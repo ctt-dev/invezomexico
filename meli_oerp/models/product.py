@@ -554,7 +554,8 @@ class product_product(models.Model):
 
             if (pli_tpl or pli_var):
                 #_logger.info("Updating price")
-                return_val = pl._get_product_price(product=self,quantity=1.0)
+                return_val = {}
+                return_val[pl.id] = pl._get_product_price(product=self,quantity=1.0)
                 if (pl.id in return_val):
                     old_price = return_val[pl.id]
                     if pli_tpl:

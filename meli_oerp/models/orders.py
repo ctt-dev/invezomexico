@@ -1709,7 +1709,7 @@ class mercadolibre_orders(models.Model):
 
 
                 product_related = order.search_meli_product( meli=meli, meli_item=Item['item'], config=config )
-                _logger.info("1st attempt: "+str(product_related)+" Item: "+str(Item["item"]) + " seller_sku:"+str(seller_sku) )
+                _logger.info("1st attempt: "+str(product_related)+" Item: "+str(Item["item"]) )
                 if ( ( (not product_related) or len(product_related)==0 ) and ('seller_custom_field' in Item['item'] or 'seller_sku' in Item['item'])):
                     _logger.info("2nd attempt: "+str(Item["item"]) )
                     #1ST attempt "seller_sku" or "seller_custom_field"

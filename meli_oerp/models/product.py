@@ -554,7 +554,7 @@ class product_product(models.Model):
 
             if (pli_tpl or pli_var):
                 #_logger.info("Updating price")
-                return_val = pl.price_get( self.id, 1.0 )
+                return_val = pl._get_product_price(product=self,quantity=1.0)
                 if (pl.id in return_val):
                     old_price = return_val[pl.id]
                     if pli_tpl:
@@ -616,7 +616,8 @@ class product_product(models.Model):
             new_price = product.lst_price
 
         if (pl):
-            return_val = pl.price_get(product.id,1.0)
+            return_val = {}
+            return_val[pl.id] = pl._get_product_price(product=product,quantity=1.0)
             if pl.id in return_val:
                 new_price = return_val[pl.id]
             _logger.info("return_val: "+str(return_val))
@@ -1550,13 +1551,7 @@ class product_product(models.Model):
         product_template.write( tmpl_fields )
 
         if (rjson['available_quantity']>=0):
-            if (product_template.type not in ['product']):
-                try:
-                    product_template.write( { 'type': 'product' } )
-                except Exception as e:
-                    _logger.info("Set type almacenable ('product') not possible:")
-                    _logger.error(e, exc_info=True)
-                    pass;
+            UpdateProductType(product_template)
             #TODO: agregar parametro para esto: ml_auto_website_published_if_available  default true
             if (1==1 and rjson['available_quantity']>0):
                 product_template.website_published = True

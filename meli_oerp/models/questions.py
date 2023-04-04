@@ -48,6 +48,7 @@ class mercadolibre_questions(models.Model):
     answer_status = fields.Selection( [("ACTIVE","Active"),("DISABLED","Disabled"),("BANNED","Banned")], string='Answer Status')
     answer_text = fields.Text("Answer Text")
 
+
     def compute_answer_link( self ):
         company = self.env.user.company_id
         for q in self:

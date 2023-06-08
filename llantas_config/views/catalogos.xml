@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <menuitem id="llantas_config_catalogos" 
+                          name="Catálogos" 
+                          parent="stock.menu_stock_config_settings" 
+                          sequence="1001" />
+        
+        <record id="tree_view_marca_llanta" model="ir.ui.view">
+            <field name="name">tree.actividad_eco</field>
+            <field name="model">llantas_config.marca_llanta</field>
+            <field name="arch" type="xml">
+                <tree string="Marca de llanta" editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="llantas_marca">
+            <field name="name">Marca de llanta</field>
+            <field name="res_model">llantas_config.marca_llanta</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="country_marca_llanta_menu" 
+                  name="Marca de llanta" 
+                  action="llantas_marca"
+                  parent="llantas_cpnfig.llantas_config_catalogos" 
+                  sequence="1" />
+    </data>
+</odoo>

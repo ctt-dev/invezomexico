@@ -18,15 +18,25 @@
     # for the full list
     'category': 'Uncategorized',
     'version': '0.1',
+    'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': [
+        'base',
+        'contacts',
+        'stock',
+        'sale_management',
+        'account',
+        'l10n_mx_edi',
+    ],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
+        'security/ir.model.access.csv',
         'views/templates.xml',
+        'views/views.xml',
+        'views/catalogos.xml',
+        'views/product.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

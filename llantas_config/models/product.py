@@ -12,4 +12,38 @@ class product_template_inherit(models.Model):
     string='Codigo',
     )
 
-    marca_llanta = fields.Many2one('country_config.actividad_eco', string="Actividad Economica")
+    marca_llanta = fields.Many2one(
+        'llantas_config.marca_llanta', 
+        string="Marca llanta"
+    )
+    
+    modelo_llanta = fields.Many2one(
+        'llantas_config.modelo_llanta', 
+        string="Modelo llanta"
+    )
+    
+    medida_llanta = fields.Many2one(
+        'llantas_config.medida_llanta', 
+        string="Medida llanta"
+    )
+
+    indice_carga = fields.Integer(
+    string='Indice de carga',
+    )
+
+    indice_velocidad = fields.Char(
+    string='Indice de velocidad',
+    )
+
+    largo = fields.Float(
+    string='Largo llanta',
+    )
+    
+    ancho = fields.Float(
+    string='Ancho llanta',
+    )	
+    
+    alto = fields.Float(
+    string='Alto llanta',
+    )	
+

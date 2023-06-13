@@ -6,11 +6,12 @@
                           sequence="1001" />
         
         <record id="tree_view_marca_llanta" model="ir.ui.view">
-            <field name="name">tree.actividad_eco</field>
+            <field name="name">tree.marca_llanta</field>
             <field name="model">llantas_config.marca_llanta</field>
             <field name="arch" type="xml">
                 <tree string="Marca de llanta" editable="top">
                     <field name="name"/>
+                    <field name="color" widget="color_picker"/>
                 </tree>
             </field>
         </record>
@@ -21,10 +22,57 @@
             <field name="view_mode">tree</field>
             <field name="target">current</field>
         </record>
-        <menuitem id="country_marca_llanta_menu" 
+        <menuitem id="llantas_marca_llanta_menu" 
                   name="Marca de llanta" 
                   action="llantas_marca"
-                  parent="llantas_cpnfig.llantas_config_catalogos" 
+                  parent="llantas_config.llantas_config_catalogos" 
                   sequence="1" />
+
+        
+        <record id="tree_view_modelo_llanta" model="ir.ui.view">
+            <field name="name">tree.modelo_llanta</field>
+            <field name="model">llantas_config.modelo_llanta</field>
+            <field name="arch" type="xml">
+                <tree string="Modelo de llanta" editable="top">
+                    <field name="name"/>
+                    <field name="color" widget="color_picker"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="llantas_modelo">
+            <field name="name">Modelo de llanta</field>
+            <field name="res_model">llantas_config.modelo_llanta</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="llantas_modelo_llanta_menu" 
+                  name="Modelo de llanta" 
+                  action="llantas_modelo"
+                  parent="llantas_config.llantas_config_catalogos" 
+                  sequence="2" />
+
+        <record id="tree_view_medida_llanta" model="ir.ui.view">
+            <field name="name">tree.medida_llanta</field>
+            <field name="model">llantas_config.medida_llanta</field>
+            <field name="arch" type="xml">
+                <tree string="Medida de llanta" editable="top">
+                    <field name="name"/>
+                    <field name="color" widget="color_picker"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="llantas_medida">
+            <field name="name">Medida de llanta</field>
+            <field name="res_model">llantas_config.medida_llanta</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="llantas_medida_llanta_menu" 
+                  name="Medida de llanta" 
+                  action="llantas_medida"
+                  parent="llantas_config.llantas_config_catalogos" 
+                  sequence="3" />
     </data>
 </odoo>

@@ -12,3 +12,20 @@ class marca_llanta(models.Model):
     _order = 'id desc'
     
     name = fields.Char(string="Nombre",required=False)
+    color = fields.Integer(string="Color",required=True)
+
+class modelo_llanta(models.Model):
+    _name = 'llantas_config.modelo_llanta'
+    _description = 'Catalogo de modelo de llantas'
+    _order = 'id desc'
+    
+    name = fields.Char(string="Nombre",required=False)
+    color = fields.Integer(string="Color",required=True)
+
+class medida_llanta(models.Model):
+    _name = 'llantas_config.medida_llanta'
+    _description = 'Catalogo de medida de llantas'
+    _order = 'id desc'
+    
+    name = fields.Char(string="Nombre",required=False)
+    color = fields.Integer(string="Color",required=True)

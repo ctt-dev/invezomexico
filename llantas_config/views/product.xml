@@ -1,0 +1,34 @@
+<odoo>
+    <data>
+        <record id="view_product_template_pos_form" model="ir.ui.view">
+            <field name="name">Product.template.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//page[@name='general_information']//group//group[@name='group_general']//field[@name='product_tooltip']" position="after">
+                     <field name="marca_llanta" />
+                     <field name="modelo_llanta" />
+                     <field name="medida_llanta" />
+                     <field name="indice_carga" />
+                     <field name="indice_velocidad" />
+                     
+                 </xpath>
+                <xpath expr="//page[@name='inventory']//group//group//div[2]" position="after">
+                     <label for="largo" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
+                        <div class="o_row" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">
+                            <field name="largo" class="oe_inline"/>
+                        </div>
+                    <label for="ancho" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
+                        <div class="o_row" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">
+                            <field name="ancho" class="oe_inline"/>
+                    </div>
+                    <label for="alto" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
+                        <div class="o_row" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">
+                            <field name="alto" class="oe_inline"/>
+                    </div>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

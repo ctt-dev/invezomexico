@@ -2,3 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_llantas_config_llantas_config_marca_llanta,llantas_config.marca_llanta,model_llantas_config_marca_llanta,,1,1,1,1
 access_llantas_config_llantas_config_modelo_llanta,llantas_config.modelo_llanta,model_llantas_config_modelo_llanta,,1,1,1,1
 access_llantas_config_llantas_config_medida_llanta,llantas_config.medida_llanta,model_llantas_config_medida_llanta,,1,1,1,1
+access_llantas_config_llantas_config_status,llantas_config.status,model_llantas_config_status,,1,1,1,1
+
+access_llantas_config_llantas_config_ctt_llantas,llantas_config.ctt_llantas,model_llantas_config_ctt_llantas,,1,1,1,1

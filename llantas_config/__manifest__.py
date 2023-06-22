@@ -37,6 +37,7 @@
         'views/views.xml',
         'views/catalogos.xml',
         'views/product.xml',
+        'views/module.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

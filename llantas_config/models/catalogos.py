@@ -26,6 +26,26 @@ class medida_llanta(models.Model):
     _name = 'llantas_config.medida_llanta'
     _description = 'Catalogo de medida de llantas'
     _order = 'id desc'
-    
+
     name = fields.Char(string="Nombre",required=False)
     color = fields.Integer(string="Color",required=True)
+
+class status(models.Model):
+    _name = 'llantas_config.status'
+    _description = 'Status'
+    _order = 'id desc'
+    
+    name = fields.Char(
+        string="Nombre",
+        required=True,
+        tracking=True,
+    )
+    
+    color = fields.Integer(
+        string="Color",
+        tracking=True,
+    )
+    description=fields.Char(
+        string="Descripción",
+        tracking=True,
+    )

@@ -3,3 +3,4 @@
 from . import product
 from . import models
 from . import catalogos
+from . import module

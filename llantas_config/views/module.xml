@@ -1,0 +1,92 @@
+<odoo>
+    <data>
+        <record id="view_llantas_tree" model="ir.ui.view">
+            <field name="name">Resumen</field>
+            <field name="model">llantas_config.ctt_llantas</field>
+            <field name="arch" type="xml">
+                <tree edit="0" sample="1">
+                    <field name="comprador" />
+                    <field name="venta" />
+                    <field name="cliente" />
+                    <field name="marketplace" />
+                    <field name="proveedor" />
+                    <field name="registro" />
+                    <field name="orden_compra" />
+                    <field name="guia" />
+                    <field name="no_recoleccion" />
+                    <field name="status_enviado" />
+                    <field name="factura_prov" />
+                    <field name="num_cliente" />
+                    <field name="factura_cliente" />
+                    <field name="status" />
+                    <field name="fecha" />
+                    <field name="dias" />
+                </tree>
+            </field>
+        </record>    
+        
+        <record id="ctt_llantas_action_ctrl_llantas_tree" model="ir.actions.act_window">
+            <field name="name">Resumen</field>
+            <field name="res_model">llantas_config.ctt_llantas</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'create': False}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+        </record>
+
+        <record id="ctt_llantas_action_proveedor_list_tree" model="ir.actions.act_window">
+            <field name="name">Existencia proveedores</field>
+            <field name="res_model">llantas_config.ctt_llantas</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'create': False}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+        </record>
+        
+        <!-- <record id="ctt_llantas_action_kiosk_mode" model="ir.actions.client">
+            <field name="name">Acceso a socios</field>
+            <field name="tag">ctt_llantas_kiosk_mode</field>
+            <field name="target">fullscreen</field>
+        </record>
+        
+        <record id="ctt_llantas_action_greeting_message" model="ir.actions.client">
+            <field name="name">Message</field>
+            <field name="tag">ctt_llantas_greeting_message</field>
+        </record> -->
+        
+        
+        
+        <!--<record id="ctt_country_partner_search" model="ir.ui.view">
+            <field name="name">contactos_search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//search//field[@name='barcode']" position="replace">
+                    <field name="barcode" string="Codigo de socio (exacto)" filter_domain="[('barcode', '=', self)]"/>
+                    <field name="barcode" string="Codigo de socio (similar)"/>
+                </xpath>
+            </field>
+        </record>-->
+
+
+        
+        <menuitem id="menu_ctt_llantas_root" name="Control Llantas" web_icon="llantas_config,static/description/ctt.png" groups=""/>
+        <menuitem id="menu_ctt_llantas_ctrl_list" name="Operaciones" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_proveedores_list" name="Listado proveedores" parent="menu_ctt_llantas_ctrl_list" sequence="1" action="ctt_llantas_action_proveedor_list_tree"/>
+        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <!-- <menuitem id="menu_ctt_country_kiosk_no_user_mode" name="Modo Kiosko" parent="menu_ctt_country_root" sequence="2" action="ctt_country_action_kiosk_mode"/> -->
+
+    </data>
+</odoo>

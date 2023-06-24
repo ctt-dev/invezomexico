@@ -49,3 +49,15 @@ class status(models.Model):
         string="Descripción",
         tracking=True,
     )
+    
+class almacen(models.Model):
+    _name = 'llantas_config.almacen'
+    _description = 'Catalogo de almacenes'
+    _order = 'id desc'
+
+    name = fields.Char(string="Nombre",required=False)
+    proveedor=fields.Many2one(
+        "res.partner",
+        string="Proveedor",
+    )
+    color = fields.Integer(string="Color",required=True)

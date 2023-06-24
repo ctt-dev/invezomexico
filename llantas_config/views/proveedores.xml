@@ -1,0 +1,77 @@
+<odoo>
+    <data>
+        <record id="view_proveedores_tree" model="ir.ui.view">
+            <field name="name">Proveedores</field>
+            <field name="model">llantas_config.ctt_prov</field>
+            <field name="arch" type="xml">
+                <tree edit="0" sample="1">
+                    <field name="proveedor" />
+                    <field name="codigo_producto" optional="hide"/>
+                    <field name="producto" />
+                    <field name="almacen" />       
+                    <field name="existencia" />
+                    <field name="costo_sin_iva" />
+                    <field name="create_date" optional="hide"/>
+                    <field name="fecha_proveedor" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ctt_llantas_action_ctrl_proveedores_form" model="ir.ui.view">
+            <field name="name">form</field>
+            <field name="model">llantas_config.ctt_prov</field>
+            <field name="arch" type="xml">
+            <form string="Resumen">
+                <sheet string="Registration">
+                    <div class="oe_button_box" />
+                    <group>
+                        <group string="Producto" >
+                            <field name="proveedor" />
+                            <field name="codigo_producto" optional="hide"/>
+                            <field name="producto" />
+                            <!-- <field name="almacen" />        -->
+                            
+                        </group>
+                        <group string="Información proveedor" >
+                            <field name="almacen" />       
+                            <field name="existencia" />
+                            <field name="costo_sin_iva" />
+                        </group>
+                        <group string="Informacion registro" >
+                            <!-- <field name="fecha_registro" optional="hide"/> -->
+                            <field name="fecha_proveedor" optional="hide"/>
+                            
+                        </group>
+                    </group>
+                </sheet>
+                 <div class="oe_chatter">
+                        <!-- <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/> -->
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+            </form>
+            </field>
+        </record>
+
+
+        <record id="ctt_llantas_action_proveedor_list_form" model="ir.actions.act_window">
+            <field name="name">Existencia_proveedores</field>
+            <field name="res_model">llantas_config.ctt_prov</field>
+            <field name="view_mode">tree,form,pivot</field>
+            <field name="context">{'create': True}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+        </record>
+
+
+
+
+        <menuitem id="menu_ctt_llantas_proveedores_list" name="Listado proveedores" parent="menu_ctt_llantas_ctrl_list" sequence="1" action="ctt_llantas_action_proveedor_list_form"/>
+    </data>
+</odoo>

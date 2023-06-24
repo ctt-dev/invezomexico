@@ -99,5 +99,30 @@
                   action="llantas_status"
                   parent="menu_ctt_llantas_catalogos_list" 
                   sequence="1" />
+
+        <record id="tree_view_almacen" model="ir.ui.view">
+            <field name="name">tree.almacen</field>
+            <field name="model">llantas_config.almacen</field>
+            <field name="arch" type="xml">
+                <tree string="Status" editable="bottom">
+                    <field name="name"/>
+                    <field name="proveedor" domain="[('category_id','like','PROVEEDOR')]"/>
+                    <field name="color" widget="color_picker"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="llantas_almacen">
+            <field name="name">Almacen</field>
+            <field name="res_model">llantas_config.almacen</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        
+        <menuitem id="llantas_almacen_menu" 
+                  name="Almacenes" 
+                  action="llantas_almacen"
+                  parent="menu_ctt_llantas_catalogos_list" 
+                  sequence="2" />
     </data>
 </odoo>

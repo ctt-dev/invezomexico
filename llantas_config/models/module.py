@@ -76,3 +76,7 @@ class ctrl_llantas(models.Model):
     dias=fields.Integer(
         string="Dias",
     )
+
+    comentarios=fields.Char(
+        string="Comentarios",
+    )

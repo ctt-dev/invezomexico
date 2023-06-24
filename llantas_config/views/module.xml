@@ -19,17 +19,66 @@
                     <field name="num_cliente" />
                     <field name="factura_cliente" />
                     <field name="status" />
+                    <field name="comentarios" optional="hide"/>
                     <field name="fecha" />
                     <field name="dias" />
                 </tree>
             </field>
         </record>    
+
         
+        <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
+            <field name="name">form</field>
+            <field name="model">llantas_config.ctt_llantas</field>
+            <field name="arch" type="xml">
+            <form string="Resumen">
+                <!-- <header>
+
+                </header> -->
+                <!-- <field name="status" nolabel="1" colspan="2" widget="statusbar" statusbar_visible="Pendiente, Debito en Curso, Traspaso"/> -->
+                <sheet string="Registration">
+                    <div class="oe_button_box" />
+                    <group>
+                        <group string="Información basica" >
+                           <field name="comprador" />
+                            <field name="venta" />
+                            <field name="cliente" />
+                            
+                        </group>
+                        <group string="Información proveedor" >
+                            <field name="marketplace" />
+                           <field name="proveedor" />
+                            <field name="registro" />
+                            <field name="orden_compra" />
+                            
+                        </group>
+                        <group string="Informacion venta" >
+                            <field name="guia" />
+                            <field name="no_recoleccion" />
+                            <field name="status_enviado" />
+                            <field name="factura_prov" />
+                            <field name="num_cliente" />
+                            <field name="factura_cliente" />
+                            <field name="comentarios" optional="hide"/>
+                            
+                        </group>
+                        <group string="Informacion pedido" >
+                            <field name="status" />
+                            <field name="fecha" />
+                            <field name="dias" />
+                            
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+                </field>
+        </record>
+            
         <record id="ctt_llantas_action_ctrl_llantas_tree" model="ir.actions.act_window">
             <field name="name">Resumen</field>
             <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">tree</field>
-            <field name="context">{'create': False}</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_empty_folder">
@@ -38,13 +87,16 @@
                     Aqui aparecerán los registros de existencia de proveedores.
                 </p>
             </field>
+            
         </record>
 
-        <record id="ctt_llantas_action_proveedor_list_tree" model="ir.actions.act_window">
+        
+
+        <!-- <record id="ctt_llantas_action_proveedor_list_tree" model="ir.actions.act_window">
             <field name="name">Existencia proveedores</field>
             <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">tree</field>
-            <field name="context">{'create': False}</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_empty_folder">
@@ -53,7 +105,9 @@
                     Aqui aparecerán los registros de existencia de proveedores.
                 </p>
             </field>
-        </record>
+        </record> -->
+        
+
         
         <!-- <record id="ctt_llantas_action_kiosk_mode" model="ir.actions.client">
             <field name="name">Acceso a socios</field>
@@ -84,7 +138,7 @@
         
         <menuitem id="menu_ctt_llantas_root" name="Control Llantas" web_icon="llantas_config,static/description/ctt.png" groups=""/>
         <menuitem id="menu_ctt_llantas_ctrl_list" name="Operaciones" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
-        <menuitem id="menu_ctt_llantas_proveedores_list" name="Listado proveedores" parent="menu_ctt_llantas_ctrl_list" sequence="1" action="ctt_llantas_action_proveedor_list_tree"/>
+        
         <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
         <!-- <menuitem id="menu_ctt_country_kiosk_no_user_mode" name="Modo Kiosko" parent="menu_ctt_country_root" sequence="2" action="ctt_country_action_kiosk_mode"/> -->
 

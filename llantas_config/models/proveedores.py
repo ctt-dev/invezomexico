@@ -24,7 +24,7 @@ class ctrl_llantas(models.Model):
         tracking=True
         
     )
-
+    
     almacen=fields.Many2one(
         'llantas_config.almacen',
         string="Almacen",
@@ -41,12 +41,19 @@ class ctrl_llantas(models.Model):
         string="Producto",
         tracking=True
     )
+  
+    proveedor_id=fields.Char(
+        related="codigo_producto.partner_id.name",
+        string="Proveedor",
+        tracking=True
+        
+    )
     
     producto=fields.Char(
         related="codigo_producto.product_name",
         string="Nombre producto"
     )
-    
+
     existencia=fields.Integer(
         string="Existencias",
         tracking=True
@@ -56,7 +63,15 @@ class ctrl_llantas(models.Model):
         string="Costo",
         tracking=True
     )
-    
+
+    tipo_cambio=fields.Float(
+        string="Tipo de cambio"
+    )
+
+    moneda=fields.Many2one(
+        "res.currency",
+        string="Moneda",
+    )
 class ProductSupplierinfoInherited(models.Model):
     _inherit = 'product.supplierinfo'
     
@@ -72,4 +87,55 @@ class ProductSupplierinfoInherited(models.Model):
             display_value += str(e.partner_id.name) or ""
             data.append((e.id, display_value))
         return data
+
+class ctrl_llantas(models.Model): 
+    _name = "llantas_config.ctt_prov_cargar"
+    _description = "Cargar Existencia"
     
+    cargar_nombre_proveedor=fields.Char(
+        string="Nombre proveedor",
+        tracking=True
+        
+    )
+
+    cargar_almacen=fields.Char(
+        string="Almacen",
+        tracking=True
+    )
+    
+    
+    fecha_proveedor=fields.Date(
+        string="Fecha validez",
+        tracking=True
+    )
+    
+
+    cargar_codigo_producto=fields.Char(
+        string="Producto",
+        tracking=True
+    )
+    
+
+    cargar_producto=fields.Char(
+        string="Nombre producto"
+    )
+    
+    
+    existencia=fields.Integer(
+        string="Existencias",
+        tracking=True
+    )
+    
+    costo_sin_iva=fields.Float(
+        string="Costo",
+        tracking=True
+    )
+
+    tipo_cambio=fields.Float(
+        string="Tipo de cambio"
+    )
+
+    moneda=fields.Many2one(
+        "res.currency",
+        string="Moneda",
+    )

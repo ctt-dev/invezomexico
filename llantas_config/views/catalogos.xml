@@ -107,7 +107,7 @@
                 <tree string="Status" editable="bottom">
                     <field name="name"/>
                     <field name="proveedor" domain="[('category_id','like','PROVEEDOR')]"/>
-                    <field name="color" widget="color_picker"/>
+                    <field name="color" widget="color_picker" required="0"/>
                 </tree>
             </field>
         </record>

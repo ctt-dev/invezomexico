@@ -1,27 +1,26 @@
 <odoo>
     <data>
-        <record id="view_proveedores_tree" model="ir.ui.view">
-            <field name="name">Proveedores</field>
-            <field name="model">llantas_config.ctt_prov</field>
+        <record id="view_proveedores_tree_cargar" model="ir.ui.view">
+            <field name="name">Existencias</field>
+            <field name="model">llantas_config.ctt_prov_cargar</field>
             <field name="arch" type="xml">
                 <tree edit="0" sample="1">
-                    <field name="proveedor_id" />
-                    <field name="codigo_producto" optional="hide"/>
-                    <field name="producto" />
-                    <field name="almacen" />       
+                    <field name="cargar_nombre_proveedor" />
+                    <field name="cargar_codigo_producto"/>
+                    <field name="cargar_producto" />
+                    <field name="cargar_almacen" />       
                     <field name="existencia" />
                     <field name="costo_sin_iva" />
                     <field name="moneda" optional="hide"/>
                     <field name="tipo_cambio" optional="hide"/>
-                    <field name="fecha_proveedor" optional="show"/>
                     <field name="create_date" optional="hide"/>
-                    
+                    <field name="fecha_proveedor"/>
                 </tree>
             </field>
         </record>
 
-        <record id="ctt_llantas_action_ctrl_proveedores_form" model="ir.ui.view">
-            <field name="name">form</field>
+        <!-- <record id="ctt_llantas_action_ctrl_proveedores_form_cargar" model="ir.ui.view">
+            <field name="name">cargar_existencias</field>
             <field name="model">llantas_config.ctt_prov</field>
             <field name="arch" type="xml">
             <form string="Resumen">
@@ -29,41 +28,40 @@
                     <div class="oe_button_box" />
                     <group>
                         <group string="Producto" >
-                            <!-- <field name="proveedor" /> -->
-                            <field name="codigo_producto" optional="hide"/>
+                            <field name="cargar_nombre_proveedor" />
+                            <field name="cargarcodigo_producto" optional="hide"/>
                             <field name="proveedor_id" />
                             <field name="producto" />
-                            <!-- <field name="almacen" />        -->
+
                             
                         </group>
                         <group string="Información proveedor" >
-                            <field name="almacen" />       
+                            <field name="cargar_almacen" />       
                             <field name="existencia" />
                             <field name="costo_sin_iva" />
                             <field name="moneda" />
                             <field name="tipo_cambio" />
                         </group>
                         <group string="Informacion registro" >
-                            <!-- <field name="fecha_registro" optional="hide"/> -->
+
                             <field name="fecha_proveedor" optional="hide"/>
                             
                         </group>
                     </group>
                 </sheet>
                  <div class="oe_chatter">
-                        <!-- <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/> -->
+
                         <field name="message_ids" widget="mail_thread"/>
                     </div>
             </form>
             </field>
-        </record>
+        </record> -->
 
 
-        <record id="ctt_llantas_action_proveedor_list_form" model="ir.actions.act_window">
-            <field name="name">Existencia proveedores</field>
-            <field name="res_model">llantas_config.ctt_prov</field>
-            <field name="view_mode">tree,form,pivot</field>
+        <record id="ctt_llantas_action_proveedor_list_form_cargar" model="ir.actions.act_window">
+            <field name="name">Cargar existencias</field>
+            <field name="res_model">llantas_config.ctt_prov_cargar</field>
+            <field name="view_mode">tree</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
@@ -78,6 +76,6 @@
 
 
 
-        <menuitem id="menu_ctt_llantas_proveedores_list" name="Listado proveedores" parent="menu_ctt_llantas_ctrl_list" sequence="1" action="ctt_llantas_action_proveedor_list_form"/>
+        <menuitem id="menu_ctt_llantas_proveedores_list_cargar" name="Cargar existencias" parent="menu_ctt_llantas_ctrl_list" sequence="2" action="ctt_llantas_action_proveedor_list_form_cargar"/>
     </data>
 </odoo>

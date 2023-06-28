@@ -39,6 +39,7 @@
         'views/product.xml',
         'views/module.xml',
         'views/proveedores.xml',
+        'views/subir_existencias.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

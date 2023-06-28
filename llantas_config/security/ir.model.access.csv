@@ -4,6 +4,7 @@ access_llantas_config_llantas_config_modelo_llanta,llantas_config.modelo_llanta,
 access_llantas_config_llantas_config_medida_llanta,llantas_config.medida_llanta,model_llantas_config_medida_llanta,,1,1,1,1
 access_llantas_config_llantas_config_status,llantas_config.status,model_llantas_config_status,,1,1,1,1
 access_llantas_config_llantas_config_ctt_prov,llantas_config.ctt_prov,model_llantas_config_ctt_prov,,1,1,1,1
+access_llantas_config_llantas_config_ctt_prov_cargar,llantas_config.ctt_prov_cargar,model_llantas_config_ctt_prov_cargar,,1,1,1,1
 access_llantas_config_llantas_config_almacen,llantas_config.almacen,model_llantas_config_almacen,,1,1,1,1
 
 

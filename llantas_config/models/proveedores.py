@@ -139,3 +139,42 @@ class ctrl_llantas(models.Model):
         "res.currency",
         string="Moneda",
     )
+
+
+class ctrl_tiredirect(models.Model): 
+    _name = "llantas_config.ctt_tiredirect_cargar"
+    _description = "Cargar Existencia"
+
+    clave_parte=fields.Char(
+        string="Clave Parte",
+        tracking=True
+    )
+    
+    
+    description_description=fields.Char(
+        string="Descripción",
+        tracking=True
+    )
+    
+
+    moneda_currency=fields.Char(
+        string="Moneda",
+        tracking=True
+    )
+    
+
+    TC=fields.Char(
+        string="Tipo de Cambio",
+        tracking=True
+    )
+    
+    
+    ES=fields.Char(
+        string="ES",
+        tracking=True
+    )
+    
+    FS=fields.Char(
+        string="FS",
+        tracking=True
+    )

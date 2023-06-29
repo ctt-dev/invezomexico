@@ -5,6 +5,10 @@
                           parent="stock.menu_stock_config_settings" 
                           sequence="1001" />
         
+        <menuitem id="llantas_config_catalogos_sale" 
+                              name="Catálogos" 
+                              parent="sale.menu_sale_config" 
+                              sequence="1001" />
         <record id="tree_view_marca_llanta" model="ir.ui.view">
             <field name="name">tree.marca_llanta</field>
             <field name="model">llantas_config.marca_llanta</field>
@@ -111,11 +115,36 @@
                 </tree>
             </field>
         </record>
-       
+
+        <record id="ctt_llantas_action_view_almacen_form" model="ir.ui.view">
+            <field name="name">form</field>
+            <field name="model">llantas_config.almacen</field>
+            <field name="arch" type="xml">
+            <form string="Resumen">
+                <sheet string="View">
+                    <div class="oe_button_box" />
+
+                        <group string="Información" >
+                            <field name="name"/>
+                            <field name="proveedor" domain="[('category_id','like','PROVEEDOR')]"/>
+                            <field name="color" widget="color_picker" required="0"/>
+                        </group>
+                        
+     
+                </sheet>
+                <div class="oe_chatter">
+                        <!-- <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/> -->
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+            </form>
+            </field>
+        </record>
+        
         <record model="ir.actions.act_window" id="llantas_almacen">
             <field name="name">Almacen</field>
             <field name="res_model">llantas_config.almacen</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form</field>
             <field name="target">current</field>
         </record>
         
@@ -124,5 +153,63 @@
                   action="llantas_almacen"
                   parent="menu_ctt_llantas_catalogos_list" 
                   sequence="2" />
+    <!-- </data> -->
+
+    <record id="tree_view_marketplaces" model="ir.ui.view">
+            <field name="name">tree.marketplace</field>
+            <field name="model">llantas_config.marketplaces</field>
+            <field name="arch" type="xml">
+                <tree string="Status">
+                    <field name="name"/>
+                    <field name="url" />
+                    <field name="color" widget="color_picker" required="0"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ctt_llantas_action_view_marketplaces_form" model="ir.ui.view">
+            <field name="name">form</field>
+            <field name="model">llantas_config.marketplaces</field>
+            <field name="arch" type="xml">
+                <form string="Resumen">
+                    <sheet string="View">
+                        <header>
+                            <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
+                        </header>
+                        <div class="oe_button_box" />
+    
+                            <group string="Información" >
+                                <field name="name"/>
+                                <field name="url" />
+                                <field name="color" widget="color_picker" required="0"/>
+                            </group>
+                            
+         
+                    </sheet>
+                    <div class="oe_chatter">
+                            <!-- <field name="message_follower_ids" widget="mail_followers"/>
+                            <field name="activity_ids" widget="mail_activity"/> -->
+                            <field name="message_ids" widget="mail_thread"/>
+                        </div>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="llantas_marketplaces">
+            <field name="name">Marketplaces</field>
+            <field name="res_model">llantas_config.marketplaces</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">main</field>
+        </record>
+        
+        <menuitem id="llantas_marketplaces_menu" 
+                  name="Marketplaces" 
+                  action="llantas_marketplaces"
+                  parent="llantas_config_catalogos_sale" 
+                  sequence="102" />
+        
+        
+    
+    
     </data>
 </odoo>

@@ -5,3 +5,4 @@ from . import models
 from . import catalogos
 from . import module
 from . import proveedores
+from . import sales

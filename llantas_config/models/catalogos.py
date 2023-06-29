@@ -5,6 +5,8 @@ from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 import datetime
+import urllib.request 
+import json  
 
 class marca_llanta(models.Model):
     _name = 'llantas_config.marca_llanta'
@@ -54,6 +56,7 @@ class almacen(models.Model):
     _name = 'llantas_config.almacen'
     _description = 'Catalogo de almacenes'
     _order = 'id desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string="Nombre",required=False)
     proveedor=fields.Many2one(
@@ -61,3 +64,43 @@ class almacen(models.Model):
         string="Proveedor",
     )
     color = fields.Integer(string="Color",required=True)
+
+class marketplaces(models.Model):
+    _name = 'llantas_config.marketplaces'
+    _description = 'Catalogo de marketplaces'
+    _order = 'id desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    name = fields.Char(
+        string="Nombre",
+    )
+    
+    url= fields.Char(
+        string="Url marketplace",
+    )
+    
+    color = fields.Integer(
+        string="Color",
+    )
+
+    def process_link(self):
+        url = urllib.request.urlopen(self.url) 
+        data = json.loads(url.read().decode()) 
+        for x in data["objects"]["ResponseRow"]:
+            self.env['llantas_config.ctt_tiredirect_cargar'].create({
+                'description_description': x["Descripcion_Description"],
+                'clave_parte': x["Clave_Parte"],
+                'moneda_currency': x["Moneda_Currency"],
+                'TC': x["TC"],
+                'ES': x["ES"],
+                'FS': x["FS"]
+            })
+        return {
+                    'name': 'Cargar existencias',
+                    'view_type': 'tree',
+                    'view_mode': 'tree',
+                    'view_id': self.env.ref('llantas_config.view_tiredirect_tree_cargar').id,
+                    'res_model': 'llantas_config.ctt_tiredirect_cargar',
+                    'type': 'ir.actions.act_window',
+                    'target': 'new',
+                   }

@@ -27,6 +27,7 @@
         'stock',
         'sale_management',
         'account',
+        'hr',
         'l10n_mx_edi',
     ],
 

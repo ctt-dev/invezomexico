@@ -5,11 +5,12 @@
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
                 <tree edit="0" sample="1">
-                    <field name="comprador" />
-                    <field name="venta" />
-                    <field name="cliente" />
+                    <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
+                    
+                    <field name="sale_id" />
+                    <field name="partner_name" />
                     <field name="marketplace" />
-                    <field name="proveedor" />
+                    <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
                     <field name="registro" />
                     <field name="orden_compra" />
                     <field name="guia" />
@@ -40,14 +41,14 @@
                     <div class="oe_button_box" />
                     <group>
                         <group string="Información basica" >
-                           <field name="comprador" />
-                            <field name="venta" />
-                            <field name="cliente" />
+                            <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
+                            <field name="sale_id" />
+                            <field name="partner_name" />
                             
                         </group>
                         <group string="Información proveedor" >
                             <field name="marketplace" />
-                           <field name="proveedor" />
+                           <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
                             <field name="registro" />
                             <field name="orden_compra" />
                             
@@ -59,7 +60,7 @@
                             <field name="factura_prov" />
                             <field name="num_cliente" />
                             <field name="factura_cliente" />
-                            <field name="comentarios" optional="hide"/>
+                            
                             
                         </group>
                         <group string="Informacion pedido" >
@@ -68,6 +69,9 @@
                             <field name="dias" />
                             
                         </group>
+                    </group>
+                    <group>
+                        <field name="comentarios" optional="hide"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -126,19 +130,36 @@
         </record> -->
         
         
-        
-        <!--<record id="ctt_country_partner_search" model="ir.ui.view">
-            <field name="name">contactos_search</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <record id="llantas_config_search" model="ir.ui.view">
+            <field name="name">Buscar</field>
+            <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
-                 <xpath expr="//search//field[@name='barcode']" position="replace">
-                    <field name="barcode" string="Codigo de socio (exacto)" filter_domain="[('barcode', '=', self)]"/>
-                    <field name="barcode" string="Codigo de socio (similar)"/>
-                </xpath>
+               <search string="Buscar">
+                    <field name="partner_name" string="Cliente" filter_domain="[('partner_name', 'ilike', self)]"/>
+                        <field name="marketplace" string="Marketplace" filter_domain="[('marketplace', 'ilike', self)]"/>
+                        <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>
+                        <field name="status" string="Status" filter_domain="[('status', 'ilike', self)]"/>
+                        <field name="proveedor_id" string="Proveedor" filter_domain="[('proveedor_id', 'ilike', self)]"/>
+
+                       <filter string="Status pendiente" name="status" domain="[('status', '=', 'Pendiente')]"/>
+                       <!-- <filter name="fecha" string="Fecha" /> -->
+                   
+                        <separator/>
+                       <group expand="0" string="Group By">
+                        <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
+                        <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/>
+                        <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'status'}"/>
+                        <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
+                        <filter string="Order Date" name="fecha" domain="[]" context="{'group_by': 'fecha'}"/>
+                           
+                           
+                        </group>
+                       
+                </search>
             </field>
-        </record>-->
-        
+        </record>
+    
        
 
 
@@ -146,7 +167,9 @@
         <menuitem id="menu_ctt_llantas_root" name="Control Llantas" web_icon="llantas_config,static/description/ctt.png" groups=""/>
         <menuitem id="menu_ctt_llantas_ctrl_list" name="Operaciones" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
-        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="3" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_marketplace_list" name="Proveedores" parent="menu_ctt_llantas_root" sequence="2" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        
         <!-- <menuitem id="menu_ctt_country_kiosk_no_user_mode" name="Modo Kiosko" parent="menu_ctt_country_root" sequence="2" action="ctt_country_action_kiosk_mode"/> -->
 
     </data>

@@ -13,4 +13,6 @@ class sale_order_inherit(models.Model):
     marketplace = fields.Many2one(
         "llantas_config.marketplaces",
         string="Marketplace",
+        required=True,
+        tracking=True,
     )

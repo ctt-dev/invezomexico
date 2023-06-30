@@ -173,9 +173,9 @@
             <field name="arch" type="xml">
                 <form string="Resumen">
                     <sheet string="View">
-                        <header>
+                        <!-- <header>
                             <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
-                        </header>
+                        </header> -->
                         <div class="oe_button_box" />
     
                             <group string="Información" >

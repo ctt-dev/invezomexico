@@ -17,9 +17,17 @@ class ctrl_llantas(models.Model):
         tracking=True
     )
 
+    comprador_id= fields.Many2one(
+        "hr.employee",
+        string="Comprador",
+        tracking=True,
+        store=True,
+    )
+    
     comprador=fields.Char(
         string="Comprador",
-        tracking=True
+        tracking=True,
+        store=True,
     )
     
     venta=fields.Char(
@@ -28,18 +36,33 @@ class ctrl_llantas(models.Model):
     )
     
     cliente=fields.Char(
+        
         string="Cliente",
         tracking=True
     )
+    partner_name=fields.Char(
+        related="sale_id.partner_id.name",
+        string="Cliente",
+        store=True,
+    )
     
     marketplace=fields.Char(
+        related="sale_id.marketplace.name",
         string="Marketplace",
-        tracking=True
+        tracking=True,
+        store=True,
     )
+
     
     proveedor=fields.Char(
         string="Proveedor",
         tracking=True
+    )
+    proveedor_id=fields.Many2one(
+        "res.partner",
+        string="Proveedor",
+        tracking=True,
+        store=True,
     )
     
     registro=fields.Boolean(
@@ -88,7 +111,8 @@ class ctrl_llantas(models.Model):
     
     fecha=fields.Datetime(
         string="Fecha",    
-        tracking=True
+        tracking=True,
+        readonly=True,
     )
     
     dias=fields.Integer(
@@ -99,4 +123,11 @@ class ctrl_llantas(models.Model):
     comentarios=fields.Char(
         string="Comentarios",
         tracking=True
+    )
+
+    sale_id=fields.Many2one(
+        "sale.order",
+        string="Venta",
+        readonly=True,
+        store=True,
     )

@@ -26,8 +26,10 @@
                 <tree edit="0" sample="1">
                     <field name="clave_parte" />
                     <field name="description_description"/>
+                    <field name="Existencia_Stock" />
                     <field name="moneda_currency" />
-                    <field name="TC" />       
+                    <field name="TC" />
+                    
                     <field name="ES" />
                     <field name="FS" />
                 </tree>
@@ -103,15 +105,12 @@
             </field>
         </record>
 
-    <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
+    <!-- <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
             <field name="name">form</field>
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
             <form string="Resumen">
-                <!-- <header>
 
-                </header> -->
-                <!-- <field name="status" nolabel="1" colspan="2" widget="statusbar" statusbar_visible="Pendiente, Debito en Curso, Traspaso"/> -->
                 <sheet string="Registration">
                     <div class="oe_button_box" />
                     <group>
@@ -147,13 +146,12 @@
                     </group>
                 </sheet>
                 <div class="oe_chatter">
-                        <!-- <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/> -->
+
                         <field name="message_ids" widget="mail_thread"/>
                     </div>
             </form>
                 </field>
-        </record>
+        </record> -->
 
 
         <menuitem id="menu_ctt_llantas_proveedores_list_cargar" name="Cargar existencias" parent="menu_ctt_llantas_ctrl_list" sequence="2" action="ctt_llantas_action_proveedor_list_form_cargar"/>

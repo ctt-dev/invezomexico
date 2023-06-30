@@ -75,6 +75,62 @@
             </field>
         </record>
 
+        <record id="tree_view_proveedores_links" model="ir.ui.view">
+                    <field name="name">link.Proveedores</field>
+                    <field name="model">llantas_config.proveedores_links</field>
+                    <field name="arch" type="xml">
+                        <tree string="Status">
+                            <field name="name"/>
+                            <field name="url" />
+                            <field name="company_id" />
+                            <field name="color" widget="color_picker" required="0"/>
+                            <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
+                        </tree>
+                    </field>
+                </record>
+        
+                <record id="ctt_llantas_action_view_mproveedores_links_form" model="ir.ui.view">
+                    <field name="name">form</field>
+                    <field name="model">llantas_config.proveedores_links</field>
+                    <field name="arch" type="xml">
+                        <form string="Resumen">
+                            <sheet string="View">
+                                <header>
+                                    <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
+                                </header>
+                                <div class="oe_button_box" />
+            
+                                    <group string="Información" >
+                                        <field name="name"/>
+                                        <field name="url" />
+                                        <field name="company_id" />
+                                        <field name="color" widget="color_picker" required="0"/>
+                                    </group>
+                                    
+                 
+                            </sheet>
+                            <div class="oe_chatter">
+                                    <!-- <field name="message_follower_ids" widget="mail_followers"/>
+                                    <field name="activity_ids" widget="mail_activity"/> -->
+                                    <field name="message_ids" widget="mail_thread"/>
+                                </div>
+                        </form>
+                    </field>
+                </record>
+                
+                <record model="ir.actions.act_window" id="llantas_proveedores_links">
+                    <field name="name">Proveedores links</field>
+                    <field name="res_model">llantas_config.proveedores_links</field>
+                    <field name="view_mode">tree,form</field>
+                    <field name="target">main</field>
+                </record>
+                
+                <menuitem id="llantas_proveedores_links_menu_list" 
+                          name="Proveedores links" 
+                          action="llantas_proveedores_links"
+                          parent="menu_ctt_llantas_marketplace_list" 
+                          sequence="102" />
+
 
 
 

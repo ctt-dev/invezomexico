@@ -72,6 +72,9 @@ class ctrl_llantas(models.Model):
         "res.currency",
         string="Moneda",
     )
+
+
+    
 class ProductSupplierinfoInherited(models.Model):
     _inherit = 'product.supplierinfo'
     
@@ -147,34 +150,39 @@ class ctrl_tiredirect(models.Model):
 
     clave_parte=fields.Char(
         string="Clave Parte",
-        tracking=True
+        tracking=True,
     )
     
     
     description_description=fields.Char(
         string="Descripción",
-        tracking=True
+        tracking=True,
     )
     
 
     moneda_currency=fields.Char(
         string="Moneda",
-        tracking=True
+        tracking=True,
     )
     
 
     TC=fields.Char(
         string="Tipo de Cambio",
-        tracking=True
+        tracking=True,
     )
     
     
     ES=fields.Char(
         string="ES",
-        tracking=True
+        tracking=True,
     )
     
     FS=fields.Char(
         string="FS",
-        tracking=True
+        tracking=True,
+    )
+    
+    Existencia_Stock=fields.Char(
+        string="Existencias",
+        tracking=True,
     )

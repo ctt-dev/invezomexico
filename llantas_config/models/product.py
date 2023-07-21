@@ -47,3 +47,17 @@ class product_template_inherit(models.Model):
     string='Alto llanta',
     )	
 
+    config_marketplace_id=fields.Many2one(
+        "llantas_config.product_marketplace",
+        string="Maketplaces",
+        store=True
+
+    )
+
+    config_marketplace_ids=fields.One2many(
+        "llantas_config.product_marketplace",
+        "product_ids",
+        string="Maketplaces",
+        store=True
+
+    )

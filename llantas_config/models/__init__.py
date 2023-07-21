@@ -6,3 +6,4 @@ from . import catalogos
 from . import module
 from . import proveedores
 from . import sales
+from . import marketplaces

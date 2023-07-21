@@ -1,0 +1,81 @@
+<odoo>
+    <data>
+
+        <record id="tree_view_marketplaces_product" model="ir.ui.view">
+            <field name="name">tree.marketplaces_product</field>
+            <field name="model">llantas_config.product_marketplace</field>
+            <field name="arch" type="xml">
+                <tree string="Configuracion marketplace" editable="top">
+                    <field name="name"/>
+                    <field name="product_ids" force_save="1" readonly="1"/>
+                    <field name="sku" />
+                    <field name="sku_premium" />
+                    <field name="sku_paquete_clasico" />
+                    <field name="sku_paquete_premium" />
+                    <field name="codigo_clasico" />
+                    <field name="codigo_premium" />
+                    <field name="codigo_paquete_clasico" />
+                    <field name="codigo_paquete_premium" />
+                    <field name="codigo_ean" />
+                    <field name="color" widget="color_picker"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tree_view_marketplaces_product_form" model="ir.ui.view">
+            <field name="name">form</field>
+            <field name="model">llantas_config.product_marketplace</field>
+            <field name="arch" type="xml">
+                <form string="Resumen">
+                    <sheet string="View">
+                        <!-- <header>
+                            <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
+                        </header> -->
+                        <div class="oe_button_box" />
+    
+                            <group string="Información" >
+                                <field name="name"/>
+                                <field name="product_ids" force_save="1" readonly="1" invisible="1"/>
+                            </group>
+                            <group string="SKU" >
+                                <field name="sku" />
+                                <field name="sku_premium" />
+                                <field name="sku_paquete_clasico" />
+                                <field name="sku_paquete_premium" />
+                            </group>
+                            <group string="Codigo" >
+                                <field name="codigo_clasico" />
+                                <field name="codigo_premium" />
+                                <field name="codigo_paquete_clasico" />
+                                <field name="codigo_paquete_premium" />
+                                <field name="codigo_ean" />
+                                
+                            </group>
+                            <group string="Configuración">
+                                <field name="color" widget="color_picker"/>
+                            </group>
+
+                    </sheet>
+                    <div class="oe_chatter">
+                            <!-- <field name="message_follower_ids" widget="mail_followers"/>
+                            <field name="activity_ids" widget="mail_activity"/> -->
+                            <field name="message_ids" widget="mail_thread"/>
+                        </div>
+                </form>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="marketplaces_products">
+            <field name="name">Configuración marketplace</field>
+            <field name="res_model">llantas_config.product_marketplace</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="configuracion_marketplace_menu" 
+                  name="Configuración marketplaces" 
+                  action="marketplaces_products"
+                  parent="llantas_config_catalogos_sale" 
+                  sequence="103" />
+        
+    </data>
+</odoo>

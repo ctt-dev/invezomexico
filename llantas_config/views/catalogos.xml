@@ -203,13 +203,10 @@
         </record>
         
         <menuitem id="llantas_marketplaces_menu" 
-                  name="Marketplaces" 
+                  name="Marketplaces links" 
                   action="llantas_marketplaces"
                   parent="llantas_config_catalogos_sale" 
                   sequence="102" />
-        
-        
-    
-    
+
     </data>
 </odoo>

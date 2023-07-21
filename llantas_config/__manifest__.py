@@ -42,6 +42,7 @@
         'views/proveedores.xml',
         'views/subir_existencias.xml',
         'views/sales.xml',
+        'views/marketplaces.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

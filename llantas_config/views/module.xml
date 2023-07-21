@@ -24,6 +24,11 @@
                     <field name="fecha" />
                     <field name="dias" />
                 </tree>
+                <graph string="Sales Orders" sample="1">
+                    <!-- <field name="marketplace" invisible="1" optional="hide"/>
+                    <field name="status" invisible="1" optional="hide"/> -->
+                        <!-- type="measure"/> -->
+                </graph>
             </field>
         </record>    
 
@@ -86,7 +91,7 @@
         <record id="ctt_llantas_action_ctrl_llantas_tree" model="ir.actions.act_window">
             <field name="name">Resumen</field>
             <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,graph,pivot</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">

@@ -1,21 +1,41 @@
 # -*- coding: utf-8 -*-
-# from odoo import http
+from odoo import http
+from odoo.http import request
+from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 
+import logging
+_logger = logging.getLogger(__name__)
 
-# class CttMercadoLibre(http.Controller):
-#     @http.route('/ctt_mercado_libre/ctt_mercado_libre', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
+class MercadoLibreLogin(http.Controller):
 
-#     @http.route('/ctt_mercado_libre/ctt_mercado_libre/objects', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('ctt_mercado_libre.listing', {
-#             'root': '/ctt_mercado_libre/ctt_mercado_libre',
-#             'objects': http.request.env['ctt_mercado_libre.ctt_mercado_libre'].search([]),
-#         })
+    @http.route(['/meli_code'], type='http', auth="user", methods=['GET'], website=True)
+    def index(self, **codes ):
+    
+        codes.setdefault('code','none')
+        codes.setdefault('error','none')
+        
+        if codes['code'] != 'none':
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_code', codes['code'])
 
-#     @http.route('/ctt_mercado_libre/ctt_mercado_libre/objects/<model("ctt_mercado_libre.ctt_mercado_libre"):obj>', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('ctt_mercado_libre.object', {
-#             'object': obj
-#         })
+            params = request.env['ir.config_parameter'].sudo()
+            client_id = params.get_param('ctt_mercado_libre.mercado_libre_app_id')
+            client_secret = params.get_param('ctt_mercado_libre.mercado_libre_client_secret')
+            redirect_uri = params.get_param('ctt_mercado_libre.mercado_libre_redirect_url')
+
+            api_conecctor = MeliApi({
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'tg_code': codes['code'],
+                'redirect_uri': redirect_uri
+            })
+
+            tokens = api_conecctor.authorize()
+
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token', tokens['access_token'])
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_refresh_token', tokens['refresh_token'])
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_is_connect', True)
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_valido', True)
+
+        server_action = request.env.ref("ctt_mercado_libre.redirect_settings_action")
+        return request.redirect(
+            '/web#action=%s&model=res.config.settings' % (server_action.id))

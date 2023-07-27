@@ -1,5 +1,23 @@
 <odoo>
     <data>
+        <record id="mercado_libre_settings_menu_action" model="ir.actions.act_window">
+            <field name="name">Settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_id" ref="base.res_config_settings_view_form"/>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'ctt_mercado_libre'}</field>
+        </record>
+        
+        <record id="redirect_settings_action" model="ir.actions.server">
+            <field name="name">Redirection to Mercado Libre settings</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="base.model_res_config_settings"/>
+            <field name="state">code</field>
+            <field name="code">action = model._ml_redirect_settings()</field>
+        </record>
+        
         <record id="ctt_meli_res_config_settings_view_form" model="ir.ui.view">
             <field name="name">res.config.settings.view.form.inherit.ctt.meli</field>
             <field name="model">res.config.settings</field>
@@ -46,6 +64,7 @@
                                         <label for="mercado_libre_token_valid" class="o_light_label mr8"/>
                                         <field name="mercado_libre_token_valid" class="oe_inline" readonly="1"/>
                                     </div>
+                                    <button type="object" name="mercado_libre_get_token" string="Get token" icon="fa-arrow-right" class="btn-link"/>
                                 </div>
                             </div>
                         </div>

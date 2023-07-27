@@ -15,12 +15,36 @@
                                 <div class="o_setting_right_pane">
                                     <span class="o_form_label">App settings</span>
                                     <div class="content-group mt16">
-                                        <label for="app_id" class="o_light_label"/>
-                                        <field name="app_id"/>
+                                        <label for="mercado_libre_app_id" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_app_id" class="oe_inline"/>
                                     </div>
                                     <div class="content-group">
-                                        <label for="client_secret" class="o_light_label"/>
-                                        <field name="client_secret"/>
+                                        <label for="mercado_libre_client_secret" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_client_secret" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_redirect_url" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_redirect_url" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_code" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_code" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_token" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_token" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_refresh_token" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_refresh_token" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_is_connect" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_is_connect" class="oe_inline" readonly="1"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_token_valid" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_token_valid" class="oe_inline" readonly="1"/>
                                     </div>
                                 </div>
                             </div>

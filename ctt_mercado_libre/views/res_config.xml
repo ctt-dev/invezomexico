@@ -57,6 +57,14 @@
                                         <field name="mercado_libre_refresh_token" class="oe_inline"/>
                                     </div>
                                     <div class="content-group">
+                                        <label for="mercado_libre_token_request_time" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_token_request_time" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
+                                        <label for="mercado_libre_token_expires" class="o_light_label mr8"/>
+                                        <field name="mercado_libre_token_expires" class="oe_inline"/>
+                                    </div>
+                                    <div class="content-group">
                                         <label for="mercado_libre_is_connect" class="o_light_label mr8"/>
                                         <field name="mercado_libre_is_connect" class="oe_inline" readonly="1"/>
                                     </div>

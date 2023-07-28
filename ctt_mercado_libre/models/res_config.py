@@ -14,6 +14,8 @@ class CTTMELIResConfigSettings(models.TransientModel):
     mercado_libre_code = fields.Char(string="Code", config_parameter="ctt_mercado_libre.mercado_libre_code")
     mercado_libre_token = fields.Char(string="Token", config_parameter="ctt_mercado_libre.mercado_libre_token")
     mercado_libre_refresh_token = fields.Char(string="Refresh token", config_parameter="ctt_mercado_libre.mercado_libre_refresh_token")
+    mercado_libre_token_request_time = fields.Datetime(string="Fecha de obtención del token", config_parameter='ctt_mercado_libre.mercado_libre_token_request_time')
+    mercado_libre_token_expires = fields.Datetime(string="Expiracion del token", config_parameter='ctt_mercado_libre.mercado_libre_token_expires')
     mercado_libre_is_connect = fields.Boolean(string="Conectado", default=False,config_parameter="ctt_mercado_libre.mercado_libre_is_connect")
     mercado_libre_token_valid = fields.Boolean(string="Token valido", config_parameter="ctt_mercado_libre.mercado_libre_token_valido")
 

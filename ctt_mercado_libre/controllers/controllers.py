@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+from datetime import datetime, timedelta
 from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 
 import logging
@@ -31,10 +32,30 @@ class MercadoLibreLogin(http.Controller):
 
             tokens = api_conecctor.authorize()
 
+            init_time = datetime.now()
+            request_time = datetime(init_time.year,init_time.month,init_time.day,init_time.hour,init_time.minute,init_time.second)
+            expired_time = request_time + timedelta(seconds=tokens['expires_in'])
+
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token', tokens['access_token'])
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_refresh_token', tokens['refresh_token'])
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_is_connect', True)
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_valido', True)
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_request_time', request_time)
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_expires', expired_time)
+
+            cron = request.env['ir.cron'].create({
+                'name': "***Automated refresh ML Token",
+                'model_id': request.env['ir.model.data']._xmlid_to_res_id('base.model_res_config_settings'),
+                'interval_number': 1,
+                'interval_type': 'hours',
+                'active': True,
+                'nextcall': expired_time,
+                'numbercall': 1,
+                'priority': 1,
+                'doall': True,
+                'code': """
+                        env['res.config.settings']._refresh_ml_token()
+                        """})
 
         server_action = request.env.ref("ctt_mercado_libre.redirect_settings_action")
         return request.redirect(

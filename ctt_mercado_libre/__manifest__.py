@@ -25,6 +25,7 @@
     'data': [
         # 'security/ir.model.access.csv',
         'views/res_config.xml',
+        # 'data/cron_verify_token.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

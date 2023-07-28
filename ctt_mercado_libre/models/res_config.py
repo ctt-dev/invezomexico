@@ -2,6 +2,8 @@
 
 from odoo import models, fields, api
 from urllib.parse import urlencode
+from datetime import datetime, timedelta
+from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +21,48 @@ class CTTMELIResConfigSettings(models.TransientModel):
     mercado_libre_is_connect = fields.Boolean(string="Conectado", default=False,config_parameter="ctt_mercado_libre.mercado_libre_is_connect")
     mercado_libre_token_valid = fields.Boolean(string="Token valido", config_parameter="ctt_mercado_libre.mercado_libre_token_valido")
 
+
+    def _refresh_ml_token(self):
+        params = self.env['ir.config_parameter'].sudo()
+
+        api_conector = MeliApi({
+                'client_id': params.get_param('ctt_mercado_libre.mercado_libre_app_id'),
+                'client_secret': params.get_param('ctt_mercado_libre.mercado_libre_client_secret'),
+                'refresh_token': params.get_param('ctt_mercado_libre.mercado_libre_refresh_token'),
+        })
+
+        response = api_conector.refresh()
+
+        init_time = datetime.now()
+        request_time = datetime(init_time.year,init_time.month,init_time.day,init_time.hour,init_time.minute,init_time.second)
+        expired_time = request_time + timedelta(seconds=response['expires_in'])
+
+        self.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token', response['access_token'])
+        self.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_refresh_token', response['refresh_token'])
+        self.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_request_time', request_time)
+        self.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_expires', expired_time)
+
+        cron = self.env['ir.cron'].create({
+            'name': "***Automated refresh ML Token",
+            'model_id': request.env['ir.model.data']._xmlid_to_res_id('base.model_res_config_settings'),
+            'interval_number': 1,
+            'interval_type': 'hours',
+            'active': True,
+            'nextcall': expired_time,
+            'numbercall': 1,
+            'priority': 1,
+            'doall': True,
+            'code': """
+                    env['res.config.settings']._refresh_ml_token()
+                    """})
+
+    def verify_ml_token(self):
+        for rec in self:
+            if datetime.now() >= rec.mercado_libre_token_request_time and datetime.now() <= rec.mercado_libre_token_expires:
+                rec.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_valido', True)
+            else:
+                rec.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_valido', False)
+    
     def _ml_redirect_settings(self):
         action = self.env["ir.actions.act_window"]._for_xml_id("ctt_mercado_libre.mercado_libre_settings_menu_action")
         return action

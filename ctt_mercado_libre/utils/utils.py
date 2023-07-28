@@ -25,6 +25,9 @@ class MeliApi():
         for key, value in dict.items():
             setattr(self, key, value)
 
+    def json(self):
+        return self.rjson
+
     def authorize(self):
         params = { 'grant_type' : 'authorization_code', 'client_id' : self.client_id, 'client_secret' : self.client_secret, 'code' : self.tg_code, 'redirect_uri' : self.redirect_uri}
         headers = {'Accept': 'application/json', 'User-Agent': 'My custom agent', 'Content-type':'application/json'}
@@ -34,10 +37,64 @@ class MeliApi():
         if response.status_code == requests.codes.ok:
             data = {}
             response_info = response.json()
-            data['access_token'] = response_info['access_token']
-            data['refresh_token'] = response_info['refresh_token']
-
-            return data
+            return response_info
+        
         else:
             response.raise_for_status()
 
+    def refresh(self):
+        params = { 'grant_type': 'refresh_token', 'client_id': self.client_id, 'client_secret': self.client_secret, 'refresh_token': self.refresh_token,}
+        headers = {'Accept': 'application/json', 'User-Agent': 'My custom agent', 'Content-type':'application/json'}
+
+        response = requests.post(self.host + '/oauth/token', params=urlencode(params), headers=headers)
+
+        if response.status_code == requests.codes.ok:
+            data = {}
+            response_info = response.json()
+            
+            return response_info
+        else:
+            response.raise_for_status()
+
+    def get(self, path, params={}):
+        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        self.response = requests.get(self.host + path, params=urlencode(params), headers=headers)
+        self.rjson = self.response
+        return self
+
+    def post(self, path, body=None, params={}):
+        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        if body:
+            body = json.dumps(body)
+
+        self.response = requests.post(self.host + path, data=body, params=urlencode(params), headers=headers)
+        self.rjson = self.response
+        return self
+        
+    def upload(self, path, files, params={}):
+        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'multipart/form-data'}
+        headers = {}
+        self.response = requests.post(self.host + path, files=files, params=urlencode(params), headers=headers)
+        self.rjson = self.response
+        return self
+
+    def put(self, path, body=None, params={}):
+        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        if body:
+            body = json.dumps(body)
+
+        self.response = requests.put(self.host + path, data=body, params=urlencode(params), headers=headers)
+        self.rjson = self.response
+        return self
+        
+    def delete(self, path, params={}):
+        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        self.response = requests.delete(self.host + path, params=params, headers=headers)
+        self.rjson = self.response
+        return self
+        
+    def options(self, path, params={}):
+        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        self.response = requests.options(self.host + path, params=urlencode(params), headers=headers)
+        self.rjson = self.response
+        return self

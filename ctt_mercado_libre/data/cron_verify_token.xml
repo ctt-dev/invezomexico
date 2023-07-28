@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="ir_cron_verify_ml_token" model="ir.cron">
+            <field name="name">Verificar: ML Access token</field>
+            <field name="model_id" ref="base.model_res_config_settings"/>
+            <field name="state">code</field>
+            <field name="code">model.verify_ml_token()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+    </data>
+</odoo>

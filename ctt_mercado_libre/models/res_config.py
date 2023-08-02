@@ -20,6 +20,7 @@ class CTTMELIResConfigSettings(models.TransientModel):
     mercado_libre_token_expires = fields.Datetime(string="Expiracion del token", config_parameter='ctt_mercado_libre.mercado_libre_token_expires')
     mercado_libre_is_connect = fields.Boolean(string="Conectado", default=False,config_parameter="ctt_mercado_libre.mercado_libre_is_connect")
     mercado_libre_token_valid = fields.Boolean(string="Token valido", config_parameter="ctt_mercado_libre.mercado_libre_token_valido")
+    mercado_libre_user_id = fields.Char(string="Vendedor ID", config_parameter='ctt_mercado_libre.mercado_libre_user_id')
 
 
     def _refresh_ml_token(self):

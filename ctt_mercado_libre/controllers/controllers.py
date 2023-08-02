@@ -7,6 +7,13 @@ from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 import logging
 _logger = logging.getLogger(__name__)
 
+class MercadoLibre(http.Controller):
+    @http.route(['/meli_notify'], type='json', auth='public')
+    def meli_notify(self,**kw):
+        _logger.warning("NOTIFICACION MERCADO LIBRE")
+        data = json.loads(request.httprequest.data)
+        _logger.warning(data)
+
 class MercadoLibreLogin(http.Controller):
 
     @http.route(['/meli_code'], type='http', auth="user", methods=['GET'], website=True)
@@ -38,6 +45,7 @@ class MercadoLibreLogin(http.Controller):
 
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token', tokens['access_token'])
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_refresh_token', tokens['refresh_token'])
+            request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_user_id', tokens['user_id'])
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_is_connect', True)
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_valido', True)
             request.env['ir.config_parameter'].set_param('ctt_mercado_libre.mercado_libre_token_request_time', request_time)

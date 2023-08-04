@@ -21,6 +21,8 @@ class CTTMELIResConfigSettings(models.TransientModel):
     mercado_libre_is_connect = fields.Boolean(string="Conectado", default=False,config_parameter="ctt_mercado_libre.mercado_libre_is_connect")
     mercado_libre_token_valid = fields.Boolean(string="Token valido", config_parameter="ctt_mercado_libre.mercado_libre_token_valido")
     mercado_libre_user_id = fields.Char(string="Vendedor ID", config_parameter='ctt_mercado_libre.mercado_libre_user_id')
+    mercado_libre_site_id = fields.Char(string="Site ID", default="MLM", config_parameter="ctt_mercado_libre.mercado_libre_site_id")
+    mercado_libre_currency_id = fields.Char(string="Moneda", default="MXN", config_parameter="ctt_mercado_libre.mercado_libre_currency_id")
 
 
     def _refresh_ml_token(self):

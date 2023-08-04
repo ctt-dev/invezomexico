@@ -1,0 +1,42 @@
+<odoo>
+    <data>
+        <record id="ctt_mercado_libre_product_template_form" model="ir.ui.view">
+            <field name="name">Product.template.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <notebook>
+                    <page string="Mercado Libre">
+                        <div class="oe_button_box" name="button_box_mel">
+                            <button name="predict_category" 
+                                type="object" 
+                                string="Sugerir Categoria"
+                                class="oe_stat_button" 
+                                icon="fa-refresh"/>
+                            <button name="import_category" 
+                                type="object" 
+                                string="Importar Categoria"
+                                class="oe_stat_button" 
+                                icon="fa-list"/>
+                            <button name="predict_category" 
+                                type="object" 
+                                string="Sugerir Categoria"
+                                class="oe_stat_button" 
+                                icon="fa-refresh"/>
+                        </div>
+                        <separator string="Plantilla en Mercado Libre" colspan="1"/>
+                        <group>
+                            <field name="mercadolibre_category_id"/>
+                            <field name="mercadolibre_price"/>
+                            <field name="mercadolibre_buying_mode"/>
+                            <field name="mercadolibre_condition"/>
+                            <field name="mercadolibre_listing_type"/>
+                            <field name="mercadolibre_warranty_type"/>
+                            <field name="mercadolibre_warranty"/>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

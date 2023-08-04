@@ -1,5 +1,6 @@
 import requests
 from urllib.parse import urlencode
+from odoo.http import request
 import json
 import logging
 _logger = logging.getLogger(__name__)
@@ -57,25 +58,35 @@ class MeliApi():
             response.raise_for_status()
 
     def get(self, path, params={}):
-        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        headers = {
+            'Accept': 'application/json', 
+            'User-Agent':'My custom agent', 
+            'Content-type':'application/json',
+            'Authorization': 'Bearer ' + self.access_token
+        }
         self.response = requests.get(self.host + path, params=urlencode(params), headers=headers)
-        self.rjson = self.response
+        self.rjson = self.response.json()
         return self
 
     def post(self, path, body=None, params={}):
-        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        headers = {
+            'Accept': 'application/json', 
+            'User-Agent':'My custom agent', 
+            'Content-type':'application/json',
+            'Authorization': 'Bearer ' + self.access_token
+        }
         if body:
             body = json.dumps(body)
 
         self.response = requests.post(self.host + path, data=body, params=urlencode(params), headers=headers)
-        self.rjson = self.response
+        self.rjson = self.response.json()
         return self
         
     def upload(self, path, files, params={}):
         headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'multipart/form-data'}
         headers = {}
         self.response = requests.post(self.host + path, files=files, params=urlencode(params), headers=headers)
-        self.rjson = self.response
+        self.rjson = self.response.json()
         return self
 
     def put(self, path, body=None, params={}):

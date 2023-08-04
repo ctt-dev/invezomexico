@@ -26,7 +26,26 @@
                         </div>
                         <separator string="Plantilla en Mercado Libre" colspan="1"/>
                         <group>
-                            <field name="mercadolibre_category_id"/>
+                            <group>
+                                <field name="mercadolibre_category_id"/>
+                                <field name="mercadolibre_BRAND"/>
+                                <field name="mercadolibre_MODEL"/>
+                                <field name="mercadolibre_LOAD_INDEX"/>
+                                <field name="mercadolibre_TIRES_NUMBER"/>
+                                <field name="mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO"/>
+                                <field name="mercadolibre_IS_RUN_FLAT"/>
+                            </group>
+                            <group>
+                                <field name="mercadolibre_SECTION_WIDTH"/>
+                                <field name="mercadolibre_RIM_DIAMETER"/>
+                                <field name="mercadolibre_LOAD_RANGE"/>
+                                <field name="mercadolibre_TERRAIN_TYPE"/>
+                                <field name="mercadolibre_TIRE_CONSTRUCTION_TYPE"/>
+                                <field name="mercadolibre_UNIT_TYPE"/>
+                            </group>
+                        </group>
+                        <separator string="Datos de venta" colspan="1"/>
+                        <group>
                             <field name="mercadolibre_price"/>
                             <field name="mercadolibre_buying_mode"/>
                             <field name="mercadolibre_condition"/>

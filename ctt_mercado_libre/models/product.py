@@ -58,8 +58,23 @@ class CTTMLProductTmplate(models.Model):
     mercadolibre_UNIT_TYPE = fields.Char(string="Tipo de unidad")
     mercadolibre_IS_RUN_FLAT = fields.Char(string="Es run flat")
 
-    def _import_ml_catgory(self):
-        pass
+    def _import_ml_catgory(self,category_id):
+        params = self.env['ir.config_parameter'].sudo()
+        access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
+
+        api_conector = MeliApi({'access_token': access_token})
+
+        category_obj = self.env["mercadolibre.category"]
+        ml_cat_id = category_obj.search([('mercadolibre_id','=',category_id)],limit=1)
+
+        if not ml_cat_id:
+            url = "/categories/"+category_id
+            response = api_conector.get(path=url)
+            data = response.json()
+
+            ml_cat_id = category_obj.create({
+                'mercadolibre_id': data['id'],
+                'name': data['name']}) 
     
     def predict_category(self):
         self.ensure_one()
@@ -67,31 +82,26 @@ class CTTMLProductTmplate(models.Model):
         params = self.env['ir.config_parameter'].sudo()
         site_id = params.get_param('ctt_mercado_libre.mercado_libre_site_id')
         access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
-        # _logger.warning(site_id)
-        # _logger.warning(self.name)
         
         url = "/sites/"+site_id+"/domain_discovery/search?q="+self.name
-        # _logger.warning(url)
 
         api_conector = MeliApi({'access_token': access_token})
         response = api_conector.get(path=url)
-        # _logger.warning(response)
-        # _logger.warning(response.json())
 
         data = response.json()
+        category_id = data[0]['category_id']
 
-        self.write({
-            'mercadolibre_category_id': data[0]['category_id']
-        })
+        self.write({'mercadolibre_category_id': category_id})
+
+        self._import_ml_catgory(category_id)
+            
         
     def import_category(self):
         self.ensure_one()
-        _logger.warning("Importando atributos")
         params = self.env['ir.config_parameter'].sudo()
         access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
 
         url = "/categories/"+self.mercadolibre_category_id+"/technical_specs/input"
-        _logger.warning(url)
 
         api_conector = MeliApi({'access_token': access_token})
         response = api_conector.get(path=url)
@@ -116,6 +126,9 @@ class CTTMLProductTmplate(models.Model):
             for component in group['components']:
                 if 'required' in component['attributes'][0]['tags']:
                     _logger.warning(component['attributes'][0]['id'])
+    
+    def publicar_producto(self):
+        pass
             
 
         

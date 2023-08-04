@@ -26,11 +26,12 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'views/res_config.xml',
         # 'data/cron_verify_token.xml',
         'data/categories_import.xml',
         'views/product.xml',
+        'views/categories.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 # from urllib.parse import urlencode
 # from datetime import datetime, timedelta
-# from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
+from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 import logging
 _logger = logging.getLogger(__name__)
 

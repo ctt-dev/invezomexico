@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="action_mercadolibre_categories">
+            <field name="name">Categorías</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mercadolibre.category</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_marketplaces" name="Marketplaces" parent="stock.menu_stock_root" sequence="9"/>
+        <menuitem id="menu_mercadolibre" name="Mercado Libre" parent="menu_marketplaces" sequence="1"/>
+        <menuitem id="menu_meli_categories"
+            action="action_mercadolibre_categories"
+            parent="menu_mercadolibre"
+            name="Categorías" />
+    </data>
+</odoo>

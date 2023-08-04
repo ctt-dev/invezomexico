@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ctt_mercado_libre_ctt_mercado_libre,ctt_mercado_libre.ctt_mercado_libre,model_ctt_mercado_libre_ctt_mercado_libre,base.group_user,1,1,1,1
+access_mercadolibre_category,mercadolibre.category manager,model_mercadolibre_category,,1,1,1,1

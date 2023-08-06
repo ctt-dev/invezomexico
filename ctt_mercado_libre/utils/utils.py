@@ -77,14 +77,16 @@ class MeliApi():
         }
         if body:
             body = json.dumps(body)
+            _logger.warning(body)
 
         self.response = requests.post(self.host + path, data=body, params=urlencode(params), headers=headers)
+        _logger.warning(self.response)
         self.rjson = self.response.json()
+        _logger.warning(self.json())
         return self
         
     def upload(self, path, files, params={}):
         headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'multipart/form-data'}
-        headers = {}
         self.response = requests.post(self.host + path, files=files, params=urlencode(params), headers=headers)
         self.rjson = self.response.json()
         return self

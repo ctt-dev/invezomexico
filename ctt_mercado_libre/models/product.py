@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.tools.image import image_data_uri
 from urllib.parse import urlencode
 from datetime import datetime, timedelta
 from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
@@ -128,7 +129,59 @@ class CTTMLProductTmplate(models.Model):
                     _logger.warning(component['attributes'][0]['id'])
     
     def publicar_producto(self):
-        pass
+        params = self.env['ir.config_parameter'].sudo()
+        access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
+        base_url = params.get_param('web.base.url')
+        
+        image_url_1920 = base_url + '/web/image?' + 'model=product_template&id=' + str(self.id) + '&field=image_1920'
+        url = "/items/"
+        _logger.warning(url)
+
+        api_conector = MeliApi({'access_token': access_token})
+
+        body = {
+            "title": self.name + "Test item - No ofertar",
+            "category_id": self.mercadolibre_category_id,
+            "price": 54999990,
+            "currency_id": "MXN",
+            "available_quantity": 1,
+            "buying_mode": self.mercadolibre_buying_mode,
+            "condition": self.mercadolibre_condition,
+            "listing_type_id": self.mercadolibre_listing_type,
+            "sale_terms":[
+                {"id":"WARRANTY_TYPE",
+                "value_name": self.mercadolibre_warranty_type},
+                {"id":"WARRANTY_TIME",
+                "value_name": self.mercadolibre_warranty}],
+            "pictures":[
+                {"source": image_url_1920}],
+            "attributes":[
+                {"id":"BRAND",
+                 "value_name": self.mercadolibre_BRAND},
+                {"id":"MODEL",
+                 "value_name": self.mercadolibre_MODEL},
+                {"id":"LOAD_INDEX",
+                 "value_name": self.mercadolibre_LOAD_INDEX},
+                {"id":"TIRES_NUMBER",
+                 "value_name": self.mercadolibre_TIRES_NUMBER},
+                {
+                    "id":"AUTOMOTIVE_TIRE_ASPECT_RATIO",
+                     "value_name": self.mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO
+                },
+                {"id":"SECTION_WIDTH",
+                 "value_name": self.mercadolibre_SECTION_WIDTH},
+                {"id":"RIM_DIAMETER",
+                 "value_name": self.mercadolibre_RIM_DIAMETER},]
+        }
+
+        response = api_conector.post(path=url, body=body)
+        # data = response.json()
+        
+        # mercadolibre_LOAD_INDEX = fields.Char(string="Índice de carga")
+        # mercadolibre_TIRES_NUMBER = fields.Char(string="Cantidad de llantas")
+        # mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO = fields.Char(string="Relación de aspecto")
+        # mercadolibre_SECTION_WIDTH = fields.Char(string="Ancho de sección")
+        # mercadolibre_RIM_DIAMETER = fields.Char(string="Diámetro del rin")
             
 
         

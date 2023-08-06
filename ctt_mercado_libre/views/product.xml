@@ -18,11 +18,11 @@
                                 string="Importar Categoria"
                                 class="oe_stat_button" 
                                 icon="fa-list"/>
-                            <button name="predict_category" 
+                            <button name="publicar_producto" 
                                 type="object" 
-                                string="Sugerir Categoria"
+                                string="Publicar producto"
                                 class="oe_stat_button" 
-                                icon="fa-refresh"/>
+                                icon="fa-cloud-upload"/>
                         </div>
                         <separator string="Plantilla en Mercado Libre" colspan="1"/>
                         <group>

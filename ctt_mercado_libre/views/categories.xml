@@ -13,5 +13,40 @@
             action="action_mercadolibre_categories"
             parent="menu_mercadolibre"
             name="Categorías" />
+        
+        <record id="ctt_mercado_libre_category_tree" model="ir.ui.view">
+            <field name="name">mercadolibre.category.tree</field>
+            <field name="model">mercadolibre.category</field>
+            <field name="arch" type="xml">
+               <tree>
+                   <field name="name"/>
+                   <field name="meli_id"/>
+               </tree>
+            </field>
+        </record>
+
+        <record id="ctt_mercado_libre_category_form" model="ir.ui.view">
+            <field name="name">mercadolibre.category.form</field>
+            <field name="model">mercadolibre.category</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="meli_id"/>
+                        </group>
+                        <field name="attribute_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="meli_id"/>
+                                <field name="values"/>
+                                <field name="type"/>
+                                <field name="required"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
     </data>
 </odoo>

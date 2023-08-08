@@ -26,6 +26,26 @@
                         </div>
                         <separator string="Plantilla en Mercado Libre" colspan="1"/>
                         <group>
+                            <field name="meli_categ_id"/>
+                        </group>
+                        <separator string="Atributos en Mercado Libre" colspan="1"/>
+                        <field name="meli_categ_attribute_ids" widget="one2many">
+                            <tree editable="bottom">
+                                <field name="attr_id"/>
+                                <field name="value"/>
+                            </tree>
+                        </field>
+                        <separator string="Datos de venta" colspan="1"/>
+                        <group>
+                            <!-- <field name="mercadolibre_price"/> -->
+                            <field name="mercadolibre_buying_mode"/>
+                            <field name="mercadolibre_condition"/>
+                            <field name="mercadolibre_listing_type"/>
+                            <field name="mercadolibre_warranty_type"/>
+                            <field name="mercadolibre_warranty"/>
+                            <field name="mercadolibre_warranty_unit"/>
+                        </group>
+                        <!-- <group>
                             <group>
                                 <field name="mercadolibre_category_id"/>
                                 <field name="mercadolibre_BRAND"/>
@@ -52,7 +72,7 @@
                             <field name="mercadolibre_listing_type"/>
                             <field name="mercadolibre_warranty_type"/>
                             <field name="mercadolibre_warranty"/>
-                        </group>
+                        </group> -->
                     </page>
                 </notebook>
             </field>

@@ -1,19 +1,35 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.tools.image import image_data_uri
-from urllib.parse import urlencode
-from datetime import datetime, timedelta
+# from odoo.tools.image import image_data_uri
+# from urllib.parse import urlencode
+# from datetime import datetime, timedelta
 from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 import logging
 _logger = logging.getLogger(__name__)
+
+class ProductCategoryAttribute(models.Model):
+    _name = "product.category.attribute"
+    _description = "Lineas de plantilla para Mercado Libre"
+
+    product_id = fields.Many2one('product.template', string="Producto")
+    categ_id = fields.Many2one("mercadolibre.category", related="product_id.meli_categ_id")
+    attr_id = fields.Many2one("mercadolibre.attribute", string="Atributo")
+    value = fields.Char(string="Valor")
 
 class CTTMLProductTmplate(models.Model):
     _inherit = 'product.template'
     _description = 'Atributos y funciones para Mercado Libre'
 
-    mercadolibre_category_id = fields.Char(string="Categoria de Mercado Libre")
-    mercadolibre_price = fields.Char(string="Precio en mercado Libre")
+    meli_categ_id = fields.Many2one("mercadolibre.category", string="Categoria de Mercado Libre")
+    meli_categ_attribute_ids = fields.One2many(
+        "product.category.attribute",
+        "product_id",
+        string="Atributos de categoria"
+    )
+    
+    # mercadolibre_category_id = fields.Char(string="Categoria de Mercado Libre")
+    # mercadolibre_price = fields.Char(string="Precio en mercado Libre")
     mercadolibre_buying_mode = fields.Selection(
         [("buy_it_now","Compre ahora"),
          ("classified","Clasificado")],
@@ -41,23 +57,29 @@ class CTTMLProductTmplate(models.Model):
          ("Sin garantía","Sin garantía")],
         string="Tipo de garantia"
     )
-    mercadolibre_warranty = fields.Char(string='Garantía', size=256, help='Garantía del producto. Es obligatorio y debe ser un número seguido por una unidad temporal. Ej. 2 meses, 3 años.')
+    mercadolibre_warranty = fields.Integer(string='Garantía', help='Garantía del producto. Es obligatorio y debe ser un número seguido por una unidad temporal. Ej. 2 meses, 3 años.')
+    mercadolibre_warranty_unit = fields.Selection(
+        [("días","Días"),
+         ("meses","Meses"),
+         ("años","Años")],
+        string="Unidad de garantia"
+    )
 
-    #ATRIBUTOS OBLIGATORIOS
-    mercadolibre_BRAND = fields.Char(string="Marca")
-    mercadolibre_MODEL = fields.Char(string="Modelo")
-    mercadolibre_LOAD_INDEX = fields.Char(string="Índice de carga")
-    mercadolibre_TIRES_NUMBER = fields.Char(string="Cantidad de llantas")
-    mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO = fields.Char(string="Relación de aspecto")
-    mercadolibre_SECTION_WIDTH = fields.Char(string="Ancho de sección")
-    mercadolibre_RIM_DIAMETER = fields.Char(string="Diámetro del rin")
+    # #ATRIBUTOS OBLIGATORIOS
+    # mercadolibre_BRAND = fields.Char(string="Marca")
+    # mercadolibre_MODEL = fields.Char(string="Modelo")
+    # mercadolibre_LOAD_INDEX = fields.Char(string="Índice de carga")
+    # mercadolibre_TIRES_NUMBER = fields.Char(string="Cantidad de llantas")
+    # mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO = fields.Char(string="Relación de aspecto")
+    # mercadolibre_SECTION_WIDTH = fields.Char(string="Ancho de sección")
+    # mercadolibre_RIM_DIAMETER = fields.Char(string="Diámetro del rin")
 
-    #ATRIBUTOS DE INVENXO
-    mercadolibre_LOAD_RANGE = fields.Char(string="Rango de carga")
-    mercadolibre_TERRAIN_TYPE = fields.Char(string="Tipo de terreno")
-    mercadolibre_TIRE_CONSTRUCTION_TYPE = fields.Char(string="Tipo de construcción")
-    mercadolibre_UNIT_TYPE = fields.Char(string="Tipo de unidad")
-    mercadolibre_IS_RUN_FLAT = fields.Char(string="Es run flat")
+    # #ATRIBUTOS DE INVENXO
+    # mercadolibre_LOAD_RANGE = fields.Char(string="Rango de carga")
+    # mercadolibre_TERRAIN_TYPE = fields.Char(string="Tipo de terreno")
+    # mercadolibre_TIRE_CONSTRUCTION_TYPE = fields.Char(string="Tipo de construcción")
+    # mercadolibre_UNIT_TYPE = fields.Char(string="Tipo de unidad")
+    # mercadolibre_IS_RUN_FLAT = fields.Char(string="Es run flat")
 
     def _import_ml_catgory(self,category_id):
         params = self.env['ir.config_parameter'].sudo()
@@ -66,7 +88,7 @@ class CTTMLProductTmplate(models.Model):
         api_conector = MeliApi({'access_token': access_token})
 
         category_obj = self.env["mercadolibre.category"]
-        ml_cat_id = category_obj.search([('mercadolibre_id','=',category_id)],limit=1)
+        ml_cat_id = category_obj.search([('meli_id','=',category_id)],limit=1)
 
         if not ml_cat_id:
             url = "/categories/"+category_id
@@ -74,8 +96,12 @@ class CTTMLProductTmplate(models.Model):
             data = response.json()
 
             ml_cat_id = category_obj.create({
-                'mercadolibre_id': data['id'],
-                'name': data['name']}) 
+                'meli_id': data['id'],
+                'name': data['name']})
+
+            return ml_cat_id
+
+        return False
     
     def predict_category(self):
         self.ensure_one()
@@ -92,9 +118,10 @@ class CTTMLProductTmplate(models.Model):
         data = response.json()
         category_id = data[0]['category_id']
 
-        self.write({'mercadolibre_category_id': category_id})
+        ml_cat_id = self._import_ml_catgory(category_id)
 
-        self._import_ml_catgory(category_id)
+        if ml_cat_id:
+            self.write({'meli_categ_id': ml_cat_id.id})
             
         
     def import_category(self):
@@ -141,7 +168,7 @@ class CTTMLProductTmplate(models.Model):
         body = {
             "title": self.name + " - Test - No ofertar",
             "category_id": self.mercadolibre_category_id,
-            "price": 1000000,
+            "price": self.list_price,
             "currency_id": "MXN",
             "available_quantity": 1,
             "buying_mode": self.mercadolibre_buying_mode,
@@ -161,31 +188,23 @@ class CTTMLProductTmplate(models.Model):
                 },
                 {"id":"MODEL",
                  "value_name": self.mercadolibre_MODEL},
-                {"id": "GTIN",
-                 "value_name":"978020137962"}
-                # {"id":"LOAD_INDEX",
-                #  "value_name": self.mercadolibre_LOAD_INDEX},
-                # {"id":"TIRES_NUMBER",
-                #  "value_name": self.mercadolibre_TIRES_NUMBER},
-                # {
-                #     "id":"AUTOMOTIVE_TIRE_ASPECT_RATIO",
-                #      "value_name": self.mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO
-                # },
-                # {"id":"SECTION_WIDTH",
-                #  "value_name": self.mercadolibre_SECTION_WIDTH},
-                # {"id":"RIM_DIAMETER",
-                #  "value_name": self.mercadolibre_RIM_DIAMETER},
+                {"id":"LOAD_INDEX",
+                 "value_name": self.mercadolibre_LOAD_INDEX},
+                {"id":"TIRES_NUMBER",
+                 "value_name": self.mercadolibre_TIRES_NUMBER},
+                {
+                    "id":"AUTOMOTIVE_TIRE_ASPECT_RATIO",
+                     "value_name": self.mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO
+                },
+                {"id":"SECTION_WIDTH",
+                 "value_name": self.mercadolibre_SECTION_WIDTH},
+                {"id":"RIM_DIAMETER",
+                 "value_name": self.mercadolibre_RIM_DIAMETER},
             ]
         }
 
         response = api_conector.post(path=url, body=body)
-        # data = response.json()
-        
-        # mercadolibre_LOAD_INDEX = fields.Char(string="Índice de carga")
-        # mercadolibre_TIRES_NUMBER = fields.Char(string="Cantidad de llantas")
-        # mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO = fields.Char(string="Relación de aspecto")
-        # mercadolibre_SECTION_WIDTH = fields.Char(string="Ancho de sección")
-        # mercadolibre_RIM_DIAMETER = fields.Char(string="Diámetro del rin")
+        data = response.json()
             
 
         

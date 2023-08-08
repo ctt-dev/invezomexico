@@ -132,17 +132,16 @@ class CTTMLProductTmplate(models.Model):
         params = self.env['ir.config_parameter'].sudo()
         access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
         base_url = params.get_param('web.base.url')
-        
-        image_url_1920 = base_url + '/web/image?' + 'model=product_template&id=' + str(self.id) + '&field=image_1920'
+        image_url_1920 = base_url + '/web/image?' + 'model=product.template&id=' + str(self.id) + '&field=image_1920'
         url = "/items/"
         _logger.warning(url)
 
         api_conector = MeliApi({'access_token': access_token})
 
         body = {
-            "title": self.name + "Test item - No ofertar",
+            "title": self.name + " - Test - No ofertar",
             "category_id": self.mercadolibre_category_id,
-            "price": 54999990,
+            "price": 1000000,
             "currency_id": "MXN",
             "available_quantity": 1,
             "buying_mode": self.mercadolibre_buying_mode,
@@ -157,21 +156,26 @@ class CTTMLProductTmplate(models.Model):
                 {"source": image_url_1920}],
             "attributes":[
                 {"id":"BRAND",
-                 "value_name": self.mercadolibre_BRAND},
+                 "value_name": self.mercadolibre_BRAND,
+                 "value_id": "995"
+                },
                 {"id":"MODEL",
                  "value_name": self.mercadolibre_MODEL},
-                {"id":"LOAD_INDEX",
-                 "value_name": self.mercadolibre_LOAD_INDEX},
-                {"id":"TIRES_NUMBER",
-                 "value_name": self.mercadolibre_TIRES_NUMBER},
-                {
-                    "id":"AUTOMOTIVE_TIRE_ASPECT_RATIO",
-                     "value_name": self.mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO
-                },
-                {"id":"SECTION_WIDTH",
-                 "value_name": self.mercadolibre_SECTION_WIDTH},
-                {"id":"RIM_DIAMETER",
-                 "value_name": self.mercadolibre_RIM_DIAMETER},]
+                {"id": "GTIN",
+                 "value_name":"978020137962"}
+                # {"id":"LOAD_INDEX",
+                #  "value_name": self.mercadolibre_LOAD_INDEX},
+                # {"id":"TIRES_NUMBER",
+                #  "value_name": self.mercadolibre_TIRES_NUMBER},
+                # {
+                #     "id":"AUTOMOTIVE_TIRE_ASPECT_RATIO",
+                #      "value_name": self.mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO
+                # },
+                # {"id":"SECTION_WIDTH",
+                #  "value_name": self.mercadolibre_SECTION_WIDTH},
+                # {"id":"RIM_DIAMETER",
+                #  "value_name": self.mercadolibre_RIM_DIAMETER},
+            ]
         }
 
         response = api_conector.post(path=url, body=body)

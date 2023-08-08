@@ -3,6 +3,7 @@ from odoo import http
 from odoo.http import request
 from datetime import datetime, timedelta
 from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
+import json
 
 import logging
 _logger = logging.getLogger(__name__)

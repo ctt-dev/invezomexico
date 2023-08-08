@@ -14,9 +14,18 @@ class MercadoLibreCategoryImport(models.TransientModel):
     mercadolibre_id = fields.Char(string="MercadoLibre ID")
     name = fields.Char(string="Nombre")
 
-class MercadoLibreCategory(models.TransientModel):
+class MercadoLibreCategory(models.Model):
     _name = "mercadolibre.category"
     _description = "Categorias de Mercado Libre"
 
     mercadolibre_id = fields.Char(string="MercadoLibre ID")
     name = fields.Char(string="Nombre")
+
+class MercadoLibreAttribute(models.Model):
+    _name = "mercadolibre.attribute"
+    _description = "Atributo de categoria"
+
+    categ_id = fields.Many2one("mercadolibre.category", string="Categoria")
+    meli_id = fields.Char(string="ID de Mercado Libre")
+    name = fields.Char(string="Nombre")
+    required = fields.Boolean(string="Requerido",default=False)

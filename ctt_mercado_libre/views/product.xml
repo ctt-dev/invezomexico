@@ -33,9 +33,11 @@
                             <tree editable="bottom">
                                 <field name="categ_id" invisible="1"/>
                                 <field name="has_value" invisible="1"/>
-                                <field name="attr_id" domain="[('required','=',True),('categ_id','=',categ_id)]"/>
-                                <field name="value_id" domain="[('attr_id','=',attr_id)]" attrs="{'readonly':[('has_value', '=', False)]}"/>
+                                <field name="attr_units" invisible="1"/>
+                                <field name="attr_id" domain="[('required','=',True),('categ_id','=',categ_id)]" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="value_id" domain="[('attr_id','=',attr_id)]" attrs="{'readonly':[('has_value', '=', False)]}" options="{'no_open': True, 'no_create': True}"/>
                                 <field name="value" attrs="{'readonly':[('has_value', '=', True)]}"/>
+                                <field name="unit_id" domain="[('id','in',attr_units)]" options="{'no_open': True, 'no_create': True}"/>
                             </tree>
                         </field>
                         <separator string="Datos de venta" colspan="1"/>

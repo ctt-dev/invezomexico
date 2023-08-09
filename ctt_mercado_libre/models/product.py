@@ -15,9 +15,12 @@ class ProductCategoryAttribute(models.Model):
     product_id = fields.Many2one('product.template', string="Producto")
     categ_id = fields.Many2one("mercadolibre.category", related="product_id.meli_categ_id")
     attr_id = fields.Many2one("mercadolibre.attribute", string="Atributo")
+    attr_units = fields.Many2many("mercadolibre.units", related="attr_id.unit_ids")
     has_value = fields.Boolean(related="attr_id.has_values")
     value = fields.Char(string="Valor")
     value_id = fields.Many2one("mercadolibre.value", string="Valores predeterminados")
+    unit_id = fields.Many2one("mercadolibre.units", string="Unidad")
+    
 
 class CTTMLProductTmplate(models.Model):
     _inherit = 'product.template'
@@ -125,18 +128,31 @@ class CTTMLProductTmplate(models.Model):
         #             _logger.warning(component['attributes'][0]['id'])
     
     def publicar_producto(self):
+        self.ensure_one()
         params = self.env['ir.config_parameter'].sudo()
         access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
         base_url = params.get_param('web.base.url')
         image_url_1920 = base_url + '/web/image?' + 'model=product.template&id=' + str(self.id) + '&field=image_1920'
         url = "/items/"
-        # _logger.warning(url)
 
         api_conector = MeliApi({'access_token': access_token})
 
+        attributes = []
+
+        for line in self.meli_categ_attribute_ids:
+            data = {"id": line.attr_id.meli_id}
+
+            if line.attr_id.has_values:
+                data["value_name"] = line.value_id.name
+                data["value_id"] = line.value_id.meli_id
+            else:
+                data["value_name"] = line.value if line.attr_id.type == "string" else "%s %s" % (line.value, line.unit_id.name)
+            
+            attributes.append(data)
+        
         body = {
             "title": self.name + " - Test - No ofertar",
-            "category_id": self.mercadolibre_category_id,
+            "category_id": self.meli_categ_id.meli_id,
             "price": self.list_price,
             "currency_id": "MXN",
             "available_quantity": 1,
@@ -147,29 +163,20 @@ class CTTMLProductTmplate(models.Model):
                 {"id":"WARRANTY_TYPE",
                 "value_name": self.mercadolibre_warranty_type},
                 {"id":"WARRANTY_TIME",
-                "value_name": self.mercadolibre_warranty}],
+                "value_name": "%s %s" % (self.mercadolibre_warranty, self.mercadolibre_warranty_unit) }],
             "pictures":[
                 {"source": image_url_1920}],
-            "attributes":[
-                {"id":"BRAND",
-                 "value_name": self.mercadolibre_BRAND,
-                 "value_id": "995"
-                },
-                {"id":"MODEL",
-                 "value_name": self.mercadolibre_MODEL},
-                {"id":"LOAD_INDEX",
-                 "value_name": self.mercadolibre_LOAD_INDEX},
-                {"id":"TIRES_NUMBER",
-                 "value_name": self.mercadolibre_TIRES_NUMBER},
-                {
-                    "id":"AUTOMOTIVE_TIRE_ASPECT_RATIO",
-                     "value_name": self.mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO
-                },
-                {"id":"SECTION_WIDTH",
-                 "value_name": self.mercadolibre_SECTION_WIDTH},
-                {"id":"RIM_DIAMETER",
-                 "value_name": self.mercadolibre_RIM_DIAMETER},
-            ]
+            "attributes": attributes,
+            "shipping": {
+                "mode": "me1",
+                "local_pick_up": False,
+                "free_shipping": False,
+                "methods": [],
+                "dimensions": None,
+                "tags": [],
+                "logistic_type": "not_specified",
+                "store_pick_up": False
+            }
         }
 
         response = api_conector.post(path=url, body=body)

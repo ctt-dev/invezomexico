@@ -80,7 +80,7 @@ class MercadoLibreCategory(models.Model):
                 _logger.warning("asignando unidades")
                 _logger.warning(categ_attr['allowed_units'])
                 _logger.warning(attr_units)
-                units_allowed = self.env["mercadolibre.units"].search([('name','in',attr_units)]
+                units_allowed = self.env["mercadolibre.units"].search([('name','in',attr_units)])
                 _logger.warning(units_allowed)
                 attribute.write({"unit_ids": units_allowed.ids})
 

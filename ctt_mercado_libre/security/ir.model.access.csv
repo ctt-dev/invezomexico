@@ -2,4 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_template_public,product.template,product.model_product_template,base.group_public,1,0,0,0
 access_mercadolibre_category,mercadolibre.category manager,model_mercadolibre_category,,1,1,1,1
 access_mercadolibre_attribute,mercadolibre.attribute manager,model_mercadolibre_attribute,,1,1,1,1
+access_mercadolibre_value,mercadolibre.value manager,model_mercadolibre_value,,1,1,1,1
+access_mercadolibre_units,mercadolibre.units manager,model_mercadolibre_units,,1,1,1,1
 access_product_category_attribute,product.category.attribute manager,model_product_category_attribute,,1,1,1,1

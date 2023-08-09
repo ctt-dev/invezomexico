@@ -31,13 +31,15 @@
                         <separator string="Atributos en Mercado Libre" colspan="1"/>
                         <field name="meli_categ_attribute_ids" widget="one2many">
                             <tree editable="bottom">
-                                <field name="attr_id"/>
-                                <field name="value"/>
+                                <field name="categ_id" invisible="1"/>
+                                <field name="has_value" invisible="1"/>
+                                <field name="attr_id" domain="[('required','=',True),('categ_id','=',categ_id)]"/>
+                                <field name="value_id" domain="[('attr_id','=',attr_id)]" attrs="{'readonly':[('has_value', '=', False)]}"/>
+                                <field name="value" attrs="{'readonly':[('has_value', '=', True)]}"/>
                             </tree>
                         </field>
                         <separator string="Datos de venta" colspan="1"/>
                         <group>
-                            <!-- <field name="mercadolibre_price"/> -->
                             <field name="mercadolibre_buying_mode"/>
                             <field name="mercadolibre_condition"/>
                             <field name="mercadolibre_listing_type"/>
@@ -45,34 +47,6 @@
                             <field name="mercadolibre_warranty"/>
                             <field name="mercadolibre_warranty_unit"/>
                         </group>
-                        <!-- <group>
-                            <group>
-                                <field name="mercadolibre_category_id"/>
-                                <field name="mercadolibre_BRAND"/>
-                                <field name="mercadolibre_MODEL"/>
-                                <field name="mercadolibre_LOAD_INDEX"/>
-                                <field name="mercadolibre_TIRES_NUMBER"/>
-                                <field name="mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO"/>
-                                <field name="mercadolibre_IS_RUN_FLAT"/>
-                            </group>
-                            <group>
-                                <field name="mercadolibre_SECTION_WIDTH"/>
-                                <field name="mercadolibre_RIM_DIAMETER"/>
-                                <field name="mercadolibre_LOAD_RANGE"/>
-                                <field name="mercadolibre_TERRAIN_TYPE"/>
-                                <field name="mercadolibre_TIRE_CONSTRUCTION_TYPE"/>
-                                <field name="mercadolibre_UNIT_TYPE"/>
-                            </group>
-                        </group>
-                        <separator string="Datos de venta" colspan="1"/>
-                        <group>
-                            <field name="mercadolibre_price"/>
-                            <field name="mercadolibre_buying_mode"/>
-                            <field name="mercadolibre_condition"/>
-                            <field name="mercadolibre_listing_type"/>
-                            <field name="mercadolibre_warranty_type"/>
-                            <field name="mercadolibre_warranty"/>
-                        </group> -->
                     </page>
                 </notebook>
             </field>

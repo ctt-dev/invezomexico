@@ -15,7 +15,9 @@ class ProductCategoryAttribute(models.Model):
     product_id = fields.Many2one('product.template', string="Producto")
     categ_id = fields.Many2one("mercadolibre.category", related="product_id.meli_categ_id")
     attr_id = fields.Many2one("mercadolibre.attribute", string="Atributo")
+    has_value = fields.Boolean(related="attr_id.has_values")
     value = fields.Char(string="Valor")
+    value_id = fields.Many2one("mercadolibre.value", string="Valores predeterminados")
 
 class CTTMLProductTmplate(models.Model):
     _inherit = 'product.template'
@@ -27,9 +29,6 @@ class CTTMLProductTmplate(models.Model):
         "product_id",
         string="Atributos de categoria"
     )
-    
-    # mercadolibre_category_id = fields.Char(string="Categoria de Mercado Libre")
-    # mercadolibre_price = fields.Char(string="Precio en mercado Libre")
     mercadolibre_buying_mode = fields.Selection(
         [("buy_it_now","Compre ahora"),
          ("classified","Clasificado")],
@@ -64,22 +63,6 @@ class CTTMLProductTmplate(models.Model):
          ("años","Años")],
         string="Unidad de garantia"
     )
-
-    # #ATRIBUTOS OBLIGATORIOS
-    # mercadolibre_BRAND = fields.Char(string="Marca")
-    # mercadolibre_MODEL = fields.Char(string="Modelo")
-    # mercadolibre_LOAD_INDEX = fields.Char(string="Índice de carga")
-    # mercadolibre_TIRES_NUMBER = fields.Char(string="Cantidad de llantas")
-    # mercadolibre_AUTOMOTIVE_TIRE_ASPECT_RATIO = fields.Char(string="Relación de aspecto")
-    # mercadolibre_SECTION_WIDTH = fields.Char(string="Ancho de sección")
-    # mercadolibre_RIM_DIAMETER = fields.Char(string="Diámetro del rin")
-
-    # #ATRIBUTOS DE INVENXO
-    # mercadolibre_LOAD_RANGE = fields.Char(string="Rango de carga")
-    # mercadolibre_TERRAIN_TYPE = fields.Char(string="Tipo de terreno")
-    # mercadolibre_TIRE_CONSTRUCTION_TYPE = fields.Char(string="Tipo de construcción")
-    # mercadolibre_UNIT_TYPE = fields.Char(string="Tipo de unidad")
-    # mercadolibre_IS_RUN_FLAT = fields.Char(string="Es run flat")
 
     def _import_ml_catgory(self,category_id):
         params = self.env['ir.config_parameter'].sudo()
@@ -135,25 +118,11 @@ class CTTMLProductTmplate(models.Model):
         response = api_conector.get(path=url)
         data = response.json()
 
-        # _logger.warning(data['groups'][0])
-        # _logger.warning("Main")
-        # for component in data['groups'][0]['components']:
-        #     _logger.warning(component['attributes'][0]['id'])
-        #     _logger.warning(component['attributes'][0]['tags'])
-        # _logger.warning("PRODUCT_REGISTRIES")
-        # for component in data['groups'][1]['components']:
-        #     _logger.warning(component['attributes'][0]['id'])
-        #     _logger.warning(component['attributes'][0]['tags'])
-        # _logger.warning("OTHER")
-        # for component in data['groups'][2]['components']:
-        #     _logger.warning(component['attributes'][0]['id'])
-        #     _logger.warning(component['attributes'][0]['tags'])
-
-        for group in data['groups']:
-            _logger.warning(group['id'])
-            for component in group['components']:
-                if 'required' in component['attributes'][0]['tags']:
-                    _logger.warning(component['attributes'][0]['id'])
+        # for group in data['groups']:
+        #     _logger.warning(group['id'])
+        #     for component in group['components']:
+        #         if 'required' in component['attributes'][0]['tags']:
+        #             _logger.warning(component['attributes'][0]['id'])
     
     def publicar_producto(self):
         params = self.env['ir.config_parameter'].sudo()
@@ -161,7 +130,7 @@ class CTTMLProductTmplate(models.Model):
         base_url = params.get_param('web.base.url')
         image_url_1920 = base_url + '/web/image?' + 'model=product.template&id=' + str(self.id) + '&field=image_1920'
         url = "/items/"
-        _logger.warning(url)
+        # _logger.warning(url)
 
         api_conector = MeliApi({'access_token': access_token})
 

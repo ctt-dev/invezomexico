@@ -83,18 +83,28 @@ class MeliApi():
         return self
         
     def upload(self, path, files, params={}):
-        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'multipart/form-data'}
+        headers = {
+            'Accept': 'application/json', 
+            'User-Agent':'My custom agent', 
+            'Content-type':'application/json',
+            'Authorization': 'Bearer ' + self.access_token
+        }
         self.response = requests.post(self.host + path, files=files, params=urlencode(params), headers=headers)
         self.rjson = self.response.json()
         return self
 
     def put(self, path, body=None, params={}):
-        headers = {'Accept': 'application/json', 'User-Agent':'My custom agent', 'Content-type':'application/json'}
+        headers = {
+            'Accept': 'application/json', 
+            'User-Agent':'My custom agent', 
+            'Content-type':'application/json',
+            'Authorization': 'Bearer ' + self.access_token
+        }
         if body:
             body = json.dumps(body)
 
         self.response = requests.put(self.host + path, data=body, params=urlencode(params), headers=headers)
-        self.rjson = self.response
+        self.rjson = self.response.json()
         return self
         
     def delete(self, path, params={}):

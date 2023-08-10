@@ -26,7 +26,9 @@ class CTTMLProductTmplate(models.Model):
     _inherit = 'product.template'
     _description = 'Atributos y funciones para Mercado Libre'
 
+    meli_id = fields.Char(string="ID en Mercado Libre")
     meli_categ_id = fields.Many2one("mercadolibre.category", string="Categoria de Mercado Libre")
+    mercadolibre_description = fields.Text(string="Descripción en Mercado Libre")
     meli_categ_attribute_ids = fields.One2many(
         "product.category.attribute",
         "product_id",
@@ -65,6 +67,15 @@ class CTTMLProductTmplate(models.Model):
          ("meses","Meses"),
          ("años","Años")],
         string="Unidad de garantia"
+    )
+    mercadolibre_local_pick_up = fields.Boolean(default=False, string="Retiro en persona")
+    mercadolibre_free_shipping = fields.Boolean(default=False, string="Envio gratis")
+    mercadolibre_store_pick_up = fields.Boolean(default=False, string="Retiro en sucursal")
+    mercado_shipping_mode = fields.Selection(
+        [("me2","Mercado Envios 2"),
+         ("not_specified", "No especificado")],
+        string="Modo de envio",
+        default="me2"
     )
 
     def _import_ml_catgory(self,category_id):
@@ -108,24 +119,6 @@ class CTTMLProductTmplate(models.Model):
 
         if ml_cat_id:
             self.write({'meli_categ_id': ml_cat_id.id})
-            
-        
-    def import_category(self):
-        self.ensure_one()
-        params = self.env['ir.config_parameter'].sudo()
-        access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
-
-        url = "/categories/"+self.mercadolibre_category_id+"/technical_specs/input"
-
-        api_conector = MeliApi({'access_token': access_token})
-        response = api_conector.get(path=url)
-        data = response.json()
-
-        # for group in data['groups']:
-        #     _logger.warning(group['id'])
-        #     for component in group['components']:
-        #         if 'required' in component['attributes'][0]['tags']:
-        #             _logger.warning(component['attributes'][0]['id'])
     
     def publicar_producto(self):
         self.ensure_one()
@@ -168,19 +161,25 @@ class CTTMLProductTmplate(models.Model):
                 {"source": image_url_1920}],
             "attributes": attributes,
             "shipping": {
-                "mode": "me1",
-                "local_pick_up": False,
-                "free_shipping": False,
+                "mode": self.mercado_shipping_mode,
+                "local_pick_up": self.mercadolibre_local_pick_up,
+                "free_shipping": self.mercadolibre_free_shipping,
                 "methods": [],
                 "dimensions": None,
                 "tags": [],
                 "logistic_type": "not_specified",
-                "store_pick_up": False
+                "store_pick_up": self.mercadolibre_store_pick_up
             }
         }
 
         response = api_conector.post(path=url, body=body)
         data = response.json()
-            
 
+        self.write({"meli_id": data["id"]})
+
+        url = "/items/"+self.meli_id+"/description"
+        body = {'plain_text': self.mercadolibre_description}
+
+        response = api_conector.put(path=url, body=body)
+        # data = response.json()
         

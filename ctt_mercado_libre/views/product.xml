@@ -13,11 +13,6 @@
                                 string="Sugerir Categoria"
                                 class="oe_stat_button" 
                                 icon="fa-refresh"/>
-                            <button name="import_category" 
-                                type="object" 
-                                string="Importar Categoria"
-                                class="oe_stat_button" 
-                                icon="fa-list"/>
                             <button name="publicar_producto" 
                                 type="object" 
                                 string="Publicar producto"
@@ -27,6 +22,9 @@
                         <separator string="Plantilla en Mercado Libre" colspan="1"/>
                         <group>
                             <field name="meli_categ_id"/>
+                        </group>
+                        <group string="Descripción">
+                            <field colspan="2" name="mercadolibre_description" nolabel="1" placeholder="Descripción en Mercado Libre"/>
                         </group>
                         <separator string="Atributos en Mercado Libre" colspan="1"/>
                         <field name="meli_categ_attribute_ids" widget="one2many">
@@ -40,14 +38,23 @@
                                 <field name="unit_id" domain="[('id','in',attr_units)]" options="{'no_open': True, 'no_create': True}"/>
                             </tree>
                         </field>
-                        <separator string="Datos de venta" colspan="1"/>
                         <group>
-                            <field name="mercadolibre_buying_mode"/>
-                            <field name="mercadolibre_condition"/>
-                            <field name="mercadolibre_listing_type"/>
-                            <field name="mercadolibre_warranty_type"/>
-                            <field name="mercadolibre_warranty"/>
-                            <field name="mercadolibre_warranty_unit"/>
+                            <group>
+                                <separator string="Datos de venta" colspan="1"/>
+                                <field name="mercadolibre_buying_mode"/>
+                                <field name="mercadolibre_condition"/>
+                                <field name="mercadolibre_listing_type"/>
+                                <field name="mercadolibre_warranty_type"/>
+                                <field name="mercadolibre_warranty"/>
+                                <field name="mercadolibre_warranty_unit"/>
+                            </group>
+                            <group>
+                                <separator string="Datos de envio" colspan="1"/>
+                                <field name="mercado_shipping_mode"/>
+                                <field name="mercadolibre_local_pick_up"/>
+                                <field name="mercadolibre_store_pick_up"/>
+                                <field name="mercadolibre_free_shipping"/>
+                            </group>
                         </group>
                     </page>
                 </notebook>

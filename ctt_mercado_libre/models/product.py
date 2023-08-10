@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 # from odoo.tools.image import image_data_uri
 # from urllib.parse import urlencode
 # from datetime import datetime, timedelta
@@ -174,12 +175,32 @@ class CTTMLProductTmplate(models.Model):
 
         response = api_conector.post(path=url, body=body)
         data = response.json()
-
+        if 'error' in data:
+            message = ""
+            for item in data['cause']:
+                message += item["message"] + "\n"
+            raise ValidationError(message)
+        
         self.write({"meli_id": data["id"]})
 
         url = "/items/"+self.meli_id+"/description"
         body = {'plain_text': self.mercadolibre_description}
 
         response = api_conector.put(path=url, body=body)
-        # data = response.json()
+        data = response.json()
+        if 'error' in data:
+            message = ""
+            for item in data['cause']:
+                message += item["message"] + "\n"
+            raise ValidationError(message)
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'success',
+                'sticky': True,
+                'message': ("Artículo publicado en Mercado Libre"),
+        }
+        }
         

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import http
-from odoo.http import request
+from odoo.http import request, Response
 from datetime import datetime, timedelta
 from odoo.addons.ctt_mercado_libre.utils.utils import MeliApi
 import json
@@ -13,7 +13,16 @@ class MercadoLibre(http.Controller):
     def meli_notify(self,**kw):
         _logger.warning("NOTIFICACION MERCADO LIBRE")
         data = json.loads(request.httprequest.data)
+
+        notify_obj = request.env['mercadolibre.notification']
         _logger.warning(data)
+
+        result = notify_obj.meli_notifications(data)
+        
+        if (result and "error" in result):
+            return Response(result["error"],content_type='text/html;charset=utf-8',status=result["status"])
+        else:
+            return ""
 
 class MercadoLibreLogin(http.Controller):
 

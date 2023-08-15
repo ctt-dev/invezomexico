@@ -5,3 +5,4 @@ access_mercadolibre_attribute,mercadolibre.attribute manager,model_mercadolibre_
 access_mercadolibre_value,mercadolibre.value manager,model_mercadolibre_value,,1,1,1,1
 access_mercadolibre_units,mercadolibre.units manager,model_mercadolibre_units,,1,1,1,1
 access_product_category_attribute,product.category.attribute manager,model_product_category_attribute,,1,1,1,1
+access_mercadolibre_notification,mercadolibre.notification manager,model_mercadolibre_notification,,1,1,1,1

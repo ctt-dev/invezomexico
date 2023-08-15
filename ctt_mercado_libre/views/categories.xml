@@ -14,16 +14,18 @@
             <field name="view_mode">tree</field>
         </record>
 
+        <record model="ir.actions.act_window" id="action_mercadolibre_notifications">
+            <field name="name">Notificaciones</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mercadolibre.notification</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
         <menuitem id="menu_marketplaces" name="Marketplaces" parent="stock.menu_stock_root" sequence="9"/>
         <menuitem id="menu_mercadolibre" name="Mercado Libre" parent="menu_marketplaces" sequence="1"/>
-        <menuitem id="menu_meli_categories"
-            action="action_mercadolibre_categories"
-            parent="menu_mercadolibre"
-            name="Categorías" />
-        <menuitem id="menu_meli_units"
-            action="action_mercadolibre_units"
-            parent="menu_mercadolibre"
-            name="Unidades" />
+        <menuitem id="menu_meli_categories" action="action_mercadolibre_categories" parent="menu_mercadolibre" name="Categorías"/>
+        <menuitem id="menu_meli_units" action="action_mercadolibre_units" parent="menu_mercadolibre" name="Unidades"/>
+        <menuitem id="menu_meli_notifications" action="action_mercadolibre_notifications" parent="menu_mercadolibre" name="Notificaciones"/>
         
         <record id="ctt_mercado_libre_category_tree" model="ir.ui.view">
             <field name="name">mercadolibre.category.tree</field>

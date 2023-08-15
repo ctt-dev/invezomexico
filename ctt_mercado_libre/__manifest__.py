@@ -22,6 +22,7 @@
     'depends': [
         'base',
         'stock',
+        'sale_management',
     ],
 
     # always loaded

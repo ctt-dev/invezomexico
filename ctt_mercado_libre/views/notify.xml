@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <record id="ctt_mercado_libre_notification_form" model="ir.ui.view">
+            <field name="name">mercadolibre.notification.form</field>
+            <field name="model">mercadolibre.notification</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false">
+                    <sheet>
+                        <header>
+                            <button type="object" name="process_order_notification" string="procesar"/> 
+                        </header>
+                        <group>
+                            <field name="resource"/>
+                            <field name="data"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

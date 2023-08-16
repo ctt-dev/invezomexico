@@ -33,6 +33,7 @@
         'data/categories_import.xml',
         'views/product.xml',
         'views/categories.xml',
+        'views/notify.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

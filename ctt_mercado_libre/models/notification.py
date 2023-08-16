@@ -54,7 +54,7 @@ class MercadoLibreNotification(models.Model):
                     api_conector = MeliApi({'access_token': access_token})
                     response = api_conector.get(path=data["resource"])
                     data = response.json()
-                    vals["data"] = data
+                    vals["data"] = json.dumps(data, indent=4, sort_keys=True)
                     
                     noti = self.create(vals)
                     _logger.info("Created new ORDER notification")
@@ -67,4 +67,4 @@ class MercadoLibreNotification(models.Model):
         return self._process_notification(data)
 
     def process_order_notification(self):
-        pass
+        _logger.warning("Procesando")

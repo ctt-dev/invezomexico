@@ -22,6 +22,7 @@
     'depends': [
         'base',
         'stock',
+        'sale',
         'sale_management',
     ],
 
@@ -29,7 +30,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/res_config.xml',
-        # 'data/cron_verify_token.xml',
+        'data/cron_verify_token.xml',
         'data/categories_import.xml',
         'views/product.xml',
         'views/categories.xml',

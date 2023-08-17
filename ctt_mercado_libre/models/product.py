@@ -29,6 +29,7 @@ class CTTMLProductTmplate(models.Model):
 
     meli_id = fields.Char(string="ID en Mercado Libre")
     meli_categ_id = fields.Many2one("mercadolibre.category", string="Categoria de Mercado Libre")
+    mercadolibre_title = fields.Char(string="Titulo", size=60)
     mercadolibre_description = fields.Text(string="Descripción en Mercado Libre")
     meli_categ_attribute_ids = fields.One2many(
         "product.category.attribute",
@@ -145,7 +146,7 @@ class CTTMLProductTmplate(models.Model):
             attributes.append(data)
         
         body = {
-            "title": self.name + " - Test - No ofertar",
+            "title": self.mercadolibre_title,
             "category_id": self.meli_categ_id.meli_id,
             "price": self.list_price,
             "currency_id": "MXN",
@@ -201,6 +202,6 @@ class CTTMLProductTmplate(models.Model):
                 'type': 'success',
                 'sticky': True,
                 'message': ("Artículo publicado en Mercado Libre"),
-        }
+            }
         }
         

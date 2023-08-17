@@ -23,6 +23,12 @@
                         <group>
                             <field name="meli_categ_id"/>
                         </group>
+                        <group>
+                            <field name="meli_id"/>
+                        </group>
+                        <group>
+                            <field name="mercadolibre_title"/>
+                        </group>
                         <group string="Descripción">
                             <field colspan="2" name="mercadolibre_description" nolabel="1" placeholder="Descripción en Mercado Libre"/>
                         </group>

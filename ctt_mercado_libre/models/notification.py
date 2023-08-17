@@ -21,7 +21,7 @@ class MercadoLibreNotification(models.Model):
     # received = fields.Datetime(string='Received', index=True)
     resource = fields.Char(string="Resource", index=True)
     attempts = fields.Integer(string='Attempts')
-
+    process_notification = fields.Boolean(default=False)
     data = fields.Text()
 
     _sql_constraints = [
@@ -58,6 +58,7 @@ class MercadoLibreNotification(models.Model):
                     
                     noti = self.create(vals)
                     _logger.info("Created new ORDER notification")
+                    # noti.process_order_notification()
         except Exception as e:
             _logger.error("Error creating notification.")
             _logger.info(e, exc_info=True)
@@ -67,4 +68,17 @@ class MercadoLibreNotification(models.Model):
         return self._process_notification(data)
 
     def process_order_notification(self):
-        _logger.warning("Procesando")
+        notifications = self.search([("process_notification","=", False)])
+        for rec in notifications:
+            data = json.loads(rec.data)
+            order_obj = rec.env["sale.order"]
+    
+            order_ml = order_obj.search([("mercadolibre_id", "=", data["id"])])
+            meli_data = { "id": False, "order_json": data }
+            
+            if (order_ml and len(order_ml)):
+                meli_data["id"] =  order_ml
+            
+            rsjson = order_ml.mercadolibre_order_json(meli_data)
+
+            rec.write({"process_notification":True})

@@ -18,6 +18,11 @@
                                 string="Publicar producto"
                                 class="oe_stat_button" 
                                 icon="fa-cloud-upload"/>
+                            <button name="import_product" 
+                                type="object" 
+                                string="Importar producto"
+                                class="oe_stat_button" 
+                                icon="fa-cloud-download"/>
                         </div>
                         <separator string="Plantilla en Mercado Libre" colspan="1"/>
                         <group>

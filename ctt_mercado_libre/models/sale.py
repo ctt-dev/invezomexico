@@ -60,7 +60,8 @@ class SaleOrderInherit(models.Model):
         saleorderline_obj = self.env["sale.order.line"]
         product_obj = self.env['product.product']
         odoobot = self.env.ref('base.partner_root')
-        mail_obj = self.env["mail.channel"].search([("name", "=", "MercadoLibre")])
+        # mail_obj = self.env["mail.channel"].search([("name", "=", "MercadoLibre")])
+        mail_obj = self.env.ref('ctt_mercado_libre.mercadolibre_channel')
 
         vals = self._prepare_meli_vals(order_json)
 

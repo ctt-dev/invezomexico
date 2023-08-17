@@ -22,8 +22,9 @@
     'depends': [
         'base',
         'stock',
-        'sale',
+        # 'sale',
         'sale_management',
+        'website_sale',
     ],
 
     # always loaded
@@ -32,6 +33,7 @@
         'views/res_config.xml',
         'data/cron_verify_token.xml',
         'data/categories_import.xml',
+        'data/mail_channel.xml',
         'views/product.xml',
         'views/categories.xml',
         'views/notify.xml',

@@ -1,0 +1,9 @@
+<odoo>
+    <data noupdate="1">
+        <record id="mercadolibre_channel" model="mail.channel">
+            <field name="name">Mercado Libre</field>
+            <field name="active">1</field>
+            <field name="description">Notificaciones de Mercado Libre</field>
+        </record>
+    </data>
+</odoo>

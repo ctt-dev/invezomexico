@@ -126,6 +126,7 @@ class CTTMLProductTmplate(models.Model):
         self.ensure_one()
         params = self.env['ir.config_parameter'].sudo()
         access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
+        currency = params.get_param("ctt_mercado_libre.mercado_libre_currency_id")
         base_url = params.get_param('web.base.url')
         image_url_1920 = base_url + '/web/image?' + 'model=product.template&id=' + str(self.id) + '&field=image_1920'
         url = "/items/"
@@ -149,7 +150,7 @@ class CTTMLProductTmplate(models.Model):
             "title": self.mercadolibre_title,
             "category_id": self.meli_categ_id.meli_id,
             "price": self.list_price,
-            "currency_id": "MXN",
+            "currency_id": currency,
             "available_quantity": 1,
             "buying_mode": self.mercadolibre_buying_mode,
             "condition": self.mercadolibre_condition,
@@ -174,6 +175,11 @@ class CTTMLProductTmplate(models.Model):
             }
         }
 
+        for image in self.product_template_image_ids:
+            body["pictures"].append({
+                "source": base_url + '/web/image?' + 'model=product.image&id=' + str(image.id) + '&field=image_1920'
+            })
+        
         response = api_conector.post(path=url, body=body)
         data = response.json()
         if 'error' in data:
@@ -184,24 +190,34 @@ class CTTMLProductTmplate(models.Model):
         
         self.write({"meli_id": data["id"]})
 
-        url = "/items/"+self.meli_id+"/description"
-        body = {'plain_text': self.mercadolibre_description}
-
-        response = api_conector.put(path=url, body=body)
-        data = response.json()
-        if 'error' in data:
-            message = ""
-            for item in data['cause']:
-                message += item["message"] + "\n"
-            raise ValidationError(message)
+        if self.mercadolibre_description:
+            url = "/items/"+self.meli_id+"/description"
+            body = {'plain_text': self.mercadolibre_description}
+    
+            response = api_conector.put(path=url, body=body)
+            data = response.json()
+            if 'error' in data:
+                message = ""
+                for item in data['cause']:
+                    message += item["message"] + "\n"
+                raise ValidationError(message)  
+        else:
+            raise ValidationError("Es necesaria una descripción del producto")
         
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'type': 'success',
-                'sticky': True,
+                'sticky': False,
                 'message': ("Artículo publicado en Mercado Libre"),
             }
         }
-        
+    def import_product(self):
+        self.ensure_one()
+        params = self.env['ir.config_parameter'].sudo()
+        site_id = params.get_param("ctt_mercado_libre.mercado_libre_site_id")
+        if not self.meli_id or self.meli_id[:3] != site_id:
+            raise ValidationError("ID de Mercado Libre con formato %sXXXXXXXXXX" % (site_id))
+
+        _logger.warning("paso")

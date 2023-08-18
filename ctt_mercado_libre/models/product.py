@@ -81,15 +81,14 @@ class CTTMLProductTmplate(models.Model):
     )
 
     def _import_ml_catgory(self,category_id):
-        params = self.env['ir.config_parameter'].sudo()
-        access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
-
-        api_conector = MeliApi({'access_token': access_token})
-
         category_obj = self.env["mercadolibre.category"]
         ml_cat_id = category_obj.search([('meli_id','=',category_id)],limit=1)
-
         if not ml_cat_id:
+            params = self.env['ir.config_parameter'].sudo()
+            access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
+    
+            api_conector = MeliApi({'access_token': access_token})
+
             url = "/categories/"+category_id
             response = api_conector.get(path=url)
             data = response.json()
@@ -98,9 +97,9 @@ class CTTMLProductTmplate(models.Model):
                 'meli_id': data['id'],
                 'name': data['name']})
 
-            return ml_cat_id
+        return ml_cat_id
 
-        return False
+        # return False
     
     def predict_category(self):
         self.ensure_one()
@@ -215,9 +214,80 @@ class CTTMLProductTmplate(models.Model):
         }
     def import_product(self):
         self.ensure_one()
+        self.meli_categ_attribute_ids = False
         params = self.env['ir.config_parameter'].sudo()
         site_id = params.get_param("ctt_mercado_libre.mercado_libre_site_id")
+        access_token = params.get_param('ctt_mercado_libre.mercado_libre_token')
         if not self.meli_id or self.meli_id[:3] != site_id:
             raise ValidationError("ID de Mercado Libre con formato %sXXXXXXXXXX" % (site_id))
 
-        _logger.warning("paso")
+        url = "/items/"+self.meli_id
+
+        api_conector = MeliApi({'access_token': access_token})
+        response = api_conector.get(path=url)
+
+        data = response.json()
+        if 'error' in data:
+            message = ""
+            for item in data['cause']:
+                message += item["message"] + "\n"
+            raise ValidationError(message)
+
+        ml_cat_id = self._import_ml_catgory(data["category_id"])
+        
+        vals = {
+            "meli_categ_id": ml_cat_id.id,
+            "mercadolibre_title": data["title"],
+            "mercadolibre_buying_mode": data["buying_mode"],
+            "mercadolibre_condition": data["condition"],
+            "mercadolibre_listing_type": data["listing_type_id"],
+            
+        }
+
+        if "sale_terms" in data:
+            for item in data["sale_terms"]:
+                if item["id"] == "WARRANTY_TYPE":
+                    vals["mercadolibre_warranty_type"] = item["value_name"]
+                if item["id"] == "WARRANTY_TIME":
+                    vals["mercadolibre_warranty"] = item["value_struct"]["number"]
+                    vals["mercadolibre_warranty_unit"] = item["value_struct"]["unit"]
+
+        #Atributos
+        attr_lines = self.env["product.category.attribute"]
+        attr_obj = self.env["mercadolibre.attribute"]
+        for attr in data["attributes"]:
+            attr_id = attr_obj.search([("categ_id.meli_id","=",data["category_id"]),("meli_id","=",attr["id"])])
+
+            prod_attr_vals = {
+                "product_id": self.id,
+                "categ_id": self.meli_categ_id.id,
+                "attr_id": attr_id.id,
+            }
+
+            if attr_id.has_values:
+                prod_attr_vals["value_id"] = self.env["mercadolibre.value"].search([("attr_id","=",attr_id.id),("name","=",attr["value_name"])]).id
+            if not attr_id.has_values and attr_id.type != "number_unit":
+                prod_attr_vals["value"] = attr["value_name"]
+            elif not attr_id.has_values and attr_id.type == "number_unit":
+                prod_attr_vals["value"] = attr["value_struct"]["number"]
+                prod_attr_vals["unit_id"] = self.env["mercadolibre.units"].search([("name","=",attr["value_struct"]["unit"])]).id
+
+            attr_lines += self.env["product.category.attribute"].create(prod_attr_vals)
+
+        vals["meli_categ_attribute_ids"] = attr_lines.ids
+        
+        #Envios
+        if "shipping" in data:
+            vals["mercado_shipping_mode"] = data["shipping"]["mode"]
+            vals["mercadolibre_local_pick_up"] = data["shipping"]["local_pick_up"]
+            vals["mercadolibre_free_shipping"] = data["shipping"]["free_shipping"]
+            vals["mercadolibre_store_pick_up"] = data["shipping"]["store_pick_up"]
+
+        #Descripcion
+        url = "/items/"+self.meli_id+"/description"
+        response = api_conector.get(path=url)
+        data = response.json()
+
+        vals["mercadolibre_description"] = data["plain_text"]
+        
+        self.write(vals)

@@ -29,6 +29,7 @@ class ctrl_llantas(models.Model):
         tracking=True,
         store=True,
     )
+
     
     venta=fields.Char(
         string="Venta",
@@ -65,11 +66,11 @@ class ctrl_llantas(models.Model):
         store=True,
     )
     
-    registro=fields.Boolean(
-        string="Registro",
-        tracking=True
+    # registro=fields.Boolean(
+    #     string="Registro",
+    #     tracking=True
         
-    )
+    # )
     orden_compra=fields.Char(
         string="Orden de compra",
         tracking=True
@@ -84,10 +85,10 @@ class ctrl_llantas(models.Model):
         tracking=True
     )
     
-    status_enviado=fields.Boolean(
-        string="Status",
-        tracking=True
-    )
+    # status_enviado=fields.Boolean(
+    #     string="Status",
+    #     tracking=True
+    # )
     
     factura_prov=fields.Char(
         string="Factura proveedor",
@@ -117,7 +118,7 @@ class ctrl_llantas(models.Model):
     
     dias=fields.Integer(
         string="Dias",
-        tracking=True
+        # tracking=True
     )
 
     comentarios=fields.Char(
@@ -131,3 +132,9 @@ class ctrl_llantas(models.Model):
         readonly=True,
         store=True,
     )
+
+    orden_entrega=fields.Many2one(
+        "stock.picking",
+        string="Orden de entrega",
+    )
+    

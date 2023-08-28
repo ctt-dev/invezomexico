@@ -5,18 +5,42 @@
             <field name="name">tree.marketplaces_product</field>
             <field name="model">llantas_config.product_marketplace</field>
             <field name="arch" type="xml">
-                <tree string="Configuracion marketplace" editable="top">
+                <tree string="Configuracion marketplace" edit="0" sample="1">
                     <field name="name"/>
                     <field name="product_ids" force_save="1" readonly="1"/>
-                    <field name="sku" />
-                    <field name="sku_premium" />
-                    <field name="sku_paquete_clasico" />
-                    <field name="sku_paquete_premium" />
                     <field name="codigo_clasico" />
                     <field name="codigo_premium" />
                     <field name="codigo_paquete_clasico" />
                     <field name="codigo_paquete_premium" />
+                    <field name="id_clasico" />
+                    <field name="id_premium" />
+                    <field name="id_paquete_clasico" />
+                    <field name="id_paquete_premium" />
+                    <field name="sku_individual" />
+                    <field name="sku_paquete" />
                     <field name="codigo_ean" />
+                    <field name="codigo_ean_paquete" />
+                    <field name="no_tienda" optional="hide"/>
+                    <field name="no_proveedor" optional="hide"/>
+                    <field name="grupo_articulo" optional="hide"/>
+                    <field name="palabra_clave" optional="hide"/>
+                    <field name="precio" optional="hide"/>
+                    <field name="estado_publicacion" optional="hide"/>
+                    <field name="condicion" optional="hide"/>
+                    <field name="garantia" optional="hide"/>
+                    <field name="tipo_vehiculo" optional="hide"/>
+                    <field name="posicion" optional="hide"/>
+                    <field name="lado" optional="hide"/>
+                    <field name="ano_vehiculo" optional="hide"/>
+                    <field name="voltaje" optional="hide"/>
+                    <field name="potencia" optional="hide"/>
+                    <field name="capacidad_produccion" optional="hide"/>
+                    <field name="capacidad_almacenamiento" optional="hide"/>
+                    <field name="forma_hielo" optional="hide"/>
+                    <field name="material" optional="hide"/>
+                    <field name="category" optional="hide"/>
+                    
+                   
                     <field name="color" widget="color_picker"/>
                 </tree>
             </field>
@@ -32,25 +56,76 @@
                             <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
                         </header> -->
                         <div class="oe_button_box" />
-    
+                            
                             <group string="Información" >
                                 <field name="name"/>
                                 <field name="product_ids" force_save="1" readonly="1" invisible="1"/>
                             </group>
-                            <group string="SKU" >
-                                <field name="sku" />
-                                <field name="sku_premium" />
-                                <field name="sku_paquete_clasico" />
-                                <field name="sku_paquete_premium" />
-                            </group>
-                            <group string="Codigo" >
-                                <field name="codigo_clasico" />
-                                <field name="codigo_premium" />
-                                <field name="codigo_paquete_clasico" />
-                                <field name="codigo_paquete_premium" />
-                                <field name="codigo_ean" />
+                        <div>
+                            <group>
+                                <group string="Codigo" >
+                                    <field name="codigo_paquete_clasico" />
+                                    <field name="codigo_paquete_premium" />
+                                </group>
+                                <group string="ID" >
+                                    <field name="id_clasico" />
+                                    <field name="id_premium" />
+                                    <field name="id_paquete_clasico" />
+                                    <field name="id_paquete_premium" />
+                                </group>
+                                
+                                <group string="SKU" >
+                                    <field name="sku_individual" />
+                                    <field name="sku_paquete" />
+                                </group>
+                                <group string="Codigos" >
+                                    <field name="codigo_ean" />
+                                    <field name="codigo_ean_paquete" />
+                                    <field name="codigo_proveedor" />
+                                </group>
+                                <group string="Info extra" >
+                                    <field name="no_tienda" />
+                                    <field name="no_proveedor" />
+                                    <field name="grupo_articulo" />
+                                    <field name="palabra_clave" />
+                                    <field name="precio" />
+                                    <field name="precio_descuento" />
+                                    <field name="estado_publicacion" />
+                                    <field name="condicion" />
+                                    <field name="garantia" />
+                                </group>
+                                <group string="Información llantas" >
+                                    <field name="marca" />
+                                    <field name="modelo" />
+                                    <field name="peso" />
+                                    <field name="medida" />
+                                    <field name="material" />
+                                    <field name="medida_llanta" />
+                                    <field name="medida_rin" />
+                                </group>  
+    
+                                <group string="Información amortiguadores" >
+                                    <field name="marca" />
+                                    <field name="modelo" />
+                                    <field name="tipo_vehiculo" />
+                                    <field name="posicion" />
+                                    <field name="lado" />
+                                    <field name="ano_vehiculo" />
+                                </group>
+                                <group string="Información maquina de hielo" >
+                                    <field name="marca" />
+                                    <field name="modelo" />
+                                    <field name="voltaje" />
+                                    <field name="potencia" />
+                                    <field name="capacidad_produccion" />
+                                    <field name="capacidad_almacenamiento" />
+                                    <field name="forma_hielo" />
+                                    <field name="material" />
+                                </group>
                                 
                             </group>
+                            
+                        </div>
                             <group string="Configuración">
                                 <field name="color" widget="color_picker"/>
                             </group>
@@ -68,8 +143,9 @@
         <record model="ir.actions.act_window" id="marketplaces_products">
             <field name="name">Configuración marketplace</field>
             <field name="res_model">llantas_config.product_marketplace</field>
-            <field name="view_mode">tree</field>
-            <field name="target">current</field>
+            <field name="view_mode">tree,kanban,form,pivot</field>
+            <field name="context">{'create': True}</field>
+            <field name="target">main</field>
         </record>
         <menuitem id="configuracion_marketplace_menu" 
                   name="Configuración marketplaces" 

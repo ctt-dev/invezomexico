@@ -46,6 +46,7 @@ class product_template_inherit(models.Model):
     alto = fields.Float(
     string='Alto llanta',
     )	
+    
 
     config_marketplace_id=fields.Many2one(
         "llantas_config.product_marketplace",
@@ -61,3 +62,7 @@ class product_template_inherit(models.Model):
         store=True
 
     )
+
+    
+    
+    

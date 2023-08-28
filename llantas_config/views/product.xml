@@ -13,7 +13,6 @@
                      <field name="indice_velocidad" />
                      <field name="config_marketplace_id" widget="many2one_tags" force_save="1" invisible="1"/>
                      <field name="config_marketplace_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-                     
                  </xpath>
                 <xpath expr="//page[@name='inventory']//group//group//div[2]" position="after">
                      <label for="largo" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
@@ -29,6 +28,153 @@
                             <field name="alto" class="oe_inline"/>
                     </div>
 
+                </xpath>
+                <xpath expr="//page[@name='inventory']" position="after">
+                    <page string="Marketplaces" >
+                            <!-- <group> -->
+                                <field name="config_marketplace_ids" mode="kanban" >
+                                <kanban>
+                                    
+                                    <field name="id" />
+                                    <field name="name"/>
+                                    <field name="listado_marketplace" />
+                                    
+                                    <!-- <field name="codigo_llanta" />
+                                    <field name="marca_llanta" />
+                                    <field name="modelo_llanta" />                                    
+                                    <field name="medida_llanta" />
+                                    <field name="indice_carga" />
+                                    <field name="indice_velocidad" />  -->
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_global_click">
+                                            <div>
+                                                <b style="font-size:15px"><field name="listado_marketplace"/></b><br/>
+                                                <field name="tipo_producto"/>
+                                                
+                                            </div>
+                                            <!-- <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                                            <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                                                <div class="o_kanban_image">
+                                                    <img alt="Contact image" t-att-src="kanban_image('res.partner', 'avatar_128', record.id.raw_value)"/>
+                                                </div>-->
+                                            <!-- <div>
+                                                <field name="name"/>
+                                                
+                                                <field name="tipo_producto"/>
+                                            </div> -->
+                                            <!--
+                                                <div class="oe_kanban_details">
+                                                    <field name="name"/>
+                                                    <div t-if="record.function.raw_value"><field name="function"/></div>
+                                                    <div t-if="record.email.raw_value"><field name="email" widget="email"/></div>
+                                                    <div t-if="record.type.raw_value != 'contact'">
+                                                        <div>
+                                                            <field name="zip"/><t t-if="record.city"> </t>
+                                                            <field name="city"/>
+                                                        </div>
+                                                        <field t-if="record.state_id.raw_value" name="state_id"/><t t-if="record.country_id"> </t>
+                                                        <field name="country_id"/>
+                                                    </div>
+                                                    <div t-if="record.phone.raw_value">Phone: <t t-esc="record.phone.value"/></div>
+                                                    <div t-if="record.mobile.raw_value">Mobile: <t t-esc="record.mobile.value"/></div>
+                                                </div>
+                                            </div> -->
+                                              </div>  
+                                        </t>
+                                    </templates>
+                                </kanban>
+                                    <form string="Contact / Address">
+                                        <!-- llantas_config.product_marketplace -->
+                                        <sheet>
+                                             <field name="image_1920" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;avatar_128&quot;}"/>
+                                            <group>
+                                                <field name="listado_marketplace" required="1" widget="radio" options="{'horizontal': true}"/>
+                                                <group>
+                                                    <field name="tipo_producto" required="1" widget="selection" />
+                                                </group>
+                                            </group>
+                                            <field name="id" invisible="1"/>
+                                            
+                                        <group>
+                                            <group string="Codigo" >
+                                                <field name="codigo_paquete_clasico" />
+                                                <field name="codigo_paquete_premium" />
+                                            </group>
+                                            <group string="ID" >
+                                                <field name="id_clasico" />
+                                                <field name="id_premium" />
+                                                <field name="id_paquete_clasico" />
+                                                <field name="id_paquete_premium" />
+                                            </group>
+                                            
+                                            <group string="Categorias" >
+                                                <field name="categoria"/>
+                                                <field name="garantia"/>
+                                            </group>
+                                            
+                                            <group string="SKU" >
+                                                <field name="sku_individual" />
+                                                <field name="sku_paquete" />
+                                            </group>
+                                            <group string="Codigos" >
+                                                <field name="codigo_ean" />
+                                                <field name="codigo_ean_paquete" />
+                                                <field name="codigo_proveedor" />
+                                            </group>
+                                            <group string="Info extra" >
+                                                <field name="no_tienda" />
+                                                <field name="no_proveedor" />
+                                                <field name="grupo_articulo" />
+                                                <field name="palabra_clave" />
+                                                <field name="precio" />
+                                                <field name="precio_descuento" />
+                                                <field name="estado_publicacion" />
+                                                <field name="condicion" />
+                                                <field name="garantia" />
+                                            </group>
+                                            <group string="Información llantas" attrs="{'invisible': [('tipo_producto', '!=', '01')]}">
+                                                <field name="marca" />
+                                                <field name="modelo" />
+                                                <field name="peso" />
+                                                <field name="medida" />
+                                                <field name="material" />
+                                                <field name="medida_llanta" />
+                                                <field name="medida_rin" />
+                                                
+                                                
+                                            </group>  
+                                            <group string="Información amortiguadores" attrs="{'invisible': [('tipo_producto', '!=', '02')]}">
+                                                <field name="marca" />
+                                                <field name="modelo" />
+                                                <field name="tipo_vehiculo" />
+                                                <field name="posicion" />
+                                                <field name="lado" />
+                                                <field name="ano_vehiculo" />
+                                                
+                                                
+                                            </group>
+                                            <group string="Información maquina de hielo" attrs="{'invisible': [('tipo_producto', '!=', '03')]}">
+                                                <field name="marca" />
+                                                <field name="modelo" />
+                                                <field name="voltaje" />
+                                                <field name="potencia" />
+                                                <field name="capacidad_produccion" />
+                                                <field name="capacidad_almacenamiento" />
+                                                <field name="forma_hielo" />
+                                                <field name="material" />
+                                                
+                                                
+                                            </group>
+                                            
+                                        </group>
+                                        <!-- <group>
+                                            <field name="comment" placeholder="Internal notes..." nolabel="1" colspan="2"/>
+                                        </group> -->
+                                    </sheet>
+                                </form>
+                            </field>
+                    </page>
                 </xpath>
             </field>
         </record>

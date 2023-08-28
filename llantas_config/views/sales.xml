@@ -6,9 +6,28 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                  <xpath expr="//group[@name='order_details']//field[@name='payment_term_id']" position="after">
-                     <field name="marketplace" required="1"/>
+                     <field name="marketplace"/>
+                     <field name="comprador_id" domain="['|',('category_ids','ilike','COMP'),('category_ids','ilike','Comp')]" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"/> 
+                     <field name="comision" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"/>
+                     <field name="envio" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}" />
                  </xpath>
+                <xpath expr="//sheet//group[@name='sale_header']" position="before">
+                    <div class="oe_title">
+                        <group>
+                            <field name="folio_venta" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"/>
+                        </group>
+                             
+                    </div>
+                </xpath>
+                <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="before">
+                    <field name="proveedor_id" />
+                        <!-- domain="[('product_tmpl_id','=','order_line.product_template_id')]"/> -->
+                </xpath>
+
+                
             </field>
         </record>
+        
+        
     </data>
 </odoo>

@@ -6,23 +6,20 @@
             <field name="arch" type="xml">
                 <tree edit="0" sample="1">
                     <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
-                    
                     <field name="sale_id" />
                     <field name="partner_name" />
                     <field name="marketplace" />
                     <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
-                    <field name="registro" />
                     <field name="orden_compra" />
                     <field name="guia" />
                     <field name="no_recoleccion" />
-                    <field name="status_enviado" />
                     <field name="factura_prov" />
                     <field name="num_cliente" />
                     <field name="factura_cliente" />
                     <field name="status" />
                     <field name="comentarios" optional="hide"/>
                     <field name="fecha" />
-                    <field name="dias" />
+                    <field name="dias" readonly="1"/>
                 </tree>
                 <graph string="Sales Orders" sample="1">
                     <!-- <field name="marketplace" invisible="1" optional="hide"/>
@@ -53,15 +50,14 @@
                         </group>
                         <group string="Información proveedor" >
                             <field name="marketplace" />
-                           <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
-                            <field name="registro" />
+                            <!-- <field name="marketplace_id"/> -->
+                            <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
                             <field name="orden_compra" />
                             
                         </group>
                         <group string="Informacion venta" >
                             <field name="guia" />
                             <field name="no_recoleccion" />
-                            <field name="status_enviado" />
                             <field name="factura_prov" />
                             <field name="num_cliente" />
                             <field name="factura_cliente" />
@@ -69,9 +65,10 @@
                             
                         </group>
                         <group string="Informacion pedido" >
+                            <field name="orden_entrega"/>
                             <field name="status" />
                             <field name="fecha" />
-                            <field name="dias" />
+                            <field name="dias" readonly="1"/>
                             
                         </group>
                     </group>

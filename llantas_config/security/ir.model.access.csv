@@ -13,3 +13,5 @@ access_llantas_config_llantas_config_product_marketplace,llantas_config.product_
 
 
 access_llantas_config_llantas_config_ctt_llantas,llantas_config.ctt_llantas,model_llantas_config_ctt_llantas,,1,1,1,1
+access_llantas_config_llantas_config_status_ventas,llantas_config.status_ventas,model_llantas_config_status_ventas,,1,1,1,1
+access_llantas_config_llantas_config_carrier,llantas_config.carrier,model_llantas_config_carrier,,1,1,1,1

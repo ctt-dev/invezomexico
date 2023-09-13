@@ -29,6 +29,14 @@
         'account',
         'hr',
         'l10n_mx_edi',
+        'base_automation',
+        'crm',
+        'website',
+        'account_accountant',
+        'purchase',
+        'website_sale',
+        'mrp',
+
     ],
 
     # always loaded
@@ -43,6 +51,7 @@
         'views/subir_existencias.xml',
         'views/sales.xml',
         'views/marketplaces.xml',
+        'views/stock.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

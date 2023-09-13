@@ -78,6 +78,27 @@ class marketplaces(models.Model):
     url= fields.Char(
         string="Url marketplace",
     )
+
+    mostrar_comision=fields.Boolean(
+        string="Mostrar comisión?",
+        default="1"
+    )
+    
+    mostrar_envio=fields.Boolean(
+        string="Mostrar envio?",
+        default="1"
+    )
+
+    category_id=fields.Many2one(
+        "res.partner.category",
+        string="Categoria contacto",
+        
+    )
+
+    diarios_id=fields.Many2one(
+        "account.journal",
+        string="Diario de facturación",
+    )
     
     color = fields.Integer(
         string="Color",
@@ -149,3 +170,37 @@ class proveedores_link(models.Model):
                 'type': 'ir.actions.act_window',
                 'target': 'new',
             }
+
+class status_ventas(models.Model):
+    _name = 'llantas_config.status_ventas'
+    _description = 'Catalogo de status'
+    _order = 'id desc'
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    name = fields.Char(
+        string="Nombre",
+        required=True,
+
+    )
+    
+    description=fields.Char(
+        string="Descripción",
+
+    )
+    
+    color = fields.Integer(
+        string="Color",
+        required=True,
+        
+    )
+
+class carriers(models.Model):
+    _name = 'llantas_config.carrier'
+    _description = 'Catalogo carriers'
+    _order = 'id desc'
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    name = fields.Char(
+        string="Nombre",
+        required=True,
+    )

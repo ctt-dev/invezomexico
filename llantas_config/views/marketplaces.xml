@@ -141,14 +141,14 @@
         </record>
        
         <record model="ir.actions.act_window" id="marketplaces_products">
-            <field name="name">Configuración marketplace</field>
+            <field name="name">Productos con marketplace</field>
             <field name="res_model">llantas_config.product_marketplace</field>
             <field name="view_mode">tree,kanban,form,pivot</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
         </record>
         <menuitem id="configuracion_marketplace_menu" 
-                  name="Configuración marketplaces" 
+                  name="Productos con marketplace" 
                   action="marketplaces_products"
                   parent="llantas_config_catalogos_sale" 
                   sequence="103" />

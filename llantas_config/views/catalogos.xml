@@ -153,15 +153,18 @@
                   action="llantas_almacen"
                   parent="menu_ctt_llantas_catalogos_list" 
                   sequence="2" />
-    <!-- </data> -->
 
     <record id="tree_view_marketplaces" model="ir.ui.view">
             <field name="name">tree.marketplace</field>
             <field name="model">llantas_config.marketplaces</field>
             <field name="arch" type="xml">
-                <tree string="Status">
-                    <field name="name"/>
+                <tree string="Status" sample="1" multi_edit="1">
+                    <field name="name" required="1"/>
                     <field name="url" />
+                    <field name="mostrar_comision" />
+                    <field name="mostrar_envio"/>
+                    <field name="category_id" widget="many2one_tags"/>
+                    <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
                     <field name="color" widget="color_picker" required="0"/>
                 </tree>
             </field>
@@ -181,6 +184,10 @@
                             <group string="Información" >
                                 <field name="name"/>
                                 <field name="url" />
+                                <field name="mostrar_comision" />
+                                <field name="mostrar_envio"/>
+                                <field name="category_id" readonly="0"/>
+                                <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>/>
                                 <field name="color" widget="color_picker" required="0"/>
                             </group>
                             
@@ -203,10 +210,60 @@
         </record>
         
         <menuitem id="llantas_marketplaces_menu" 
-                  name="Marketplaces links" 
+                  name="Marketplaces configuraciones" 
                   action="llantas_marketplaces"
                   parent="llantas_config_catalogos_sale" 
                   sequence="102" />
+        
+
+        <record id="tree_view_status_ventas" model="ir.ui.view">
+            <field name="name">status_ventas_tree</field>
+            <field name="model">llantas_config.status_ventas</field>
+            <field name="arch" type="xml">
+                <tree string="status" editable="bottom">
+                    <field name="name"/>
+                    <field name="description" />
+                    <field name="color" widget="color_picker"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="llantas_status_ventas">
+            <field name="name">Estatus</field>
+            <field name="res_model">llantas_config.status_ventas</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="llantas_status_ventas_menu" 
+                  name="Estatus" 
+                  action="llantas_status_ventas"
+                  parent="sale.menu_sale_config" 
+                  sequence="1500" />
+
+        <record id="tree_view_carrier" model="ir.ui.view">
+            <field name="name">carrier_</field>
+            <field name="model">llantas_config.carrier</field>
+            <field name="arch" type="xml">
+                <tree string="Carrier" editable="bottom">
+                    <field name="name"/>
+                    
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="llantas_carrier">
+            <field name="name">Carrier</field>
+            <field name="res_model">llantas_config.carrier</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="llantas_carrier_menu" 
+                  name="Carrier" 
+                  action="llantas_carrier"
+                  parent="sale.menu_sale_config" 
+                  sequence="1510" />
+
+        
 
     </data>
 </odoo>

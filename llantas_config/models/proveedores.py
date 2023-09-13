@@ -82,12 +82,13 @@ class ProductSupplierinfoInherited(models.Model):
         res = super(ProductSupplierinfoInherited, self).name_get()
         data = []
         for e in self:
-            display_value = '['
-            display_value += str(e.product_code) or ""
-            display_value += '] '
-            display_value += str(e.product_name) or ""
-            display_value += ' - '
-            display_value += str(e.partner_id.name) or ""
+            display_value = ''
+            display_value += str(e.partner_id.name)
+            display_value += ' - $'
+            display_value += str(e.price) or ""
+            display_value += ' ['
+            display_value += str(e.currency_id.name) or ""
+            display_value += ']'
             data.append((e.id, display_value))
         return data
 

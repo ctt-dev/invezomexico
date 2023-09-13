@@ -1,0 +1,57 @@
+<odoo>
+    <data>
+        <record id="view_stock_picking_inherit" model="ir.ui.view">
+            <field name="name">stock_picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='carrier_data']//field[@name='carrier_id']" position="after">
+                    <field name="carrier" />
+                </xpath>
+                 <xpath expr="//group[@name='carrier_data']//field[@name='carrier_id']" position="replace">
+                    <field name="carrier_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}" options="{'no_create': True, 'no_open': True}" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="view_stock_picking_form_view" model="ir.ui.view">
+            <field name="name">stock_picking_form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet//group//group[2]//field[@name='origin']" position="after">
+                    <field name="no_venta" readonly="1"/>
+                </xpath>
+               
+            </field>
+        </record>
+
+        <record id="view_stock_picking_tree" model="ir.ui.view">
+            <field name="name">stock_picking_tree</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="no_venta" readonly="1"/>
+                    <field name="carrier"/>
+                </xpath>
+               
+            </field>
+        </record>
+
+        <record id="view_stock_picking_search" model="ir.ui.view">
+            <field name="name">stock_picking_search</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search//field[@name='name']" position="replace">
+                    <field name="name" string="Referencia / no. venta" filter_domain="['|', '|', ('name', 'ilike', self), ('origin', 'ilike', self), ('no_venta', 'ilike', self)]"/>
+                </xpath>
+                <xpath expr="//search//group//filter[@name='status']" position="after">
+                    <filter string="Carrier" name="carrier" domain="[]" context="{'group_by': 'carrier'}"/>
+                </xpath>
+               
+            </field>
+        </record>
+    </data>
+</odoo>

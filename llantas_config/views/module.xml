@@ -21,11 +21,6 @@
                     <field name="fecha" />
                     <field name="dias" readonly="1"/>
                 </tree>
-                <graph string="Sales Orders" sample="1">
-                    <!-- <field name="marketplace" invisible="1" optional="hide"/>
-                    <field name="status" invisible="1" optional="hide"/> -->
-                        <!-- type="measure"/> -->
-                </graph>
             </field>
         </record>    
 

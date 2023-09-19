@@ -30,6 +30,7 @@ class sale_order_inherit(models.Model):
         "hr.employee",
         string="Comprador",
         tracking=True,
+        company_dependent=True,
     )
 
     folio_venta=fields.Char(
@@ -94,7 +95,20 @@ class sale_order_inherit(models.Model):
                     self.partner_id.category_id += self.marketplace.category_id
         return res
 
-        
+    # def _prepare_invoice(self):
+    #     inv = super(sale_order_inherit, self)._prepare_invoice()
+    #     if self.marketplace.id:
+    #         if self.marketplace.diarios_id.id:
+    #             if self.marketplace.diarios_id not in self.journal_id:
+    #                 self.journal_id = self.marketplace.diarios_id
+    #     return inv
+    
+    def _prepare_invoice(self):
+        invoice_vals = super()._prepare_invoice()
+        if self.marketplace.id:
+            if self.marketplace.diarios_id.id:
+                invoice_vals.update({'journal_id': self.marketplace.diarios_id.id})
+            return invoice_vals
 
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'

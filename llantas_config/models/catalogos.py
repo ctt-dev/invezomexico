@@ -98,6 +98,7 @@ class marketplaces(models.Model):
     diarios_id=fields.Many2one(
         "account.journal",
         string="Diario de facturación",
+        company_dependent=True,
     )
     
     color = fields.Integer(

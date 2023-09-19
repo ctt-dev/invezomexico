@@ -12,35 +12,37 @@ class ctrl_llantas(models.Model):
     _description = "Llantas"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name= fields.Char(
+    sale_id=fields.Many2one(
+        "sale.order",
+        string="Venta",
+        store=True,
+    )
+    
+    name=fields.Char(
+        related="sale_id.name",
         string="Nombre",
         tracking=True
     )
 
-    comprador_id= fields.Many2one(
+    comprador_id=fields.Many2one(
         "hr.employee",
+        related="sale_id.comprador_id",
         string="Comprador",
         tracking=True,
-        store=True,
-    )
-    
-    comprador=fields.Char(
-        string="Comprador",
-        tracking=True,
-        store=True,
+        company_dependent=True,
     )
 
+    # venta=fields.Char(
+    #     string="Venta",
+    #     tracking=True
+    # )
     
-    venta=fields.Char(
-        string="Venta",
-        tracking=True
-    )
-    
-    cliente=fields.Char(
+    # cliente=fields.Char(
         
-        string="Cliente",
-        tracking=True
-    )
+    #     string="Cliente",
+    #     tracking=True
+    # )    
+
     partner_name=fields.Char(
         related="sale_id.partner_id.name",
         string="Cliente",
@@ -75,6 +77,7 @@ class ctrl_llantas(models.Model):
         string="Orden de compra",
         tracking=True
     )
+    
     guia=fields.Char(
         string="No. Guia",
         tracking=True
@@ -100,25 +103,39 @@ class ctrl_llantas(models.Model):
         tracking=True
     )
     
+    
     factura_cliente=fields.Char(
         string="Factura cliente",
         tracking=True
     )
-    status = fields.Many2one(
-        'llantas_config.status', 
+    
+    # status = fields.Many2one(
+    #     'llantas_config.status', 
+    #     string="Status",
+    # )
+
+    status = fields.Selection([
+        ('01','Pendiente'),
+        ('02','Debito en curso'),
+        ('03','Traspaso'),
+        ('04','Guia pendiente'),
+        ('05','Enviado'),
+        ('06','Entregado'),
+        ('07','Cerrado'),
+        ('08','Incidencia'),
+        ('09','Devolución'),],
+        related="sale_id.ventas_status",
         string="Status",
-    tracking=True
     )
     
     fecha=fields.Datetime(
+        related="sale_id.fecha_venta",
         string="Fecha",    
         tracking=True,
-        readonly=True,
     )
     
     dias=fields.Integer(
         string="Dias",
-        # tracking=True
     )
 
     comentarios=fields.Char(
@@ -126,15 +143,32 @@ class ctrl_llantas(models.Model):
         tracking=True
     )
 
-    sale_id=fields.Many2one(
-        "sale.order",
-        string="Venta",
-        readonly=True,
-        store=True,
-    )
-
     orden_entrega=fields.Many2one(
         "stock.picking",
         string="Orden de entrega",
+    )
+
+    link_venta=fields.Char(
+        related="sale_id.link_venta",
+        string="Link venta",
+    )
+
+    no_venta=fields.Char(
+        related="sale_id.folio_venta",
+        string="No. Venta",
+    )
+
+    comision=fields.Float(
+        string="Comisión",
+    )
+
+    envio=fields.Float(
+        string="Envio",
+    )
+
+    company_id=fields.Many2one(
+        "res.company",
+        related="sale_id.company_id",
+        string="Empresa",
     )
     

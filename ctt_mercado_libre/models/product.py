@@ -270,7 +270,7 @@ class CTTMLProductTmplate(models.Model):
                 prod_attr_vals["value"] = attr["value_name"]
             elif not attr_id.has_values and attr_id.type == "number_unit":
                 prod_attr_vals["value"] = attr["value_struct"]["number"]
-                prod_attr_vals["unit_id"] = self.env["mercadolibre.units"].search([("name","=",attr["value_struct"]["unit"])]).id
+                prod_attr_vals["unit_id"] = self.env["mercadolibre.units"].search([("name","=",attr["value_struct"]["unit"])])[0].id
 
             attr_lines += self.env["product.category.attribute"].create(prod_attr_vals)
 

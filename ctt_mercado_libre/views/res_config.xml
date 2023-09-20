@@ -27,76 +27,41 @@
                 <xpath expr="//div[hasclass('settings')]" position="inside">
                     <div class="app_settings_block" data-string="Mercado Libre" string="Mercado Libre" data-key="ctt_mercado_libre">
                         <h2>Mercado Libre Login</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <span class="o_form_label">App settings</span>
-                                    <div class="content-group mt16">
-                                        <label for="mercado_libre_app_id" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_app_id" class="oe_inline"/>
-                                    </div>
+                        <div class="col-xs-12 row o_settings_container" id="mercado_libre_login">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="o_setting_right_pane border-start-0">
                                     <div class="content-group">
-                                        <label for="mercado_libre_client_secret" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_client_secret" class="oe_inline"/>
+                                        <div class="row mt4">
+                                            <label class="col-lg-3" for="mercado_libre_app_id"/>
+                                            <field name="mercado_libre_app_id"/>
+                                        </div>
+                                        <div class="row mt4">
+                                            <label class="col-lg-3" for="mercado_libre_client_secret"/>
+                                            <field name="mercado_libre_client_secret" password="True"/>
+                                        </div>
+                                        <div class="row mt4">
+                                            <label class="col-lg-3" for="mercado_libre_redirect_url"/>
+                                            <field name="mercado_libre_redirect_url"/>
+                                        </div>
+                                        <div class="row mt4">
+                                            <label class="col-lg-3" for="mercado_libre_token"/>
+                                            <field name="mercado_libre_token" password="True"/>
+                                        </div>
+                                        <div class="row mt4">
+                                            <label class="col-lg-3" string="Ultimo Login" for="mercado_libre_token_request_time"/>
+                                            <field name="mercado_libre_token_request_time" readonly="1"/>
+                                        </div>
+                                        <div class="row mt4">
+                                            <label class="col-lg-3" string="Expiración" for="mercado_libre_token_expires"/>
+                                            <field name="mercado_libre_token_expires" readonly="1"/>
+                                        </div>
+                                        <div class="mt4">
+                                            <button type="object" name="mercado_libre_get_token" string="Obtener Token" icon="fa-arrow-right" class="btn-link"/>
+                                        </div>
                                     </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_redirect_url" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_redirect_url" class="oe_inline"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_code" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_code" class="oe_inline"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_token" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_token" class="oe_inline"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_refresh_token" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_refresh_token" class="oe_inline"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_token_request_time" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_token_request_time" class="oe_inline"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_token_expires" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_token_expires" class="oe_inline"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_is_connect" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_is_connect" class="oe_inline" readonly="1"/>
-                                    </div>
-                                    <div class="content-group">
-                                        <label for="mercado_libre_token_valid" class="o_light_label mr8"/>
-                                        <field name="mercado_libre_token_valid" class="oe_inline" readonly="1"/>
-                                    </div>
-                                    <button type="object" name="mercado_libre_get_token" string="Get token" icon="fa-arrow-right" class="btn-link"/>
                                 </div>
                             </div>
                         </div>
-                        
-                        <h2>Configuración Básica</h2>
-                        <div class="row mt16 o_settings_container">
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_right_pane">
-                                    <label for="mercado_libre_site_id" class="o_light_label mr8"/>
-                                    <field name="mercado_libre_site_id" class="oe_inline"/>    
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_right_pane">
-                                    <label for="mercado_libre_currency_id" class="o_light_label mr8"/>
-                                    <field name="mercado_libre_currency_id" class="oe_inline"/> 
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_right_pane">
-                                </div>
-                            </div>
-                        </div>
-                        
                     </div>
                 </xpath>
             </field>

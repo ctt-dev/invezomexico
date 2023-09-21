@@ -99,7 +99,29 @@ class CTTMLProductTmplate(models.Model):
 
         return ml_cat_id
 
-        # return False
+    def reload_meli_attrs(self):
+        self.ensure_one()
+        if not self.meli_categ_id:
+            raise ValidationError("Debe de estar seleccionada una categoria de Mercado Libre")
+
+        self.meli_categ_attribute_ids.unlink()
+
+        required_attrs = self.env["mercadolibre.attribute"].search([("categ_id","=",self.meli_categ_id.id),("required","=",True)])
+
+        product_attrs = self.env["product.category.attribute"]
+        
+        for attr in required_attrs:
+            attr_line = self.env["product.category.attribute"].create({
+                "product_id": self.id,
+                "categ_id": self.meli_categ_id.id,
+                "attr_id": attr.id 
+            })
+
+            product_attrs += attr_line
+
+        self.write({
+            "meli_categ_attribute_ids": product_attrs.ids
+        })
     
     def predict_category(self):
         self.ensure_one()

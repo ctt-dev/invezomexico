@@ -75,7 +75,8 @@ class MercadoLibreCategory(models.Model):
                 for unit in categ_attr['allowed_units']:
                     attr_units.append(unit['id'])
                     if unit['id'] not in units_list:
-                        self.env["mercadolibre.units"].create({'name': unit["id"]})
+                        if not self.env["mercadolibre.units"].search([('name','=',unit["id"])]):     
+                            self.env["mercadolibre.units"].create({'name': unit["id"]})
                         units_list.append(unit['id'])
                 units_allowed = self.env["mercadolibre.units"].search([('name','in',attr_units)])
                 attribute.write({"unit_ids": units_allowed.ids})

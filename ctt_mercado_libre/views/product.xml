@@ -23,6 +23,11 @@
                                 string="Importar producto"
                                 class="oe_stat_button" 
                                 icon="fa-cloud-download"/>
+                            <button name="reload_meli_attrs" 
+                                type="object" 
+                                string="Reiniciar atributos"
+                                class="oe_stat_button" 
+                                icon="fa-repeat"/>
                         </div>
                         <separator string="Plantilla en Mercado Libre" colspan="1"/>
                         <group>

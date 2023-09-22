@@ -1,0 +1,5 @@
+<odoo>
+    <data>
+        <menuitem id="menu_marketplaces" name="Marketplaces" parent="stock.menu_stock_root" sequence="9"/>
+    </data>
+</odoo>

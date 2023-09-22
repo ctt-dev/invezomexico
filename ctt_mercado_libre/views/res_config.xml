@@ -45,7 +45,7 @@
                                         </div>
                                         <div class="row mt4">
                                             <label class="col-lg-3" for="mercado_libre_token"/>
-                                            <field name="mercado_libre_token" password="True"/>
+                                            <field name="mercado_libre_token" readonly="1" password="True"/>
                                         </div>
                                         <div class="row mt4">
                                             <label class="col-lg-3" string="Ultimo Login" for="mercado_libre_token_request_time"/>

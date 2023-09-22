@@ -159,11 +159,12 @@ class CTTMLProductTmplate(models.Model):
         for line in self.meli_categ_attribute_ids:
             data = {"id": line.attr_id.meli_id}
 
-            if line.attr_id.has_values:
-                data["value_name"] = line.value_id.name
-                data["value_id"] = line.value_id.meli_id
-            else:
-                data["value_name"] = line.value if line.attr_id.type == "string" else "%s %s" % (line.value, line.unit_id.name)
+            data["value_name"] = line.value
+            # if line.attr_id.has_values:
+            #     data["value_name"] = line.value_id.name
+            #     # data["value_id"] = line.value_id.meli_id
+            # else:
+            #     data["value_name"] = line.value if line.attr_id.type == "string" else "%s %s" % (line.value, line.unit_id.name)
             
             attributes.append(data)
         

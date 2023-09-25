@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="autofacturacion.list">
+      <field name="name">autofacturacion list</field>
+      <field name="model">autofacturacion.autofacturacion</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="autofacturacion.action_window">
+      <field name="name">autofacturacion window</field>
+      <field name="res_model">autofacturacion.autofacturacion</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="autofacturacion.action_server">
+      <field name="name">autofacturacion server</field>
+      <field name="model_id" ref="model_autofacturacion_autofacturacion"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="autofacturacion" id="autofacturacion.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="autofacturacion.menu_1" parent="autofacturacion.menu_root"/>
+    <menuitem name="Menu 2" id="autofacturacion.menu_2" parent="autofacturacion.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="autofacturacion.menu_1_list" parent="autofacturacion.menu_1"
+              action="autofacturacion.action_window"/>
+    <menuitem name="Server to list" id="autofacturacion" parent="autofacturacion.menu_2"
+              action="autofacturacion.action_server"/>
+-->
+  </data>
+</odoo>

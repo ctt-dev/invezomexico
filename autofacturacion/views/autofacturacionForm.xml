@@ -1,0 +1,51 @@
+<odoo>
+  <template id="portal_auto_invoices_form" name="Auto Invoices">
+      <t t-call="portal.portal_layout">
+            <t t-if="breadcrumbs_searchbar">
+                  <t t-call="portal.portal_breadcrumbs"/>
+              </t>
+          <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <div class="container mb64 col-md-12">
+          <form action="/" method="post" class="oe_login_form" style="max-width: 600px !important;">
+            <h3 class="page-header" style="text-align: center;">Autofacturador</h3>
+                <label class="control-label" for="razon_social">Nombre o Razon Social*</label>
+                <input type="text" required="" name="razon_social" id="razon_social" placeholder="NOMBRE NOMBRE APELLIDO APELLIDO" class="form-control"/>
+                <label class="control-label" for="rfc">introduce tu RFC*</label>
+                <input type="text" required="" name="rfc" id="rfc" placeholder="e.g. ABCD990715T1b" class="form-control"/>
+                <label class="control-label" for="email">Correo Electronico*</label>
+                <input type="email" required="" name="email" id="email" placeholder="micorreo@dominio.com" class="form-control"/>
+                <label class="control-label" for="zip">Codigo Postal*</label>
+                <input id="zip" name="zip" type="text" inputmode="numeric" placeholder="81850" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)" class="form-control"/>
+                <label class="control-label" for="forma_pago">Forma de Pago</label>
+                <div class="custom-select">
+                  <select class="form-control" id = "forma_pago">
+                    <option value="0">SELECCIONA FORMA PAGO:</option>
+                    <option value="1">EFECTIVO</option>
+                    <option value="2">CREDITO</option>
+                  </select>
+                </div>
+               <label class="control-label" for="cfdi">Uso del CFDI</label>
+                <div class="custom-select">
+                  <select class="form-select" id = "cfdi">
+                    <option value="0">SELECCIONA CFDI:</option>
+                    <option value="1">HONORARIOS MEDICOS</option>
+                    <option value="2">ESCOLAR</option>
+                  </select>
+                </div>
+              <label class="control-label" for="regimen">Regimen Fiscal</label>
+                <div class="custom-select">
+                  <select class="form-select" id = "regimen">
+                    <option value="0">SELECCIONA REGIMEN:</option>
+                    <option value="1">Salarios y Otros</option>
+                    <option value="2">Patron</option>
+                  </select>
+                </div>
+              <div class="clearfix" style="text-align : center;">
+                  <br/>
+                <button type="submit" align="center" class="btn btn-primary">Enviar</button>
+              </div>
+          </form>
+      </div>
+      </t>
+  </template>
+  </odoo>

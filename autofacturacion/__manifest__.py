@@ -28,6 +28,8 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/autofacturacion.xml',
+        'views/autofacturacionForm.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

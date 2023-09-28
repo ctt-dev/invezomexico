@@ -71,46 +71,61 @@ class marketplaces(models.Model):
     _order = 'id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
+    def name_get(self):
+        res = super(marketplaces, self).name_get()
+        data = []
+        for e in self:
+            display_value = ''
+            display_value += str(e.name)
+            display_value += ' ('
+            display_value += str(e.company_id.name) or ""
+            display_value += ')'
+            data.append((e.id, display_value))
+        return data
+
     name = fields.Char(
         string="Nombre",
-        company_dependent=True,
     )
     
     url= fields.Char(
         string="Url marketplace",
-        company_dependent=True,
     )
 
     mostrar_comision=fields.Boolean(
         string="Mostrar comisión?",
         default="1",
-        company_dependent=True,
     )
     
     mostrar_envio=fields.Boolean(
         string="Mostrar envio?",
         default="1",
-        company_dependent=True,
     )
 
     category_id=fields.Many2one(
         "res.partner.category",
         string="Categoria contacto",
-        company_dependent=True,
         
     )
 
     diarios_id=fields.Many2one(
         "account.journal",
         string="Diario de facturación",
-        company_dependent=True,
     )
     
     color = fields.Integer(
         string="Color",
-        company_dependent=True,
     )
 
+    company_id=fields.Many2one(
+        "res.company",
+        string="Empresa",
+    )
+
+    @api.model
+    def create(self, values):
+        values['company_id'] = self.env.company.id
+        return super(marketplaces, self).create(values)
+    
     # def process_link(self):
     #     url = urllib.request.urlopen(self.url) 
     #     data = json.loads(url.read().decode()) 

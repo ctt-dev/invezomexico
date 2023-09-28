@@ -13,11 +13,10 @@ class sale_order_inherit(models.Model):
     marketplace = fields.Many2one(
         "llantas_config.marketplaces",
         string="Marketplace",
-        required=True,
         tracking=True,
         company_dependent=True,
     )
-
+    
     comision=fields.Monetary(
         string="Comisión",
         tracking=True,
@@ -35,11 +34,16 @@ class sale_order_inherit(models.Model):
         store=True,
     )
 
+    _sql_constraints = [
+        ('folio_venta', 'unique(folio_venta)', "Ya existe una venta con este folio. El folio de la venta debe ser único."),
+    ]
+    
     folio_venta=fields.Char(
         string="No. Venta",
         tracking=True,
         store=True,
     )
+    
 
     link_venta=fields.Char(
         string="Link de venta",

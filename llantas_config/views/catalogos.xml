@@ -148,11 +148,11 @@
             <field name="target">current</field>
         </record>
         
-        <menuitem id="llantas_almacen_menu" 
+        <!-- <menuitem id="llantas_almacen_menu" 
                   name="Almacenes" 
                   action="llantas_almacen"
                   parent="menu_ctt_llantas_catalogos_list" 
-                  sequence="2" />
+                  sequence="2" /> -->
 
     <record id="tree_view_marketplaces" model="ir.ui.view">
             <field name="name">tree.marketplace</field>

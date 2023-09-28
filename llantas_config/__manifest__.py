@@ -36,7 +36,7 @@
         'purchase',
         'website_sale',
         'mrp',
-
+        'delivery',
     ],
 
     # always loaded

@@ -8,3 +8,4 @@ from . import proveedores
 from . import sales
 from . import marketplaces
 from . import stock
+from . import tablero_detallado

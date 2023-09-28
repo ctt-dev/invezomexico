@@ -80,7 +80,7 @@
                   parent="llantas_config.llantas_config_catalogos" 
                   sequence="3" />
 
-        <record id="tree_view_status" model="ir.ui.view">
+        <!-- <record id="tree_view_status" model="ir.ui.view">
             <field name="name">tree.status</field>
             <field name="model">llantas_config.status</field>
             <field name="arch" type="xml">
@@ -102,7 +102,7 @@
                   name="Status" 
                   action="llantas_status"
                   parent="menu_ctt_llantas_catalogos_list" 
-                  sequence="1" />
+                  sequence="1" /> -->
 
         <record id="tree_view_almacen" model="ir.ui.view">
             <field name="name">tree.almacen</field>

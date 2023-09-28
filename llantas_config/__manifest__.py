@@ -52,6 +52,7 @@
         'views/sales.xml',
         'views/marketplaces.xml',
         'views/stock.xml',
+        'views/tablero_detallado.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

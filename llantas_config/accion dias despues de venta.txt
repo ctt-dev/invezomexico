@@ -1,0 +1,8 @@
+if records:
+  for rec in records:
+    fecha_venta = rec.fecha  # Formato: año, mes, día
+    fecha_actual = datetime.datetime.now()
+    diferencia= fecha_actual - fecha_venta
+    rec.write({
+      'dias':diferencia.days
+      })

@@ -15,6 +15,7 @@ class sale_order_inherit(models.Model):
         string="Marketplace",
         required=True,
         tracking=True,
+        company_dependent=True,
     )
 
     comision=fields.Monetary(
@@ -31,22 +32,26 @@ class sale_order_inherit(models.Model):
         string="Comprador",
         tracking=True,
         company_dependent=True,
+        store=True,
     )
 
     folio_venta=fields.Char(
         string="No. Venta",
         tracking=True,
+        store=True,
     )
 
     link_venta=fields.Char(
         string="Link de venta",
-        tracking=True
+        tracking=True,
+        store=True,
     )
 
     status_ventas=fields.Many2one(
         "llantas_config.status_ventas",
         string="Estatus",
         tracking=True,
+    
     )
 
     status_venta=fields.One2many(
@@ -54,6 +59,7 @@ class sale_order_inherit(models.Model):
         "name",
         string="Estatus",
         tracking=True,
+
     )
 
     ventas_status = fields.Selection([
@@ -65,8 +71,11 @@ class sale_order_inherit(models.Model):
         ('06','Entregado'),
         ('07','Cerrado'),
         ('08','Incidencia'),
-        ('09','Devolución'),
-    ], string="Estado de la venta", default='01', tracking=True, store=True)
+        ('09','Devolución'),], 
+        string="Estado de la venta", 
+        default='01', 
+        tracking=True, 
+        store=True)
 
     lineas_orden = fields.Many2one(
         "sale.order.line",
@@ -77,6 +86,7 @@ class sale_order_inherit(models.Model):
         string="Fecha venta",
         default=fields.Datetime.now,
         tracking=True,
+        store=True
     )
 
     mostrar_comision=fields.Boolean(
@@ -86,6 +96,8 @@ class sale_order_inherit(models.Model):
     mostrar_envio=fields.Boolean(
         related="marketplace.mostrar_envio",
     )
+
+    
 
     def action_confirm(self):
         res = super(sale_order_inherit, self).action_confirm()

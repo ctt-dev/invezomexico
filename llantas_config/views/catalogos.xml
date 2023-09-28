@@ -165,6 +165,7 @@
                     <field name="mostrar_envio"/>
                     <field name="category_id" widget="many2one_tags"/>
                     <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
+                    <field name="company_id" invisible="1"/>
                     <field name="color" widget="color_picker" required="0"/>
                 </tree>
             </field>
@@ -187,7 +188,8 @@
                                 <field name="mostrar_comision" />
                                 <field name="mostrar_envio"/>
                                 <field name="category_id" readonly="0"/>
-                                <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>/>
+                                <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
+                                <field name="company_id" />
                                 <field name="color" widget="color_picker" required="0"/>
                             </group>
                             

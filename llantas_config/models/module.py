@@ -285,6 +285,7 @@ class ctrl_llantas(models.Model):
             record = super(ctrl_llantas, rec).write(values)
         return self
 
+
     productos_orden=fields.Many2one(
         "sale.order.line",
         string="Líneas de la orden",

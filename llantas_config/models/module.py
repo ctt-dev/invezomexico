@@ -21,15 +21,22 @@ class ctrl_llantas(models.Model):
     name=fields.Char(
         related="sale_id.name",
         string="Nombre",
-        tracking=True
+        tracking=True,
+        store=True,
     )
 
     comprador_id=fields.Many2one(
         "hr.employee",
         related="sale_id.comprador_id",
         string="Comprador",
-        tracking=True,
         company_dependent=True,
+        store=True,
+    )
+
+    comprador=fields.Char(
+        related="comprador_id.name",
+        string="Comprador",
+        store=True,
     )
 
     # venta=fields.Char(
@@ -57,45 +64,47 @@ class ctrl_llantas(models.Model):
     )
 
     
-    proveedor=fields.Char(
-        string="Proveedor",
-        tracking=True
-    )
+    # @api.onchange("sale_id")
+    # def onchange_sale_id(self):
+    #     for rec in self:
+    #         rec.proveedor_id = rec.sale_id._get_purchase_orders().partner_id
     proveedor_id=fields.Many2one(
         "res.partner",
         string="Proveedor",
-        tracking=True,
-        store=True,
+        # compute=compute_proveedor_id,
+        # store=True,
     )
-    
+   
+    # proveedor=fields.Char(
+    #     string="Proveedor",
+    #     store=True,
+    #     related="proveedor_id.name",
+        
+    # )
     # registro=fields.Boolean(
     #     string="Registro",
     #     tracking=True
         
     # )
-    orden_compra=fields.Char(
+    def compute_orden_compra(self):
+        for rec in self:
+            rec.orden_compra = rec.sale_id._get_purchase_orders().id
+    orden_compra=fields.Many2one(
+        "purchase.order",
+        compute=compute_orden_compra,
         string="Orden de compra",
-        tracking=True
+        # store=True,
     )
+
     
-    guia=fields.Char(
-        string="No. Guia",
-        tracking=True
-        
-    )
-    no_recoleccion=fields.Char(
-        string="No. Recoleccion",  
-        tracking=True
-    )
-    
-    # status_enviado=fields.Boolean(
-    #     string="Status",
-    #     tracking=True
-    # )
-    
-    factura_prov=fields.Char(
+
+    def compute_factura_prov(self):
+        for rec in self:
+            rec.factura_prov = rec.sale_id._get_purchase_orders().invoice_ids
+    factura_prov=fields.Many2one(
+        "account.move",
         string="Factura proveedor",
-        tracking=True
+        compute=compute_factura_prov
     )
     
     num_cliente=fields.Char(
@@ -103,18 +112,27 @@ class ctrl_llantas(models.Model):
         tracking=True
     )
     
-    
     factura_cliente=fields.Char(
+        related="sale_id.invoice_ids.name",
         string="Factura cliente",
-        tracking=True
+        # tracking=True
     )
+
+    
+    
+    # factura_cliente2=fields.Char(
+    #     # "account.move",
+    #     related="sale_id.invoice_ids"
+    #     string="Factura cliente",
+    #     # tracking=True
+    # )
     
     # status = fields.Many2one(
     #     'llantas_config.status', 
     #     string="Status",
     # )
 
-    status = fields.Selection([
+    status_id = fields.Selection([
         ('01','Pendiente'),
         ('02','Debito en curso'),
         ('03','Traspaso'),
@@ -126,16 +144,17 @@ class ctrl_llantas(models.Model):
         ('09','Devolución'),],
         related="sale_id.ventas_status",
         string="Status",
+        store=True                                
     )
     
     fecha=fields.Datetime(
-        related="sale_id.fecha_venta",
-        string="Fecha",    
-        tracking=True,
+        string="Fecha",
+        store=True
     )
     
     dias=fields.Integer(
         string="Dias",
+        store=True,
     )
 
     comentarios=fields.Char(
@@ -143,14 +162,84 @@ class ctrl_llantas(models.Model):
         tracking=True
     )
 
-    orden_entrega=fields.Many2one(
+    orden_entrega=fields.One2many(
         "stock.picking",
-        string="Orden de entrega",
+        "carrier_tracking_ref",
+        string="No. Guia",
+        related="sale_id.picking_ids",
+        # store=True,
     )
+
+    @api.depends('orden_entrega','orden_entrega.carrier_tracking_ref')
+    def compute_guias(self):
+        for rec in self:
+            guias = ""
+            for orden in rec.orden_entrega:
+                guias += str(orden.carrier_tracking_ref) + ", "
+            guias = guias[:-2]
+            rec.guias = guias
+    guias = fields.Char(
+        string="Guías",
+        compute=compute_guias,
+        # store=True
+    )
+
+    @api.depends('orden_entrega','orden_entrega.carrier_tracking_ref')
+    def compute_detailed_info(self):
+        for rec in self:
+            detailed_info = ""
+            detailed_info += "<table class='table'>"
+            detailed_info += "<tr>"
+            detailed_info += "<th>Entrega</th>"
+            detailed_info += "<th>Carrier</th>"
+            detailed_info += "<th>Guía</th>"
+            detailed_info += "</tr>"
+            for orden in rec.orden_entrega:
+                detailed_info += "<tr>"
+                detailed_info += "<td>"+str(orden.display_name)+"</td>"
+                detailed_info += "<td>"+str(orden.carrier.display_name)+"</td>"
+                detailed_info += "<td>"+str(orden.carrier_tracking_ref)+"</td>"
+            detailed_info += "</tr>"
+            detailed_info += "</table>"
+                # detailed_info += str(orden.display_name) + "<table><tr><td>Carrier:</td><td>" + str(orden.carrier.display_name) + "</td></tr><tr><td>Rastreo: </td><td>" + str(orden.carrier_tracking_ref) + "</td></tr></table>"
+            # detailed_info = detailed_info[:-2]
+            rec.detailed_info = detailed_info
+    detailed_info = fields.Html(
+        string="Información detallada",
+        compute=compute_detailed_info,
+        # store=True
+    )
+
+    carrier = fields.Many2one(
+        "llantas_config.carrier",
+        string="Carrier",
+        store=True,
+        # related="orden_entrega.carrier",
+        # store=True
+    )
+
+    def compute_no_recoleccion(self):
+        for rec in self:
+            rec.no_recoleccion = rec.sale_id._get_purchase_orders().picking_ids.no_recoleccion
+    no_recoleccion=fields.Char(
+        compute=compute_no_recoleccion,
+        string="No. Recoleccion",
+    )
+    # no_recoleccion=fields.Char(
+    #     string="No. Recoleccion", 
+    #     related="sale_id.picking_ids.no_recoleccion",
+    # )
+
+    # carrier_id=fields.Many2one(
+    #     "llantas_config.carrier",
+    #     related=""
+    #     string="Carrier",
+    # )
 
     link_venta=fields.Char(
         related="sale_id.link_venta",
         string="Link venta",
+        store=True,
     )
 
     no_venta=fields.Char(
@@ -170,5 +259,40 @@ class ctrl_llantas(models.Model):
         "res.company",
         related="sale_id.company_id",
         string="Empresa",
+        store=True,
+    )
+
+    def compute_tdp(self):
+        for rec in self:
+            rec.tdp = rec.sale_id._get_purchase_orders().partner_ref
+    tdp=fields.Char(
+        string="Referencia compra (TDP)",
+        compute=compute_tdp
     )
     
+    @api.model
+    def create(self, values):
+        if 'sale_id' in values:
+            sale_id = self.env['sale.order'].browse(values['sale_id'])
+            values['proveedor_id'] = sale_id._get_purchase_orders().partner_id
+        return super(ctrl_llantas, self).create(values)
+    
+    def write(self, values):
+        for rec in self:
+            if 'sale_id' in values:
+                sale_id = rec.env['sale.order'].browse(values['sale_id'])
+                values['proveedor_id'] = sale_id._get_purchase_orders().partner_id
+            record = super(ctrl_llantas, rec).write(values)
+        return self
+
+    productos_orden=fields.Many2one(
+        "sale.order.line",
+        string="Líneas de la orden",
+        related="sale_id.lineas_orden",
+        store=True,
+    )
+
+    producto=fields.Char(
+        related="productos_orden.product_id.name",
+        string="Producto",
+    )

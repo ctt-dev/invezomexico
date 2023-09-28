@@ -1,0 +1,60 @@
+<odoo>
+    <data>
+
+        <record id="ctt_llantas_action_detallada_list_form" model="ir.actions.act_window">
+            <field name="name">Vista detallada</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'create': True}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+        </record>
+        
+        <record id="view_llantas_tablero_detallado_tree" model="ir.ui.view">
+            <field name="name">Vista detallada</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <tree edit="0" sample="1">
+                    <!-- <field name="name" /> -->
+                    <field name="producto"/>
+                    <field name="comprador_id"/>
+                    <!--<field name="partner_name" />
+                    <field name="marketplace" />
+                    <field name="link_venta" optional="hide"/>
+                    <field name="no_venta" />
+                    <field name="fecha" /> -->
+                    <!-- <field name="producto"/> -->
+
+                    <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
+                    <field name="orden_compra" optional="hide"/>
+                    <field name="tdp" />
+                    <field name="detailed_info" widget="html" optional="hide"/>
+
+                    <field name="no_recoleccion" optional="hide"/>
+                    <field name="factura_prov" optional="hide"/>
+                    <field name="num_cliente" optional="hide"/>
+                    <field name="factura_cliente" optional="hide"/>
+                    <field name="status_id" />
+                    <field name="comentarios" optional="hide"/>
+                    <field name="dias" readonly="1"/>
+                    <field name="company_id" invisible="1"/> -->
+                </tree>
+            </field>
+        </record>    
+<!-- 
+       <menuitem id="llantas_tablero_detallado_menu_list" 
+                          name="Tablero detallado" 
+                          action="view_llantas_tablero_detallado_tree"
+                          parent="menu_ctt_llantas_tablero_detallado" 
+                          sequence="102" /> -->
+
+        <menuitem id="menu_ctt_llantas_tablero_detallado" name="Tablero detallado" parent="menu_ctt_llantas_reportes_list" sequence="8" action="ctt_llantas_action_detallada_list_form"/>
+        
+    </data>
+</odoo>

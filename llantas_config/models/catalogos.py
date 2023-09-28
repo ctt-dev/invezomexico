@@ -32,25 +32,25 @@ class medida_llanta(models.Model):
     name = fields.Char(string="Nombre",required=False)
     color = fields.Integer(string="Color",required=True)
 
-class status(models.Model):
-    _name = 'llantas_config.status'
-    _description = 'Status'
-    _order = 'id desc'
+# class status(models.Model):
+#     _name = 'llantas_config.status'
+#     _description = 'Status'
+#     _order = 'id desc'
     
-    name = fields.Char(
-        string="Nombre",
-        required=True,
-        tracking=True,
-    )
+#     name = fields.Char(
+#         string="Nombre",
+#         required=True,
+#         tracking=True,
+#     )
     
-    color = fields.Integer(
-        string="Color",
-        tracking=True,
-    )
-    description=fields.Char(
-        string="Descripción",
-        tracking=True,
-    )
+#     color = fields.Integer(
+#         string="Color",
+#         tracking=True,
+#     )
+#     description=fields.Char(
+#         string="Descripción",
+#         tracking=True,
+#     )
     
 class almacen(models.Model):
     _name = 'llantas_config.almacen'
@@ -73,25 +73,30 @@ class marketplaces(models.Model):
 
     name = fields.Char(
         string="Nombre",
+        company_dependent=True,
     )
     
     url= fields.Char(
         string="Url marketplace",
+        company_dependent=True,
     )
 
     mostrar_comision=fields.Boolean(
         string="Mostrar comisión?",
-        default="1"
+        default="1",
+        company_dependent=True,
     )
     
     mostrar_envio=fields.Boolean(
         string="Mostrar envio?",
-        default="1"
+        default="1",
+        company_dependent=True,
     )
 
     category_id=fields.Many2one(
         "res.partner.category",
         string="Categoria contacto",
+        company_dependent=True,
         
     )
 
@@ -103,6 +108,7 @@ class marketplaces(models.Model):
     
     color = fields.Integer(
         string="Color",
+        company_dependent=True,
     )
 
     # def process_link(self):

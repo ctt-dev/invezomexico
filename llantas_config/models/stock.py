@@ -21,3 +21,15 @@ class sale_order_inherit(models.Model):
         string="No. Venta",
         tracking=True,
     )
+
+    no_recoleccion=fields.Char(
+        string="No. Recoleccion",
+        tracking=True,
+    )
+
+    tdp=fields.Char(
+        string="Referencia de compra (TDP)",
+        related="purchase_id.partner_ref",
+    )
+
+    

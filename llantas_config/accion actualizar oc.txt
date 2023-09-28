@@ -1,0 +1,9 @@
+moves=env["llantas_config.ctt_llantas"].search([])
+if moves:
+  for mov in moves:
+    ordenes=env["purchase.order"].search([('id','=',mov.orden_compra.id)])
+    if ordenes:
+      for order in ordenes:
+        mov.write({
+          'proveedor_id': order.partner_id.id,
+          })

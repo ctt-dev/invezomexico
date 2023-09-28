@@ -9,19 +9,22 @@
                     <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
                     <field name="partner_name" />
                     <field name="marketplace" />
-                    <field name="link_venta" />
+                    <field name="link_venta" optional="hide"/>
                     <field name="no_venta" />
                     <field name="fecha" />
-                    <field name="comision" optional="hide"/>
-                    <field name="envio" optional="hide"/>
+                    <field name="productos_orden"/>
+                    <!-- <field name="comision" optional="hide"/>
+                    <field name="envio" optional="hide"/> -->
                     <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
                     <field name="orden_compra" optional="hide"/>
-                    <field name="guia" />
+                    <field name="tdp" />
+                    <field name="detailed_info" widget="html" optional="hide"/>
+                    <!-- <field name="guias" /> -->
                     <field name="no_recoleccion" optional="hide"/>
                     <field name="factura_prov" optional="hide"/>
                     <field name="num_cliente" optional="hide"/>
                     <field name="factura_cliente" optional="hide"/>
-                    <field name="status" />
+                    <field name="status_id" />
                     <field name="comentarios" optional="hide"/>
                     <field name="dias" readonly="1"/>
                     <field name="company_id" invisible="1"/>
@@ -54,26 +57,31 @@
                             <!-- <field name="marketplace_id"/> -->
                             <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/>
                             <field name="orden_compra" readonly="1"/>
+                            <field name="tdp" readonly="1"/>
                             
                         </group>
                         <group string="Informacion venta" >
                             <field name="no_venta" readonly="1"/>
-                            <field name="link_venta" readonly="1"/>
+                            <field name="link_venta" readonly="1" widget="url"/>
+                            <field name="num_cliente" readonly="1"/>
+                            <!-- <field name="comision" readonly="1"/>
+                            <field name="envio" readonly="1"/> -->
                             
-                            <field name="comision" readonly="1"/>
-                            <field name="envio" readonly="1"/>
-                            <field name="guia" readonly="1"/>
                             <field name="no_recoleccion" readonly="1"/>
                             <field name="factura_prov" readonly="1"/>
-                            <field name="num_cliente" readonly="1"/>
-                            <field name="factura_cliente" readonly="1"/>
+                            
+                            <field name="factura_cliente" readonly="1" widget="many2many_tags"/>
+                            <!-- <field name="factura_cliente2" readonly="1"/> -->
                             
                             
                         </group>
                         <group string="Informacion pedido" >
-                            <field name="orden_entrega" readonly="1"/>
-                            <field name="status"  readonly="1"/>
-                            <field name="fecha"  readonly="1"/>
+                            <!-- <field name="orden_entrega" readonly="1" widget="many2many_tags"/> -->
+                            <!-- <field name="carrier" />
+                            <field name="guias" readonly="1"/> -->
+                            <field name="detailed_info" readonly="1" widget="html"/>
+                            <field name="status_id" readonly="0"/>
+                            <field name="fecha" readonly="1"/>
                             <field name="dias" readonly="1"/>
                             
                         </group>
@@ -107,62 +115,33 @@
             
         </record>
 
-        
-
-        <!-- <record id="ctt_llantas_action_proveedor_list_tree" model="ir.actions.act_window">
-            <field name="name">Existencia proveedores</field>
-            <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">tree,form</field>
-            <field name="context">{'create': True}</field>
-            <field name="target">main</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_empty_folder">
-                    No hay registros
-                </p><p>
-                    Aqui aparecerán los registros de existencia de proveedores.
-                </p>
-            </field>
-        </record> -->
-        
-
-        
-        <!-- <record id="ctt_llantas_action_kiosk_mode" model="ir.actions.client">
-            <field name="name">Acceso a socios</field>
-            <field name="tag">ctt_llantas_kiosk_mode</field>
-            <field name="target">fullscreen</field>
-        </record>
-        
-        <record id="ctt_llantas_action_greeting_message" model="ir.actions.client">
-            <field name="name">Message</field>
-            <field name="tag">ctt_llantas_greeting_message</field>
-        </record> -->
-        
-        
         <record id="llantas_config_search" model="ir.ui.view">
             <field name="name">Buscar</field>
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
                <search string="Buscar">
+                   <field name="sale_id" string="Venta" filter_domain="['|',('sale_id', 'ilike', self),('no_venta', 'ilike', self)]"/>
                     <field name="partner_name" string="Cliente" filter_domain="[('partner_name', 'ilike', self)]"/>
-                        <field name="marketplace" string="Marketplace" filter_domain="[('marketplace', 'ilike', self)]"/>
-                        <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>
-                        <field name="status" string="Status" filter_domain="[('status', 'ilike', self)]"/>
-                        <field name="proveedor_id" string="Proveedor" filter_domain="[('proveedor_id', 'ilike', self)]"/>
+                    <field name="marketplace" string="Marketplace" filter_domain="[('marketplace', 'ilike', self)]"/>
+                    <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>
+                    <field name="status_id" string="Status" filter_domain="[('status_id', 'ilike', self)]"/>
+                    <field name="proveedor_id" string="Proveedor" />
+                    <field name="tdp" filter_domain="[('tdp', 'ilike', self)]"/>
 
-                       <filter string="Status pendiente" name="status" domain="[('status', '=', 'Pendiente')]"/>
-                       <!-- <filter name="fecha" string="Fecha" /> -->
-                   
-                        <separator/>
-                       <group expand="0" string="Group By">
-                        <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
-                        <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/>
-                        <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
-                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'status'}"/>
-                        <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
-                        <filter string="Order Date" name="fecha" domain="[]" context="{'group_by': 'fecha'}"/>
-                           
-                           
-                        </group>
+                   <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>
+                   <filter name="fecha" string="Fecha" date="fecha"/>
+               
+                    <separator/>
+                   <group expand="0" string="Group By">
+                    <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
+                    <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/>
+                    <filter string="Comprador" name="comprador" domain="[]" context="{'group_by': 'comprador'}"/>
+                    <filter string="Status" name="status_id" domain="[]" context="{'group_by': 'status_id'}"/>
+                    <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
+                    <filter string="Order Date" name="fecha" domain="[]" context="{'group_by': 'fecha'}"/>
+                       
+                       
+                    </group>
                        
                 </search>
             </field>
@@ -175,8 +154,9 @@
         <menuitem id="menu_ctt_llantas_root" name="Tablero de control" web_icon="llantas_config,static/description/ctt.png" groups=""/>
         <menuitem id="menu_ctt_llantas_ctrl_list" name="Operaciones" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
-        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="3" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="4" action="ctt_llantas_action_ctrl_llantas_tree"/>
         <menuitem id="menu_ctt_llantas_marketplace_list" name="Proveedores" parent="menu_ctt_llantas_root" sequence="2" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_reportes_list" name="Reportes" parent="menu_ctt_llantas_root" sequence="3" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
         <!-- <menuitem id="menu_ctt_country_kiosk_no_user_mode" name="Modo Kiosko" parent="menu_ctt_country_root" sequence="2" action="ctt_country_action_kiosk_mode"/> -->
 

@@ -21,6 +21,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet//group//group[2]//field[@name='origin']" position="after">
                     <field name="no_venta" readonly="1"/>
+                    <field name="no_recoleccion" attrs="{'invisible': [('picking_type_code', '!=', 'incoming')]}" />
                 </xpath>
                
             </field>
@@ -34,6 +35,7 @@
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="no_venta" readonly="1"/>
                     <field name="carrier"/>
+                    <field name="tdp" optional="show"/>
                 </xpath>
                
             </field>
@@ -46,9 +48,11 @@
             <field name="arch" type="xml">
                 <xpath expr="//search//field[@name='name']" position="replace">
                     <field name="name" string="Referencia / no. venta" filter_domain="['|', '|', ('name', 'ilike', self), ('origin', 'ilike', self), ('no_venta', 'ilike', self)]"/>
+                    <field name="tdp" string="Referencia proveedor (TDP)" filter_domain="[('tdp', 'ilike', self)]"/>
                 </xpath>
                 <xpath expr="//search//group//filter[@name='status']" position="after">
                     <filter string="Carrier" name="carrier" domain="[]" context="{'group_by': 'carrier'}"/>
+                    <filter string="Proveedor" name="partner_id" domain="[]" context="{'group_by': 'partner_id'}"/>
                 </xpath>
                
             </field>

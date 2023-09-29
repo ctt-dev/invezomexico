@@ -6,8 +6,10 @@
               </t>
           <t t-set="breadcrumbs_searchbar" t-value="True"/>
         <div class="container mb64 col-md-12">
-          <form action="/" method="post" class="oe_login_form" style="max-width: 600px !important;">
-            <h3 class="page-header" style="text-align: center;">Autofacturador</h3>
+          <form action="/my/posorders/autofacturador/facturar" class="oe_login_form" style="max-width: 600px !important;">
+            <h3 class="page-header" style="text-align: center;">Autofacturadors</h3>
+                      <t t-log="pagos"/>
+            <input  type="hidden" name="order_id" id="order_id" t-att-value = "order_id" placeholder="" class="form-control"/>
                 <label class="control-label" for="razon_social">Nombre o Razon Social*</label>
                 <input type="text" required="" name="razon_social" id="razon_social" placeholder="NOMBRE NOMBRE APELLIDO APELLIDO" class="form-control"/>
                 <label class="control-label" for="rfc">introduce tu RFC*</label>
@@ -18,26 +20,71 @@
                 <input id="zip" name="zip" type="text" inputmode="numeric" placeholder="81850" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)" class="form-control"/>
                 <label class="control-label" for="forma_pago">Forma de Pago</label>
                 <div class="custom-select">
-                  <select class="form-control" id = "forma_pago">
+                  <select class="form-select" name = "forma_pago" id = "forma_pago">
                     <option value="0">SELECCIONA FORMA PAGO:</option>
-                    <option value="1">EFECTIVO</option>
-                    <option value="2">CREDITO</option>
+                  <t t-foreach="pagos" t-as="pago" t-key="pago.id" t-att-value="pago.id">
+                        <option t-att-value="pago.id"><t t-log="pago"/>
+                            <t t-esc="pago.name" />
+                        </option>
+                    </t>
                   </select>
                 </div>
                <label class="control-label" for="cfdi">Uso del CFDI</label>
                 <div class="custom-select">
-                  <select class="form-select" id = "cfdi">
+                  <select class="form-select" name = "cfdi" id = "cfdi">
                     <option value="0">SELECCIONA CFDI:</option>
-                    <option value="1">HONORARIOS MEDICOS</option>
-                    <option value="2">ESCOLAR</option>
+                    <option value="G01">Adquisición de mercancías</option>
+                    <option value="G02">Devoluciones, descuentos o bonificaciones</option>
+                    <option value="G03">Gastos en general</option>
+                    <option value="I01">Construcciones</option>
+                    <option value="I02">Mobilario y equipo de oficina por inversiones</option>
+                    <option value="I03">Equipo de transporte</option>
+                    <option value="I04">Equipo de cómputo y accesorios</option>
+                    <option value="I05">Dados, troqueles, moldes, matrices y herramental</option>
+                    <option value="I06">Comunicaciones telefónicas</option>
+                    <option value="I07">Comunicaciones satelitales</option>
+                    <option value="I08">Otra maquinaria y equipo</option>
+                    <option value="D01">Honorarios médicos, dentales y gastos hospitalarios.</option>
+                    <option value="D02">Gastos médicos por incapacidad o discapacidad</option>
+                    <option value="D03">Gastos funerales</option>
+                    <option value="D04">Donativos</option>
+                    <option value="D05">Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación)</option>
+                    <option value="D06">Aportaciones voluntarias al SAR</option>
+                    <option value="D07">Primas por seguros de gastos médicos</option>
+                    <option value="D08">Gastos de transportación escolar obligatoria</option>
+                    <option value="D09">Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones.</option>
+                    <option value="D10">Pagos por servicios educativos (colegiaturas)</option>
+                    <option value="P01">To define (CFDI 3.3 only)</option>
+                    <option value="S01">Sin efectos fiscales</option>
                   </select>
                 </div>
               <label class="control-label" for="regimen">Regimen Fiscal</label>
                 <div class="custom-select">
-                  <select class="form-select" id = "regimen">
+                  <select class="form-select" name = "regimen" id = "regimen">
                     <option value="0">SELECCIONA REGIMEN:</option>
-                    <option value="1">Salarios y Otros</option>
-                    <option value="2">Patron</option>
+                    <option value="601">General de Ley Personas Morales</option>
+                    <option value="603">Personas Morales con Fines no Lucrativos</option>
+                    <option value="605">Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                    <option value="606">Arrendamiento</option>
+                    <option value="607">Régimen de Enajenación o Adquisición de Bienes</option>
+                    <option value="608">Demás ingresos</option>
+                    <option value="609">Consolidación</option>
+                    <option value="610">Residentes en el Extranjero sin Establecimiento Permanente en México</option>
+                    <option value="611">Ingresos por Dividendos (socios y accionistas)</option>
+                    <option value="612">Personas Físicas con Actividades Empresariales y Profesionales</option>
+                    <option value="614">Ingresos por intereses</option>
+                    <option value="615">Régimen de los ingresos por obtención de premios</option>
+                    <option value="616">Sin obligaciones fiscales</option>
+                    <option value="620">Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option>
+                    <option value="621">Incorporación Fiscal</option>
+                    <option value="622">Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+                    <option value="623">Opcional para Grupos de Sociedades</option>
+                    <option value="624">Coordinados</option>
+                    <option value="625">Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+                    <option value="626">Régimen Simplificado de Confianza - RESICO</option>
+                    <option value="628">Hidrocarburos</option>
+                    <option value="629">De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales</option>
+                    <option value="630">Enajenación de acciones en bolsa de valores</option>  
                   </select>
                 </div>
               <div class="clearfix" style="text-align : center;">

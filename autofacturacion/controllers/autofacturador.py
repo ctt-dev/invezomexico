@@ -48,20 +48,55 @@ class autofacturador(CustomerPortal):
 
     @http.route(['/my/posorders/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True)
     def portal_my_factura_form(self, order_id, cantidad, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("FORM")
-        _logger.warning(order_id)
-        _logger.warning(cantidad)
         values = {}
+        _logger.warning("FORM")
         try:
+            pagos = request.env['l10n_mx_edi.payment.method'].search([])
+            _logger.warning(pagos)
             factura = request.env['sale.order'].search([('folio_venta', '=', order_id), ('amount_total', '=', cantidad)])
             if(factura):
                 values = {
                     'order_id' : order_id,
                     'cantidad' : cantidad,
+                    'pagos' : pagos
                 }
                 return request.render("autofacturacion.portal_auto_invoices_form", values)
             else:
                 return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
+        except (AccessError, MissingError):
+            return request.redirect('/my/posorders/autofacturador/'+str(order_id))
+
+    @http.route(['/my/posorders/autofacturador/facturar'], type='http', auth="public", website=True)
+    def portal_my_factura_creacion(self, order_id, razon_social, rfc, email, zip, forma_pago, cfdi, regimen, access_token=None, report_type=None, download=False, **kw):
+        _logger.warning("facturar")
+        _logger.warning(order_id)
+        _logger.warning(razon_social)
+        _logger.warning(rfc)
+        _logger.warning(email)
+        _logger.warning(forma_pago)
+        _logger.warning(cfdi)
+        _logger.warning(regimen)
+        values = {}
+        try:
+            factura = request.env['sale.order'].search([('folio_venta', '=', order_id)])
+            # cliente = request.env['res.partner'].search([('rfc', '=', rfc)])
+            # if cliente :
+            #     # Asigna valores al cliente
+            # else :
+                #Crea cliente
+            
+        #     invoice_vals = super()._prepare_invoice()
+        # if self.l10n_in_journal_id:
+        #     invoice_vals.update({'journal_id': self.l10n_in_journal_id.id})
+        # return invoice_vals
+            # if(factura):
+            #     values = {
+            #         'order_id' : order_id,
+            #         'cantidad' : cantidad,
+            #     }
+            #     return request.render("autofacturacion.portal_auto_invoices_form", values)
+            # else:
+            return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
             # document_sudo = document.with_user(SUPERUSER_ID).exists()
             # if not document_sudo:
             #     raise MissingError(_("This document does not exist."))

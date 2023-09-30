@@ -24,6 +24,13 @@ class sale_inherit(models.Model):
         })
         return invoice_vals
 
+    def _nothing_to_invoice_error_message_portal(self):
+        return _(
+            "¡No hay nada que facturar!\n\n"
+            "Las razones de este comportamiento podrían ser:\n"
+            "- Deben entregar tus productos antes de facturarlos.\n"
+        )
+
     def _create_invoices_portal(self, cfdi, forma_pago, grouped=False, final=False, date=None):
         """ Create invoice(s) for the given Sales Order(s).
 
@@ -78,7 +85,7 @@ class sale_inherit(models.Model):
             invoice_vals_list.append(invoice_vals)
 
         if not invoice_vals_list and self._context.get('raise_if_nothing_to_invoice', True):
-            raise UserError(self._nothing_to_invoice_error_message())
+            raise UserError(self._nothing_to_invoice_error_message_portal())
 
         # 2) Manage 'grouped' parameter: group by (partner_id, currency_id).
         if not grouped:
@@ -153,6 +160,7 @@ class sale_inherit(models.Model):
                 'mail.message_origin_link',
                 values={'self': move, 'origin': move.line_ids.sale_line_ids.order_id},
                 subtype_id=self.env['ir.model.data']._xmlid_to_res_id('mail.mt_note'))
+        moves.action_post()
         return moves
 
 class sale_advance_payment_inherit(models.TransientModel):
@@ -162,12 +170,17 @@ class sale_advance_payment_inherit(models.TransientModel):
     def create_invoices_portal(self, open_invoices, forma_pago, cfdi):
         _logger.warning("PORTAL")
         _logger.warning(open_invoices)
-        _logger.warning(cfdi)
-        _logger.warning(forma_pago)
-        _logger.warning(self.sale_order_ids)
-        self._create_invoices_portal(self.sale_order_ids, cfdi, forma_pago)
+        _logger.warning(self.sale_order_ids.partner_id)
+        if(not self.sale_order_ids.invoice_ids):
+            moves = self._create_invoices_portal(self.sale_order_ids, cfdi, forma_pago)
+            _logger.warning("CREA INVOICE")
+        else:
+            _logger.warning("YA EXISTE FACTURA")
+            moves = self.sale_order_ids.invoice_ids
+            if(not (moves.state == 'posted')):
+                moves.action_post()
         if open_invoices:
-            return self.sale_order_ids.action_view_invoice()
+            return moves
 
         return {'type': 'ir.actions.act_window_close'}
 

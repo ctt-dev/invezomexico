@@ -77,26 +77,35 @@ class autofacturador(CustomerPortal):
         _logger.warning(cfdi)
         _logger.warning(regimen)
         values = {}
+        order_ids = []
         try:
-            factura = request.env['sale.order'].search([('folio_venta', '=', order_id)])
-            # cliente = request.env['res.partner'].search([('rfc', '=', rfc)])
-            # if cliente :
-            #     # Asigna valores al cliente
-            # else :
-                #Crea cliente
+            factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
+            cliente = request.env['res.partner'].sudo().search([('vat', '=', rfc)])
+            if cliente :
+                _logger.warning("CLiente")
+                _logger.warning(cliente)
+                cliente.sudo().write({
+                    'name' : razon_social,
+                    'vat' : rfc,
+                    'zip' : zip,
+                    'l10n_mx_edi_fiscal_regime' : regimen
+                })
+            else :
+                _logger.warning("NUEVO CLIENTE")
+                cliente = request.env['res.partner'].sudo().create({
+                    'name' : razon_social,
+                    'vat' : rfc,
+                    'zip' : zip,
+                    'l10n_mx_edi_fiscal_regime' : regimen
+                })
+                _logger.warning(cliente)
+            _logger.warning(factura)
+            facturador = request.env['sale.advance.payment.inv'].sudo().create({
+                'sale_order_ids' : factura
+            })
+            facturador.create_invoices_portal(True, forma_pago, cfdi)
             
-        #     invoice_vals = super()._prepare_invoice()
-        # if self.l10n_in_journal_id:
-        #     invoice_vals.update({'journal_id': self.l10n_in_journal_id.id})
-        # return invoice_vals
-            # if(factura):
-            #     values = {
-            #         'order_id' : order_id,
-            #         'cantidad' : cantidad,
-            #     }
-            #     return request.render("autofacturacion.portal_auto_invoices_form", values)
-            # else:
-            return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
+            # return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
             # document_sudo = document.with_user(SUPERUSER_ID).exists()
             # if not document_sudo:
             #     raise MissingError(_("This document does not exist."))

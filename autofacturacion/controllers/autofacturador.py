@@ -100,10 +100,16 @@ class autofacturador(CustomerPortal):
                 })
                 _logger.warning(cliente)
             _logger.warning(factura)
+            factura.update({
+                    'partner_id' : cliente
+                })
             facturador = request.env['sale.advance.payment.inv'].sudo().create({
-                'sale_order_ids' : factura
+                'sale_order_ids' : factura,
             })
-            facturador.create_invoices_portal(True, forma_pago, cfdi)
+            invoice = facturador.create_invoices_portal(True, forma_pago, cfdi)
+            invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
+            return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
+
             
             # return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
             # document_sudo = document.with_user(SUPERUSER_ID).exists()

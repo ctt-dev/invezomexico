@@ -5,7 +5,7 @@ from odoo import http, _
 import logging
 from odoo.osv import expression
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from odoo.exceptions import AccessError, MissingError
+from odoo.exceptions import AccessError, MissingError, ValidationError
 from collections import OrderedDict
 from odoo.http import request
 _logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class autofacturador(CustomerPortal):
         return values
 
 
-    @http.route(['/my/posorders/autofacturador/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_search(self, order_id, access_token=None, report_type=None, download=False, **kw):
         _logger.warning("RUTAAA")
         _logger.warning(order_id)
@@ -34,7 +34,7 @@ class autofacturador(CustomerPortal):
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
 
-    @http.route(['/my/posorders/autofacturador/error/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/error/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_search_error(self, order_id,error, access_token=None, report_type=None, download=False, **kw):
         _logger.warning("RUTAAA")
         _logger.warning(order_id)
@@ -46,7 +46,7 @@ class autofacturador(CustomerPortal):
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
 
-    @http.route(['/my/posorders/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_form(self, order_id, cantidad, access_token=None, report_type=None, download=False, **kw):
         values = {}
         _logger.warning("FORM")
@@ -55,6 +55,8 @@ class autofacturador(CustomerPortal):
             _logger.warning(pagos)
             factura = request.env['sale.order'].search([('folio_venta', '=', order_id), ('amount_total', '=', cantidad)])
             if(factura):
+                if(not factura['state'] == 'sale'):
+                    raise ValidationError(_("La orden no ha sido confirmada"))
                 values = {
                     'order_id' : order_id,
                     'cantidad' : cantidad,
@@ -62,11 +64,15 @@ class autofacturador(CustomerPortal):
                 }
                 return request.render("autofacturacion.portal_auto_invoices_form", values)
             else:
-                return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
-        except (AccessError, MissingError):
-            return request.redirect('/my/posorders/autofacturador/'+str(order_id))
+                return request.redirect('/autofacturador/error/'+str(order_id)+'?error=1')
+        except (AccessError) as a:
+            _logger.warning(a)
+            return request.redirect('/autofacturador/'+str(order_id))
+        except (MissingError) as e:
+            _logger.warning(e)
+            return request.redirect('/autofacturador/'+str(order_id))
 
-    @http.route(['/my/posorders/autofacturador/facturar'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/facturar'], type='http', auth="public", website=True)
     def portal_my_factura_creacion(self, order_id, razon_social, rfc, email, zip, forma_pago, cfdi, regimen, access_token=None, report_type=None, download=False, **kw):
         _logger.warning("facturar")
         _logger.warning(order_id)
@@ -121,8 +127,12 @@ class autofacturador(CustomerPortal):
             # except AccessError:
             #     if not access_token or not document_sudo.access_token or not consteq(document_sudo.access_token, access_token):
             #         raise
-        except (AccessError, MissingError):
-            return request.redirect('/my/posorders/autofacturador/'+str(order_id))
+        except (AccessError) as a:
+            _logger.warning(a)
+            return request.redirect('/autofacturador/'+str(order_id))
+        except (MissingError) as e:
+            _logger.warning(e)
+            return request.redirect('/autofacturador/'+str(order_id))
         # _logger.warning("SAOKO")
         # _logger.warning(order_sudo)
 

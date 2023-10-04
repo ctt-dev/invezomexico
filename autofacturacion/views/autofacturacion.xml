@@ -22,7 +22,7 @@
               <input type="number" id="amount" step="any" required=""   name="amount" placeholder="ej. 840.35" class="form-control"/>
             </div>
             <div class="clearfix">
-                <a onclick="this.href='/my/posorders/autofacturador/formulario/'+document.getElementById('order').value+'?cantidad='+document.getElementById('amount').value"
+                <a onclick="this.href='/autofacturador/formulario/'+document.getElementById('order').value+'?cantidad='+document.getElementById('amount').value"
                             >
               <button type="button" class="btn btn-primary">Enviar</button>
                             </a>

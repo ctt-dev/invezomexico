@@ -6,7 +6,7 @@
               </t>
           <t t-set="breadcrumbs_searchbar" t-value="True"/>
         <div class="container mb64 col-md-12">
-          <form action="/my/posorders/autofacturador/facturar" class="oe_login_form" style="max-width: 600px !important;">
+          <form action="/autofacturador/facturar" class="oe_login_form" style="max-width: 600px !important;">
             <h3 class="page-header" style="text-align: center;">Autofacturadors</h3>
                       <t t-log="pagos"/>
             <input  type="hidden" name="order_id" id="order_id" t-att-value = "order_id" placeholder="" class="form-control"/>

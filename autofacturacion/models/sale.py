@@ -161,6 +161,14 @@ class sale_inherit(models.Model):
                 values={'self': move, 'origin': move.line_ids.sale_line_ids.order_id},
                 subtype_id=self.env['ir.model.data']._xmlid_to_res_id('mail.mt_note'))
         moves.action_post()
+        moves.action_process_edi_web_services()
+        try:
+            moves.action_retry_edi_documents_error()
+        except ValidationError as exc:
+            raise ValidationError(_(exc))
+        except UserError as excUser:
+            raise UserError(_(excUser))
+        
         return moves
 
 class sale_advance_payment_inherit(models.TransientModel):
@@ -179,6 +187,15 @@ class sale_advance_payment_inherit(models.TransientModel):
             moves = self.sale_order_ids.invoice_ids
             if(not (moves.state == 'posted')):
                 moves.action_post()
+            moves.action_process_edi_web_services()
+            try:
+                moves.action_retry_edi_documents_error()
+            except ValidationError as exc:
+                raise ValidationError(_(exc))
+            except UserError as excUser:
+                raise UserError(_(excUser))
+        
+        return moves
         if open_invoices:
             return moves
 

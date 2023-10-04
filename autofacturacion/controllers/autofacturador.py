@@ -51,9 +51,13 @@ class autofacturador(CustomerPortal):
         values = {}
         _logger.warning("FORM")
         try:
+            _logger.warning(request.env.user)
+            _logger.warning(request.env.company)
             pagos = request.env['l10n_mx_edi.payment.method'].search([])
             _logger.warning(pagos)
             factura = request.env['sale.order'].search([('folio_venta', '=', order_id), ('amount_total', '=', cantidad)])
+            _logger.warning(order_id)
+            _logger.warning(cantidad)
             if(factura):
                 if(not factura['state'] == 'sale'):
                     raise ValidationError(_("La orden no ha sido confirmada"))

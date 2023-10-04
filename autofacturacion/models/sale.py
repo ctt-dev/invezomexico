@@ -190,6 +190,7 @@ class sale_advance_payment_inherit(models.TransientModel):
             moves.action_process_edi_web_services()
             try:
                 moves.action_retry_edi_documents_error()
+                _logger.warning('timbrar')
             except ValidationError as exc:
                 raise ValidationError(_(exc))
             except UserError as excUser:

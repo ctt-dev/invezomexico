@@ -3,11 +3,13 @@
 
 from odoo import http, _
 import logging
+import base64
 from odoo.osv import expression
+import io
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError, ValidationError
 from collections import OrderedDict
-from odoo.http import request
+from odoo.http import request, content_disposition
 _logger = logging.getLogger(__name__)
 
 
@@ -45,6 +47,26 @@ class autofacturador(CustomerPortal):
             'error': error,
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
+
+    @http.route(['/autofacturador/xml_report/<model("account.edi.document"):wizard>'], type='http', auth="public", website=True, sitemap=False)
+    def portal__xml_report(self, wizard=None, access_token=None, report_type=None, download=False, **kw):
+         
+        response = request.make_response(
+                    None,
+                    headers=[
+                        ('Content-Type', 'application/vnd.ms-excel'),
+                        ('Content-Disposition', content_disposition('MX-Invoice-4.0' + '.xml'))
+                    ]
+                )
+        # create workbook object from xlsxwriter library
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        
+        workbook.close()
+        output.seek(0)
+        response.stream.write(base64.encodestring(wizard.edi_content))
+        output.close()
+        return response
 
     @http.route(['/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_form(self, order_id, cantidad, access_token=None, report_type=None, download=False, **kw):
@@ -120,30 +142,10 @@ class autofacturador(CustomerPortal):
             invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
             return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
 
-            
-            # return request.redirect('/my/posorders/autofacturador/error/'+str(order_id)+'?error=1')
-            # document_sudo = document.with_user(SUPERUSER_ID).exists()
-            # if not document_sudo:
-            #     raise MissingError(_("This document does not exist."))
-            # try:
-            #     document.check_access_rights('read')
-            #     document.check_access_rule('read')
-            # except AccessError:
-            #     if not access_token or not document_sudo.access_token or not consteq(document_sudo.access_token, access_token):
-            #         raise
         except (AccessError) as a:
             _logger.warning(a)
             return request.redirect('/autofacturador/'+str(order_id))
         except (MissingError) as e:
             _logger.warning(e)
             return request.redirect('/autofacturador/'+str(order_id))
-        # _logger.warning("SAOKO")
-        # _logger.warning(order_sudo)
-
-        # if report_type in ('html', 'pdf', 'text'):
-        #     return self._show_report(model=order_sudo, report_type=report_type, report_ref='account.account_invoices', download=download)
-
-        # values = order_id
-        # _logger.warning("KANEKI")
-        # _logger.warning(values)
 

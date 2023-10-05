@@ -187,14 +187,22 @@ class sale_advance_payment_inherit(models.TransientModel):
             moves = self.sale_order_ids.invoice_ids
             if(not (moves.state == 'posted')):
                 moves.action_post()
-            moves.action_process_edi_web_services()
-            try:
-                moves.action_retry_edi_documents_error()
-                _logger.warning('timbrar')
-            except ValidationError as exc:
-                raise ValidationError(_(exc))
-            except UserError as excUser:
-                raise UserError(_(excUser))
+            if(not moves.edi_state == 'sent'):
+                try:
+                    moves.action_process_edi_web_services()
+                    moves.action_retry_edi_documents_error()
+                    for x in moves.edi_document_ids:
+                        if(x.edi_format_name == 'CFDI (4.0)'):
+                            return {
+                                'type': 'ir.actions.act_url',
+                                'url': '/autofacturador/xml_report/%s' % (x.id),
+                                'target': 'self',
+                            }
+                    _logger.warning('timbrar')
+                except ValidationError as exc:
+                    raise ValidationError(_(exc))
+                except UserError as excUser:
+                    raise UserError(_(excUser))
         
         return moves
         if open_invoices:

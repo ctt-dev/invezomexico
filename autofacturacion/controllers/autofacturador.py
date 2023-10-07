@@ -6,6 +6,7 @@ import logging
 import base64
 from odoo.osv import expression
 import io
+import threading
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError, ValidationError
 from collections import OrderedDict
@@ -50,22 +51,22 @@ class autofacturador(CustomerPortal):
 
     @http.route(['/autofacturador/xml_report/<model("account.edi.document"):wizard>'], type='http', auth="public", website=True, sitemap=False)
     def portal__xml_report(self, wizard=None, access_token=None, report_type=None, download=False, **kw):
-         
+        _logger.warning("descar")
+        # create workbook object from xlsxwriter library
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        _logger.warning(wizard.edi_content)
+        workbook.close()
+        output.seek(0)
+        response.stream.write()
+        output.close()
         response = request.make_response(
-                    None,
+                    base64.encodestring(wizard.edi_content),
                     headers=[
                         ('Content-Type', 'application/vnd.ms-excel'),
                         ('Content-Disposition', content_disposition('MX-Invoice-4.0' + '.xml'))
                     ]
                 )
-        # create workbook object from xlsxwriter library
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        
-        workbook.close()
-        output.seek(0)
-        response.stream.write(base64.encodestring(wizard.edi_content))
-        output.close()
         return response
 
     @http.route(['/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
@@ -130,8 +131,6 @@ class autofacturador(CustomerPortal):
                     'zip' : zip,
                     'l10n_mx_edi_fiscal_regime' : regimen
                 })
-                _logger.warning(cliente)
-            _logger.warning(factura)
             factura.update({
                     'partner_id' : cliente
                 })
@@ -139,15 +138,29 @@ class autofacturador(CustomerPortal):
                 'sale_order_ids' : factura,
             })
             forma_pago = request.env['l10n_mx_edi.payment.method'].sudo().search([('id', '=', forma_pago)])
-            _logger.warning(forma_pago)
             invoice = facturador.create_invoices_portal(True, forma_pago, cfdi)
+            _logger.warning("factura check")
+            _logger.warning(invoice.state)
+            if(invoice.state == 'posted'):
+                return request.redirect('/autofacturador/timbrado/'+str(order_id))
             invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
             return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
 
         except (AccessError) as a:
             _logger.warning(a)
-            return request.redirect('/autofacturador/'+str(order_id))
+            raise AccessError(_(a))
         except (MissingError) as e:
-            _logger.warning(e)
-            return request.redirect('/autofacturador/'+str(order_id))
+            raise AccessError(_(e))
+
+    @http.route(['/autofacturador/timbrado/<int:order_id>'], type='http', auth="public", website=True)
+    def portal_my_factura_timbrado(self, order_id, access_token=None, report_type=None, download=False, **kw):
+        _logger.warning("TIMRBADO")
+        factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
+        facturador = request.env['sale.advance.payment.inv'].sudo().create({
+                'sale_order_ids' : factura,
+            })
+        
+        facturador.timbrado_factura()
+        invoice_sudo = self._document_check_access('account.move', factura.invoice_ids.id, access_token)
+        return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
 

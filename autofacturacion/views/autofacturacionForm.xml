@@ -5,9 +5,16 @@
                   <t t-call="portal.portal_breadcrumbs"/>
               </t>
           <t t-set="breadcrumbs_searchbar" t-value="True"/>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+          <script type="text/javascript">
+                $(.oe_login_form).submit(function() {
+                    $(".loader").show();
+                });
+          </script>
+      <div class="loader" style="position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('images/pageLoader.gif') 50% 50% no-repeat rgb(249,249,249);opacity: .8; display: none;"></div>
         <div class="container mb64 col-md-12">
-          <form action="/autofacturador/facturar" class="oe_login_form" style="max-width: 600px !important;">
-            <h3 class="page-header" style="text-align: center;">Autofacturadors</h3>
+          <form action="/autofacturador/facturar" class="oe_login_form" id ="form" style="max-width: 600px !important;">
+            <h3 class="page-header" style="text-align: center;">Autofacturador</h3>
                       <t t-log="pagos"/>
             <input  type="hidden" name="order_id" id="order_id" t-att-value = "order_id" placeholder="" class="form-control"/>
                 <label class="control-label" for="razon_social">Nombre o Razon Social*</label>
@@ -89,7 +96,7 @@
                 </div>
               <div class="clearfix" style="text-align : center;">
                   <br/>
-                <button type="submit" align="center" class="btn btn-primary">Enviar</button>
+                <button type="submit" name="send" id="send" align="center" class="btn btn-primary">Enviar</button>
               </div>
           </form>
       </div>

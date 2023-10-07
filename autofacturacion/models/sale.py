@@ -177,15 +177,15 @@ class sale_advance_payment_inherit(models.TransientModel):
 
     def timbrado_factura(self):
         e = threading.Event()
-        e.wait(1)
         moves = self.sale_order_ids.invoice_ids
         if(not moves.edi_state == 'sent'):
             try:
                 moves.action_process_edi_web_services()
-                moves.action_retry_edi_documents_error()
+                e.wait(5)
                 if(moves.edi_error_count == 1):
                     _logger.warning("erroe")
-                    raise ValidationError(_(moves.edi_error_message))
+                    moves.action_retry_edi_documents_error()
+                    return moves.edi_error_message
                 else:
                     for x in moves.edi_document_ids:
                         _logger.warning(x)

@@ -31,6 +31,8 @@
         'views/templates.xml',
         'views/autofacturacion.xml',
         'views/autofacturacionForm.xml',
+        'views/timbrar.xml',
+        'views/error.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

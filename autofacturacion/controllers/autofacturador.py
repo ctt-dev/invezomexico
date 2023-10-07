@@ -101,22 +101,12 @@ class autofacturador(CustomerPortal):
 
     @http.route(['/autofacturador/facturar'], type='http', auth="public", website=True)
     def portal_my_factura_creacion(self, order_id, razon_social, rfc, email, zip, forma_pago, cfdi, regimen, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("facturar")
-        _logger.warning(order_id)
-        _logger.warning(razon_social)
-        _logger.warning(rfc)
-        _logger.warning(email)
-        _logger.warning(forma_pago)
-        _logger.warning(cfdi)
-        _logger.warning(regimen)
         values = {}
         order_ids = []
         try:
             factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
             cliente = request.env['res.partner'].sudo().search([('vat', '=', rfc)])
             if cliente :
-                _logger.warning("CLiente")
-                _logger.warning(cliente)
                 cliente.sudo().update({
                     'name' : razon_social,
                     'vat' : rfc,
@@ -152,15 +142,30 @@ class autofacturador(CustomerPortal):
         except (MissingError) as e:
             raise AccessError(_(e))
 
-    @http.route(['/autofacturador/timbrado/<int:order_id>'], type='http', auth="public", website=True)
-    def portal_my_factura_timbrado(self, order_id, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("TIMRBADO")
+    @http.route(['/autofacturador/timbrar/<int:order_id>'], type='http', auth="public", website=True)
+    def portal_my_factura_timbrar(self, order_id, access_token=None, report_type=None, download=False, **kw):
+        _logger.warning("TIMRBADO2")
         factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
         facturador = request.env['sale.advance.payment.inv'].sudo().create({
                 'sale_order_ids' : factura,
             })
         
-        facturador.timbrado_factura()
+        mensaje = facturador.timbrado_factura()
+        _logger.warning(mensaje)
+        if(mensaje.find('Code : 301') == 1):
+            values = {
+                    'error' : error,
+                    
+                }
+            return request.render("autofacturacion.portal_auto_invoices_error", values)
         invoice_sudo = self._document_check_access('account.move', factura.invoice_ids.id, access_token)
         return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
+        
+    @http.route(['/autofacturador/timbrado/<int:order_id>'], type='http', auth="public", website=True)
+    def portal_my_factura_timbrado(self, order_id, access_token=None, report_type=None, download=False, **kw):
+        values = {
+                    'order_id' : order_id,
+                }
+        return request.render("autofacturacion.portal_auto_invoices_post", values)
+        
 

@@ -1,0 +1,19 @@
+<odoo>
+  <template id="portal_auto_invoices_post" name="Auto Invoices">
+      <t t-call="portal.portal_layout">
+            <t t-if="breadcrumbs_searchbar">
+                  <t t-call="portal.portal_breadcrumbs"/>
+              </t>
+          <t t-set="breadcrumbs_searchbar" t-value="True"/>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+          <script type="text/javascript">
+                 $(document).ready(function(){
+                      setTimeout(function() {
+                       window.location.href = window.location.href.replace("timbrado", "timbrar")
+                      }, 5000);
+                    });
+          </script>
+          <h3 class="page-header" style="text-align: center;">Espere un minuto</h3>
+      </t>
+  </template>
+  </odoo>

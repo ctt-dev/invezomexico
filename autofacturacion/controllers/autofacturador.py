@@ -116,7 +116,7 @@ class autofacturador(CustomerPortal):
             if cliente :
                 _logger.warning("CLiente")
                 _logger.warning(cliente)
-                cliente.sudo().write({
+                cliente.sudo().update({
                     'name' : razon_social,
                     'vat' : rfc,
                     'zip' : zip,
@@ -138,6 +138,8 @@ class autofacturador(CustomerPortal):
             facturador = request.env['sale.advance.payment.inv'].sudo().create({
                 'sale_order_ids' : factura,
             })
+            forma_pago = request.env['l10n_mx_edi.payment.method'].sudo().search([('id', '=', forma_pago)])
+            _logger.warning(forma_pago)
             invoice = facturador.create_invoices_portal(True, forma_pago, cfdi)
             invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
             return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)

@@ -8,6 +8,7 @@ from odoo.fields import Command
 _logger = logging.getLogger(__name__)
 import datetime
 import time
+import threading
 
 class sale_inherit(models.Model):
     _inherit = 'sale.order'
@@ -150,7 +151,7 @@ class sale_inherit(models.Model):
                     line[2]['sequence'] = SaleOrderLine._get_invoice_line_sequence(new=sequence, old=line[2]['sequence'])
                     sequence += 1
 
-        # Manage the creation of invoices in sudo because a salesperson must be able to generate an invoice from a
+        ## Manage the creation of invoices in sudo because a salesperson must be able to generate an invoice from a
         # sale order without "billing" access rights. However, he should not be able to create an invoice from scratch.
         moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(invoice_vals_list)
 
@@ -164,47 +165,67 @@ class sale_inherit(models.Model):
                 'mail.message_origin_link',
                 values={'self': move, 'origin': move.line_ids.sale_line_ids.order_id},
                 subtype_id=self.env['ir.model.data']._xmlid_to_res_id('mail.mt_note')) 
-        
-        return moves.action_post_portal()
+        moves.action_post()
+        e = threading.Event()
+        _logger.warning(moves.state)
+        _logger.warning("SALE")
+        return moves
 
 class sale_advance_payment_inherit(models.TransientModel):
     _inherit = 'sale.advance.payment.inv'
     _description = 'Modelo de modelo alterno'
 
+    def timbrado_factura(self):
+        e = threading.Event()
+        e.wait(1)
+        moves = self.sale_order_ids.invoice_ids
+        if(not moves.edi_state == 'sent'):
+            try:
+                moves.action_process_edi_web_services()
+                moves.action_retry_edi_documents_error()
+                if(moves.edi_error_count == 1):
+                    _logger.warning("erroe")
+                    raise ValidationError(_(moves.edi_error_message))
+                else:
+                    for x in moves.edi_document_ids:
+                        _logger.warning(x)
+                        _logger.warning(x.edi_format_name)
+                        if(x.edi_format_name == 'CFDI (4.0)'):
+                            _logger.warning("descargar")
+                            return {
+                                'type': 'ir.actions.act_url',
+                                'url': '/autofacturador/xml_report/%s' % (x.id),
+                                'target': 'new',
+                            }
+                _logger.warning('timbrar')
+            except ValidationError as exc:
+                raise ValidationError(_(exc))
+            except UserError as excUser:
+                raise UserError(_(excUser))
+        else:
+            for x in moves.edi_document_ids:
+                _logger.warning(x)
+                _logger.warning(x.edi_format_name)
+                if(x.edi_format_name == 'CFDI (4.0)'):
+                    _logger.warning("descargar")
+                    return {
+                        'type': 'ir.actions.act_url',
+                        'url': '/autofacturador/xml_report/%s' % (x.id),
+                        'target': self,
+                        'context': self._context, 
+                    }
+                    
     def create_invoices_portal(self, open_invoices, forma_pago, cfdi):
         _logger.warning("PORTAL")
         _logger.warning(open_invoices)
         _logger.warning(self.sale_order_ids.partner_id)
         if(not self.sale_order_ids.invoice_ids):
             moves = self._create_invoices_portal(self.sale_order_ids, cfdi, forma_pago)
-            _logger.warning("CREA INVOICE")
         else:
             _logger.warning("YA EXISTE FACTURA")
             moves = self.sale_order_ids.invoice_ids
             if(not (moves.state == 'posted')):
                 moves.action_post()
-            while not (moves.state == 'posted'):
-                time.sleep(3)
-            if(not moves.edi_state == 'sent'):
-                try:
-                    moves.action_process_edi_web_services()
-                    # moves.action_retry_edi_documents_error()
-                    # if(moves.edi_error_count == 1):
-                    #     raise ValidationError(_(moves.edi_error_message))
-                    # else:
-                    #     for x in moves.edi_document_ids:
-                    #         if(x.edi_format_name == 'CFDI (4.0)'):
-                    #             return {
-                    #                 'type': 'ir.actions.act_url',
-                    #                 'url': '/autofacturador/xml_report/%s' % (x.id),
-                    #                 'target': 'self',
-                    #             }
-                    _logger.warning('timbrar')
-                except ValidationError as exc:
-                    raise ValidationError(_(exc))
-                except UserError as excUser:
-                    raise UserError(_(excUser))
-        
         return moves
         if open_invoices:
             return moves

@@ -32,4 +32,9 @@ class sale_order_inherit(models.Model):
         related="purchase_id.partner_ref",
     )
 
+    fecha_entrega=fields.Date(
+        string="Fecha entrega",
+        tracking=True
+    )
+
     

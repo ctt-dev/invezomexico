@@ -167,23 +167,23 @@ class ctrl_tiredirect(models.Model):
     )
     
 
-    TC=fields.Char(
+    TC=fields.Float(
         string="Tipo de Cambio",
         tracking=True,
     )
     
     
-    ES=fields.Char(
+    ES=fields.Float(
         string="ES",
         tracking=True,
     )
     
-    FS=fields.Char(
+    FS=fields.Float(
         string="FS",
         tracking=True,
     )
     
-    Existencia_Stock=fields.Char(
+    Existencia_Stock=fields.Integer(
         string="Existencias",
         tracking=True,
     )

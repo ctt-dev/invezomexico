@@ -29,15 +29,9 @@ class ctrl_llantas(models.Model):
         "hr.employee",
         related="sale_id.comprador_id",
         string="Comprador",
-        company_dependent=True,
-        store=True,
+        # company_dependent=True,
     )
 
-    comprador=fields.Char(
-        related="comprador_id.name",
-        string="Comprador",
-        store=True,
-    )
 
     # venta=fields.Char(
     #     string="Venta",
@@ -50,18 +44,23 @@ class ctrl_llantas(models.Model):
     #     tracking=True
     # )    
 
-    partner_name=fields.Char(
-        related="sale_id.partner_id.name",
+    partner_name=fields.Many2one(
+        "res.partner",
+        related="sale_id.partner_id",
         string="Cliente",
-        store=True,
+    )
+
+    marketplace=fields.Many2one(
+        "llantas_config.marketplaces",
+        related="sale_id.marketplace",
+        string="Marketplace",
     )
     
-    marketplace=fields.Char(
-        related="sale_id.marketplace.name",
-        string="Marketplace",
-        tracking=True,
-        store=True,
-    )
+    # marketplace=fields.Char(
+    #     related="sale_id.marketplace.name",
+    #     string="Marketplace",
+    #     # company_dependent=True,
+    # )
 
     
     # @api.onchange("sale_id")
@@ -108,6 +107,7 @@ class ctrl_llantas(models.Model):
     )
     
     num_cliente=fields.Char(
+        related="partner_name.usuario_marketplace",
         string="Num. Cliente",
         tracking=True
     )
@@ -258,8 +258,7 @@ class ctrl_llantas(models.Model):
     company_id=fields.Many2one(
         "res.company",
         related="sale_id.company_id",
-        string="Empresa",
-        store=True,
+        string="Empresa"
     )
 
     def compute_tdp(self):
@@ -297,3 +296,5 @@ class ctrl_llantas(models.Model):
         related="productos_orden.product_id.name",
         string="Producto",
     )
+    
+

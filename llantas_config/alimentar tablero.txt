@@ -1,0 +1,39 @@
+# Available variables:
+#  - env: Odoo Environment on which the action is triggered
+#  - model: Odoo Model of the record on which the action is triggered; is a void recordset
+#  - record: record on which the action is triggered; may be void
+#  - records: recordset of all records on which the action is triggered in multi-mode; may be void
+#  - time, datetime, dateutil, timezone: useful Python libraries
+#  - float_compare: Odoo function to compare floats based on specific precisions
+#  - log: log(message, level='info'): logging function to record debug information in ir.logging table
+#  - UserError: Warning Exception to use with raise
+#  - Command: x2Many commands namespace
+# To return an action, assign: action = {...}
+if records:
+  for rec in records:
+    if rec.marketplace.name != 'Directa':
+      control = env['llantas_config.ctt_llantas'].search([('sale_id','=', rec.id)])
+      cant_reg = len(control)
+      if cant_reg < 1:
+        new_record = env['llantas_config.ctt_llantas'].create({
+          'sale_id':rec.id,
+          'fecha': rec.fecha_venta,
+          'comprador_id':rec.comprador_id.id,
+          'comision':rec.comision,
+          'envio':rec.envio,
+        })
+      else:
+        for ctrl in control:
+          ctrl.write({
+            'sale_id':rec.id,
+            'fecha': rec.fecha_venta,
+            'comprador_id':rec.comprador_id.id,
+            'comision':rec.comision,
+            'envio':rec.envio,
+          })
+    
+    # raise UserError(line.product_id.name+"\n"+str(rec.date_order)+"\n"+rec.statement_id.pos_session_id.config_id.display_name)
+
+
+
+

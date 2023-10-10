@@ -17,11 +17,11 @@ class sale_order_inherit(models.Model):
         company_dependent=True,
     )
     
-    comision=fields.Monetary(
+    comision=fields.Float(
         string="Comisión",
         tracking=True,
     )
-    envio=fields.Monetary(
+    envio=fields.Float(
         string="Envio",
         tracking=True,
     )
@@ -132,9 +132,11 @@ class sale_order_line_inherit(models.Model):
 
     proveedor_id=fields.Many2one(
         "product.supplierinfo",
+        # related="product_id.product_tmpl_id.partner_id",
         store=True,
         tracking=True,
     )
+    
 
     costo_proveedor=fields.Float(
         related="proveedor_id.price",
@@ -142,7 +144,17 @@ class sale_order_line_inherit(models.Model):
         tracking=True,
     )
 
-   
+    importe_descuento=fields.Float(
+        string="Importe descuento",
+    )
+
+    def compute_precio_antes_dec(self):
+        for rec in self:
+            rec.precio_antes_dec = rec.price_unit + rec.importe_descuento
+    precio_antes_dec=fields.Float(
+        string="Precio antes descuento",
+        compute=compute_precio_antes_dec,
+    )
 
     
 

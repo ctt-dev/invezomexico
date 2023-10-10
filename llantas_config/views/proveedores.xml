@@ -84,7 +84,9 @@
                             <field name="url" />
                             <field name="company_id" />
                             <field name="color" widget="color_picker" required="0"/>
-                            <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
+                            <button name="process_link" string="Descargar existencias" type="object" class="btn-info"/>
+                            <button name="procesar_existencias_tiredirect" string="Procesar" type="object" class="btn-success"/>
+                            
                         </tree>
                     </field>
                 </record>

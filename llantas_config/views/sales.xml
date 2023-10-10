@@ -33,9 +33,14 @@
                     </div>
                 </xpath>
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="before">
-                    <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]"/>
-                    <field name="costo_proveedor" readonly="1" optional="show"/>
+                    <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
+                    <field name="costo_proveedor" readonly="1" optional="show"  />
+                    
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->
+                </xpath>
+                <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
+                    <field name="importe_descuento" optional="show"  />
+                    <field name="precio_antes_dec" optional="show" readonly="1" />
                 </xpath>
 
                 

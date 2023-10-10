@@ -6,6 +6,7 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
                  <xpath expr="//page[@name='general_information']//group//group[@name='group_general']//field[@name='product_tooltip']" position="after">
+                     <field name="sku_alternos" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
                      <field name="marca_llanta" />
                      <field name="modelo_llanta" />
                      <field name="medida_llanta" />
@@ -176,7 +177,36 @@
                             </field>
                     </page>
                 </xpath>
+                
             </field>
         </record>
+        
+        <record id="view_product_search" model="ir.ui.view">
+            <field name="name">productos_search</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//search//field[@name='name']" position="replace">
+                    <field name="name" string="Product" filter_domain="['|', '|', '|', '|', ('default_code', 'ilike', self), ('product_variant_ids.default_code', 'ilike', self),('name', 'ilike', self), ('barcode', 'ilike', self), ('sku_alternos', 'ilike', self)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_product_supplierinfo" model="ir.ui.view">
+            <field name="name">productos_supplierinfo</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//tree//field[@name='min_qty']" position="before">
+                    <field name="existencia_actual" optional="hide"/>
+                    <field name="precio_neto" optional="hide"/>
+                    <field name="tipo_cambio" optional="hide"/>
+                    <field name="tipo_moneda_proveedor" optional="hide"/>
+                    <field name="ultima_actualizacion" optional="show"/>
+                    
+                </xpath>
+            </field>
+        </record>
+        
     </data>
 </odoo>

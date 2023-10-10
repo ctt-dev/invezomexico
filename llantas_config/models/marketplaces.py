@@ -33,7 +33,11 @@ class marketplace_product(models.Model):
         string="Color",
         tracking=True,
     )
-
+    
+    # display_name=fields.Char(
+    #     related="name",
+    #     string="display_name")
+    
     sku_premium=fields.Char(
         string="SKU Premium",
     )

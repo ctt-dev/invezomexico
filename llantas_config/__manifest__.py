@@ -53,6 +53,8 @@
         'views/marketplaces.xml',
         'views/stock.xml',
         'views/tablero_detallado.xml',
+        'views/res.xml',
+        'views/pagos_marketplace.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -1,0 +1,28 @@
+
+
+#stock_picking status=done
+if records:
+  for rec in records:
+    moves = env['llantas_config.pagos_marketplace'].search([('envio_id', '=', rec.id)])
+    if not moves:
+      if rec.location_id.usage == 'internal' and rec.location_dest_id.usage != 'internal':
+        # raise UserError(str(datetime.date.today()))
+        
+        # fecha_entrega = datetime.date.today()
+        marketplace=rec.sale_id.marketplace.name
+        # raise UserError(str(marketplace))
+        if marketplace == 'COPPEL' or marketplace == 'SEARS' or marketplace == 'CLAROSHOP':
+          new_record = env['llantas_config.pagos_marketplace'].create({
+            'envio_id': rec.id,
+            'sale_id': rec.sale_id.id,
+            'fecha_entrega': rec.fecha_entrega,
+            'name': rec.name,
+          })
+
+     
+
+
+
+
+
+

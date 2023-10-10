@@ -58,6 +58,7 @@
                         <div class="oe_button_box" />
                             
                             <group string="Información" >
+                                <!-- <field name="display_name"/> -->
                                 <field name="name"/>
                                 <field name="product_ids" force_save="1" readonly="1" invisible="1"/>
                             </group>

@@ -86,6 +86,10 @@ class marketplaces(models.Model):
     name = fields.Char(
         string="Nombre",
     )
+
+    # display_name=fields.Char(
+    #     related="name",
+    #     string="display_name")
     
     url= fields.Char(
         string="Url marketplace",
@@ -184,13 +188,78 @@ class proveedores_link(models.Model):
                     'Existencia_Stock': x["Existencia_Stock"],
                 })
             return {
-                'name': 'Cargar existencias',
-                'view_type': 'tree',
-                'view_mode': 'tree',
-                'view_id': self.env.ref('llantas_config.view_tiredirect_tree_cargar').id,
-                'res_model': 'llantas_config.ctt_tiredirect_cargar',
-                'type': 'ir.actions.act_window',
-                'target': 'new',
+            'type': 'ir.actions.client',
+            'tag': 'warning',
+            'params': {
+                'title': 'Mensaje de Aviso',
+                'text': 'Se descargaron las existencias correctamente.',
+                'sticky': True
+            }
+            # return {
+            #     raise UserError('Existencias cargadas, a continuación de clic en procesar')
+                # 'name': 'Cargar existencias',
+                # 'view_type': 'tree',
+                # 'view_mode': 'tree',
+                # 'view_id': self.env.ref('llantas_config.view_tiredirect_tree_cargar').id,
+                # 'res_model': 'llantas_config.ctt_tiredirect_cargar',
+                # 'type': 'ir.actions.act_window',
+                # 'target': 'new',
+            # }
+    def procesar_existencias_tiredirect(self):
+        moves=self.env['llantas_config.ctt_tiredirect_cargar'].search([])
+        partner=self.env['res.partner'].search([('name','=','TIRE DIRECT S.A. DE C.V.')], limit=1)
+        proveedor=partner.id
+        fecha_actual=datetime.datetime.now()
+        if moves:
+          for mov in moves:
+            if mov.moneda_currency == 'MXN':
+              moneda=33
+            if mov.moneda_currency=='USD':
+              moneda=2
+            lines=self.env['product.template'].search([('default_code','=',mov.clave_parte)])
+            if lines:
+              for line in lines:
+                # raise UserError(str(mov.clave_parte)+' '+line.name)
+                proveedores=self.env['product.supplierinfo'].search([('product_tmpl_id','=',line.id),('partner_id','=',proveedor)])
+                # raise UserError(len(proveedores))
+                if proveedores:
+                  for prov in proveedores:
+                    # raise UserError('Existe! \n'+str(proveedor)+'\n'+str(mov.Existencia_Stock)+'\n'+str(moneda)+'\n'+str(mov.FS))
+                    # raise UserError(mov.Existencia_Stock)
+                    prov.write({
+                      'partner_id':proveedor,
+                      'product_tmpl_id':line.id,
+                      'existencia_actual':mov.Existencia_Stock,
+                      'currency_id':33,
+                      'price':mov.FS * mov.TC,
+                      'ultima_actualizacion':fecha_actual,
+                      'tipo_cambio':mov.TC,
+                      'precio_neto':mov.FS,
+                      'tipo_moneda_proveedor':mov.moneda_currency,
+                    })
+                
+                if len(proveedores) == 0:
+                  # raise UserError('Nuevo! \n'+str(proveedor)+'\n'+str(mov.Existencia_Stock)+'\n'+str(moneda)+'\n'+str(mov.FS))
+                  new_record=self.env['product.supplierinfo'].create({
+                    'partner_id':proveedor,
+                    'product_tmpl_id':line.id,
+                    'existencia_actual':mov.Existencia_Stock,
+                    'currency_id':33,
+                    'price':mov.FS * mov.TC,
+                    'ultima_actualizacion':fecha_actual,
+                    'tipo_cambio':mov.TC,
+                    'precio_neto':mov.FS,
+                    'tipo_moneda_proveedor':mov.moneda_currency,
+                  })
+                  
+              mov.unlink()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'warning',
+            'params': {
+                'title': 'Mensaje de Aviso',
+                'text': 'Se actualizaron los datos correctamente',
+                'sticky': True
             }
 
 class status_ventas(models.Model):
@@ -225,4 +294,24 @@ class carriers(models.Model):
     name = fields.Char(
         string="Nombre",
         required=True,
+    )
+
+class sku_marketplaces(models.Model):
+    _name = 'llantas_config.sku_marketplace'
+    _description = 'Catalogo de sku'
+    _order = 'id desc'
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    name = fields.Char(
+        string="Nombre",
+        required=True,
+    )
+
+    product_id=fields.Many2one(
+        "product.template",
+        string="Producto",
+    )
+
+    color=fields.Integer(
+        string="Color",
     )

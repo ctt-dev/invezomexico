@@ -1,0 +1,106 @@
+<odoo>
+    <data>
+       <record id="view_pagos_marketplace_tree" model="ir.ui.view">
+            <field name="name">Resumen</field>
+            <field name="model">llantas_config.pagos_marketplace</field>
+            <field name="arch" type="xml">
+                <tree edit="0" sample="1">
+                    <field name="name"/>
+                    <field name="sale_id"/>
+                    <field name="folio_venta"/>
+                    <field name="link_venta" optional="hide"/>
+                    <field name="marketplace"/>
+                    <field name="total_comision" optional="show"/>
+                    <field name="total_envio" optional="show"/>
+                    <field name="total_venta" optional="show"/>
+                    <field name="total_a_pagar" />
+                    <field name="fecha_venta"/>
+                    <field name="fecha_entrega"/>
+                    <field name="fecha_14"/>
+                    <field name="fecha_efectiva"/>
+                    <field name="diferencia_dias_pago" optional="hide"/>
+                    <!-- <field name="envio_id"/> -->
+                    <field name="company_id" optional="hide"/>
+                    <field name="status_pago"/>
+                    <button name="cambiar_a_pagado" string="Cambiar a Pagado" type="object" class="btn-success" />
+                    <button name="cambiar_a_cancelado" string="Cambiar a cancelado" type="object" class="btn-warning"/>
+                    <button name="cambiar_a_pendiente" string="Cambiar a pendiente" type="object" class="btn-secondary"/>
+                </tree>
+            </field>
+        </record>    
+
+        
+        <record id="ctt_llantas_action_pagos_marketplace_form" model="ir.ui.view">
+            <field name="name">form</field>
+            <field name="model">llantas_config.pagos_marketplace</field>
+            <field name="arch" type="xml">
+                <form string="Resumen">
+                    <sheet string="Registration">
+                        <div class="oe_button_box" />
+                        <group>
+                            <group string="Información basica" >
+                               
+                            </group>
+                            <group string="Información proveedor" >
+                               
+                            </group> 
+                            <group string="Informacion venta" >
+                              
+                            </group>
+                            <group string="Informacion pedido" >
+                               
+                            </group>
+                        </group>
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <!-- <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/> -->
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+            
+        <record id="ctt_llantas_action_pagos_marketplace_tree" model="ir.actions.act_window">
+            <field name="name">Resumen</field>
+            <field name="res_model">llantas_config.pagos_marketplace</field>
+            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="context">{'create': True}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+            
+        </record>
+
+        <record id="pagos_marketplace_search" model="ir.ui.view">
+            <field name="name">Buscar</field>
+            <field name="model">llantas_config.pagos_marketplace</field>
+            <field name="arch" type="xml">
+               <search string="Buscar">
+                       
+                       
+                
+                       
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="pagos_marketplace">
+            <field name="name">Pagos marketplace</field>
+            <field name="res_model">llantas_config.pagos_marketplace</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="pagos_marketplace_menu" 
+                  name="Pagos Marketplace" 
+                  action="pagos_marketplace"
+                  parent="llantas_config.menu_ctt_llantas_ctrl_list" 
+                  sequence="5" />
+    </data>
+</odoo>

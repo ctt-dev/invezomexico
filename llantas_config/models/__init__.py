@@ -9,3 +9,5 @@ from . import sales
 from . import marketplaces
 from . import stock
 from . import tablero_detallado
+from . import res
+from . import pagos_marketplace

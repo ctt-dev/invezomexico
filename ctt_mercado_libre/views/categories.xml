@@ -21,8 +21,8 @@
             <field name="view_mode">tree,form</field>
         </record> -->
 
-        <menuitem id="menu_marketplaces" name="Marketplaces" parent="stock.menu_stock_root" sequence="9"/>
-        <menuitem id="menu_mercadolibre" name="Mercado Libre" parent="menu_marketplaces" sequence="1"/>
+        <!-- <menuitem id="menu_marketplaces" name="Marketplaces" parent="stock.menu_stock_root" sequence="9"/> -->
+        <menuitem id="menu_mercadolibre" name="Mercado Libre" parent="ctt_marketplaces.menu_marketplaces" sequence="1"/>
         <menuitem id="menu_meli_categories" action="action_mercadolibre_categories" parent="menu_mercadolibre" name="Categorías"/>
         <!-- <menuitem id="menu_meli_units" action="action_mercadolibre_units" parent="menu_mercadolibre" name="Unidades"/> -->
         <!-- <menuitem id="menu_meli_notifications" action="action_mercadolibre_notifications" parent="menu_mercadolibre" name="Notificaciones"/> -->

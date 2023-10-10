@@ -25,6 +25,7 @@
         # 'sale',
         'sale_management',
         'website_sale',
+        'ctt_marketplaces'
     ],
 
     # always loaded

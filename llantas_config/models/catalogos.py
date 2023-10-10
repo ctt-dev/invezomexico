@@ -187,13 +187,15 @@ class proveedores_link(models.Model):
                     'FS': x["FS"],
                     'Existencia_Stock': x["Existencia_Stock"],
                 })
-            return {
-            'type': 'ir.actions.client',
-            'tag': 'warning',
-            'params': {
-                'title': 'Mensaje de Aviso',
-                'text': 'Se descargaron las existencias correctamente.',
-                'sticky': True
+
+            return {            
+               'type': 'ir.actions.client',
+               'tag': 'display_notification',            
+               'params': {
+                   'type': 'success',                
+                   'sticky': False,
+                   'message': ("Se descargaron las existencias correctamente."),            
+                }        
             }
             # return {
             #     raise UserError('Existencias cargadas, a continuación de clic en procesar')
@@ -219,13 +221,9 @@ class proveedores_link(models.Model):
             lines=self.env['product.template'].search([('default_code','=',mov.clave_parte)])
             if lines:
               for line in lines:
-                # raise UserError(str(mov.clave_parte)+' '+line.name)
                 proveedores=self.env['product.supplierinfo'].search([('product_tmpl_id','=',line.id),('partner_id','=',proveedor)])
-                # raise UserError(len(proveedores))
                 if proveedores:
                   for prov in proveedores:
-                    # raise UserError('Existe! \n'+str(proveedor)+'\n'+str(mov.Existencia_Stock)+'\n'+str(moneda)+'\n'+str(mov.FS))
-                    # raise UserError(mov.Existencia_Stock)
                     prov.write({
                       'partner_id':proveedor,
                       'product_tmpl_id':line.id,
@@ -239,7 +237,6 @@ class proveedores_link(models.Model):
                     })
                 
                 if len(proveedores) == 0:
-                  # raise UserError('Nuevo! \n'+str(proveedor)+'\n'+str(mov.Existencia_Stock)+'\n'+str(moneda)+'\n'+str(mov.FS))
                   new_record=self.env['product.supplierinfo'].create({
                     'partner_id':proveedor,
                     'product_tmpl_id':line.id,
@@ -253,14 +250,17 @@ class proveedores_link(models.Model):
                   })
                   
               mov.unlink()
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'warning',
-            'params': {
-                'title': 'Mensaje de Aviso',
-                'text': 'Se actualizaron los datos correctamente',
-                'sticky': True
-            }
+
+        return {            
+           'type': 'ir.actions.client',
+           'tag': 'display_notification',            
+           'params': {
+               'type': 'success',                
+               'sticky': False,
+               'message': ("Se actualizaron los datos correctamente"),            
+            }        
+        }
+
 
 class status_ventas(models.Model):
     _name = 'llantas_config.status_ventas'

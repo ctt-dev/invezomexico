@@ -1,2 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ctt_marketplaces_ctt_marketplaces,ctt_marketplaces.ctt_marketplaces,model_ctt_marketplaces_ctt_marketplaces,base.group_user,1,1,1,1
+access_marketplaces_marketplace,marketplaces.marketplace manager,model_marketplaces_marketplace,,1,1,1,1
+access_marketplaces_marketplace_field,marketplaces.marketplace.field manager,model_marketplaces_marketplace_field,,1,1,1,1
+
+access_marketplaces_tamplate,marketplaces.tamplate manager,model_marketplaces_tamplate,,1,1,1,1
+
+access_marketplaces_category,marketplaces.category manager,model_marketplaces_category,,1,1,1,1

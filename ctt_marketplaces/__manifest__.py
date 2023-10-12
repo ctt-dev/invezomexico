@@ -29,6 +29,7 @@
         'views/marketplaces_menuitems.xml',
         'views/res_config.xml',
         'views/product.xml',
+        'views/marketplaces_template.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

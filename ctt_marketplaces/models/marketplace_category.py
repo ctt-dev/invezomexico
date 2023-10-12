@@ -6,6 +6,7 @@ class MarketplaceTemplateCategory(models.Model):
     _name = 'marketplaces.category'
     _description = 'Categorias para plantillas de marketplaces'
 
+    marketplace_id = fields.Many2one('marketplaces.marketplace', string='Marketplace')
     name = fields.Char(string='Nombre')
     display_name = fields.Char(string='Nombre')
     attribute_ids = fields.One2many(

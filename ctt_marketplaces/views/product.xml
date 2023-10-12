@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+        <record id="ctt_marketplaces_product_template_form" model="ir.ui.view">
+            <field name="name">Product.template.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <notebook>
+                    <page string="Marketplaces">
+                        <div class="o_kanban_group">
+                            <field name="marketplace_tamplate_ids" mode="kanban" add-label="Agregar Plantilla" nolabel="1">
+                                <kanban>
+                                    <field name="mkt_id"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="card oe_kanban_global_click p-0">
+                                                <div class="card-body p-0">
+                                                    <h4 class="card-title p-2 m-0 bg-200">
+                                                        <small><field name="mkt_id"/></small>
+                                                    </h4>
+                                                </div>
+                                                <t t-name="kanban-box-bottom">
+                                                    <!-- Agrega una línea horizontal de botones al final -->
+                                                    <div class="o_kanban_bottom">
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </t>
+                                    </templates>    
+                                </kanban>
+                            </field>
+                        </div>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

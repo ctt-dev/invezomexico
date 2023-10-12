@@ -8,7 +8,7 @@ class Marketplace(models.Model):
 
     name = fields.Char(string='Nombre')
     field_ids = fields.One2many(
-        'marketplaces.marketplace.field'
+        'marketplaces.marketplace.field',
         'marketplace_id',
         string='Campos de Marketplace'
     )

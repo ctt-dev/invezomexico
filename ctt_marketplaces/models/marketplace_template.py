@@ -7,6 +7,8 @@ class MarketplaceProductTemplate(models.Model):
     _description = 'Plantilla para productos en marketplaces'
 
     marketplace = fields.Selection(selection=[],string='Marketplace')
+    mkt_id = fields.Many2one('marketplaces.marketplace', string='Marketplace')
+    product_id = fields.Many2one('product.template', string='Producto')
 
     #Campos genericos para templates
     marketplace_id = fields.Char(string='Marketplace ID')
@@ -14,28 +16,22 @@ class MarketplaceProductTemplate(models.Model):
     marketplace_description = fields.Text(string='Descripción')
 
     #Lineas para campos especificos de marketplaces
-    # field_lines = fields.One2many(
-    #     'marketplaces.tamplate.field.line',
-    #     'template_id',
-    #     string='Campos generales de plantilla'
-    # )
+    field_lines = fields.One2many(
+        'marketplaces.field.line',
+        'template_id',
+        string='Campos generales de plantilla'
+    )
 
     #Campos de categoria del producto
     marketplace_categ_id = fields.Many2one('marketplaces.category', string='Categoría')
 
-# class MarketplaceTemplateField(models.Model):
-#     _name = 'marketplaces.tamplate.field'
-#     _description = 'Campos para productos en marketplace'
+    def perform_custom_action(self):
+        pass
 
-#     name = fields.Char(string='Nombre')
-#     display_name = fields.Char(string='Campo')
-#     required = fields.Boolean(string='Requerido', default=False)
-#     type = fields.Char(string='Tipo')
+class MarketplaceTemplateFieldLine(models.Model):
+    _name = 'marketplaces.field.line'
+    _description = 'Lineas para campos del template'
 
-# class MarketplaceTemplateFieldLine(models.Model):
-#     _name = 'marketplaces.tamplate.field.line'
-#     _description = 'Lineas para campos del template'
-
-#     template_id = fields.Many2one('marketplaces.tamplate', string='Plantilla')
-#     field_id = fields.Many2one('marketplaces.template.field', string='Campos')
-#     value = fields.Char(string='Valor')
+    template_id = fields.Many2one('marketplaces.tamplate', string='Plantilla')
+    field_id = fields.Many2one('marketplaces.marketplace.field', string='Campo')
+    value = fields.Char(string='Valor')

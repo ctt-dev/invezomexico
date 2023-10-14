@@ -1,5 +1,17 @@
 <odoo>
     <data>
+        <record model="ir.actions.act_window" id="action_marketplaces_list">
+            <field name="name">Marketplaces</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">marketplaces.marketplace</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
         <menuitem id="menu_marketplaces" name="Marketplaces" parent="stock.menu_stock_root" sequence="9"/>
+        <menuitem id="menu_marketplaces_List" 
+            action="action_marketplaces_list"
+            name="Marketplaces" 
+            parent="menu_marketplaces" 
+            sequence="1"/>
     </data>
 </odoo>

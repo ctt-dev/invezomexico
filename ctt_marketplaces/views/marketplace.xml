@@ -1,0 +1,24 @@
+<odoo>
+    <data>
+        <record id="ctt_marketplace_form" model="ir.ui.view">
+            <field name="name">marketplace.form</field>
+            <field name="model">marketplaces.marketplace</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <field name="field_ids" widget="one2many">
+                            <tree create="false" delete="false" editable="top">
+                                <field name="name"/>
+                                <field name="display_name" string="Nombre mostrado"/>
+                                <field name="required"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

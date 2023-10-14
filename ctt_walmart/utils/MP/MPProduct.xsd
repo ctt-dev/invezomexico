@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://walmart.com/" vc:minVersion="1.1" version="3.2" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:wm="http://walmart.com/" xmlns:xc="http://xerces.apache.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:include schemaLocation="MPCommons.xsd"/>
+  <xsd:include schemaLocation="HealthAndBeauty.xsd"/>
+  <xsd:include schemaLocation="FurnitureCategory.xsd"/>
+  <xsd:include schemaLocation="Home.xsd"/>
+  <xsd:include schemaLocation="ArtAndCraftCategory.xsd"/>
+  <xsd:include schemaLocation="FoodAndBeverageCategory.xsd"/>
+  <xsd:include schemaLocation="ToolsAndHardware.xsd"/>
+  <xsd:include schemaLocation="Photography.xsd"/>
+  <xsd:include schemaLocation="SportAndRecreation.xsd"/>
+  <xsd:include schemaLocation="Animal.xsd"/>
+  <xsd:include schemaLocation="GardenAndPatioCategory.xsd"/>
+  <xsd:include schemaLocation="OtherCategory.xsd"/>
+  <xsd:include schemaLocation="OccasionAndSeasonal.xsd"/>
+  <xsd:include schemaLocation="ToysCategory.xsd"/>
+  <xsd:include schemaLocation="Baby.xsd"/>
+  <xsd:include schemaLocation="FootwearCategory.xsd"/>
+  <xsd:include schemaLocation="MusicalInstrument.xsd"/>
+  <xsd:include schemaLocation="CarriersAndAccessoriesCategory.xsd"/>
+  <xsd:include schemaLocation="WatchesCategory.xsd"/>
+  <xsd:include schemaLocation="OfficeCategory.xsd"/>
+  <xsd:include schemaLocation="Media.xsd"/>
+  <xsd:include schemaLocation="Vehicle.xsd"/>
+  <xsd:include schemaLocation="ClothingCategory.xsd"/>
+  <xsd:include schemaLocation="JewelryCategory.xsd"/>
+  <xsd:include schemaLocation="Electronics.xsd"/>
+  <xsd:complexType name="MPProduct">
+    <xsd:all>
+      <xsd:element maxOccurs="1" minOccurs="0" name="msrp">
+        <xsd:annotation>
+          <xsd:documentation>Precio estimado del producto. Este no es el precio que pagará el comprador. Introduce puntos decimales, no utilices coma ni signos de peso</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>MSRP</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>500</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="productName">
+        <xsd:annotation>
+          <xsd:documentation>Título del producto que se mostrará en la página del artículo. El formulario estándar es: Marca + Cualidades de definición + Nombre del artículo + Recuento de paquetes, si corresponde.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Nombre del Producto</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>2000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="200"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" ref="wm:category"/>
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:element name="category">
+    <xsd:complexType>
+      <xsd:choice maxOccurs="1" minOccurs="1">
+        <xsd:element name="HealthAndBeauty" type="wm:HealthAndBeauty"/>
+        <xsd:element name="FurnitureCategory" type="wm:FurnitureCategory"/>
+        <xsd:element name="Home" type="wm:Home"/>
+        <xsd:element name="ArtAndCraftCategory" type="wm:ArtAndCraftCategory"/>
+        <xsd:element name="FoodAndBeverageCategory" type="wm:FoodAndBeverageCategory"/>
+        <xsd:element name="ToolsAndHardware" type="wm:ToolsAndHardware"/>
+        <xsd:element name="Photography" type="wm:Photography"/>
+        <xsd:element name="SportAndRecreation" type="wm:SportAndRecreation"/>
+        <xsd:element name="Animal" type="wm:Animal"/>
+        <xsd:element name="GardenAndPatioCategory" type="wm:GardenAndPatioCategory"/>
+        <xsd:element name="OtherCategory" type="wm:OtherCategory"/>
+        <xsd:element name="OccasionAndSeasonal" type="wm:OccasionAndSeasonal"/>
+        <xsd:element name="ToysCategory" type="wm:ToysCategory"/>
+        <xsd:element name="Baby" type="wm:Baby"/>
+        <xsd:element name="FootwearCategory" type="wm:FootwearCategory"/>
+        <xsd:element name="MusicalInstrument" type="wm:MusicalInstrument"/>
+        <xsd:element name="CarriersAndAccessoriesCategory" type="wm:CarriersAndAccessoriesCategory"/>
+        <xsd:element name="WatchesCategory" type="wm:WatchesCategory"/>
+        <xsd:element name="OfficeCategory" type="wm:OfficeCategory"/>
+        <xsd:element name="Media" type="wm:Media"/>
+        <xsd:element name="Vehicle" type="wm:Vehicle"/>
+        <xsd:element name="ClothingCategory" type="wm:ClothingCategory"/>
+        <xsd:element name="JewelryCategory" type="wm:JewelryCategory"/>
+        <xsd:element name="Electronics" type="wm:Electronics"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

@@ -1,0 +1,3395 @@
+<?xml version="1.0" ?>
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://walmart.com/" vc:minVersion="1.1" version="3.2" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:wm="http://walmart.com/" xmlns:xc="http://xerces.apache.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:include schemaLocation="MPCommons.xsd"/>
+  <xsd:complexType name="Home">
+    <xsd:choice maxOccurs="1" minOccurs="0">
+      <xsd:element name="Bedding" type="wm:Bedding"/>
+      <xsd:element name="LargeAppliances" type="wm:LargeAppliances"/>
+      <xsd:element name="HomeOther" type="wm:HomeOther"/>
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="Bedding">
+    <xsd:all>
+      <xsd:element maxOccurs="1" minOccurs="0" name="pieceCount">
+        <xsd:annotation>
+          <xsd:documentation>Indicar el total de piezas que contiene el set y que llegarán al cliente.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número de Piezas</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="20"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="innerspringDesign">
+        <xsd:annotation>
+          <xsd:documentation>Indica la variación del resorte que cambia con el modelo de colchón.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Forma del Resorte</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Continuo"/>
+            <xsd:enumeration value="Bolsillo (Marshal Coil)"/>
+            <xsd:enumeration value="Bonell (Abiertos-Open coil)"/>
+            <xsd:enumeration value="Compensación (Offset)"/>
+            <xsd:enumeration value="Espuma Viscoelástica"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="secondaryMaterial">
+        <xsd:annotation>
+          <xsd:documentation>Refiere al elemento principal o predominante en la composición del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Material de fabricación</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Acero"/>
+            <xsd:enumeration value="Acero Carbonizado"/>
+            <xsd:enumeration value="Acero Cromado"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acrílico"/>
+            <xsd:enumeration value="Alambrón Cromado"/>
+            <xsd:enumeration value="Acero Vitrificado"/>
+            <xsd:enumeration value="Alambrón Plateado"/>
+            <xsd:enumeration value="Algodón"/>
+            <xsd:enumeration value="Algodón Egipcio"/>
+            <xsd:enumeration value="Aluminio"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Cable Metálico"/>
+            <xsd:enumeration value="Cartón"/>
+            <xsd:enumeration value="Caucho"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Cera"/>
+            <xsd:enumeration value="Cerámica"/>
+            <xsd:enumeration value="Cristal"/>
+            <xsd:enumeration value="Espuma"/>
+            <xsd:enumeration value="Espuma de Poliuretano"/>
+            <xsd:enumeration value="Espuma Visco Elástica"/>
+            <xsd:enumeration value="Hierro fundido"/>
+            <xsd:enumeration value="Hule Espuma"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Madera de Pino"/>
+            <xsd:enumeration value="Hule Natural"/>
+            <xsd:enumeration value="Mármol"/>
+            <xsd:enumeration value="Material Reciclado"/>
+            <xsd:enumeration value="Melamina"/>
+            <xsd:enumeration value="Memory Foam"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Metal Cromado"/>
+            <xsd:enumeration value="Microfibra"/>
+            <xsd:enumeration value="Nylon"/>
+            <xsd:enumeration value="Opalglass"/>
+            <xsd:enumeration value="Papel"/>
+            <xsd:enumeration value="Percal"/>
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Plástico ABS"/>
+            <xsd:enumeration value="Plástico EVA"/>
+            <xsd:enumeration value="Plástico Libre de BPA"/>
+            <xsd:enumeration value="Pluma de Ganso"/>
+            <xsd:enumeration value="Policarbonato"/>
+            <xsd:enumeration value="Polietileno"/>
+            <xsd:enumeration value="Polipropileno"/>
+            <xsd:enumeration value="Poliéster"/>
+            <xsd:enumeration value="Poliresina"/>
+            <xsd:enumeration value="Poliuretano"/>
+            <xsd:enumeration value="Porcelana"/>
+            <xsd:enumeration value="PVC"/>
+            <xsd:enumeration value="Fibras Sintéticas"/>
+            <xsd:enumeration value="Resina"/>
+            <xsd:enumeration value="Silicón"/>
+            <xsd:enumeration value="Tela"/>
+            <xsd:enumeration value="Titanio"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Vidrio Forrado de Metal"/>
+            <xsd:enumeration value="Vidrio Templado"/>
+            <xsd:enumeration value="Vinil"/>
+            <xsd:enumeration value="Vitroceramica Acero"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acero Vitrificado"/>
+            <xsd:enumeration value="Acrílico"/>
+            <xsd:enumeration value="Alambrón Cromado"/>
+            <xsd:enumeration value="Alambrón Plateado"/>
+            <xsd:enumeration value="Algodón"/>
+            <xsd:enumeration value="Aluminio"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Cable metálico"/>
+            <xsd:enumeration value="Cartón"/>
+            <xsd:enumeration value="Caucho"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Cera"/>
+            <xsd:enumeration value="Cerámica"/>
+            <xsd:enumeration value="Cristal"/>
+            <xsd:enumeration value="Hierro fundido"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Mármol"/>
+            <xsd:enumeration value="Material Reciclado"/>
+            <xsd:enumeration value="Melamina"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Microfibra"/>
+            <xsd:enumeration value="Nylon"/>
+            <xsd:enumeration value="Opalglass"/>
+            <xsd:enumeration value="Papel"/>
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Plástico ABS"/>
+            <xsd:enumeration value="Plástico Libre de BPA"/>
+            <xsd:enumeration value="Policarbonato"/>
+            <xsd:enumeration value="Poliéster"/>
+            <xsd:enumeration value="Polietileno"/>
+            <xsd:enumeration value="Polipropileno"/>
+            <xsd:enumeration value="Poliuretano"/>
+            <xsd:enumeration value="Porcelana"/>
+            <xsd:enumeration value="PVC"/>
+            <xsd:enumeration value="Resina"/>
+            <xsd:enumeration value="Silicón"/>
+            <xsd:enumeration value="Titanio"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Vidrio Templado"/>
+            <xsd:enumeration value="Vitrelle"/>
+            <xsd:enumeration value="Vitroacero"/>
+            <xsd:enumeration value="Vitrocerámica Plástico"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acero"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Alambrón"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="springSize" type="wm:LengthUnit">
+        <xsd:annotation>
+          <xsd:documentation>Se refiere al número que indica el grueso del resorte.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Calibre del Resorte</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfCoils">
+        <xsd:annotation>
+          <xsd:documentation>El número de resortes con los que cuenta el colchón.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número de Resortes</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="mattressPadAndTopperType">
+        <xsd:annotation>
+          <xsd:documentation>Indica si el producto cuenta con colchoneta integrada o no.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Colchoneta</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="400"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="mattressType">
+        <xsd:annotation>
+          <xsd:documentation>Indica el tipo de tecnología con la que cuenta el artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Sistema de Descanso</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="400"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="shortDescription">
+        <xsd:annotation>
+          <xsd:documentation>Descripción general de los puntos de venta clave del artículo, contenido de marketing y puntos destacados en forma de párrafo. Para fines de SEO, repita el nombre del producto y las palabras clave relevantes aquí.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Descripción corta</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>8000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="keyFeatures" type="wm:KeyFeatures">
+        <xsd:annotation>
+          <xsd:documentation>Las características clave aparecerán como texto con viñetas en la página del elemento y en los resultados de búsqueda. Las características clave ayudan al usuario a comprender los beneficios del producto con un formato simple y limpio. Recomendamos usar tres o más funciones clave.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Características clave</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>9000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="mainImageUrl">
+        <xsd:annotation>
+          <xsd:documentation>Imagen principal del artículo. La URL de la imagen debe terminar en el nombre del archivo. La URL de la imagen debe ser estática y no tener redirecciones. Tipo de archivo preferido: JPEG Tipos de archivo aceptados: JPG, PNG, GIF, BMP Resolución de imagen recomendada: 3000 x 3000 píxeles a 300 ppi. Requisitos mínimos de tamaño de imagen: Capacidad de zoom: 2000 x 2000 píxeles a 300 ppp. Mínimo sin zoom: 500 x 500 píxeles a 72 ppi. Tamaño máximo de archivo: 2 MB.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Link de imagen principal</wm:displayName>
+            <wm:group>Images</wm:group>
+            <wm:rank>16000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:anyURI"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="productSecondaryImageURL" type="wm:ProductSecondaryImageURL">
+        <xsd:annotation>
+          <xsd:documentation>Imágenes secundarias del artículo. La URL de la imagen debe terminar en el nombre del archivo. La URL de la imagen debe ser estática y no tener redirecciones. Tipo de archivo preferido: JPEG Tipos de archivo aceptados: JPG, PNG, GIF, BMP Resolución de imagen recomendada: 3000 x 3000 píxeles a 300 ppi. Requisitos mínimos de tamaño de imagen: Capacidad de zoom: 2000 x 2000 píxeles a 300 ppp. Mínimo sin zoom: 500 x 500 píxeles a 72 ppi. Tamaño máximo de archivo: 2 MB.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Link de imágenes secundarias</wm:displayName>
+            <wm:group>Images</wm:group>
+            <wm:rank>17000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="color">
+        <xsd:annotation>
+          <xsd:documentation>Color como lo describe el fabricante.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Color</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>19000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="material">
+        <xsd:annotation>
+          <xsd:documentation>El (los) material (es) principal (es) de los que está hecho un producto. Esto no necesita ser una lista exhaustiva, pero debe contener el material / materiales predominantes o funcionalmente importantes. Las especificaciones del material de la tela se deben ingresar usando el atributo &quot;Contenido de la tela&quot;.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>composición</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>22000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductLength">
+        <xsd:annotation>
+          <xsd:documentation>La longitud del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Largo del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>36000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductWidth">
+        <xsd:annotation>
+          <xsd:documentation>El ancho del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Ancho del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>37000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductHeight">
+        <xsd:annotation>
+          <xsd:documentation>La altura del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Altura del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>38000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductWeight">
+        <xsd:annotation>
+          <xsd:documentation>El peso del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Peso del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>39000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="kg"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="keywords">
+        <xsd:annotation>
+          <xsd:documentation>Palabras que la gente usaría para buscar este artículo. Las palabras clave pueden incluir sinónimos y términos relacionados.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Palabras clave</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>72000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="productVideo" type="wm:ProductVideo">
+        <xsd:annotation>
+          <xsd:documentation>Colocar la URL del video de YouTube en donde se muestran las características del producto </xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>URL del vídeo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>82000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="cleaningCareAndMaintenance">
+        <xsd:annotation>
+          <xsd:documentation>Recomendaciones para el lavado del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Indicaciones de limpieza, cuidado y mantenimiento</wm:displayName>
+            <wm:group>Nice to Have</wm:group>
+            <wm:rank>83000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="bedSize">
+        <xsd:annotation>
+          <xsd:documentation>Indicar el nombre del tamaño comercial con el que se refiere al producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tamaño de la cama</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>84000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Estándar"/>
+            <xsd:enumeration value="Individual"/>
+            <xsd:enumeration value="Matrimonial"/>
+            <xsd:enumeration value="Matrimonial/Queen"/>
+            <xsd:enumeration value="King Size"/>
+            <xsd:enumeration value="Queen Size"/>
+            <xsd:enumeration value="Euro (Esperar los ejemplos)"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="fillMaterial">
+        <xsd:annotation>
+          <xsd:documentation>Indica el tipo de material con el que se rellena la almohada.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Relleno de Almohada</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>86000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="1" name="fillMaterialValue">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Espuma"/>
+                  <xsd:enumeration value="Poliéster"/>
+                  <xsd:enumeration value="Látex"/>
+                  <xsd:enumeration value="Pluma"/>
+                  <xsd:enumeration value="Plumón"/>
+                  <xsd:enumeration value="Micro esferás"/>
+                  <xsd:enumeration value="Viscolátex"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="countryOfOriginAssembly">
+        <xsd:annotation>
+          <xsd:documentation>Seleccione el país donde se montó el artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>País de Origen</wm:displayName>
+            <wm:group>Compliance</wm:group>
+            <wm:rank>87000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Afganistán"/>
+            <xsd:enumeration value="Albania"/>
+            <xsd:enumeration value="Alemania"/>
+            <xsd:enumeration value="Andorra"/>
+            <xsd:enumeration value="Angola"/>
+            <xsd:enumeration value="Antigua y Barbuda"/>
+            <xsd:enumeration value="Arabia Saudita"/>
+            <xsd:enumeration value="Argelia"/>
+            <xsd:enumeration value="Argentina"/>
+            <xsd:enumeration value="Armenia"/>
+            <xsd:enumeration value="Australia"/>
+            <xsd:enumeration value="Austria"/>
+            <xsd:enumeration value="Azerbaiyán"/>
+            <xsd:enumeration value="Bahamas"/>
+            <xsd:enumeration value="Bangladés"/>
+            <xsd:enumeration value="Barbados"/>
+            <xsd:enumeration value="Baréin"/>
+            <xsd:enumeration value="Bélgica"/>
+            <xsd:enumeration value="Belice"/>
+            <xsd:enumeration value="Benín"/>
+            <xsd:enumeration value="Bielorrusia"/>
+            <xsd:enumeration value="Birmania/Myanmar"/>
+            <xsd:enumeration value="Bolivia"/>
+            <xsd:enumeration value="Bosnia y Herzegovina"/>
+            <xsd:enumeration value="Botsuana"/>
+            <xsd:enumeration value="Brasil"/>
+            <xsd:enumeration value="Brunéi"/>
+            <xsd:enumeration value="Bulgaria"/>
+            <xsd:enumeration value="Burkina Faso"/>
+            <xsd:enumeration value="Burundi"/>
+            <xsd:enumeration value="Bután"/>
+            <xsd:enumeration value="Cabo Verde"/>
+            <xsd:enumeration value="Camboya"/>
+            <xsd:enumeration value="Camerún"/>
+            <xsd:enumeration value="Canadá"/>
+            <xsd:enumeration value="Catar"/>
+            <xsd:enumeration value="Chad"/>
+            <xsd:enumeration value="Chile"/>
+            <xsd:enumeration value="China"/>
+            <xsd:enumeration value="Chipre"/>
+            <xsd:enumeration value="Ciudad del Vaticano"/>
+            <xsd:enumeration value="Colombia"/>
+            <xsd:enumeration value="Comoras"/>
+            <xsd:enumeration value="Corea del Norte"/>
+            <xsd:enumeration value="Corea del Sur"/>
+            <xsd:enumeration value="Costa de Marfil"/>
+            <xsd:enumeration value="Costa Rica"/>
+            <xsd:enumeration value="Croacia"/>
+            <xsd:enumeration value="Dinamarca"/>
+            <xsd:enumeration value="Dominica"/>
+            <xsd:enumeration value="Ecuador"/>
+            <xsd:enumeration value="Egipto"/>
+            <xsd:enumeration value="El Salvador"/>
+            <xsd:enumeration value="Emiratos Árabes Unidos"/>
+            <xsd:enumeration value="Eritrea"/>
+            <xsd:enumeration value="Eslovaquia"/>
+            <xsd:enumeration value="Eslovenia"/>
+            <xsd:enumeration value="España"/>
+            <xsd:enumeration value="Estados Unidos"/>
+            <xsd:enumeration value="Estonia"/>
+            <xsd:enumeration value="Etiopía"/>
+            <xsd:enumeration value="Filipinas"/>
+            <xsd:enumeration value="Finlandia"/>
+            <xsd:enumeration value="Fiyi"/>
+            <xsd:enumeration value="Francia"/>
+            <xsd:enumeration value="Gabón"/>
+            <xsd:enumeration value="Gambia"/>
+            <xsd:enumeration value="Georgia"/>
+            <xsd:enumeration value="Ghana"/>
+            <xsd:enumeration value="Granada"/>
+            <xsd:enumeration value="Grecia"/>
+            <xsd:enumeration value="Guatemala"/>
+            <xsd:enumeration value="Guyana"/>
+            <xsd:enumeration value="Guinea"/>
+            <xsd:enumeration value="Guinea ecuatorial"/>
+            <xsd:enumeration value="Guinea-Bisáu"/>
+            <xsd:enumeration value="Haití"/>
+            <xsd:enumeration value="Honduras"/>
+            <xsd:enumeration value="Hungría"/>
+            <xsd:enumeration value="India"/>
+            <xsd:enumeration value="Indonesia"/>
+            <xsd:enumeration value="Irak"/>
+            <xsd:enumeration value="Irán"/>
+            <xsd:enumeration value="Irlanda"/>
+            <xsd:enumeration value="Islandia"/>
+            <xsd:enumeration value="Islas Marshall"/>
+            <xsd:enumeration value="Islas Salomón"/>
+            <xsd:enumeration value="Israel"/>
+            <xsd:enumeration value="Italia"/>
+            <xsd:enumeration value="Jamaica"/>
+            <xsd:enumeration value="Japón"/>
+            <xsd:enumeration value="Jordania"/>
+            <xsd:enumeration value="Kazajistán"/>
+            <xsd:enumeration value="Kenia"/>
+            <xsd:enumeration value="Kirguistán"/>
+            <xsd:enumeration value="Kiribati"/>
+            <xsd:enumeration value="Kuwait"/>
+            <xsd:enumeration value="Laos"/>
+            <xsd:enumeration value="Lesoto"/>
+            <xsd:enumeration value="Letonia"/>
+            <xsd:enumeration value="Líbano"/>
+            <xsd:enumeration value="Liberia"/>
+            <xsd:enumeration value="Libia"/>
+            <xsd:enumeration value="Liechtenstein"/>
+            <xsd:enumeration value="Lituania"/>
+            <xsd:enumeration value="Luxemburgo"/>
+            <xsd:enumeration value="Madagascar"/>
+            <xsd:enumeration value="Malasia"/>
+            <xsd:enumeration value="Malaui"/>
+            <xsd:enumeration value="Maldivas"/>
+            <xsd:enumeration value="Malí"/>
+            <xsd:enumeration value="Malta"/>
+            <xsd:enumeration value="Marruecos"/>
+            <xsd:enumeration value="Mauricio"/>
+            <xsd:enumeration value="Mauritania"/>
+            <xsd:enumeration value="México"/>
+            <xsd:enumeration value="Micronesia"/>
+            <xsd:enumeration value="Moldavia"/>
+            <xsd:enumeration value="Mónaco"/>
+            <xsd:enumeration value="Mongolia"/>
+            <xsd:enumeration value="Montenegro"/>
+            <xsd:enumeration value="Mozambique"/>
+            <xsd:enumeration value="Namibia"/>
+            <xsd:enumeration value="Nauru"/>
+            <xsd:enumeration value="Nepal"/>
+            <xsd:enumeration value="Nicaragua"/>
+            <xsd:enumeration value="Níger"/>
+            <xsd:enumeration value="Nigeria"/>
+            <xsd:enumeration value="Noruega"/>
+            <xsd:enumeration value="Nueva Zelanda"/>
+            <xsd:enumeration value="Omán"/>
+            <xsd:enumeration value="Países Bajos"/>
+            <xsd:enumeration value="Pakistán"/>
+            <xsd:enumeration value="Palaos"/>
+            <xsd:enumeration value="Panamá"/>
+            <xsd:enumeration value="Papúa Nueva Guinea"/>
+            <xsd:enumeration value="Paraguay"/>
+            <xsd:enumeration value="Perú"/>
+            <xsd:enumeration value="Polonia"/>
+            <xsd:enumeration value="Portugal"/>
+            <xsd:enumeration value="Reino Unido"/>
+            <xsd:enumeration value="República Centroafricana"/>
+            <xsd:enumeration value="República Checa"/>
+            <xsd:enumeration value="República de Macedonia"/>
+            <xsd:enumeration value="República del Congo"/>
+            <xsd:enumeration value="República Democrática del Congo"/>
+            <xsd:enumeration value="República Dominicana"/>
+            <xsd:enumeration value="República Sudafricana"/>
+            <xsd:enumeration value="Ruanda: Rumanía"/>
+            <xsd:enumeration value="Rusia"/>
+            <xsd:enumeration value="Samoa"/>
+            <xsd:enumeration value="San Cristóbal y Nieves"/>
+            <xsd:enumeration value="San Marino"/>
+            <xsd:enumeration value="San Vicente y las Granadinas"/>
+            <xsd:enumeration value="Santa Lucía"/>
+            <xsd:enumeration value="Santo Tomé y Príncipe"/>
+            <xsd:enumeration value="Senegal"/>
+            <xsd:enumeration value="Serbia"/>
+            <xsd:enumeration value="Seychelles"/>
+            <xsd:enumeration value="Sierra Leona"/>
+            <xsd:enumeration value="Singapur"/>
+            <xsd:enumeration value="Siria"/>
+            <xsd:enumeration value="Somalia"/>
+            <xsd:enumeration value="Sri Lanka"/>
+            <xsd:enumeration value="Suazilandia"/>
+            <xsd:enumeration value="Sudán"/>
+            <xsd:enumeration value="Sudán del Sur"/>
+            <xsd:enumeration value="Suecia: Suiza"/>
+            <xsd:enumeration value="Surinam"/>
+            <xsd:enumeration value="Tailandia"/>
+            <xsd:enumeration value="Tanzania"/>
+            <xsd:enumeration value="Tayikistán"/>
+            <xsd:enumeration value="Timor Oriental"/>
+            <xsd:enumeration value="Togo"/>
+            <xsd:enumeration value="Tonga"/>
+            <xsd:enumeration value="Trinidad y Tobago"/>
+            <xsd:enumeration value="Túnez"/>
+            <xsd:enumeration value="Turkmenistán"/>
+            <xsd:enumeration value="Turquía"/>
+            <xsd:enumeration value="Tuvalu"/>
+            <xsd:enumeration value="Ucrania"/>
+            <xsd:enumeration value="Uganda"/>
+            <xsd:enumeration value="Uruguay"/>
+            <xsd:enumeration value="Uzbekistán"/>
+            <xsd:enumeration value="Vanuatu"/>
+            <xsd:enumeration value="Venezuela"/>
+            <xsd:enumeration value="Vietnam"/>
+            <xsd:enumeration value="Yemen"/>
+            <xsd:enumeration value="Yibuti"/>
+            <xsd:enumeration value="Zambia"/>
+            <xsd:enumeration value="Zimbabue"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="subBrand">
+        <xsd:annotation>
+          <xsd:documentation>Indica la siguiente línea de importancia de la marca. Indica la sub-marca del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Submarcas</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>88000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="itemsIncluded">
+        <xsd:annotation>
+          <xsd:documentation>Describe los artículos que están incluidos en o con el producto. Los ejemplos pueden incluir hardware o accesorios.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Contenido del empaque</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>89000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="modelStyleType">
+        <xsd:annotation>
+          <xsd:documentation>Esto representa el modelo, estilo y tipo de televisor.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Modelo / Estilo / Tipo</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>90000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="brand">
+        <xsd:annotation>
+          <xsd:documentation>Nombre, término, diseño u otra característica que distingue el producto de un vendedor de los de otros. Este puede ser el nombre de la compañía asociada con el producto, pero no siempre. Si el artículo no tiene una marca, use &quot;Sin marca&quot;.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Marca</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>91000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="60"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="LargeAppliances">
+    <xsd:all>
+      <xsd:element maxOccurs="1" minOccurs="0" name="dryerCapacity">
+        <xsd:annotation>
+          <xsd:documentation>Rango de capacidad de aguante en kilos de ropa.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capacidad de Secado</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="8"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Kg"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfShelves">
+        <xsd:annotation>
+          <xsd:documentation>Mencionar el número de soportes de las puertas de refrigerador y congelador.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número de Anaqueles</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="7"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="operatingType">
+        <xsd:annotation>
+          <xsd:documentation>Indica el tipo de ensartador que incluye la máquina de coser. Ya sea automático o manual.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Aparato</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Eléctrica"/>
+            <xsd:enumeration value="Magnética"/>
+            <xsd:enumeration value="Manual"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="energyConsumptionPerYear">
+        <xsd:annotation>
+          <xsd:documentation>Mención del consumo total de kilowatts al año del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Consumo de Energía</wm:displayName>
+            <wm:group>Compliance</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="16"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="rangeHoodType">
+        <xsd:annotation>
+          <xsd:documentation>En las estufas, se indica el material del capelo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capelo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="400"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="gasType">
+        <xsd:annotation>
+          <xsd:documentation>Indica la compatibilidad del producto con el tipo de gas o combustible LP.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>TIPO DE GAS</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Gas Natural"/>
+            <xsd:enumeration value="Gas LP"/>
+            <xsd:enumeration value="Gas Natural y Gas LP"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="sewingMachineType">
+        <xsd:annotation>
+          <xsd:documentation>Mención del producto según su composición y características.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Máquina</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Mecánica"/>
+            <xsd:enumeration value="Computarizada"/>
+            <xsd:enumeration value="Bordadora"/>
+            <xsd:enumeration value="Over"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="holdingCapacity">
+        <xsd:annotation>
+          <xsd:documentation>Rango de capacidad de aguante en kilos de ropa.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capacidad en Latas</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:maxLength value="400"/>
+                  <xsd:minLength value="1"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Kg"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="videoPanelDesign">
+        <xsd:annotation>
+          <xsd:documentation>Indica el diseño del panel de video del producto, si es curvo, plano o enmarcado</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Forma de la pantalla</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="LED"/>
+            <xsd:enumeration value="HD"/>
+            <xsd:enumeration value="Touch"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="filterType">
+        <xsd:annotation>
+          <xsd:documentation>Indica el tipo de artículo compatible con la cafetera o la aspiradora.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Filtros</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Permanente"/>
+            <xsd:enumeration value="Deshechable"/>
+            <xsd:enumeration value="Cartucho"/>
+            <xsd:enumeration value="Bolsa"/>
+            <xsd:enumeration value="Papel"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="dripCoffeeMakerType">
+        <xsd:annotation>
+          <xsd:documentation>Variación del producto según se trate de Goteo, Cápsulas, Percoladora, Espresso-Capuchino.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Cafetera</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Goteo"/>
+            <xsd:enumeration value="Cápsulas"/>
+            <xsd:enumeration value="Percoladora"/>
+            <xsd:enumeration value="Espresso-Capuchino"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="instructions">
+        <xsd:annotation>
+          <xsd:documentation>Indicar las instrucciones pertinentes para el uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Instrucciones</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Aplicar una pequeña cantidad en diferentes partes del cuerpo"/>
+            <xsd:enumeration value="Conectar el producto y dejar calentar por 30 segundos para comenzar el uso"/>
+            <xsd:enumeration value="Desconectar de la corriente después del uso"/>
+            <xsd:enumeration value="Limpiar con un paño húmedo y secar inmediatamente"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfDrawers">
+        <xsd:annotation>
+          <xsd:documentation>Mencionar el número de cajones para guardar en refrigerador o congelador.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número de Gavetas</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="7"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="technology">
+        <xsd:annotation>
+          <xsd:documentation>Indicar las características especiales que mejoran el funcionamiento del artículo y lo distiguen de la competencia </xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tecnología</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="40"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="airConditionerType">
+        <xsd:annotation>
+          <xsd:documentation>Refiere al clima o ambiente que genera el Mini Split.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Mini Split</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sólo Frio"/>
+            <xsd:enumeration value="Frio y Calor"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="basketMaterial">
+        <xsd:annotation>
+          <xsd:documentation>Material de la canasta dentro de la lavadora.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Acabado De La Canasta</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Plástico"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="electronicsFeature">
+        <xsd:annotation>
+          <xsd:documentation>Identifica si el artículo cuenta con funciones como grabar, emitir sonidos, girar, prender o similar.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Electrónico</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Inverter"/>
+            <xsd:enumeration value="Portátil"/>
+            <xsd:enumeration value="De ventana"/>
+            <xsd:enumeration value="Aire lavado"/>
+            <xsd:enumeration value="On/Off"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="dispenserIncluded">
+        <xsd:annotation>
+          <xsd:documentation>Sistema para la distribución del agua en la parte frontal del refrigerador. Indicar si cuenta o no con esta característica</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Despachador De Agua</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sí"/>
+            <xsd:enumeration value="No"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfWaterLevels">
+        <xsd:annotation>
+          <xsd:documentation>Indica el número de niveles que la lavadora tiene para el llenado de agua.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Niveles De Agua</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="percentageOfEnergySavings">
+        <xsd:annotation>
+          <xsd:documentation>Indica el porcentaje de ahorro de energía del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Ahorro de energía</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="controlType">
+        <xsd:annotation>
+          <xsd:documentation>Indica la función automática o manual de la lavadora. </xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Programas de Lavado</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="400"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfSpeeds">
+        <xsd:annotation>
+          <xsd:documentation>Indica el número de velocidades que tiene el electrodoméstico.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número de Velocidades</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="7"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="waterConsumption">
+        <xsd:annotation>
+          <xsd:documentation>Indicación de el número de litros que se consumen en cada ciclo de lavado.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Consumo de Agua</wm:displayName>
+            <wm:group>Compliance</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="vacuumCleanerType">
+        <xsd:annotation>
+          <xsd:documentation>Variación del producto según su diseño y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Aspiradora</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Barredora"/>
+            <xsd:enumeration value="Canister"/>
+            <xsd:enumeration value="Robot"/>
+            <xsd:enumeration value="Pedestal"/>
+            <xsd:enumeration value="Portátil"/>
+            <xsd:enumeration value="Seco-Mojado"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="hasElectricStarter">
+        <xsd:annotation>
+          <xsd:documentation>Se indica si el electrodoméstico cuenta con la opción de encenderse de manera electrónica. Indicar si cuenta o no con esta característica.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Encendido Electrónico</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sí"/>
+            <xsd:enumeration value="No"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfBottles">
+        <xsd:annotation>
+          <xsd:documentation>Se especifica la capacidad de almacenamiento de cafeteras, sandwicheras, waffleras y cavas.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capacidad (Botellas/Tazas/Porciones)</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Menos de 10 Botellas"/>
+            <xsd:enumeration value="10 a 20 Botellas"/>
+            <xsd:enumeration value="21 a 50 Botellas"/>
+            <xsd:enumeration value="51 a 100 Botellas"/>
+            <xsd:enumeration value="Más de 100 Botellas"/>
+            <xsd:enumeration value="1 a 12 Tazas"/>
+            <xsd:enumeration value="12 a 24 Tazas"/>
+            <xsd:enumeration value="Más de 24 tazas"/>
+            <xsd:enumeration value="1 a 2 Porciones"/>
+            <xsd:enumeration value="3 a 4 Porciones"/>
+            <xsd:enumeration value="Más de 4 Porciones"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfBurners">
+        <xsd:annotation>
+          <xsd:documentation>Se enumera la cantidad de parrillas o quemadores que presentan los diferentes tipos de estufa o parrilla eléctrica.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número De Parrillas ó Quemadores</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="7"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfDividers">
+        <xsd:annotation>
+          <xsd:documentation>Indicar el número de divisiones con las que cuenta el electrodoméstico.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número de Parrillas Del Refrigerador</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="secondaryMaterial">
+        <xsd:annotation>
+          <xsd:documentation>Refiere al elemento principal o predominante en la composición del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Material de fabricación</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Acero"/>
+            <xsd:enumeration value="Acero Carbonizado"/>
+            <xsd:enumeration value="Acero Cromado"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acrílico"/>
+            <xsd:enumeration value="Alambrón Cromado"/>
+            <xsd:enumeration value="Acero Vitrificado"/>
+            <xsd:enumeration value="Alambrón Plateado"/>
+            <xsd:enumeration value="Algodón"/>
+            <xsd:enumeration value="Algodón Egipcio"/>
+            <xsd:enumeration value="Aluminio"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Cable Metálico"/>
+            <xsd:enumeration value="Cartón"/>
+            <xsd:enumeration value="Caucho"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Cera"/>
+            <xsd:enumeration value="Cerámica"/>
+            <xsd:enumeration value="Cristal"/>
+            <xsd:enumeration value="Espuma"/>
+            <xsd:enumeration value="Espuma de Poliuretano"/>
+            <xsd:enumeration value="Espuma Visco Elástica"/>
+            <xsd:enumeration value="Hierro fundido"/>
+            <xsd:enumeration value="Hule Espuma"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Madera de Pino"/>
+            <xsd:enumeration value="Hule Natural"/>
+            <xsd:enumeration value="Mármol"/>
+            <xsd:enumeration value="Material Reciclado"/>
+            <xsd:enumeration value="Melamina"/>
+            <xsd:enumeration value="Memory Foam"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Metal Cromado"/>
+            <xsd:enumeration value="Microfibra"/>
+            <xsd:enumeration value="Nylon"/>
+            <xsd:enumeration value="Opalglass"/>
+            <xsd:enumeration value="Papel"/>
+            <xsd:enumeration value="Percal"/>
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Plástico ABS"/>
+            <xsd:enumeration value="Plástico EVA"/>
+            <xsd:enumeration value="Plástico Libre de BPA"/>
+            <xsd:enumeration value="Pluma de Ganso"/>
+            <xsd:enumeration value="Policarbonato"/>
+            <xsd:enumeration value="Polietileno"/>
+            <xsd:enumeration value="Polipropileno"/>
+            <xsd:enumeration value="Poliéster"/>
+            <xsd:enumeration value="Poliresina"/>
+            <xsd:enumeration value="Poliuretano"/>
+            <xsd:enumeration value="Porcelana"/>
+            <xsd:enumeration value="PVC"/>
+            <xsd:enumeration value="Fibras Sintéticas"/>
+            <xsd:enumeration value="Resina"/>
+            <xsd:enumeration value="Silicón"/>
+            <xsd:enumeration value="Tela"/>
+            <xsd:enumeration value="Titanio"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Vidrio Forrado de Metal"/>
+            <xsd:enumeration value="Vidrio Templado"/>
+            <xsd:enumeration value="Vinil"/>
+            <xsd:enumeration value="Vitroceramica Acero"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acero Vitrificado"/>
+            <xsd:enumeration value="Acrílico"/>
+            <xsd:enumeration value="Alambrón Cromado"/>
+            <xsd:enumeration value="Alambrón Plateado"/>
+            <xsd:enumeration value="Algodón"/>
+            <xsd:enumeration value="Aluminio"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Cable metálico"/>
+            <xsd:enumeration value="Cartón"/>
+            <xsd:enumeration value="Caucho"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Cera"/>
+            <xsd:enumeration value="Cerámica"/>
+            <xsd:enumeration value="Cristal"/>
+            <xsd:enumeration value="Hierro fundido"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Mármol"/>
+            <xsd:enumeration value="Material Reciclado"/>
+            <xsd:enumeration value="Melamina"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Microfibra"/>
+            <xsd:enumeration value="Nylon"/>
+            <xsd:enumeration value="Opalglass"/>
+            <xsd:enumeration value="Papel"/>
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Plástico ABS"/>
+            <xsd:enumeration value="Plástico Libre de BPA"/>
+            <xsd:enumeration value="Policarbonato"/>
+            <xsd:enumeration value="Poliéster"/>
+            <xsd:enumeration value="Polietileno"/>
+            <xsd:enumeration value="Polipropileno"/>
+            <xsd:enumeration value="Poliuretano"/>
+            <xsd:enumeration value="Porcelana"/>
+            <xsd:enumeration value="PVC"/>
+            <xsd:enumeration value="Resina"/>
+            <xsd:enumeration value="Silicón"/>
+            <xsd:enumeration value="Titanio"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Vidrio Templado"/>
+            <xsd:enumeration value="Vitrelle"/>
+            <xsd:enumeration value="Vitroacero"/>
+            <xsd:enumeration value="Vitrocerámica Plástico"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acero"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Alambrón"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfDoors">
+        <xsd:annotation>
+          <xsd:documentation>Número de puertas con las que cuenta el electrodoméstico.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número De Puertas</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="8"/>
+            <xsd:enumeration value="0"/>
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="2"/>
+            <xsd:enumeration value="3"/>
+            <xsd:enumeration value="4"/>
+            <xsd:enumeration value="5"/>
+            <xsd:enumeration value="6"/>
+            <xsd:enumeration value="7"/>
+            <xsd:enumeration value="8"/>
+            <xsd:enumeration value="9"/>
+            <xsd:enumeration value="10"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="spaceHeaterType">
+        <xsd:annotation>
+          <xsd:documentation>Mención del producto según su composición y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Calefactor</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="1" name="spaceHeaterTypeValue">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Pedestal"/>
+                  <xsd:enumeration value="Piso"/>
+                  <xsd:enumeration value="Torre"/>
+                  <xsd:enumeration value="Pared"/>
+                  <xsd:enumeration value="Escritorio"/>
+                  <xsd:enumeration value="Gas"/>
+                  <xsd:enumeration value="Resistencia"/>
+                  <xsd:enumeration value="Aceite"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="iceMakerType">
+        <xsd:annotation>
+          <xsd:documentation>Mencionar si el refrigerador cuenta con fábrica de hielo o despachador de hielo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Hielo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Fábrica de Hielo"/>
+            <xsd:enumeration value="Despachador de Hielo"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="maximumTemperature">
+        <xsd:annotation>
+          <xsd:documentation>Nivel máximo de temperatura en centígrados que genera el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Temperatura Máxima</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="ºF"/>
+                  <xsd:enumeration value="ºC"/>
+                  <xsd:enumeration value="ºK"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="cookingRangeType">
+        <xsd:annotation>
+          <xsd:documentation>Mención del producto según su composición y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Estufa</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Empotrable"/>
+            <xsd:enumeration value="Piso"/>
+            <xsd:enumeration value="Piso con Capelo"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="refrigeratorType">
+        <xsd:annotation>
+          <xsd:documentation>Mención del producto según su tamaño, diseño de origen y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Refrigerador</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Top Mount"/>
+            <xsd:enumeration value="Bottom Mount"/>
+            <xsd:enumeration value="Dúplex"/>
+            <xsd:enumeration value="French Door"/>
+            <xsd:enumeration value="Frigobar"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="standMixerType">
+        <xsd:annotation>
+          <xsd:documentation>Mención del producto según su composición y características.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Batidora</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="De pulso"/>
+            <xsd:enumeration value="Velocidades"/>
+            <xsd:enumeration value="Magnética"/>
+            <xsd:enumeration value="Digital"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="washingMachineType">
+        <xsd:annotation>
+          <xsd:documentation>Mecanismo por el cual la lavadora hace diferentes formas de lavado.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Sistema de Lavado</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Burbujas"/>
+            <xsd:enumeration value="Agitador"/>
+            <xsd:enumeration value="Impulsor"/>
+            <xsd:enumeration value="Tambor"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="lightBulbType">
+        <xsd:annotation>
+          <xsd:documentation>Mención de la variación en la calidad y cantidad de luz que produce el objeto luminoso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Iluminación</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Blanca"/>
+            <xsd:enumeration value="Cálida"/>
+            <xsd:enumeration value="Fría"/>
+            <xsd:enumeration value="Intensa"/>
+            <xsd:enumeration value="Neutra"/>
+            <xsd:enumeration value="Ultravioleta"/>
+            <xsd:enumeration value="Variable"/>
+            <xsd:enumeration value="Neón"/>
+            <xsd:enumeration value="Halógeno"/>
+            <xsd:enumeration value="LED"/>
+            <xsd:enumeration value="Incandescente"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfWashCycles">
+        <xsd:annotation>
+          <xsd:documentation>Mención del número programado y posible de rutinas para el lavado.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Número De Ciclos</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="8"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfSettings">
+        <xsd:annotation>
+          <xsd:documentation>El rango de servicios personales que soporta la lavavajillas.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Servicios</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="9-12 servicios"/>
+            <xsd:enumeration value="13-15 servicios"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="freezerCapacity">
+        <xsd:annotation>
+          <xsd:documentation>Rango de capacidad de almacenamiento del congelador.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capacidad Congeladores</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="8"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Pies cúbicos"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="electricHouseholdFanType">
+        <xsd:annotation>
+          <xsd:documentation>Mención del producto según su composición y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Ventilador</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Pedestal"/>
+            <xsd:enumeration value="Piso"/>
+            <xsd:enumeration value="Torre"/>
+            <xsd:enumeration value="Pared"/>
+            <xsd:enumeration value="Escritorio"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="refrigeratorFeature">
+        <xsd:annotation>
+          <xsd:documentation>Mencionar la tecnología propia de la maca para referirse al mecanismo por el cual el refrigerador realiza su función.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Sistema De Enfriamiento</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="400"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="productVideo" type="wm:ProductVideo">
+        <xsd:annotation>
+          <xsd:documentation>Colocar la URL del video de YouTube en donde se muestran las características del producto </xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>URL del vídeo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="freezerType">
+        <xsd:annotation>
+          <xsd:documentation>Variación del producto según su orientación en cuanto a colocación.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Congelador</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Horizontal"/>
+            <xsd:enumeration value="Vertical"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="shortDescription">
+        <xsd:annotation>
+          <xsd:documentation>Descripción general de los puntos de venta clave del artículo, contenido de marketing y puntos destacados en forma de párrafo. Para fines de SEO, repita el nombre del producto y las palabras clave relevantes aquí.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Descripción corta</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>8000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="keyFeatures" type="wm:KeyFeatures">
+        <xsd:annotation>
+          <xsd:documentation>Las características clave aparecerán como texto con viñetas en la página del elemento y en los resultados de búsqueda. Las características clave ayudan al usuario a comprender los beneficios del producto con un formato simple y limpio. Recomendamos usar tres o más funciones clave.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Características clave</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>9000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="brand">
+        <xsd:annotation>
+          <xsd:documentation>Nombre, término, diseño u otra característica que distingue el producto de un vendedor de los de otros. Este puede ser el nombre de la compañía asociada con el producto, pero no siempre. Si el artículo no tiene una marca, use &quot;Sin marca&quot;.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Marca</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>11000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="60"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="mainImageUrl">
+        <xsd:annotation>
+          <xsd:documentation>Imagen principal del artículo. La URL de la imagen debe terminar en el nombre del archivo. La URL de la imagen debe ser estática y no tener redirecciones. Tipo de archivo preferido: JPEG Tipos de archivo aceptados: JPG, PNG, GIF, BMP Resolución de imagen recomendada: 3000 x 3000 píxeles a 300 ppi. Requisitos mínimos de tamaño de imagen: Capacidad de zoom: 2000 x 2000 píxeles a 300 ppp. Mínimo sin zoom: 500 x 500 píxeles a 72 ppi. Tamaño máximo de archivo: 2 MB.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Link de imagen principal</wm:displayName>
+            <wm:group>Images</wm:group>
+            <wm:rank>16000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:anyURI"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="productSecondaryImageURL" type="wm:ProductSecondaryImageURL">
+        <xsd:annotation>
+          <xsd:documentation>Imágenes secundarias del artículo. La URL de la imagen debe terminar en el nombre del archivo. La URL de la imagen debe ser estática y no tener redirecciones. Tipo de archivo preferido: JPEG Tipos de archivo aceptados: JPG, PNG, GIF, BMP Resolución de imagen recomendada: 3000 x 3000 píxeles a 300 ppi. Requisitos mínimos de tamaño de imagen: Capacidad de zoom: 2000 x 2000 píxeles a 300 ppp. Mínimo sin zoom: 500 x 500 píxeles a 72 ppi. Tamaño máximo de archivo: 2 MB.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Link de imágenes secundarias</wm:displayName>
+            <wm:group>Images</wm:group>
+            <wm:rank>17000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="color">
+        <xsd:annotation>
+          <xsd:documentation>Color como lo describe el fabricante.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Color</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>19000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="capacity">
+        <xsd:annotation>
+          <xsd:documentation>Espacio disponible de un producto. La capacidad a menudo se proporciona para los artículos que contienen piezas múltiples de algo o que pueden acomodar cierta cantidad de objetos.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capacidad</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>22000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductLength">
+        <xsd:annotation>
+          <xsd:documentation>La longitud del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Largo del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>29000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductWidth">
+        <xsd:annotation>
+          <xsd:documentation>El ancho del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Ancho del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>30000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductHeight">
+        <xsd:annotation>
+          <xsd:documentation>La altura del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Altura del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>31000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductWeight">
+        <xsd:annotation>
+          <xsd:documentation>El peso del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Peso del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>32000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="kg"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="powerType">
+        <xsd:annotation>
+          <xsd:documentation>Indicación del tipo de corriente que utiliza el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Corriente</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>64000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Continua"/>
+            <xsd:enumeration value="Alterna"/>
+            <xsd:enumeration value="Universal"/>
+            <xsd:enumeration value="Directa"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="volts">
+        <xsd:annotation>
+          <xsd:documentation>Número de voltios que el producto produce o requiere. La importancia del voltaje varía con el tipo de producto. Por ejemplo, si el producto es un aparato, se utiliza para describir el voltaje de salida requerido. Si un elemento (como una fuente de alimentación) produce y requiere diferentes voltajes, se debe incluir cada tipo de voltaje.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Voltaje</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>65000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="mV"/>
+                  <xsd:enumeration value="V"/>
+                  <xsd:enumeration value="VAC"/>
+                  <xsd:enumeration value="VDC"/>
+                  <xsd:enumeration value="kV"/>
+                  <xsd:enumeration value="kVAC"/>
+                  <xsd:enumeration value="kVDC"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="watts">
+        <xsd:annotation>
+          <xsd:documentation>La cantidad de watts que utiliza el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Potencia</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>66000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="W"/>
+                  <xsd:enumeration value="KW"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="btu" type="wm:PowerUnit">
+        <xsd:annotation>
+          <xsd:documentation>Rango de calefacción que brinda el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>BTU</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>67000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="loadPosition">
+        <xsd:annotation>
+          <xsd:documentation>Refiere a la ubicación de la puerta o la forma en la que se ingresa la ropa en la lavadora, lavasecadora o secadora.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Posición de carga</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>75000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Frontal"/>
+            <xsd:enumeration value="Superior"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="keywords">
+        <xsd:annotation>
+          <xsd:documentation>Palabras que la gente usaría para buscar este artículo. Las palabras clave pueden incluir sinónimos y términos relacionados.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Palabras clave</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>84000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="subBrand">
+        <xsd:annotation>
+          <xsd:documentation>Indica la siguiente línea de importancia de la marca. Indica la sub-marca del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Submarcas</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>86000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="modelStyleType">
+        <xsd:annotation>
+          <xsd:documentation>Esto representa el modelo, estilo y tipo de televisor.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Modelo / Estilo / Tipo</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>87000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="itemsIncluded">
+        <xsd:annotation>
+          <xsd:documentation>Describe los artículos que están incluidos en o con el producto. Los ejemplos pueden incluir hardware o accesorios.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Contenido del empaque</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>88000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="countryOfOriginAssembly">
+        <xsd:annotation>
+          <xsd:documentation>Seleccione el país donde se montó el artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>País de Origen</wm:displayName>
+            <wm:group>Compliance</wm:group>
+            <wm:rank>89000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Afganistán"/>
+            <xsd:enumeration value="Albania"/>
+            <xsd:enumeration value="Alemania"/>
+            <xsd:enumeration value="Andorra"/>
+            <xsd:enumeration value="Angola"/>
+            <xsd:enumeration value="Antigua y Barbuda"/>
+            <xsd:enumeration value="Arabia Saudita"/>
+            <xsd:enumeration value="Argelia"/>
+            <xsd:enumeration value="Argentina"/>
+            <xsd:enumeration value="Armenia"/>
+            <xsd:enumeration value="Australia"/>
+            <xsd:enumeration value="Austria"/>
+            <xsd:enumeration value="Azerbaiyán"/>
+            <xsd:enumeration value="Bahamas"/>
+            <xsd:enumeration value="Bangladés"/>
+            <xsd:enumeration value="Barbados"/>
+            <xsd:enumeration value="Baréin"/>
+            <xsd:enumeration value="Bélgica"/>
+            <xsd:enumeration value="Belice"/>
+            <xsd:enumeration value="Benín"/>
+            <xsd:enumeration value="Bielorrusia"/>
+            <xsd:enumeration value="Birmania/Myanmar"/>
+            <xsd:enumeration value="Bolivia"/>
+            <xsd:enumeration value="Bosnia y Herzegovina"/>
+            <xsd:enumeration value="Botsuana"/>
+            <xsd:enumeration value="Brasil"/>
+            <xsd:enumeration value="Brunéi"/>
+            <xsd:enumeration value="Bulgaria"/>
+            <xsd:enumeration value="Burkina Faso"/>
+            <xsd:enumeration value="Burundi"/>
+            <xsd:enumeration value="Bután"/>
+            <xsd:enumeration value="Cabo Verde"/>
+            <xsd:enumeration value="Camboya"/>
+            <xsd:enumeration value="Camerún"/>
+            <xsd:enumeration value="Canadá"/>
+            <xsd:enumeration value="Catar"/>
+            <xsd:enumeration value="Chad"/>
+            <xsd:enumeration value="Chile"/>
+            <xsd:enumeration value="China"/>
+            <xsd:enumeration value="Chipre"/>
+            <xsd:enumeration value="Ciudad del Vaticano"/>
+            <xsd:enumeration value="Colombia"/>
+            <xsd:enumeration value="Comoras"/>
+            <xsd:enumeration value="Corea del Norte"/>
+            <xsd:enumeration value="Corea del Sur"/>
+            <xsd:enumeration value="Costa de Marfil"/>
+            <xsd:enumeration value="Costa Rica"/>
+            <xsd:enumeration value="Croacia"/>
+            <xsd:enumeration value="Dinamarca"/>
+            <xsd:enumeration value="Dominica"/>
+            <xsd:enumeration value="Ecuador"/>
+            <xsd:enumeration value="Egipto"/>
+            <xsd:enumeration value="El Salvador"/>
+            <xsd:enumeration value="Emiratos Árabes Unidos"/>
+            <xsd:enumeration value="Eritrea"/>
+            <xsd:enumeration value="Eslovaquia"/>
+            <xsd:enumeration value="Eslovenia"/>
+            <xsd:enumeration value="España"/>
+            <xsd:enumeration value="Estados Unidos"/>
+            <xsd:enumeration value="Estonia"/>
+            <xsd:enumeration value="Etiopía"/>
+            <xsd:enumeration value="Filipinas"/>
+            <xsd:enumeration value="Finlandia"/>
+            <xsd:enumeration value="Fiyi"/>
+            <xsd:enumeration value="Francia"/>
+            <xsd:enumeration value="Gabón"/>
+            <xsd:enumeration value="Gambia"/>
+            <xsd:enumeration value="Georgia"/>
+            <xsd:enumeration value="Ghana"/>
+            <xsd:enumeration value="Granada"/>
+            <xsd:enumeration value="Grecia"/>
+            <xsd:enumeration value="Guatemala"/>
+            <xsd:enumeration value="Guyana"/>
+            <xsd:enumeration value="Guinea"/>
+            <xsd:enumeration value="Guinea ecuatorial"/>
+            <xsd:enumeration value="Guinea-Bisáu"/>
+            <xsd:enumeration value="Haití"/>
+            <xsd:enumeration value="Honduras"/>
+            <xsd:enumeration value="Hungría"/>
+            <xsd:enumeration value="India"/>
+            <xsd:enumeration value="Indonesia"/>
+            <xsd:enumeration value="Irak"/>
+            <xsd:enumeration value="Irán"/>
+            <xsd:enumeration value="Irlanda"/>
+            <xsd:enumeration value="Islandia"/>
+            <xsd:enumeration value="Islas Marshall"/>
+            <xsd:enumeration value="Islas Salomón"/>
+            <xsd:enumeration value="Israel"/>
+            <xsd:enumeration value="Italia"/>
+            <xsd:enumeration value="Jamaica"/>
+            <xsd:enumeration value="Japón"/>
+            <xsd:enumeration value="Jordania"/>
+            <xsd:enumeration value="Kazajistán"/>
+            <xsd:enumeration value="Kenia"/>
+            <xsd:enumeration value="Kirguistán"/>
+            <xsd:enumeration value="Kiribati"/>
+            <xsd:enumeration value="Kuwait"/>
+            <xsd:enumeration value="Laos"/>
+            <xsd:enumeration value="Lesoto"/>
+            <xsd:enumeration value="Letonia"/>
+            <xsd:enumeration value="Líbano"/>
+            <xsd:enumeration value="Liberia"/>
+            <xsd:enumeration value="Libia"/>
+            <xsd:enumeration value="Liechtenstein"/>
+            <xsd:enumeration value="Lituania"/>
+            <xsd:enumeration value="Luxemburgo"/>
+            <xsd:enumeration value="Madagascar"/>
+            <xsd:enumeration value="Malasia"/>
+            <xsd:enumeration value="Malaui"/>
+            <xsd:enumeration value="Maldivas"/>
+            <xsd:enumeration value="Malí"/>
+            <xsd:enumeration value="Malta"/>
+            <xsd:enumeration value="Marruecos"/>
+            <xsd:enumeration value="Mauricio"/>
+            <xsd:enumeration value="Mauritania"/>
+            <xsd:enumeration value="México"/>
+            <xsd:enumeration value="Micronesia"/>
+            <xsd:enumeration value="Moldavia"/>
+            <xsd:enumeration value="Mónaco"/>
+            <xsd:enumeration value="Mongolia"/>
+            <xsd:enumeration value="Montenegro"/>
+            <xsd:enumeration value="Mozambique"/>
+            <xsd:enumeration value="Namibia"/>
+            <xsd:enumeration value="Nauru"/>
+            <xsd:enumeration value="Nepal"/>
+            <xsd:enumeration value="Nicaragua"/>
+            <xsd:enumeration value="Níger"/>
+            <xsd:enumeration value="Nigeria"/>
+            <xsd:enumeration value="Noruega"/>
+            <xsd:enumeration value="Nueva Zelanda"/>
+            <xsd:enumeration value="Omán"/>
+            <xsd:enumeration value="Países Bajos"/>
+            <xsd:enumeration value="Pakistán"/>
+            <xsd:enumeration value="Palaos"/>
+            <xsd:enumeration value="Panamá"/>
+            <xsd:enumeration value="Papúa Nueva Guinea"/>
+            <xsd:enumeration value="Paraguay"/>
+            <xsd:enumeration value="Perú"/>
+            <xsd:enumeration value="Polonia"/>
+            <xsd:enumeration value="Portugal"/>
+            <xsd:enumeration value="Reino Unido"/>
+            <xsd:enumeration value="República Centroafricana"/>
+            <xsd:enumeration value="República Checa"/>
+            <xsd:enumeration value="República de Macedonia"/>
+            <xsd:enumeration value="República del Congo"/>
+            <xsd:enumeration value="República Democrática del Congo"/>
+            <xsd:enumeration value="República Dominicana"/>
+            <xsd:enumeration value="República Sudafricana"/>
+            <xsd:enumeration value="Ruanda: Rumanía"/>
+            <xsd:enumeration value="Rusia"/>
+            <xsd:enumeration value="Samoa"/>
+            <xsd:enumeration value="San Cristóbal y Nieves"/>
+            <xsd:enumeration value="San Marino"/>
+            <xsd:enumeration value="San Vicente y las Granadinas"/>
+            <xsd:enumeration value="Santa Lucía"/>
+            <xsd:enumeration value="Santo Tomé y Príncipe"/>
+            <xsd:enumeration value="Senegal"/>
+            <xsd:enumeration value="Serbia"/>
+            <xsd:enumeration value="Seychelles"/>
+            <xsd:enumeration value="Sierra Leona"/>
+            <xsd:enumeration value="Singapur"/>
+            <xsd:enumeration value="Siria"/>
+            <xsd:enumeration value="Somalia"/>
+            <xsd:enumeration value="Sri Lanka"/>
+            <xsd:enumeration value="Suazilandia"/>
+            <xsd:enumeration value="Sudán"/>
+            <xsd:enumeration value="Sudán del Sur"/>
+            <xsd:enumeration value="Suecia: Suiza"/>
+            <xsd:enumeration value="Surinam"/>
+            <xsd:enumeration value="Tailandia"/>
+            <xsd:enumeration value="Tanzania"/>
+            <xsd:enumeration value="Tayikistán"/>
+            <xsd:enumeration value="Timor Oriental"/>
+            <xsd:enumeration value="Togo"/>
+            <xsd:enumeration value="Tonga"/>
+            <xsd:enumeration value="Trinidad y Tobago"/>
+            <xsd:enumeration value="Túnez"/>
+            <xsd:enumeration value="Turkmenistán"/>
+            <xsd:enumeration value="Turquía"/>
+            <xsd:enumeration value="Tuvalu"/>
+            <xsd:enumeration value="Ucrania"/>
+            <xsd:enumeration value="Uganda"/>
+            <xsd:enumeration value="Uruguay"/>
+            <xsd:enumeration value="Uzbekistán"/>
+            <xsd:enumeration value="Vanuatu"/>
+            <xsd:enumeration value="Venezuela"/>
+            <xsd:enumeration value="Vietnam"/>
+            <xsd:enumeration value="Yemen"/>
+            <xsd:enumeration value="Yibuti"/>
+            <xsd:enumeration value="Zambia"/>
+            <xsd:enumeration value="Zimbabue"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="warningText">
+        <xsd:annotation>
+          <xsd:documentation>Indicar los avisos de protección que el cliente debe tomar en cuenta para el uso del artículo</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Leyendas de Protección / Advertencias</wm:displayName>
+            <wm:group>Compliance</wm:group>
+            <wm:rank>90000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="modelName">
+        <xsd:annotation>
+          <xsd:documentation>El nombre del modelo con el que se refiere el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Modelo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>91000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="cableLength">
+        <xsd:annotation>
+          <xsd:documentation>Indica el largo del cable que incluye el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Largo del Cable</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>92000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="m"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="volumeCapacity">
+        <xsd:annotation>
+          <xsd:documentation>El almacenamiento que puede tener el producto en mililitros.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Volumen Capacidad</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>93000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="ml"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="applianceType">
+        <xsd:annotation>
+          <xsd:documentation>Variación del producto según su diseño y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Electrodoméstico</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>94000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Purificador"/>
+            <xsd:enumeration value="Dispensador"/>
+            <xsd:enumeration value="Accesorio"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="clothesIronType">
+        <xsd:annotation>
+          <xsd:documentation>Variación según la suela de la plancha.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Plancha</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>95000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Suela de cerámica"/>
+            <xsd:enumeration value="Suela antiadherente"/>
+            <xsd:enumeration value="Suela inoxidable"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="consoleDisplayType">
+        <xsd:annotation>
+          <xsd:documentation>Indica el tipo de pantalla con la que cuenta el electrodoméstico.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Display</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>96000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Digital"/>
+            <xsd:enumeration value="Touch"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="bodyMaterial">
+        <xsd:annotation>
+          <xsd:documentation>La denominación de la composición del producto principal o la base de licuadoras, batidoras y cafeteras.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Material del cuerpo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>97000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Metal"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="coverMaterial" type="wm:CoverMaterial">
+        <xsd:annotation>
+          <xsd:documentation>En las estufas, se indica el material de la parte superior del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Material de Cubierta</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>98000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="grillType">
+        <xsd:annotation>
+          <xsd:documentation>Variación del producto según su diseño y uso.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de Parrilla</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>99000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Eléctrica"/>
+            <xsd:enumeration value="Gas"/>
+            <xsd:enumeration value="Inducción"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="hasLightFixture">
+        <xsd:annotation>
+          <xsd:documentation>Indica si el dispositivo cuenta con la función de luz o no.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Luz Integrada</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>100000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sí"/>
+            <xsd:enumeration value="No"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="numberOfStitches">
+        <xsd:annotation>
+          <xsd:documentation>Indica el número de puntas que dan las máquinas de coser.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Puntadas</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>101000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="8"/>
+            <xsd:enumeration value="2"/>
+            <xsd:enumeration value="25"/>
+            <xsd:enumeration value="26"/>
+            <xsd:enumeration value="50"/>
+            <xsd:enumeration value="51"/>
+            <xsd:enumeration value="100"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:complexType name="HomeOther">
+    <xsd:all>
+      <xsd:element maxOccurs="1" minOccurs="0" name="thickness">
+        <xsd:annotation>
+          <xsd:documentation>Indica el grosor del producto en decimales.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Grosor</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="in"/>
+                  <xsd:enumeration value="mil"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="technology">
+        <xsd:annotation>
+          <xsd:documentation>Indicar las características especiales que mejoran el funcionamiento del artículo y lo distiguen de la competencia </xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tecnología</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="40"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="maximumResistance">
+        <xsd:annotation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>RESISTENCIA AL CALOR</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="No"/>
+            <xsd:enumeration value="Hasta 20 C"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="secondaryMaterial">
+        <xsd:annotation>
+          <xsd:documentation>Refiere al elemento principal o predominante en la composición del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Material de fabricación</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Acero"/>
+            <xsd:enumeration value="Acero Carbonizado"/>
+            <xsd:enumeration value="Acero Cromado"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acrílico"/>
+            <xsd:enumeration value="Alambrón Cromado"/>
+            <xsd:enumeration value="Acero Vitrificado"/>
+            <xsd:enumeration value="Alambrón Plateado"/>
+            <xsd:enumeration value="Algodón"/>
+            <xsd:enumeration value="Algodón Egipcio"/>
+            <xsd:enumeration value="Aluminio"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Cable Metálico"/>
+            <xsd:enumeration value="Cartón"/>
+            <xsd:enumeration value="Caucho"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Cera"/>
+            <xsd:enumeration value="Cerámica"/>
+            <xsd:enumeration value="Cristal"/>
+            <xsd:enumeration value="Espuma"/>
+            <xsd:enumeration value="Espuma de Poliuretano"/>
+            <xsd:enumeration value="Espuma Visco Elástica"/>
+            <xsd:enumeration value="Hierro fundido"/>
+            <xsd:enumeration value="Hule Espuma"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Madera de Pino"/>
+            <xsd:enumeration value="Hule Natural"/>
+            <xsd:enumeration value="Mármol"/>
+            <xsd:enumeration value="Material Reciclado"/>
+            <xsd:enumeration value="Melamina"/>
+            <xsd:enumeration value="Memory Foam"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Metal Cromado"/>
+            <xsd:enumeration value="Microfibra"/>
+            <xsd:enumeration value="Nylon"/>
+            <xsd:enumeration value="Opalglass"/>
+            <xsd:enumeration value="Papel"/>
+            <xsd:enumeration value="Percal"/>
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Plástico ABS"/>
+            <xsd:enumeration value="Plástico EVA"/>
+            <xsd:enumeration value="Plástico Libre de BPA"/>
+            <xsd:enumeration value="Pluma de Ganso"/>
+            <xsd:enumeration value="Policarbonato"/>
+            <xsd:enumeration value="Polietileno"/>
+            <xsd:enumeration value="Polipropileno"/>
+            <xsd:enumeration value="Poliéster"/>
+            <xsd:enumeration value="Poliresina"/>
+            <xsd:enumeration value="Poliuretano"/>
+            <xsd:enumeration value="Porcelana"/>
+            <xsd:enumeration value="PVC"/>
+            <xsd:enumeration value="Fibras Sintéticas"/>
+            <xsd:enumeration value="Resina"/>
+            <xsd:enumeration value="Silicón"/>
+            <xsd:enumeration value="Tela"/>
+            <xsd:enumeration value="Titanio"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Vidrio Forrado de Metal"/>
+            <xsd:enumeration value="Vidrio Templado"/>
+            <xsd:enumeration value="Vinil"/>
+            <xsd:enumeration value="Vitroceramica Acero"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acero Vitrificado"/>
+            <xsd:enumeration value="Acrílico"/>
+            <xsd:enumeration value="Alambrón Cromado"/>
+            <xsd:enumeration value="Alambrón Plateado"/>
+            <xsd:enumeration value="Algodón"/>
+            <xsd:enumeration value="Aluminio"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Cable metálico"/>
+            <xsd:enumeration value="Cartón"/>
+            <xsd:enumeration value="Caucho"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Cera"/>
+            <xsd:enumeration value="Cerámica"/>
+            <xsd:enumeration value="Cristal"/>
+            <xsd:enumeration value="Hierro fundido"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Mármol"/>
+            <xsd:enumeration value="Material Reciclado"/>
+            <xsd:enumeration value="Melamina"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Microfibra"/>
+            <xsd:enumeration value="Nylon"/>
+            <xsd:enumeration value="Opalglass"/>
+            <xsd:enumeration value="Papel"/>
+            <xsd:enumeration value="Plástico"/>
+            <xsd:enumeration value="Plástico ABS"/>
+            <xsd:enumeration value="Plástico Libre de BPA"/>
+            <xsd:enumeration value="Policarbonato"/>
+            <xsd:enumeration value="Poliéster"/>
+            <xsd:enumeration value="Polietileno"/>
+            <xsd:enumeration value="Polipropileno"/>
+            <xsd:enumeration value="Poliuretano"/>
+            <xsd:enumeration value="Porcelana"/>
+            <xsd:enumeration value="PVC"/>
+            <xsd:enumeration value="Resina"/>
+            <xsd:enumeration value="Silicón"/>
+            <xsd:enumeration value="Titanio"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Vidrio Templado"/>
+            <xsd:enumeration value="Vitrelle"/>
+            <xsd:enumeration value="Vitroacero"/>
+            <xsd:enumeration value="Vitrocerámica Plástico"/>
+            <xsd:enumeration value="Vidrio"/>
+            <xsd:enumeration value="Acero Inoxidable"/>
+            <xsd:enumeration value="Acero"/>
+            <xsd:enumeration value="Metal"/>
+            <xsd:enumeration value="Alambrón"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="shortDescription">
+        <xsd:annotation>
+          <xsd:documentation>Descripción general de los puntos de venta clave del artículo, contenido de marketing y puntos destacados en forma de párrafo. Para fines de SEO, repita el nombre del producto y las palabras clave relevantes aquí.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Descripción corta</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>8000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="keyFeatures" type="wm:KeyFeatures">
+        <xsd:annotation>
+          <xsd:documentation>Las características clave aparecerán como texto con viñetas en la página del elemento y en los resultados de búsqueda. Las características clave ayudan al usuario a comprender los beneficios del producto con un formato simple y limpio. Recomendamos usar tres o más funciones clave.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Características clave</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>9000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="brand">
+        <xsd:annotation>
+          <xsd:documentation>Nombre, término, diseño u otra característica que distingue el producto de un vendedor de los de otros. Este puede ser el nombre de la compañía asociada con el producto, pero no siempre. Si el artículo no tiene una marca, use &quot;Sin marca&quot;.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Marca</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>11000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="60"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="mainImageUrl">
+        <xsd:annotation>
+          <xsd:documentation>Imagen principal del artículo. La URL de la imagen debe terminar en el nombre del archivo. La URL de la imagen debe ser estática y no tener redirecciones. Tipo de archivo preferido: JPEG Tipos de archivo aceptados: JPG, PNG, GIF, BMP Resolución de imagen recomendada: 3000 x 3000 píxeles a 300 ppi. Requisitos mínimos de tamaño de imagen: Capacidad de zoom: 2000 x 2000 píxeles a 300 ppp. Mínimo sin zoom: 500 x 500 píxeles a 72 ppi. Tamaño máximo de archivo: 2 MB.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Link de imagen principal</wm:displayName>
+            <wm:group>Images</wm:group>
+            <wm:rank>16000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:anyURI"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="productSecondaryImageURL" type="wm:ProductSecondaryImageURL">
+        <xsd:annotation>
+          <xsd:documentation>Imágenes secundarias del artículo. La URL de la imagen debe terminar en el nombre del archivo. La URL de la imagen debe ser estática y no tener redirecciones. Tipo de archivo preferido: JPEG Tipos de archivo aceptados: JPG, PNG, GIF, BMP Resolución de imagen recomendada: 3000 x 3000 píxeles a 300 ppi. Requisitos mínimos de tamaño de imagen: Capacidad de zoom: 2000 x 2000 píxeles a 300 ppp. Mínimo sin zoom: 500 x 500 píxeles a 72 ppi. Tamaño máximo de archivo: 2 MB.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Link de imágenes secundarias</wm:displayName>
+            <wm:group>Images</wm:group>
+            <wm:rank>17000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="color">
+        <xsd:annotation>
+          <xsd:documentation>Color como lo describe el fabricante.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Color</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>19000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductLength">
+        <xsd:annotation>
+          <xsd:documentation>La longitud del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Largo del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>41000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductWidth">
+        <xsd:annotation>
+          <xsd:documentation>El ancho del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Ancho del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>42000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductHeight">
+        <xsd:annotation>
+          <xsd:documentation>La altura del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Altura del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>43000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assembledProductWeight">
+        <xsd:annotation>
+          <xsd:documentation>El peso del producto totalmente ensamblado. NOTA: Esta información se muestra en la página del artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Peso del Producto Armado</wm:displayName>
+            <wm:group>Dimensions</wm:group>
+            <wm:rank>44000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="kg"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="frameColor">
+        <xsd:annotation>
+          <xsd:documentation>Indicar el color principal del armazón</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Color del marco</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>85500</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Acero Inox"/>
+            <xsd:enumeration value="Amarillo"/>
+            <xsd:enumeration value="Anaranjado"/>
+            <xsd:enumeration value="Aqua"/>
+            <xsd:enumeration value="Azul"/>
+            <xsd:enumeration value="Bambú"/>
+            <xsd:enumeration value="Beige"/>
+            <xsd:enumeration value="Blanco"/>
+            <xsd:enumeration value="Bronce"/>
+            <xsd:enumeration value="Café"/>
+            <xsd:enumeration value="Camello"/>
+            <xsd:enumeration value="Cedro"/>
+            <xsd:enumeration value="Chocolate"/>
+            <xsd:enumeration value="Dorado"/>
+            <xsd:enumeration value="Encino"/>
+            <xsd:enumeration value="Fresno"/>
+            <xsd:enumeration value="Fucsia"/>
+            <xsd:enumeration value="Gris"/>
+            <xsd:enumeration value="Lila"/>
+            <xsd:enumeration value="Madera"/>
+            <xsd:enumeration value="Morado"/>
+            <xsd:enumeration value="Negro"/>
+            <xsd:enumeration value="Nogal"/>
+            <xsd:enumeration value="Plateado"/>
+            <xsd:enumeration value="Roble"/>
+            <xsd:enumeration value="Rojo"/>
+            <xsd:enumeration value="Rosa"/>
+            <xsd:enumeration value="Rosa Dorado"/>
+            <xsd:enumeration value="Shedron"/>
+            <xsd:enumeration value="Silver"/>
+            <xsd:enumeration value="Tabaco"/>
+            <xsd:enumeration value="Transparente"/>
+            <xsd:enumeration value="Turquesa"/>
+            <xsd:enumeration value="Verde"/>
+            <xsd:enumeration value="Vino"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="keywords">
+        <xsd:annotation>
+          <xsd:documentation>Palabras que la gente usaría para buscar este artículo. Las palabras clave pueden incluir sinónimos y términos relacionados.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Palabras clave</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>88000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="capacity">
+        <xsd:annotation>
+          <xsd:documentation>Espacio disponible de un producto. La capacidad a menudo se proporciona para los artículos que contienen piezas múltiples de algo o que pueden acomodar cierta cantidad de objetos.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Capacidad</wm:displayName>
+            <wm:group>Discoverability</wm:group>
+            <wm:rank>97000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="countryOfOriginAssembly">
+        <xsd:annotation>
+          <xsd:documentation>Seleccione el país donde se montó el artículo.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>País de Origen</wm:displayName>
+            <wm:group>Compliance</wm:group>
+            <wm:rank>98000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Afganistán"/>
+            <xsd:enumeration value="Albania"/>
+            <xsd:enumeration value="Alemania"/>
+            <xsd:enumeration value="Andorra"/>
+            <xsd:enumeration value="Angola"/>
+            <xsd:enumeration value="Antigua y Barbuda"/>
+            <xsd:enumeration value="Arabia Saudita"/>
+            <xsd:enumeration value="Argelia"/>
+            <xsd:enumeration value="Argentina"/>
+            <xsd:enumeration value="Armenia"/>
+            <xsd:enumeration value="Australia"/>
+            <xsd:enumeration value="Austria"/>
+            <xsd:enumeration value="Azerbaiyán"/>
+            <xsd:enumeration value="Bahamas"/>
+            <xsd:enumeration value="Bangladés"/>
+            <xsd:enumeration value="Barbados"/>
+            <xsd:enumeration value="Baréin"/>
+            <xsd:enumeration value="Bélgica"/>
+            <xsd:enumeration value="Belice"/>
+            <xsd:enumeration value="Benín"/>
+            <xsd:enumeration value="Bielorrusia"/>
+            <xsd:enumeration value="Birmania/Myanmar"/>
+            <xsd:enumeration value="Bolivia"/>
+            <xsd:enumeration value="Bosnia y Herzegovina"/>
+            <xsd:enumeration value="Botsuana"/>
+            <xsd:enumeration value="Brasil"/>
+            <xsd:enumeration value="Brunéi"/>
+            <xsd:enumeration value="Bulgaria"/>
+            <xsd:enumeration value="Burkina Faso"/>
+            <xsd:enumeration value="Burundi"/>
+            <xsd:enumeration value="Bután"/>
+            <xsd:enumeration value="Cabo Verde"/>
+            <xsd:enumeration value="Camboya"/>
+            <xsd:enumeration value="Camerún"/>
+            <xsd:enumeration value="Canadá"/>
+            <xsd:enumeration value="Catar"/>
+            <xsd:enumeration value="Chad"/>
+            <xsd:enumeration value="Chile"/>
+            <xsd:enumeration value="China"/>
+            <xsd:enumeration value="Chipre"/>
+            <xsd:enumeration value="Ciudad del Vaticano"/>
+            <xsd:enumeration value="Colombia"/>
+            <xsd:enumeration value="Comoras"/>
+            <xsd:enumeration value="Corea del Norte"/>
+            <xsd:enumeration value="Corea del Sur"/>
+            <xsd:enumeration value="Costa de Marfil"/>
+            <xsd:enumeration value="Costa Rica"/>
+            <xsd:enumeration value="Croacia"/>
+            <xsd:enumeration value="Dinamarca"/>
+            <xsd:enumeration value="Dominica"/>
+            <xsd:enumeration value="Ecuador"/>
+            <xsd:enumeration value="Egipto"/>
+            <xsd:enumeration value="El Salvador"/>
+            <xsd:enumeration value="Emiratos Árabes Unidos"/>
+            <xsd:enumeration value="Eritrea"/>
+            <xsd:enumeration value="Eslovaquia"/>
+            <xsd:enumeration value="Eslovenia"/>
+            <xsd:enumeration value="España"/>
+            <xsd:enumeration value="Estados Unidos"/>
+            <xsd:enumeration value="Estonia"/>
+            <xsd:enumeration value="Etiopía"/>
+            <xsd:enumeration value="Filipinas"/>
+            <xsd:enumeration value="Finlandia"/>
+            <xsd:enumeration value="Fiyi"/>
+            <xsd:enumeration value="Francia"/>
+            <xsd:enumeration value="Gabón"/>
+            <xsd:enumeration value="Gambia"/>
+            <xsd:enumeration value="Georgia"/>
+            <xsd:enumeration value="Ghana"/>
+            <xsd:enumeration value="Granada"/>
+            <xsd:enumeration value="Grecia"/>
+            <xsd:enumeration value="Guatemala"/>
+            <xsd:enumeration value="Guyana"/>
+            <xsd:enumeration value="Guinea"/>
+            <xsd:enumeration value="Guinea ecuatorial"/>
+            <xsd:enumeration value="Guinea-Bisáu"/>
+            <xsd:enumeration value="Haití"/>
+            <xsd:enumeration value="Honduras"/>
+            <xsd:enumeration value="Hungría"/>
+            <xsd:enumeration value="India"/>
+            <xsd:enumeration value="Indonesia"/>
+            <xsd:enumeration value="Irak"/>
+            <xsd:enumeration value="Irán"/>
+            <xsd:enumeration value="Irlanda"/>
+            <xsd:enumeration value="Islandia"/>
+            <xsd:enumeration value="Islas Marshall"/>
+            <xsd:enumeration value="Islas Salomón"/>
+            <xsd:enumeration value="Israel"/>
+            <xsd:enumeration value="Italia"/>
+            <xsd:enumeration value="Jamaica"/>
+            <xsd:enumeration value="Japón"/>
+            <xsd:enumeration value="Jordania"/>
+            <xsd:enumeration value="Kazajistán"/>
+            <xsd:enumeration value="Kenia"/>
+            <xsd:enumeration value="Kirguistán"/>
+            <xsd:enumeration value="Kiribati"/>
+            <xsd:enumeration value="Kuwait"/>
+            <xsd:enumeration value="Laos"/>
+            <xsd:enumeration value="Lesoto"/>
+            <xsd:enumeration value="Letonia"/>
+            <xsd:enumeration value="Líbano"/>
+            <xsd:enumeration value="Liberia"/>
+            <xsd:enumeration value="Libia"/>
+            <xsd:enumeration value="Liechtenstein"/>
+            <xsd:enumeration value="Lituania"/>
+            <xsd:enumeration value="Luxemburgo"/>
+            <xsd:enumeration value="Madagascar"/>
+            <xsd:enumeration value="Malasia"/>
+            <xsd:enumeration value="Malaui"/>
+            <xsd:enumeration value="Maldivas"/>
+            <xsd:enumeration value="Malí"/>
+            <xsd:enumeration value="Malta"/>
+            <xsd:enumeration value="Marruecos"/>
+            <xsd:enumeration value="Mauricio"/>
+            <xsd:enumeration value="Mauritania"/>
+            <xsd:enumeration value="México"/>
+            <xsd:enumeration value="Micronesia"/>
+            <xsd:enumeration value="Moldavia"/>
+            <xsd:enumeration value="Mónaco"/>
+            <xsd:enumeration value="Mongolia"/>
+            <xsd:enumeration value="Montenegro"/>
+            <xsd:enumeration value="Mozambique"/>
+            <xsd:enumeration value="Namibia"/>
+            <xsd:enumeration value="Nauru"/>
+            <xsd:enumeration value="Nepal"/>
+            <xsd:enumeration value="Nicaragua"/>
+            <xsd:enumeration value="Níger"/>
+            <xsd:enumeration value="Nigeria"/>
+            <xsd:enumeration value="Noruega"/>
+            <xsd:enumeration value="Nueva Zelanda"/>
+            <xsd:enumeration value="Omán"/>
+            <xsd:enumeration value="Países Bajos"/>
+            <xsd:enumeration value="Pakistán"/>
+            <xsd:enumeration value="Palaos"/>
+            <xsd:enumeration value="Panamá"/>
+            <xsd:enumeration value="Papúa Nueva Guinea"/>
+            <xsd:enumeration value="Paraguay"/>
+            <xsd:enumeration value="Perú"/>
+            <xsd:enumeration value="Polonia"/>
+            <xsd:enumeration value="Portugal"/>
+            <xsd:enumeration value="Reino Unido"/>
+            <xsd:enumeration value="República Centroafricana"/>
+            <xsd:enumeration value="República Checa"/>
+            <xsd:enumeration value="República de Macedonia"/>
+            <xsd:enumeration value="República del Congo"/>
+            <xsd:enumeration value="República Democrática del Congo"/>
+            <xsd:enumeration value="República Dominicana"/>
+            <xsd:enumeration value="República Sudafricana"/>
+            <xsd:enumeration value="Ruanda: Rumanía"/>
+            <xsd:enumeration value="Rusia"/>
+            <xsd:enumeration value="Samoa"/>
+            <xsd:enumeration value="San Cristóbal y Nieves"/>
+            <xsd:enumeration value="San Marino"/>
+            <xsd:enumeration value="San Vicente y las Granadinas"/>
+            <xsd:enumeration value="Santa Lucía"/>
+            <xsd:enumeration value="Santo Tomé y Príncipe"/>
+            <xsd:enumeration value="Senegal"/>
+            <xsd:enumeration value="Serbia"/>
+            <xsd:enumeration value="Seychelles"/>
+            <xsd:enumeration value="Sierra Leona"/>
+            <xsd:enumeration value="Singapur"/>
+            <xsd:enumeration value="Siria"/>
+            <xsd:enumeration value="Somalia"/>
+            <xsd:enumeration value="Sri Lanka"/>
+            <xsd:enumeration value="Suazilandia"/>
+            <xsd:enumeration value="Sudán"/>
+            <xsd:enumeration value="Sudán del Sur"/>
+            <xsd:enumeration value="Suecia: Suiza"/>
+            <xsd:enumeration value="Surinam"/>
+            <xsd:enumeration value="Tailandia"/>
+            <xsd:enumeration value="Tanzania"/>
+            <xsd:enumeration value="Tayikistán"/>
+            <xsd:enumeration value="Timor Oriental"/>
+            <xsd:enumeration value="Togo"/>
+            <xsd:enumeration value="Tonga"/>
+            <xsd:enumeration value="Trinidad y Tobago"/>
+            <xsd:enumeration value="Túnez"/>
+            <xsd:enumeration value="Turkmenistán"/>
+            <xsd:enumeration value="Turquía"/>
+            <xsd:enumeration value="Tuvalu"/>
+            <xsd:enumeration value="Ucrania"/>
+            <xsd:enumeration value="Uganda"/>
+            <xsd:enumeration value="Uruguay"/>
+            <xsd:enumeration value="Uzbekistán"/>
+            <xsd:enumeration value="Vanuatu"/>
+            <xsd:enumeration value="Venezuela"/>
+            <xsd:enumeration value="Vietnam"/>
+            <xsd:enumeration value="Yemen"/>
+            <xsd:enumeration value="Yibuti"/>
+            <xsd:enumeration value="Zambia"/>
+            <xsd:enumeration value="Zimbabue"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="fuelType">
+        <xsd:annotation>
+          <xsd:documentation>Variación del producto según función de calentado.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tipo de combustible</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>99000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="modelName">
+        <xsd:annotation>
+          <xsd:documentation>El nombre del modelo con el que se refiere el producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Modelo</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>100000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="modelStyleType">
+        <xsd:annotation>
+          <xsd:documentation>Esto representa el modelo, estilo y tipo de televisor.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Modelo / Estilo / Tipo</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>101000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="subBrand">
+        <xsd:annotation>
+          <xsd:documentation>Indica la siguiente línea de importancia de la marca. Indica la sub-marca del producto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Submarcas</wm:displayName>
+            <wm:group>Basic</wm:group>
+            <wm:rank>102000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="itemsIncluded">
+        <xsd:annotation>
+          <xsd:documentation>Describe los artículos que están incluidos en o con el producto. Los ejemplos pueden incluir hardware o accesorios.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Contenido del empaque</wm:displayName>
+            <wm:group>Additional Category Attributes</wm:group>
+            <wm:rank>103000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+</xsd:schema>

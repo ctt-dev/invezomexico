@@ -21,4 +21,5 @@ class MarketplaceField(models.Model):
     display_name = fields.Char(string='Campo')
     required = fields.Boolean(string='Requerido', default=False)
     type = fields.Char(string='Tipo')
+    complex_type = fields.Char(string='Tipo Complejo')
     marketplace_id = fields.Many2one('marketplaces.marketplace', string='Marketplace')

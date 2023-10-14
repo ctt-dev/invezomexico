@@ -1,0 +1,616 @@
+<?xml version="1.0" ?>
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://walmart.com/" vc:minVersion="1.1" version="3.2" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:wm="http://walmart.com/" xmlns:xc="http://xerces.apache.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:include schemaLocation="MPCommons.xsd"/>
+  <xsd:complexType name="MPOffer">
+    <xsd:all>
+      <xsd:element maxOccurs="1" minOccurs="1" name="msiEligible">
+        <xsd:annotation>
+          <xsd:documentation>Indica cuándo un artículo es elegible para el programa promocional &quot;Meses Sin Intereses&quot;</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>MSI elegible</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>None</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sí"/>
+            <xsd:enumeration value="No"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="price">
+        <xsd:annotation>
+          <xsd:documentation>El precio que el cliente paga por el producto. Por favor, no utilice comas o símbolos de moneda.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Precio de la oferta</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>1000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="16"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="StartDate">
+        <xsd:annotation>
+          <xsd:documentation>Indica la fecha en que el elemento está disponible para publicarse en el sitio.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Fecha de inicio de la disponibilidad</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>3000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:date"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="EndDate">
+        <xsd:annotation>
+          <xsd:documentation>Indica la fecha en que el elemento del socio debe eliminarse del sitio.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Fecha de finalización de la disponibilidad</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>4000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:date"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ShippingDimensionsWidth">
+        <xsd:annotation>
+          <xsd:documentation>Venta de unidades de medida. La medición más larga (lado) siempre debe ingresarse como &quot;profundidad&quot; con las mediciones restantes ingresadas como ancho o alto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Ancho de producto con empaque</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>7000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ShippingDimensionsHeight">
+        <xsd:annotation>
+          <xsd:documentation>Venta de unidades de medida. La medición más larga (lado) siempre debe ingresarse como &quot;profundidad&quot; con las mediciones restantes ingresadas como ancho o alto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Alto de producto con empaque</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>8000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ShippingDimensionsDepth">
+        <xsd:annotation>
+          <xsd:documentation>Venta de unidades de medida. La medición más larga (lado) siempre debe ingresarse como &quot;profundidad&quot; con las mediciones restantes ingresadas como ancho o alto.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Largo de producto con empaque</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>8500</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="cm"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ShippingWeight">
+        <xsd:annotation>
+          <xsd:documentation>Ingrese el peso de la unidad de venta individual.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Peso de producto con empaque</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>9000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element maxOccurs="1" minOccurs="1" name="measure">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:totalDigits value="16"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element maxOccurs="1" minOccurs="1" name="unit">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="kg"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ProductTaxCode">
+        <xsd:annotation>
+          <xsd:documentation>Código del Catálogo de Productos y Servicios del SAT que corresponda a la mercancía ofertada.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Código fiscal del producto</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>10000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:pattern value="\d{7,8}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="condition">
+        <xsd:annotation>
+          <xsd:documentation>Use esto para describir el estado de un artículo si es algo nuevo. Por ejemplo, una computadora portátil que ha sido restaurada. Utilizado para no perecederos.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Estado de la oferta</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>21000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Nuevo"/>
+            <xsd:enumeration value="Reacondicionado"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="typeOfTaxInPercentage">
+        <xsd:annotation>
+          <xsd:documentation>Tipo de impuesto en porcentaje para el artículo proporcionado por el vendedor</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Impuesto en Porcentaje</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>22000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:totalDigits value="2"/>
+            <xsd:enumeration value="0"/>
+            <xsd:enumeration value="8"/>
+            <xsd:enumeration value="16"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="shippingDiscount">
+        <xsd:annotation>
+          <xsd:documentation>Descuento por envío del artículo proporcionado por el vendedor.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Subsidio de Envío</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>24000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sí"/>
+            <xsd:enumeration value="No"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="sellerWarranty">
+        <xsd:annotation>
+          <xsd:documentation>Garantía proporcionada por el vendedor al cliente para el artículo</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Garante</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>25000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="2000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="sellerWarrantyCondition">
+        <xsd:annotation>
+          <xsd:documentation>Condición de la garantía según la cual el vendedor proporciona la garantía del artículo al cliente</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Condiciones de Garantía</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>26000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="2000"/>
+            <xsd:minLength value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="sellerWarrantyPeriod">
+        <xsd:annotation>
+          <xsd:documentation>Período de garantía en meses para el artículo proporcionado por el vendedor al cliente</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>Garantía</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>27000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="10"/>
+            <xsd:enumeration value="3"/>
+            <xsd:enumeration value="4"/>
+            <xsd:enumeration value="5"/>
+            <xsd:enumeration value="6"/>
+            <xsd:enumeration value="7"/>
+            <xsd:enumeration value="8"/>
+            <xsd:enumeration value="9"/>
+            <xsd:enumeration value="10"/>
+            <xsd:enumeration value="11"/>
+            <xsd:enumeration value="12"/>
+            <xsd:enumeration value="13"/>
+            <xsd:enumeration value="14"/>
+            <xsd:enumeration value="15"/>
+            <xsd:enumeration value="16"/>
+            <xsd:enumeration value="17"/>
+            <xsd:enumeration value="18"/>
+            <xsd:enumeration value="19"/>
+            <xsd:enumeration value="20"/>
+            <xsd:enumeration value="21"/>
+            <xsd:enumeration value="22"/>
+            <xsd:enumeration value="23"/>
+            <xsd:enumeration value="24"/>
+            <xsd:enumeration value="25"/>
+            <xsd:enumeration value="26"/>
+            <xsd:enumeration value="27"/>
+            <xsd:enumeration value="28"/>
+            <xsd:enumeration value="29"/>
+            <xsd:enumeration value="30"/>
+            <xsd:enumeration value="31"/>
+            <xsd:enumeration value="32"/>
+            <xsd:enumeration value="33"/>
+            <xsd:enumeration value="34"/>
+            <xsd:enumeration value="35"/>
+            <xsd:enumeration value="36"/>
+            <xsd:enumeration value="37"/>
+            <xsd:enumeration value="38"/>
+            <xsd:enumeration value="39"/>
+            <xsd:enumeration value="40"/>
+            <xsd:enumeration value="41"/>
+            <xsd:enumeration value="42"/>
+            <xsd:enumeration value="43"/>
+            <xsd:enumeration value="44"/>
+            <xsd:enumeration value="45"/>
+            <xsd:enumeration value="46"/>
+            <xsd:enumeration value="47"/>
+            <xsd:enumeration value="48"/>
+            <xsd:enumeration value="49"/>
+            <xsd:enumeration value="50"/>
+            <xsd:enumeration value="51"/>
+            <xsd:enumeration value="52"/>
+            <xsd:enumeration value="53"/>
+            <xsd:enumeration value="54"/>
+            <xsd:enumeration value="55"/>
+            <xsd:enumeration value="56"/>
+            <xsd:enumeration value="57"/>
+            <xsd:enumeration value="58"/>
+            <xsd:enumeration value="59"/>
+            <xsd:enumeration value="60"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="shippingCountryOfOrigin">
+        <xsd:annotation>
+          <xsd:documentation>Indica el país de origen del envío para el artículo</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>País de Envío</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>28000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Afganistán"/>
+            <xsd:enumeration value="Albania"/>
+            <xsd:enumeration value="Alemania"/>
+            <xsd:enumeration value="Andorra"/>
+            <xsd:enumeration value="Angola"/>
+            <xsd:enumeration value="Antigua y Barbuda"/>
+            <xsd:enumeration value="Arabia Saudita"/>
+            <xsd:enumeration value="Argelia"/>
+            <xsd:enumeration value="Argentina"/>
+            <xsd:enumeration value="Armenia"/>
+            <xsd:enumeration value="Australia"/>
+            <xsd:enumeration value="Austria"/>
+            <xsd:enumeration value="Azerbaiyán"/>
+            <xsd:enumeration value="Bahamas"/>
+            <xsd:enumeration value="Bangladés"/>
+            <xsd:enumeration value="Barbados"/>
+            <xsd:enumeration value="Baréin"/>
+            <xsd:enumeration value="Bélgica"/>
+            <xsd:enumeration value="Belice"/>
+            <xsd:enumeration value="Benín"/>
+            <xsd:enumeration value="Bielorrusia"/>
+            <xsd:enumeration value="Birmania/Myanmar"/>
+            <xsd:enumeration value="Bolivia"/>
+            <xsd:enumeration value="Bosnia y Herzegovina"/>
+            <xsd:enumeration value="Botsuana"/>
+            <xsd:enumeration value="Brasil"/>
+            <xsd:enumeration value="Brunéi"/>
+            <xsd:enumeration value="Bulgaria"/>
+            <xsd:enumeration value="Burkina Faso"/>
+            <xsd:enumeration value="Burundi"/>
+            <xsd:enumeration value="Bután"/>
+            <xsd:enumeration value="Cabo Verde"/>
+            <xsd:enumeration value="Camboya"/>
+            <xsd:enumeration value="Camerún"/>
+            <xsd:enumeration value="Canadá"/>
+            <xsd:enumeration value="Catar"/>
+            <xsd:enumeration value="Chad"/>
+            <xsd:enumeration value="Chile"/>
+            <xsd:enumeration value="China"/>
+            <xsd:enumeration value="Chipre"/>
+            <xsd:enumeration value="Ciudad del Vaticano"/>
+            <xsd:enumeration value="Colombia"/>
+            <xsd:enumeration value="Comoras"/>
+            <xsd:enumeration value="Corea del Sur"/>
+            <xsd:enumeration value="Costa de Marfil"/>
+            <xsd:enumeration value="Costa Rica"/>
+            <xsd:enumeration value="Croacia"/>
+            <xsd:enumeration value="Dinamarca"/>
+            <xsd:enumeration value="Dominica"/>
+            <xsd:enumeration value="Ecuador"/>
+            <xsd:enumeration value="Egipto"/>
+            <xsd:enumeration value="El Salvador"/>
+            <xsd:enumeration value="Emiratos Árabes Unidos"/>
+            <xsd:enumeration value="Eritrea"/>
+            <xsd:enumeration value="Eslovaquia"/>
+            <xsd:enumeration value="Eslovenia"/>
+            <xsd:enumeration value="España"/>
+            <xsd:enumeration value="Estados Unidos"/>
+            <xsd:enumeration value="Estonia"/>
+            <xsd:enumeration value="Etiopía"/>
+            <xsd:enumeration value="Filipinas"/>
+            <xsd:enumeration value="Finlandia"/>
+            <xsd:enumeration value="Fiyi"/>
+            <xsd:enumeration value="Francia"/>
+            <xsd:enumeration value="Gabón"/>
+            <xsd:enumeration value="Gambia"/>
+            <xsd:enumeration value="Georgia"/>
+            <xsd:enumeration value="Ghana"/>
+            <xsd:enumeration value="Granada"/>
+            <xsd:enumeration value="Grecia"/>
+            <xsd:enumeration value="Guatemala"/>
+            <xsd:enumeration value="Guyana"/>
+            <xsd:enumeration value="Guinea"/>
+            <xsd:enumeration value="Guinea ecuatorial"/>
+            <xsd:enumeration value="Guinea-Bisáu"/>
+            <xsd:enumeration value="Haití"/>
+            <xsd:enumeration value="Honduras"/>
+            <xsd:enumeration value="Hungría"/>
+            <xsd:enumeration value="India"/>
+            <xsd:enumeration value="Indonesia"/>
+            <xsd:enumeration value="Irak"/>
+            <xsd:enumeration value="Irán"/>
+            <xsd:enumeration value="Irlanda"/>
+            <xsd:enumeration value="Islandia"/>
+            <xsd:enumeration value="Islas Marshall"/>
+            <xsd:enumeration value="Islas Salomón"/>
+            <xsd:enumeration value="Israel"/>
+            <xsd:enumeration value="Italia"/>
+            <xsd:enumeration value="Jamaica"/>
+            <xsd:enumeration value="Japón"/>
+            <xsd:enumeration value="Jordania"/>
+            <xsd:enumeration value="Kazajistán"/>
+            <xsd:enumeration value="Kenia"/>
+            <xsd:enumeration value="Kirguistán"/>
+            <xsd:enumeration value="Kiribati"/>
+            <xsd:enumeration value="Kuwait"/>
+            <xsd:enumeration value="Laos"/>
+            <xsd:enumeration value="Lesoto"/>
+            <xsd:enumeration value="Letonia"/>
+            <xsd:enumeration value="Líbano"/>
+            <xsd:enumeration value="Liberia"/>
+            <xsd:enumeration value="Libia"/>
+            <xsd:enumeration value="Liechtenstein"/>
+            <xsd:enumeration value="Lituania"/>
+            <xsd:enumeration value="Luxemburgo"/>
+            <xsd:enumeration value="Madagascar"/>
+            <xsd:enumeration value="Malasia"/>
+            <xsd:enumeration value="Malaui"/>
+            <xsd:enumeration value="Maldivas"/>
+            <xsd:enumeration value="Malí"/>
+            <xsd:enumeration value="Malta"/>
+            <xsd:enumeration value="Marruecos"/>
+            <xsd:enumeration value="Mauricio"/>
+            <xsd:enumeration value="Mauritania"/>
+            <xsd:enumeration value="México"/>
+            <xsd:enumeration value="Micronesia"/>
+            <xsd:enumeration value="Moldavia"/>
+            <xsd:enumeration value="Mónaco"/>
+            <xsd:enumeration value="Mongolia"/>
+            <xsd:enumeration value="Montenegro"/>
+            <xsd:enumeration value="Mozambique"/>
+            <xsd:enumeration value="Namibia"/>
+            <xsd:enumeration value="Nauru"/>
+            <xsd:enumeration value="Nepal"/>
+            <xsd:enumeration value="Nicaragua"/>
+            <xsd:enumeration value="Níger"/>
+            <xsd:enumeration value="Nigeria"/>
+            <xsd:enumeration value="Noruega"/>
+            <xsd:enumeration value="Nueva Zelanda"/>
+            <xsd:enumeration value="Omán"/>
+            <xsd:enumeration value="Países Bajos"/>
+            <xsd:enumeration value="Pakistán"/>
+            <xsd:enumeration value="Palaos"/>
+            <xsd:enumeration value="Panamá"/>
+            <xsd:enumeration value="Papúa Nueva Guinea"/>
+            <xsd:enumeration value="Paraguay"/>
+            <xsd:enumeration value="Perú"/>
+            <xsd:enumeration value="Polonia"/>
+            <xsd:enumeration value="Portugal"/>
+            <xsd:enumeration value="Reino Unido"/>
+            <xsd:enumeration value="República Centroafricana"/>
+            <xsd:enumeration value="República Checa"/>
+            <xsd:enumeration value="República de Macedonia"/>
+            <xsd:enumeration value="República del Congo"/>
+            <xsd:enumeration value="República Democrática del Congo"/>
+            <xsd:enumeration value="República Dominicana"/>
+            <xsd:enumeration value="República Sudafricana"/>
+            <xsd:enumeration value="Ruanda"/>
+            <xsd:enumeration value="Rumanía"/>
+            <xsd:enumeration value="Rusia"/>
+            <xsd:enumeration value="Samoa"/>
+            <xsd:enumeration value="San Cristóbal y Nieves"/>
+            <xsd:enumeration value="San Marino"/>
+            <xsd:enumeration value="San Vicente y las Granadinas"/>
+            <xsd:enumeration value="Santa Lucía"/>
+            <xsd:enumeration value="Santo Tomé y Príncipe"/>
+            <xsd:enumeration value="Senegal"/>
+            <xsd:enumeration value="Serbia"/>
+            <xsd:enumeration value="Seychelles"/>
+            <xsd:enumeration value="Sierra Leona"/>
+            <xsd:enumeration value="Singapur"/>
+            <xsd:enumeration value="Somalia"/>
+            <xsd:enumeration value="Sri Lanka"/>
+            <xsd:enumeration value="Suazilandia"/>
+            <xsd:enumeration value="Sudán"/>
+            <xsd:enumeration value="Sudán del Sur"/>
+            <xsd:enumeration value="Suecia"/>
+            <xsd:enumeration value="Suiza"/>
+            <xsd:enumeration value="Surinam"/>
+            <xsd:enumeration value="Tailandia"/>
+            <xsd:enumeration value="Tanzania"/>
+            <xsd:enumeration value="Tayikistán"/>
+            <xsd:enumeration value="Timor Oriental"/>
+            <xsd:enumeration value="Togo"/>
+            <xsd:enumeration value="Tonga"/>
+            <xsd:enumeration value="Trinidad y Tobago"/>
+            <xsd:enumeration value="Túnez"/>
+            <xsd:enumeration value="Turkmenistán"/>
+            <xsd:enumeration value="Turquía"/>
+            <xsd:enumeration value="Tuvalu"/>
+            <xsd:enumeration value="Ucrania"/>
+            <xsd:enumeration value="Uganda"/>
+            <xsd:enumeration value="Uruguay"/>
+            <xsd:enumeration value="Uzbekistán"/>
+            <xsd:enumeration value="Vanuatu"/>
+            <xsd:enumeration value="Venezuela"/>
+            <xsd:enumeration value="Vietnam"/>
+            <xsd:enumeration value="Yemen"/>
+            <xsd:enumeration value="Yibuti"/>
+            <xsd:enumeration value="Zambia"/>
+            <xsd:enumeration value="Zimbabue"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="fulfillmentLagTime">
+        <xsd:annotation>
+          <xsd:documentation>Tiempo de demora de cumplimiento para el artículo proporcionado por el vendedor</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Tiempo de retraso de cumplimiento</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>30000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="1" name="hazardousMaterialsInd">
+        <xsd:annotation>
+          <xsd:documentation>Indica si el artículo es o contiene material peligroso conforme al catálogo de Material Peligroso del SAT para Carta Porte.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Required"/>
+            <wm:displayName>¿Es material peligroso?</wm:displayName>
+            <wm:group>Offer</wm:group>
+            <wm:rank>31000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Sí"/>
+            <xsd:enumeration value="No"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element maxOccurs="1" minOccurs="0" name="hazardousMaterialsTaxCode">
+        <xsd:annotation>
+          <xsd:documentation>Clave del material peligroso del SAT para Carta Porte que corresponda a la mercancía ofertada.</xsd:documentation>
+          <xsd:appinfo>
+            <wm:requiredLevel value="Optional"/>
+            <wm:displayName>Clave del material peligroso</wm:displayName>
+            <wm:rank>32000</wm:rank>
+          </xsd:appinfo>
+        </xsd:annotation>
+	<xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{4,4}"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+</xsd:schema>

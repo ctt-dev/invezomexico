@@ -30,8 +30,33 @@ class MarketplaceProductTemplate(models.Model):
         string='Campos de categoría'
     )
 
-    def test_button(self):
-        pass
+    @api.onchange('mkt_id')
+    def _load_marketplace_fields(self):
+        self.field_lines.unlink()
+
+        required_fields = self.env['marketplaces.marketplace.field'].search([("marketplace_id","=",self.mkt_id.id),("required","=",True)])
+
+        mkt_fields = []
+
+        for field in required_fields:
+            mkt_fields.append((0,0,{'field_id': field.id}))
+        
+        if mkt_fields:
+            self.field_lines = mkt_fields
+    
+    @api.onchange('marketplace_categ_id')
+    def _load_category_attrs(self):
+        self.attr_lines.unlink()
+
+        required_attrs = self.env['marketplaces.category.attribute'].search([("category_id","=",self.marketplace_categ_id.id),("required","=",True)])
+
+        categ_attrs = []
+
+        for attr in required_attrs:
+            categ_attrs.append((0,0,{'attr_id': attr.id}))
+        
+        if categ_attrs:
+            self.attr_lines = categ_attrs
         
 class MarketplaceTemplateFieldLine(models.Model):
     _name = 'marketplaces.field.line'

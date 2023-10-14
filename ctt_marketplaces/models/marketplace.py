@@ -23,3 +23,11 @@ class MarketplaceField(models.Model):
     type = fields.Char(string='Tipo')
     complex_type = fields.Char(string='Tipo Complejo')
     marketplace_id = fields.Many2one('marketplaces.marketplace', string='Marketplace')
+
+    @api.model
+    def name_get(self):
+        result = []
+        for record in self:
+            name = record.display_name
+            result.append((record.id, name))
+        return result

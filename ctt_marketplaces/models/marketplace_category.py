@@ -25,4 +25,12 @@ class MarketplaceCategoryAttribute(models.Model):
     required = fields.Boolean(string='Requerido', default=False)
     type = fields.Char(string='Tipo')
 
+    @api.model
+    def name_get(self):
+        result = []
+        for record in self:
+            name = record.display_name
+            result.append((record.id, name))
+        return result
+
     

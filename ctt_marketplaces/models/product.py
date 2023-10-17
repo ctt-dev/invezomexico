@@ -6,7 +6,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     marketplace_tamplate_ids = fields.One2many(
-        'marketplaces.tamplate',
+        'marketplaces.template',
         'product_id',
         string='Plantillas'
     )

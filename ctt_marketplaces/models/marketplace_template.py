@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 
 class MarketplaceProductTemplate(models.Model):
-    _name = 'marketplaces.tamplate'
+    _name = 'marketplaces.template'
     _description = 'Plantilla para productos en marketplaces'
 
     marketplace = fields.Selection(selection=[],string='Marketplace')

@@ -2,7 +2,7 @@
     <data>
         <record id="marketplaces_template_form" model="ir.ui.view">
             <field name="name">Marketplaces.template.form</field>
-            <field name="model">marketplaces.tamplate</field>
+            <field name="model">marketplaces.template</field>
             <field name="arch" type="xml">
                 <form>
                     <header>
@@ -34,5 +34,31 @@
                 </form>
             </field>
         </record>
+
+    <record id="marketplace_template_kanban_view" model="ir.ui.view">
+        <field name="name">marketplace.kanban</field>
+        <field name="model">marketplace.template</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="mkt_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="card oe_kanban_global_click p-0">
+                            <div class="card-body p-0">
+                                <h4 class="card-title p-2 m-0 bg-200">
+                                    <small><field name="mkt_id"/></small>
+                                </h4>
+                            </div>
+                            <t t-name="kanban-box-bottom">
+                                <!-- Agrega una línea horizontal de botones al final -->
+                                <div class="o_kanban_bottom">
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </templates>    
+            </kanban> 
+        </field>
+    </record>
     </data>
 </odoo>

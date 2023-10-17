@@ -2,7 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_marketplaces_marketplace,marketplaces.marketplace manager,model_marketplaces_marketplace,,1,1,1,1
 access_marketplaces_marketplace_field,marketplaces.marketplace.field manager,model_marketplaces_marketplace_field,,1,1,1,1
 
-access_marketplaces_tamplate,marketplaces.tamplate manager,model_marketplaces_tamplate,,1,1,1,1
+access_marketplaces_template,marketplaces.template manager,model_marketplaces_template,,1,1,1,1
 access_marketplaces_field_line,marketplaces.field.line manager,model_marketplaces_field_line,,1,1,1,1
 access_marketplaces_attribute_line,marketplaces.attribute.line manager,model_marketplaces_attribute_line,,1,1,1,1
 

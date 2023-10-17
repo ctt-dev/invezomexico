@@ -37,7 +37,7 @@
 
     <record id="marketplace_template_kanban_view" model="ir.ui.view">
         <field name="name">marketplace.kanban</field>
-        <field name="model">marketplace.template</field>
+        <field name="model">marketplaces.template</field>
         <field name="arch" type="xml">
             <kanban>
                 <field name="mkt_id"/>

@@ -62,7 +62,7 @@ class MarketplaceTemplateFieldLine(models.Model):
     _name = 'marketplaces.field.line'
     _description = 'Lineas para campos del template'
 
-    template_id = fields.Many2one('marketplaces.tamplate', string='Plantilla')
+    template_id = fields.Many2one('marketplaces.template', string='Plantilla')
     field_id = fields.Many2one('marketplaces.marketplace.field', string='Campo')
     value = fields.Char(string='Valor')
 
@@ -70,6 +70,6 @@ class MarketplaceTemplateFieldLine(models.Model):
     _name = 'marketplaces.attribute.line'
     _description = 'Lineas para campos del template'
 
-    template_id = fields.Many2one('marketplaces.tamplate', string='Plantilla')
+    template_id = fields.Many2one('marketplaces.template', string='Plantilla')
     attr_id = fields.Many2one('marketplaces.category.attribute', string='Campo')
     value = fields.Char(string='Valor')

@@ -8,7 +8,7 @@
                 <notebook>
                     <page string="Marketplaces">
                         <div class="o_kanban_group">
-                            <field name="marketplace_tamplate_ids" mode="kanban" add-label="Agregar Plantilla" nolabel="1"/>
+                            <field name="marketplace_template_ids" mode="kanban" add-label="Agregar Plantilla" nolabel="1"/>
                                 <!-- <kanban>
                                     <field name="mkt_id"/>
                                     <templates>

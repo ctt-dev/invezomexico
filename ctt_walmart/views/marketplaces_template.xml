@@ -1,0 +1,18 @@
+<odoo>
+    <data>
+        <record id="ctt_walmart_marketplaces_template_view_form" model="ir.ui.view">
+            <field name="name">ctt_walmart.marketplaces.template.kanban.inherit</field>
+            <field name="model">marketplaces.template</field>
+            <field name="inherit_id" ref="ctt_marketplaces.marketplace_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('o_kanban_bottom')]" position="inside">
+                    <div name="walmart_buttons" attrs="{'invisible': [('mkt_name', '!=', 'WALMART')]}">
+                        <button name="publish_walmart_item" type="object" class="oe_kanban_button" icon="fa-cloud-upload"
+                            string="Publicar producto">
+                        </button>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

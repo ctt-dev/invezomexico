@@ -41,6 +41,7 @@
         <field name="arch" type="xml">
             <kanban>
                 <field name="mkt_id"/>
+                <field name="mkt_name"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="card oe_kanban_global_click p-0">
@@ -52,6 +53,9 @@
                             <t t-name="kanban-box-bottom">
                                 <!-- Agrega una línea horizontal de botones al final -->
                                 <div class="o_kanban_bottom">
+                                    <!-- <button name="test_button" type="object" class="oe_kanban_button" icon="fa-plus"
+                                        help="Este es un botón personalizado">
+                                    </button> -->
                                 </div>
                             </t>
                         </div>

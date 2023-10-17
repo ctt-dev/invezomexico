@@ -2,6 +2,8 @@ import requests
 import json
 import uuid
 import base64
+import logging
+_logger = logging.getLogger(__name__)
 
 class WalmartAPI:
     """
@@ -109,7 +111,7 @@ class WalmartAPI:
                 return None
 
             if response is not None:
-                return response
+                return response.json()
             else:
                 print(f"Solicitud {method} fallida: {response.status_code}")
                 return None
@@ -283,7 +285,7 @@ class WalmartAPI:
         :param headers: Los encabezados HTTP personalizados a incluir en la solicitud.
         :return: La respuesta de la API en formato JSON o None en caso de error.
         """
-        files = {'file': (file['filename'], file['content'])}
+        # files = {'file': (file['filename'], file['content'])}
 
-        response = requests.post(url, files=files, data=data, headers=headers)
+        response = requests.post(url, files=file, data=data, headers=headers)
         return response

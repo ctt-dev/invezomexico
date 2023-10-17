@@ -1,4 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_template_public,product.template,product.model_product_template,base.group_public,1,0,0,0
+access_product_image_public,product.image,website_sale.model_product_image,base.group_public,1,0,0,0
+
 access_marketplaces_marketplace,marketplaces.marketplace manager,model_marketplaces_marketplace,,1,1,1,1
 access_marketplaces_marketplace_field,marketplaces.marketplace.field manager,model_marketplaces_marketplace_field,,1,1,1,1
 

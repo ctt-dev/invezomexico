@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ctt_walmart_ctt_walmart,ctt_walmart.ctt_walmart,model_ctt_walmart_ctt_walmart,base.group_user,1,1,1,1
+access_walmart_feed,walmart.feed manager,model_walmart_feed,,1,1,1,1

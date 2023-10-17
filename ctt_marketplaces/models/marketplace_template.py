@@ -8,6 +8,7 @@ class MarketplaceProductTemplate(models.Model):
 
     marketplace = fields.Selection(selection=[],string='Marketplace')
     mkt_id = fields.Many2one('marketplaces.marketplace', string='Marketplace')
+    mkt_name = fields.Char(related='mkt_id.name')
     product_id = fields.Many2one('product.template', string='Producto')
 
     #Campos genericos para templates
@@ -29,6 +30,9 @@ class MarketplaceProductTemplate(models.Model):
         'template_id',
         string='Campos de categoría'
     )
+
+    def test_button(self):
+        pass
 
     @api.onchange('mkt_id')
     def _load_marketplace_fields(self):

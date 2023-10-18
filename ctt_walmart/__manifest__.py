@@ -29,6 +29,7 @@
         'security/ir.model.access.csv',
         'views/res_config.xml',
         'data/marketplace.xml',
+        'data/cron_feed_status.xml',
         'views/marketplaces_template.xml'
     ],
     # only loaded in demonstration mode

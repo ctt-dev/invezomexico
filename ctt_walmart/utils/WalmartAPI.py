@@ -67,10 +67,10 @@ class WalmartAPI:
                 self.headers["WM_SEC.ACCESS_TOKEN"] = self.token
                 return True
             else:
-                print("Autenticación fallida.")
+                _logger.warning("Autenticación fallida.")
                 return False
         except Exception as e:
-            print(f"Error en la autenticación: {str(e)}")
+            _logger.warning(f"Error en la autenticación: {str(e)}")
             return False
 
     def send_request(self, method, endpoint, data=None, file=None, headers=None):
@@ -107,16 +107,16 @@ class WalmartAPI:
             elif method == "DELETE":
                 response = self.delete(url, request_headers)
             else:
-                print(f"Método HTTP no válido: {method}")
+                _logger.warning(f"Método HTTP no válido: {method}")
                 return None
 
             if response is not None:
                 return response.json()
             else:
-                print(f"Solicitud {method} fallida: {response.status_code}")
+                _logger.warning(f"Solicitud {method} fallida: {response.status_code}")
                 return None
         except Exception as e:
-            print(f"Error en la solicitud {method}: {str(e)}")
+            _logger.warning(f"Error en la solicitud {method}: {str(e)}")
             return None
 
 
@@ -150,10 +150,10 @@ class WalmartAPI:
                 if response.status_code == 200:
                     return response.json()
             else:
-                print(f"Solicitud PUT fallida. Código de estado: {response.status_code}")
+                _logger.warning(f"Solicitud PUT fallida. Código de estado: {response.status_code}")
                 return None
         except Exception as e:
-            print(f"Error en la solicitud PUT: {str(e)}")
+            _logger.warning(f"Error en la solicitud PUT: {str(e)}")
             return None
 
     def delete(self, endpoint, headers=None):
@@ -179,10 +179,10 @@ class WalmartAPI:
                 if response.status_code == 204:
                     return True
             else:
-                print(f"Solicitud DELETE fallida. Código de estado: {response.status_code}")
+                _logger.warning(f"Solicitud DELETE fallida. Código de estado: {response.status_code}")
                 return False
         except Exception as e:
-            print(f"Error en la solicitud DELETE: {str(e)}")
+            _logger.warning(f"Error en la solicitud DELETE: {str(e)}")
             return False
 
     def get(self, endpoint, headers=None):
@@ -208,10 +208,10 @@ class WalmartAPI:
                 if response.status_code == 200:
                     return response.json()
             else:
-                print(f"Solicitud GET fallida. Código de estado: {response.status_code}")
+                _logger.warning(f"Solicitud GET fallida. Código de estado: {response.status_code}")
                 return None
         except Exception as e:
-            print(f"Error en la solicitud GET: {str(e)}")
+            _logger.warning(f"Error en la solicitud GET: {str(e)}")
             return None
 
     def post(self, endpoint, data=None, file=None, headers=None):
@@ -253,10 +253,10 @@ class WalmartAPI:
                 elif response.status_code == 201:
                     return response.json()
             else:
-                print(f"Solicitud POST fallida. Código de estado: {response.status_code}")
+                _logger.warning(f"Solicitud POST fallida. Código de estado: {response.status_code}")
                 return None
         except Exception as e:
-            print(f"Error en la solicitud POST: {str(e)}")
+            _logger.warning(f"Error en la solicitud POST: {str(e)}")
             return None
 
     def post_json(self, url, data, headers):

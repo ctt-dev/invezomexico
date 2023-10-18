@@ -136,6 +136,12 @@ class MarketplaceProductTemplate(models.Model):
                 ]
 
                 response = api_client.send_request("POST", url, file=files)
+
+                feed = self.env['walmart.feed'].create({
+                    'feedId': response['feedId'],
+                    'status': 'RECEIVED',
+                    'template_id': self.id
+                })
                 
                 return {
                     'type': 'ir.actions.client',

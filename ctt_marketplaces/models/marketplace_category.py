@@ -13,7 +13,15 @@ class MarketplaceTemplateCategory(models.Model):
         'marketplaces.category.attribute',
         'category_id',
         string='Atributos de Categoría'
-    )    
+    )
+
+    @api.model
+    def name_get(self):
+        result = []
+        for record in self:
+            name = record.display_name
+            result.append((record.id, name))
+        return result
 
 class MarketplaceCategoryAttribute(models.Model):
     _name = 'marketplaces.category.attribute'

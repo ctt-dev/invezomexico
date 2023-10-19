@@ -5,6 +5,15 @@
             <field name="model">marketplaces.template</field>
             <field name="inherit_id" ref="ctt_marketplaces.marketplace_template_kanban_view"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='mkt_id']" position="after">
+                    <field name="walmart_feed_id"/>
+                    <field name="walmart_status_feed"/>
+                </xpath>
+                <xpath expr="//div[hasclass('card-body')]" position="inside">
+                    <div class="p-2 m-0" attrs="{'invisible': [('walmart_feed_id', '=', False)]}">
+                        <span>Estado: <field name="walmart_status_feed"/></span>
+                    </div>
+                </xpath>
                 <xpath expr="//div[hasclass('o_kanban_bottom')]" position="inside">
                     <div name="walmart_buttons" attrs="{'invisible': [('mkt_name', '!=', 'WALMART')]}">
                         <button name="publish_walmart_item" type="object" class="oe_kanban_button" icon="fa-cloud-upload"

@@ -201,12 +201,12 @@ class WalmartAPI:
 
             # Verificar si la solicitud fue exitosa (código de estado 200)
             if response.status_code == 200:
-                return response.json()
+                return response
             elif response.status_code == 401:  # Token vencido
                 self.autenticar()  # Intentar actualizar el token y reintentar la solicitud
                 response = self.get(endpoint, headers=headers)
                 if response.status_code == 200:
-                    return response.json()
+                    return response
             else:
                 _logger.warning(f"Solicitud GET fallida. Código de estado: {response.status_code}")
                 return None

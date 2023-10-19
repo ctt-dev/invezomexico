@@ -36,7 +36,7 @@ class MarketplaceProductTemplate(models.Model):
 
     @api.onchange('mkt_id')
     def _load_marketplace_fields(self):
-        self.field_lines.unlink()
+        self.field_lines = False
 
         required_fields = self.env['marketplaces.marketplace.field'].search([("marketplace_id","=",self.mkt_id.id),("required","=",True)])
 
@@ -50,7 +50,7 @@ class MarketplaceProductTemplate(models.Model):
     
     @api.onchange('marketplace_categ_id')
     def _load_category_attrs(self):
-        self.attr_lines.unlink()
+        self.attr_lines = False
 
         required_attrs = self.env['marketplaces.category.attribute'].search([("category_id","=",self.marketplace_categ_id.id),("required","=",True)])
 

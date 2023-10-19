@@ -53,9 +53,6 @@
                             <t t-name="kanban-box-bottom">
                                 <!-- Agrega una línea horizontal de botones al final -->
                                 <div class="o_kanban_bottom">
-                                    <!-- <button name="test_button" type="object" class="oe_kanban_button" icon="fa-plus"
-                                        help="Este es un botón personalizado">
-                                    </button> -->
                                 </div>
                             </t>
                         </div>

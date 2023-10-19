@@ -26,11 +26,12 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/marketplaces_menuitems.xml',
         'views/res_config.xml',
         'views/product.xml',
         'views/marketplaces_template.xml',
-        'views/marketplace.xml'
+        'views/marketplace.xml',
+        'views/marketplaces_category.xml',
+        'views/marketplaces_menuitems.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

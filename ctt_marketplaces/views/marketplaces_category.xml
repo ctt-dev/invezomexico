@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <record id="view_marketplaces_category_search" model="ir.ui.view">
+            <field name="name">marketplaces.category.search</field>
+            <field name="model">marketplaces.category</field>
+            <field name="arch" type="xml">
+                <search>
+                    <group expand="1" string="Group By">
+                        <filter string="Marketplace" name="marketplace_group" context="{'group_by':'marketplace_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="ctt_marketplace_category_tree" model="ir.ui.view">
+            <field name="name">marketplace.category.tree</field>
+            <field name="model">marketplaces.category</field>
+            <field name="arch" type="xml">
+                <tree create="false" delete="false">
+                    <field name="display_name" string="Nombre mostrado"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="ctt_marketplace_category_form" model="ir.ui.view">
+            <field name="name">marketplace.category.form</field>
+            <field name="model">marketplaces.category</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="display_name" string="Nombre mostrado"/>
+                        </group>
+                        <field name="attribute_ids" widget="one2many">
+                            <tree create="false" delete="false" editable="top">
+                                <field name="name"/>
+                                <field name="display_name" string="Nombre mostrado"/>
+                                <field name="required"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -16,7 +16,7 @@ class CttWalmartConfigSettings(models.Model):
         ('PROCESSED','Procesada'),
         ('ERROR', 'Error')
         ],string='Estado')
-    template_id = fields.Many2one('marketplaces.template', string='Plantilla')
+    # template_id = fields.Many2one('marketplaces.template', string='Plantilla')
 
     def feed_status(self):
         self.ensure_one()

@@ -13,6 +13,9 @@ _logger = logging.getLogger(__name__)
 class MarketplaceProductTemplate(models.Model):
     _inherit = 'marketplaces.template'
 
+    walmart_feed_id = fields.Many2one('walmart.feed', string='Feed')
+    walmart_status_feed = fields.Selection(related='walmart_feed_id.status')
+
     def _process_template(self):
         params = self.env['ir.config_parameter'].sudo()
         base_url = params.get_param('web.base.url')
@@ -55,7 +58,7 @@ class MarketplaceProductTemplate(models.Model):
         mp_product_category_vehicle_tires = ET.SubElement(mp_product_category_vehicle, "Tires")
 
         #Description
-        # ET.SubElement(mp_product_category_vehicle_tires, "shortDescription").text = self.marketplace_description
+        ET.SubElement(mp_product_category_vehicle_tires, "shortDescription").text = self.marketplace_description
     
         # Categ Fields
         for line in self.attr_lines:
@@ -95,7 +98,7 @@ class MarketplaceProductTemplate(models.Model):
         return root
     
     def publish_walmart_item(self):
-        self.ensure_one()
+        # self.ensure_one()
         # Obtener la estructura XML
         xml_root = self._process_template()
         
@@ -136,12 +139,16 @@ class MarketplaceProductTemplate(models.Model):
                 ]
 
                 response = api_client.send_request("POST", url, file=files)
+                _logger.warning(response)
 
                 feed = self.env['walmart.feed'].create({
                     'feedId': response['feedId'],
-                    'status': 'RECEIVED',
-                    'template_id': self.id
+                    'status': 'RECEIVED'
                 })
+
+                feed.feed_status()
+
+                self.write({'walmart_feed_id': feed.id})
                 
                 return {
                     'type': 'ir.actions.client',

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+import json
 from odoo.addons.ctt_walmart.utils.WalmartAPI import WalmartAPI
 import logging
 _logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class CttWalmartConfigSettings(models.Model):
         ('PROCESSED','Procesada'),
         ('ERROR', 'Error')
         ],string='Estado')
+    data = fields.Text(string='Información')
     # template_id = fields.Many2one('marketplaces.template', string='Plantilla')
 
     def feed_status(self):
@@ -34,9 +36,11 @@ class CttWalmartConfigSettings(models.Model):
             response = api_client.send_request("GET", url) #Request GET
             _logger.warning(response)
 
+            response_data = json.dumps(response)
             #Sobrescribir status
             self.write({
-                'status': response['feedStatus']
+                'status': response['feedStatus'],
+                'data': response_data
             })
 
         except Exception as e:

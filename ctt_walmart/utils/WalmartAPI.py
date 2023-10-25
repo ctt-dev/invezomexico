@@ -23,7 +23,8 @@ class WalmartAPI:
         self.client_secret = client_secret
         self.token = None
         self.token_expires_in = None
-        self.base_url = "https://sandbox.walmartapis.com/v3"
+        # self.base_url = "https://sandbox.walmartapis.com/v3"
+        self.base_url = "https://marketplace.walmartapis.com/v3"
 
         self.autorization = f'{client_id}:{client_secret}'
         self.encoded_string = base64.b64encode(self.autorization.encode("utf-8")).decode("utf-8")
@@ -73,7 +74,7 @@ class WalmartAPI:
             _logger.warning(f"Error en la autenticación: {str(e)}")
             return False
 
-    def send_request(self, method, endpoint, data=None, file=None, headers=None):
+    def send_request(self, method, endpoint, data=None, file=None, headers=None, params=None):
         """
         Envía una solicitud HTTP utilizando el método especificado.
 
@@ -96,7 +97,7 @@ class WalmartAPI:
 
             # Determinar el método de solicitud y realizar la solicitud correspondiente
             if method == "GET":
-                response = self.get(url, headers=request_headers)
+                response = self.get(url, headers=request_headers, params=params)
             elif method == "POST":
                 if file:
                     response = self.post_multipart(url, file, data, request_headers)
@@ -185,7 +186,7 @@ class WalmartAPI:
             _logger.warning(f"Error en la solicitud DELETE: {str(e)}")
             return False
 
-    def get(self, endpoint, headers=None):
+    def get(self, endpoint, headers=None, params=None):
         """
         Realiza una solicitud GET a la API.
 
@@ -197,7 +198,11 @@ class WalmartAPI:
             if headers is None:
                 headers = {}
 
-            response = requests.get(endpoint, headers=headers)
+            if params is None:
+                params = {}
+
+            response = requests.get(endpoint, headers=headers, params=params)
+            # _logger.warning(response.json())
 
             # Verificar si la solicitud fue exitosa (código de estado 200)
             if response.status_code == 200:

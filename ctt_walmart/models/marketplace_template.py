@@ -10,6 +10,11 @@ from odoo.addons.ctt_walmart.utils.WalmartAPI import WalmartAPI
 import logging
 _logger = logging.getLogger(__name__)
 
+import time
+import datetime
+import pytz
+from dateutil import parser
+
 class MarketplaceProductTemplate(models.Model):
     _inherit = 'marketplaces.template'
 
@@ -139,7 +144,7 @@ class MarketplaceProductTemplate(models.Model):
                 ]
 
                 response = api_client.send_request("POST", url, file=files)
-                _logger.warning(response)
+                # _logger.warning(response)
 
                 feed = self.env['walmart.feed'].create({
                     'feedId': response['feedId'],
@@ -171,3 +176,41 @@ class MarketplaceProductTemplate(models.Model):
             raise ValidationError(f"Error al analizar el archivo XML: {e}")
         except Exception as e:
             raise ValidationError(f"Ocurrió un error inesperado: {e}")
+
+    def search_orders(self):
+        try:
+            _logger.warning("BUSCAR ORDENES")
+            params = self.env['ir.config_parameter'].sudo()
+            client_id = params.get_param('ctt_walmart.walmart_client_id')
+            client_secret = params.get_param('ctt_walmart.walmart_client_secret')
+            
+            api_client = WalmartAPI(client_id, client_secret)
+
+            # url = "orders"
+            url = "orders/cursor"
+
+            # Obtén la hora actual en la Zona Horaria del Este de los Estados Unidos (-5 horas)
+            eastern_timezone = pytz.timezone('Etc/GMT+5')
+            end_time = datetime.datetime.now(eastern_timezone)
+            start_date = end_time - datetime.timedelta(minutes=1)
+            
+            params = {
+                'statusCodeFilter': 'Created',
+                'createdStartDate': start_date.strftime('%Y-%m-%dT%H:%M:%S.000-05:00'),
+                'createdEndDate': end_time.strftime('%Y-%m-%dT%H:%M:%S.000-05:00')
+                # 'createdStartDate': '2023-10-24T20:00:00.000-05:00',
+                # 'createdEndDate': '2023-10-24T22:59:59.000-05:00'
+            }
+            _logger.warning(params)
+
+            response = api_client.send_request("GET", url, params=params)
+
+            orders = response['order']
+            for order in orders:
+                _logger.warning(order['orderDate'])
+                # order_date = datetime.datetime.fromisoformat(order['orderDate'])
+                # if start_date <= order_date <= end_time:
+                #     _logger.warning(order['orderDate'])
+
+        except Exception as e:
+            raise ValidationError(f"Ocurrió un error: {e}")

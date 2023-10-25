@@ -19,6 +19,9 @@
                         <button name="publish_walmart_item" type="object" class="oe_kanban_button" icon="fa-cloud-upload"
                             string="Publicar producto">
                         </button>
+                        <!-- <button name="search_orders" type="object" class="oe_kanban_button" icon="fa-search"
+                            string="Buscar ordenes">
+                        </button> -->
                     </div>
                 </xpath>
             </field>

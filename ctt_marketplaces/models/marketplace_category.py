@@ -14,14 +14,15 @@ class MarketplaceTemplateCategory(models.Model):
         'category_id',
         string='Atributos de Categoría'
     )
+    is_installed = fields.Boolean(string='Activo', default=False)
 
-    @api.model
-    def name_get(self):
-        result = []
-        for record in self:
-            name = record.display_name
-            result.append((record.id, name))
-        return result
+    # @api.model
+    # def name_get(self):
+    #     result = []
+    #     for record in self:
+    #         name = record.display_name
+    #         result.append((record.id, name))
+    #     return result
 
 class MarketplaceCategoryAttribute(models.Model):
     _name = 'marketplaces.category.attribute'

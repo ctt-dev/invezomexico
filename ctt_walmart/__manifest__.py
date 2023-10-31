@@ -27,10 +27,11 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/res_config.xml',
         'data/marketplace.xml',
         'data/cron_feed_status.xml',
-        'views/marketplaces_template.xml'
+        'views/marketplaces_template.xml',
+        'wizard/wizard_category_install.xml',
+        'views/res_config.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

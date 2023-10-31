@@ -3,6 +3,7 @@
 from . import controllers
 from . import models
 from . import utils
+from . import wizard
 
 import os
 from odoo import api, SUPERUSER_ID

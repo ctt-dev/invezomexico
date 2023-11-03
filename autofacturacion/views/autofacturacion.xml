@@ -28,14 +28,12 @@
                             </a>
             </div>
         </form>
-        <div class="col-md-12 oe_structure">
-          <section class="s_text_block o_colored_level pt0 pb0" data-snippet="s_text_block" data-name="Text" style="background-image: none;">
+        <div class="form-group  col-xs-12">
             <div class="s_allow_columns o_container_small">
-              <p style="text-align: justify;">
+              <label class="control-label" for="name" style="text-align: justify;">
                 <em>Cuenta con 7 días naturales desde el momento de recibir su producto&#160;para realizar su factura. <strong><u>Es importante copiar y pegar sus datos tal cual vengan en su cédula fiscal.</u></strong> Si por  alguna razón&#160;<strong><u>le sale un error al momento de timbrar&#160;su factura realice una captura de pantalla&#160;del problema y envíelo a facturacion@score.com.mx</u></strong></em>
-              </p>
+              </label>
             </div>
-          </section>
         </div>
       </div>
     </div>

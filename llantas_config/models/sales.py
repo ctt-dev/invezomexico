@@ -34,23 +34,49 @@ class sale_order_inherit(models.Model):
         store=True,
     )
 
-    _sql_constraints = [
-        ('folio_venta', 'unique(folio_venta)', "Ya existe una venta con este folio. El folio de la venta debe ser único."),
-    ]
-    
     folio_venta=fields.Char(
         string="No. Venta",
         tracking=True,
-        store=True,
+
     )
+
+    @api.model
+    def create(self, values):
+        if 'folio_venta' in values:
+            venta_ids=self.env['sale.order'].search([('folio_venta','=',values['folio_venta']),('folio_venta','!=',False)])
+            if len(venta_ids) > 0:
+                raise UserError('El número de venta debe ser único.')
+            # Realizar operaciones adicionales si es necesario
+        return super(sale_order_inherit, self).create(values) 
+        
+    def write(self, values):
+        for rec in self:
+            if 'folio_venta' in values:
+                venta_ids=rec.env['sale.order'].search([('folio_venta','=',values['folio_venta']),('id','!=',rec.id),('folio_venta','!=',False)])
+                if len(venta_ids) > 0:
+                    raise UserError('El número de venta debe ser único.')
+        return super(sale_order_inherit, self).write(values)
+    
+    
     
 
     link_venta=fields.Char(
         string="Link de venta",
         tracking=True,
-        store=True,
     )
 
+    link_facturacion=fields.Char(
+        string="Link de facturacion",
+        tracking=True,
+        compute="_compute_link"
+    )
+
+    def _compute_link(self):
+        if(self.folio_venta):
+            self.link_facturacion = self.env['ir.config_parameter'].get_param('web.base.url')+'/autofacturador/'+self.folio_venta
+        else:
+            self.link_facturacion = ''
+            
     status_ventas=fields.Many2one(
         "llantas_config.status_ventas",
         string="Estatus",
@@ -156,8 +182,10 @@ class sale_order_line_inherit(models.Model):
         compute=compute_precio_antes_dec,
     )
 
-    
-
+    @api.onchange('product_id')
+    def onchange_product_id_for_llantas_config(self):
+        if self.product_id.id:
+            self.name = self.product_id.name
     
 
     

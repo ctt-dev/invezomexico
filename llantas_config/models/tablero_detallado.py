@@ -24,11 +24,12 @@ class ctrl_sale_order_line(models.Model):
         store=True,
     )
 
-    name=fields.Char(
-        related="sale_id.name",
-        string="Nombre",
-        store=True,
-    )
+    ## Esto provoca bug que no se registre el name de las líneas de producto correctamente. Será comentada para evitarlo
+    # name=fields.Char(
+    #     related="sale_id.name",
+    #     string="Nombre",
+    #     store=True,
+    # )
 
     comprador_id=fields.Many2one(
         "hr.employee",

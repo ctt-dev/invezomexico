@@ -21,8 +21,10 @@
                     <div class="oe_title">
                         <group string="Información general" style="background-color: #fff">
                             <field name="marketplace" string="Canal de venta" options="{'no_create_edit': True}"/>
-                            <field name="link_venta" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
                             <field name="folio_venta" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}" />
+                            <field name="link_venta" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
+                            <field name="link_facturacion" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
+                            
                              
                              <field name="fecha_venta" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
                             <!-- <field name="invoice_id" invisible="1"/> -->

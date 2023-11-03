@@ -24,10 +24,10 @@
                 <label class="control-label" for="email">Correo Electronico*</label>
                 <input type="email" required="" name="email" id="email" placeholder="micorreo@dominio.com" class="form-control"/>
                 <label class="control-label" for="zip">Codigo Postal*</label>
-                <input id="zip" name="zip" type="text" inputmode="numeric" placeholder="81850" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)" class="form-control"/>
+                <input id="zip" name="zip" required=""  type="text" inputmode="numeric" placeholder="81850" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)" class="form-control"/>
                 <label class="control-label" for="forma_pago">Forma de Pago</label>
                 <div class="custom-select">
-                  <select class="form-select" name = "forma_pago" id = "forma_pago">
+                  <select class="form-select" name = "forma_pago" id = "forma_pago" required="" >
                     <option value="0">SELECCIONA FORMA PAGO:</option>
                   <t t-foreach="pagos" t-as="pago" t-key="pago.id" t-att-value="pago.id">
                         <option t-att-value="pago.id"><t t-log="pago"/>
@@ -38,7 +38,7 @@
                 </div>
                <label class="control-label" for="cfdi">Uso del CFDI</label>
                 <div class="custom-select">
-                  <select class="form-select" name = "cfdi" id = "cfdi">
+                  <select class="form-select" name = "cfdi" id = "cfdi" required="" >
                     <option value="0">SELECCIONA CFDI:</option>
                     <option value="G01">Adquisición de mercancías</option>
                     <option value="G02">Devoluciones, descuentos o bonificaciones</option>
@@ -67,7 +67,7 @@
                 </div>
               <label class="control-label" for="regimen">Regimen Fiscal</label>
                 <div class="custom-select">
-                  <select class="form-select" name = "regimen" id = "regimen">
+                  <select class="form-select" name = "regimen" id = "regimen" required="" >
                     <option value="0">SELECCIONA REGIMEN:</option>
                     <option value="601">General de Ley Personas Morales</option>
                     <option value="603">Personas Morales con Fines no Lucrativos</option>
@@ -94,6 +94,12 @@
                     <option value="630">Enajenación de acciones en bolsa de valores</option>  
                   </select>
                 </div>
+              <label for="chckUser">Desea crear acceso?</label>
+              <input type="radio" id="chckUser" name="chckUser" value="True" checked=""/>
+              <label for="huey">Si</label>
+              <input type="radio" id="chckUserFalse" name="chckUser" value="False"/>
+              <label for="huey">No</label>
+              <!-- <input type="checkbox" id="chckUser" name="chckUser" value="True" class="form-check-input" style="margin-left : 5px; font-size : 17px;"/> -->
               <div class="clearfix" style="text-align : center;">
                   <br/>
                 <button type="submit" name="send" id="send" align="center" class="btn btn-primary">Enviar</button>

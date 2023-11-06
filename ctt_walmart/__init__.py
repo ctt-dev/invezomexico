@@ -64,7 +64,7 @@ def _walmart_post_init(cr, registry):
             categoria = env['marketplaces.category'].create({
                 'marketplace_id': marketplace.id,
                 'name': categ,
-                'display_name': '',
+                # 'display_name': '',
                 'group': group
             })
     

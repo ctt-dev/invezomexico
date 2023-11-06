@@ -8,7 +8,7 @@ class MarketplaceTemplateCategory(models.Model):
 
     marketplace_id = fields.Many2one('marketplaces.marketplace', string='Marketplace')
     name = fields.Char(string='Nombre')
-    display_name = fields.Char(string='Nombre')
+    displayed_name = fields.Char(string='Nombre')
     attribute_ids = fields.One2many(
         'marketplaces.category.attribute',
         'category_id',
@@ -16,13 +16,13 @@ class MarketplaceTemplateCategory(models.Model):
     )
     is_installed = fields.Boolean(string='Activo', default=False)
 
-    # @api.model
-    # def name_get(self):
-    #     result = []
-    #     for record in self:
-    #         name = record.display_name
-    #         result.append((record.id, name))
-    #     return result
+    @api.model
+    def name_get(self):
+        result = []
+        for record in self:
+            name = record.displayed_name or record.name
+            result.append((record.id, name))
+        return result
 
 class MarketplaceCategoryAttribute(models.Model):
     _name = 'marketplaces.category.attribute'

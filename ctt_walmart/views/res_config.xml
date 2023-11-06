@@ -29,6 +29,7 @@
                                     <div class="row mt4">
                                         <label class="col-lg-3" for="walmart_client_secret"/>
                                         <field name="walmart_client_secret" password="True"/>
+                                        <field name="walmart_category_count" class="w-auto ps-1 fw-bold"/>
                                     </div>
                                     <div class="mt8">
                                             <button name="%(ctt_walmart.action_view_marketplaces_category_install)d" icon="fa-arrow-right" type="action" string="Agregar categorías" class="btn-link"/>

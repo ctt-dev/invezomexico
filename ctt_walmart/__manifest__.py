@@ -29,6 +29,7 @@
         'security/ir.model.access.csv',
         'data/marketplace.xml',
         'data/cron_feed_status.xml',
+        'data/cron_new_orders.xml',
         'views/marketplaces_template.xml',
         'wizard/wizard_category_install.xml',
         'views/res_config.xml',

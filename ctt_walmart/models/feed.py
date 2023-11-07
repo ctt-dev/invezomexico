@@ -34,7 +34,7 @@ class CttWalmartConfigSettings(models.Model):
 
         try:
             response = api_client.send_request("GET", url) #Request GET
-            _logger.warning(response)
+            # _logger.warning(response)
 
             response_data = json.dumps(response)
             #Sobrescribir status

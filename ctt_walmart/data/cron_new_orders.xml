@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+
+        <record id="ir_cron_new_orders" model="ir.cron">
+            <field name="name">Verificar Walmart Orders</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">model.search_new_orders()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

@@ -1,0 +1,31 @@
+<odoo>
+    <data>
+        <!-- <menuitem id="adrone_config_tipo_producto_catalogos" 
+                          name="Catalogo tipo de productos" 
+                          parent="industry_fsm.fsm_menu_settings" 
+                          sequence="1001" /> -->
+        
+        <record id="tree_view_tipo_producto" model="ir.ui.view">
+            <field name="name">tree.tipo_producto</field>
+            <field name="model">adrone_config.tipo_productos</field>
+            <field name="arch" type="xml">
+                <tree string="Tipo de productos" editable="top">
+                    <field name="name"/>
+                    <field name="color" widget="color_picker"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="tipo_producto">
+            <field name="name">Marca de llanta</field>
+            <field name="res_model">adrone_config.tipo_productos</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="adrone_tipo_producto_menu" 
+                  name="Tipo de producto" 
+                  action="tipo_producto"
+                  parent="industry_fsm.fsm_menu_settings" 
+                  sequence="1001" />
+    </data>
+</odoo>

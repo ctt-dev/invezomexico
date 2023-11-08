@@ -20,13 +20,34 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': [
+        'base',
+        'contacts',
+        'stock',
+        'sale_management',
+        'account',
+        'hr',
+        'l10n_mx_edi',
+        'base_automation',
+        'crm',
+        'website',
+        'account_accountant',
+        'purchase',
+        'website_sale',
+        'mrp',
+        'delivery',
+        'industry_fsm',
+        
+    ],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/catalogos.xml',
+        'views/project_task.xml',
+        'reports/formato_tareas.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

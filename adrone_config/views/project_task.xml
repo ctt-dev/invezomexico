@@ -1,0 +1,32 @@
+<odoo>
+    <data>
+        <record id="view_project_task_form" model="ir.ui.view">
+            <field name="name">project_task</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//page[@name='extra_info']" position="before">
+                     <page string="Información Adrone">
+                         <group>
+                            <group>
+                                <field name="lugar" />
+                                <field name="asignado" />
+                                <field name="auxiliar" />
+                                <field name="fecha_aplicar" />
+                            </group>
+                            <group>
+                                <field name="cultivo" />
+                                <field name="hectareas" />
+                                <field name="tipo_prod" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" force_save="1"/>
+                                <field name="volumen" />
+                                <field name="altura" />
+                                <field name="velocidad" />
+                                <field name="espacio_surcos" />
+                            </group>
+                         </group>
+                     </page>
+                 </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

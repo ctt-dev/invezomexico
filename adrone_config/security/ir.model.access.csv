@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_adrone_config_adrone_config,adrone_config.adrone_config,model_adrone_config_adrone_config,base.group_user,1,1,1,1
+access_adrone_config_adrone_config_tipo_productos,adrone_config.tipo_productos,model_adrone_config_tipo_productos,,1,1,1,1

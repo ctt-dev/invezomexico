@@ -1,0 +1,9 @@
+<odoo>
+    <data noupdate="1">
+        <record id="walmart_channel" model="mail.channel">
+            <field name="name">Walmart</field>
+            <field name="active">1</field>
+            <field name="description">Notificaciones de Walmart</field>
+        </record>
+    </data>
+</odoo>

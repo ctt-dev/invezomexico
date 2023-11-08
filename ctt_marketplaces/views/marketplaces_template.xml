@@ -11,22 +11,22 @@
                         <group>
                             <field name="mkt_id"/>
                             <field name="marketplace_title"/>
-                            <field name="marketplace_categ_id"/>
+                            <field name="marketplace_categ_id" domain="[('is_installed','=',True),('marketplace_id','=',mkt_id)]"/>
                         </group>
                         <group string="Descripción">
                             <field colspan="2" name="marketplace_description" nolabel="1" placeholder="Descripción en Marketplace"/>
                         </group>
                         <separator string="Campos generales de marketplace" colspan="1"/>
-                        <field name="field_lines" widget="one2many">
+                        <field name="field_lines" widget="one2many" options="{'no_create': True}">
                             <tree editable="bottom">
-                                <field name="field_id"/>
+                                <field name="field_id" options="{'no_open': True, 'no_create': True}" readonly="1"/>
                                 <field name="value"/>
                             </tree>
                         </field>
                         <separator string="Atributos de categoria" colspan="1"/>
                         <field name="attr_lines" widget="one2many">
                             <tree editable="bottom">
-                                <field name="attr_id"/>
+                                <field name="attr_id" options="{'no_open': True, 'no_create': True}" readonly="1"/>
                                 <field name="value"/>
                             </tree>
                         </field>

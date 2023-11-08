@@ -46,7 +46,7 @@ class SaleOrder(models.Model):
                     "product_uom": product_id.uom_id.id
                 })
             except Exception as e:
-            _logger.warning(f"Ocurrió un error al crear linea de orden: {e}")
+                _logger.warning(f"Ocurrió un error al crear linea de orden: {e}")
 
     def search_new_orders(self):
         _logger.warning(f"Buscando ordenes")

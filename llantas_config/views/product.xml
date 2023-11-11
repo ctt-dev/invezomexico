@@ -12,6 +12,7 @@
                      <field name="medida_llanta" />
                      <field name="indice_carga" />
                      <field name="indice_velocidad" />
+                     <field name="rin" />
                      <field name="config_marketplace_id" widget="many2one_tags" force_save="1" invisible="1"/>
                      <field name="config_marketplace_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                  </xpath>

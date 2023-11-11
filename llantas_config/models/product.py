@@ -37,18 +37,21 @@ class product_template_inherit(models.Model):
     string='Indice de velocidad',
     )
 
-    largo = fields.Float(
+    largo = fields.Char(
     string='Largo llanta',
     )
     
-    ancho = fields.Float(
+    ancho = fields.Char(
     string='Ancho llanta',
     )	
     
-    alto = fields.Float(
+    alto = fields.Char(
     string='Alto llanta',
     )	
-    
+
+    rin = fields.Char(
+    string='Rin',
+    )
 
     config_marketplace_id=fields.Many2one(
         "llantas_config.product_marketplace",

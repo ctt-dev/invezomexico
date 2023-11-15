@@ -1,0 +1,37 @@
+<odoo>
+    <data>
+        <record id="view_flight_sheet_tree" model="ir.ui.view">
+            <field name="name">Hojas de vuelo</field>
+            <field name="model">adrone_config.flight_sheet</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="date"/>
+                    <field name="flight_time"/>
+                    <field name="location"/>
+                    <field name="aircraft_name"/>
+                    <field name="sprayed_area"/>
+                    <field name="flight_duration"/>
+                    <field name="crop"/>
+                    <field name="pilot_name"/>
+                    <field name="team_name"/>
+                    <field name="field_name"/>
+                    <field name="serial_number"/>
+                    <field name="start_battery"/>
+                    <field name="end_battery"/>
+                </tree>
+           </field>
+        </record>
+        
+        <record id="action_view_flight_sheets_tree" model="ir.actions.act_window">
+            <field name="name">Hoja de vuelo</field>
+            <field name="res_model">adrone_config.flight_sheet</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem id="menu_flight_sheet" 
+            action="action_view_flight_sheets_tree"
+            name="Hojas de vuelos" 
+            parent="adrone_config.menu_vuelos" 
+            sequence="5"/>
+    </data>
+</odoo>

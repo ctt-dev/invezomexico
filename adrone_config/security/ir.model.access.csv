@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_adrone_config_adrone_config_tipo_productos,adrone_config.tipo_productos,model_adrone_config_tipo_productos,,1,1,1,1
+access_adrone_config_import_flight,adrone_config.import.flight,model_adrone_config_import_flight,,1,1,1,1
+access_adrone_config_flight_sheet,adrone_config.flight_sheet,model_adrone_config_flight_sheet,,1,1,1,1

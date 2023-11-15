@@ -74,3 +74,11 @@ class project_task_inherit(models.Model):
     espacio_surcos=fields.Char(
         string="Espacio entre surcos",
     )
+
+    task_sequence = fields.Char(
+        string="Task Sequence",
+        default=lambda self: self.env['ir.sequence'].next_by_code('project.task.sequence'),
+        readonly=True,
+    )
+
+

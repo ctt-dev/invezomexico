@@ -5,6 +5,7 @@
             <field name="model">llantas_config.ctt_prov</field>
             <field name="arch" type="xml">
                 <tree edit="0" sample="1">
+                    <field name="sku" />
                     <field name="proveedor_id" />
                     <field name="codigo_producto" optional="hide"/>
                     <field name="producto" />
@@ -29,8 +30,8 @@
                     <div class="oe_button_box" />
                     <group>
                         <group string="Producto" >
-                            <!-- <field name="proveedor" /> -->
-                            <field name="codigo_producto" optional="hide"/>
+                            <field name="sku" />
+                            <field name="codigo_producto" />
                             <field name="proveedor_id" />
                             <field name="producto" />
                             <!-- <field name="almacen" />        -->
@@ -45,7 +46,7 @@
                         </group>
                         <group string="Informacion registro" >
                             <!-- <field name="fecha_registro" optional="hide"/> -->
-                            <field name="fecha_proveedor" optional="hide"/>
+                            <field name="fecha_proveedor"/>
                             
                         </group>
                     </group>

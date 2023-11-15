@@ -12,37 +12,105 @@
             print_report_name = "('Control de aplicacions')"/>
         
         <template id="report_control_de_aplicaciones">
-            <t t-name="adrone_config.report_control_de_aplicaciones">
-            <t t-call="web.external_layout">
-                <div class="article" t-att-data-oe-lang="o and o.env.context.get('lang')">
-                    <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
-                    <t t-set="address">
-                        <div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;, &quot;vat&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
-                    </t>
-                    <t t-if="o.dest_address_id">
-                        <t t-set="information_block">
-                            <strong>Shipping address:</strong>
-                            <div t-if="o.dest_address_id">
-                                <div t-field="o.dest_address_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" name="purchase_shipping_address"/>
-                            </div>
             
-                        </t>
-                    </t>
-                    <t t-foreach="docs" t-as="doc">
-                        <div class="page">
-                            <br/>
-                            <center style="font-size:13px">
-                                <span t-esc="company.name"/>
-                            </center><br/>
-                            <div>
-                                <h5><center>Orden de aplicacion</center></h5><br/>
-                                <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
-                            </div>
+            <t t-name="adrone_config.report_control_de_aplicaciones">
+                <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout"> 
+                    <h1><center>Orden de aplicación</center></h1><br/><br/><br/>
+                    <div id="informations" class="row mt-2 mb-32">
+                        <div t-if="doc.partner_id" class="col-6 bm-2">
+                            <center>
+                                <strong>Cliente:</strong>
+                                <span t-field="doc.partner_id.name" class="m-0" />
+                            </center>
                         </div>
-                    </t>
-                </div>
+                        <div t-if="doc.create_date" class="col-6 bm-2">
+                            <center>
+                                <strong>Fecha de orden:</strong>
+                                <p t-field="doc.create_date" class="m-0" />
+                            </center>
+                        </div>
+                    </div>
+                    <br/><br/><br/>
+                    <div>
+                        
+                        <table class="table">
+                            <tr>
+                                <td style="width: 25%">Cultivo: </td>
+                                <td style="width: 25%"><span t-field="doc.name"/></td>
+                                <td style="width: 25%">ID parcela: </td>
+                                <td style="width: 25%"></td>
+                                
+                            </tr>
+                            <tr>
+                                <td>Lugar de aplicacion: </td>
+                                <td><span t-field="doc.lugar"/></td>
+                                <td>Hora inicio: </td>
+                                <td></td>
+                                
+                            </tr>
+                            <tr>
+                                <td>Area de aplicacion total: </td>
+                                <td></td>
+                                <td>Hora termino: </td>
+                                <td></td>
+                                
+                            </tr>
+                            <tr>
+                                <td colspan="2">Area de aplicacion total: </td>
+
+                                <td colspan="2"></td>
+                                
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">Productos</td>
+                               
+                            </tr>
+                            <tr><td colspan="4"></td></tr>
+                            <tr><td colspan="4"></td></tr>
+                            <tr><td colspan="4"></td></tr>
+                            <tr><td colspan="4"></td></tr>
+                            <tr>
+                                <td colspan="1">Tipo</td>
+                                <td colspan="3"><span t-field="doc.tipo_prod" widget="many2many_tags"/></td>
+                                
+                            </tr>
+                            <tr>
+                                <td>Volumen de aplicación total</td>
+                                <td><span t-field="doc.volumen" /></td>
+                                <td>Altura sobre cultivo</td>
+                                <td><span t-field="doc.altura"/></td>
+
+                                
+                            </tr>
+                            <tr>
+                                <td>Velocidad de vuelo</td>
+                                <td><span t-field="doc.velocidad" /></td>
+                                <td>Espacio entre pasadas</td>
+                                <td><span t-field="doc.espacio_surcos" /></td>
+
+                                
+                            </tr>
+                            <tr><td colspan="4"></td></tr>
+                            <tr><td colspan="4"></td></tr>
+                            <tr >
+                                <td colspan="2" align="center">___________________</td>
+                                <td colspan="2" align="center">___________________</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center"><span t-field="doc.asignado"/></td>
+                                <td colspan="2" align="center">Supervisor</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </t>
+                </t>
+                </t>
             </t>
-            </t>
+           
+        
         </template>
     </data>
 </odoo>

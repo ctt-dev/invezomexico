@@ -73,6 +73,10 @@ class ctrl_llantas(models.Model):
         string="Moneda",
     )
 
+    sku=fields.Char(
+        string="Sku",
+    )
+
 
     
 class ProductSupplierinfoInherited(models.Model):

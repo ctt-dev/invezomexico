@@ -272,7 +272,7 @@
             <field name="arch" type="xml">
                 <tree string="sku_marketplace" editable="top">
                     <field name="name"/>
-                    <field name="product_id"/>
+                    <field name="product_id" required="1"/>
                     <field name="color" widget="color_picker"/>
                 </tree>
             </field>

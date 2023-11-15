@@ -13,6 +13,8 @@
                                 <field name="asignado" />
                                 <field name="auxiliar" />
                                 <field name="fecha_aplicar" />
+                                <field name="task_sequence" widget="sequence" options="{'sequence': 'ctt_adrone_sequence'}"/>
+                                <field name="task_sequence" widget="sequence" />
                             </group>
                             <group>
                                 <field name="cultivo" />

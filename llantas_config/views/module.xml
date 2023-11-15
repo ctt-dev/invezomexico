@@ -7,10 +7,11 @@
                 <tree edit="0" sample="1">
                     <field name="sale_id" optional="hide"/>
                     <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
+                    <field name="no_venta" />
+                    <field name="link_venta" optional="hide" widget="url"/>
                     <field name="partner_name" />
                     <field name="marketplace" />
-                    <field name="link_venta" optional="hide"/>
-                    <field name="no_venta" />
+
                     <field name="fecha" />
                     <!-- <field name="productos_orden"/> -->
                     <field name="comision" optional="hide"/>

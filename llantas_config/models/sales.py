@@ -147,10 +147,12 @@ class sale_order_inherit(models.Model):
     
     def _prepare_invoice(self):
         invoice_vals = super()._prepare_invoice()
-        if self.marketplace.id:
-            if self.marketplace.diarios_id.id:
-                invoice_vals.update({'journal_id': self.marketplace.diarios_id.id})
-            return invoice_vals
+        if self.company_id and getattr(self.company_id, 'name', '') != 'ADRONE':
+            if self.marketplace.id:
+                if self.marketplace.diarios_id.id:
+                    invoice_vals.update({'journal_id': self.marketplace.diarios_id.id})
+        return invoice_vals
+
 
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'

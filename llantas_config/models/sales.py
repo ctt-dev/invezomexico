@@ -153,6 +153,12 @@ class sale_order_inherit(models.Model):
                     invoice_vals.update({'journal_id': self.marketplace.diarios_id.id})
         return invoice_vals
 
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update({
+             'folio_venta': False,
+        })
+        return super(sale_order_inherit, self).copy(default)
 
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'

@@ -37,63 +37,60 @@
                         
                         <table class="table">
                             <tr>
-                                <td style="width: 25%">Cultivo: </td>
+                                <td style="width: 25%"><strong>Cultivo: </strong></td>
+                                <td style="width: 25%"><span t-field="doc.cultivo"/></td>
+                                <td style="width: 25%"><strong>Parcela: </strong></td>
                                 <td style="width: 25%"><span t-field="doc.name"/></td>
-                                <td style="width: 25%">ID parcela: </td>
-                                <td style="width: 25%"></td>
                                 
                             </tr>
                             <tr>
-                                <td>Lugar de aplicacion: </td>
+                                <td><strong>Lugar de aplicacion: </strong></td>
                                 <td><span t-field="doc.lugar"/></td>
-                                <td>Hora inicio: </td>
+                                <td><strong>Hora inicio: </strong></td>
                                 <td></td>
                                 
                             </tr>
                             <tr>
-                                <td>Area de aplicacion total: </td>
+                                <td><strong>Area de aplicacion total: </strong></td>
                                 <td></td>
-                                <td>Hora termino: </td>
+                                <td><strong>Hora termino: </strong></td>
                                 <td></td>
                                 
                             </tr>
                             <tr>
-                                <td colspan="2">Area de aplicacion total: </td>
+                                <td colspan="2"><strong>Area de aplicacion total: </strong></td>
 
                                 <td colspan="2"></td>
                                 
                             </tr>
                             <tr>
-                                <td colspan="4" align="center">Productos</td>
+                                <td colspan="4" align="center"><strong>Productos</strong></td>
                                
                             </tr>
-                            <tr><td colspan="4"></td></tr>
-                            <tr><td colspan="4"></td></tr>
-                            <tr><td colspan="4"></td></tr>
-                            <tr><td colspan="4"></td></tr>
+                           <tr><td colspan="4"><br/><br/><br/><br/></td></tr>
                             <tr>
-                                <td colspan="1">Tipo</td>
+                                <td colspan="1"><strong>Tipo</strong></td>
                                 <td colspan="3"><span t-field="doc.tipo_prod" widget="many2many_tags"/></td>
                                 
                             </tr>
                             <tr>
-                                <td>Volumen de aplicación total</td>
+                                <td><strong>Volumen de aplicación total</strong></td>
                                 <td><span t-field="doc.volumen" /></td>
-                                <td>Altura sobre cultivo</td>
+                                <td><strong>Altura sobre cultivo</strong></td>
                                 <td><span t-field="doc.altura"/></td>
 
                                 
                             </tr>
                             <tr>
-                                <td>Velocidad de vuelo</td>
+                                <td><strong>Velocidad de vuelo</strong></td>
                                 <td><span t-field="doc.velocidad" /></td>
-                                <td>Espacio entre pasadas</td>
+                                <td><strong>Espacio entre pasadas</strong></td>
                                 <td><span t-field="doc.espacio_surcos" /></td>
 
                                 
                             </tr>
-                            <tr><td colspan="4"></td></tr>
-                            <tr><td colspan="4"></td></tr>
+                            <tr><td colspan="4"><br/><br/><br/><br/></td></tr>
+
                             <tr >
                                 <td colspan="2" align="center">___________________</td>
                                 <td colspan="2" align="center">___________________</td>

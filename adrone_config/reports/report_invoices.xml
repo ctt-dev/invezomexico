@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="invoice_rep" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='page']//div" position="replace">
+                <div id="informations" class="row mt-4 mb-4">
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_date" name="invoice_date">
+                                <t t-if="o.move_type == 'out_invoice'"><strong>Fecha de factura:</strong></t>
+                                <t t-elif="o.move_type == 'out_refund'"><strong>Fecha de nota de credito:</strong></t>
+                                <t t-elif="o.move_type == 'out_receipt'"><strong>Fecha de recepción:</strong></t>
+                                <t t-else=""><strong>Fecha:</strong></t>
+                                <p class="m-0" t-field="o.invoice_date"/>
+                            </div>
+                    
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_date_due and o.move_type == 'out_invoice' and o.state == 'posted'" name="due_date">
+                                
+                                <strong>Fecha de vencimiento:</strong>
+                                <p class="m-0" t-field="o.invoice_date_due"/>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_origin" name="origin">
+                                <strong>Origen:</strong>
+                                <p class="m-0" t-field="o.invoice_origin"/>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.currency_id.name" name="customer_code">
+                                <strong>Moneda:</strong>
+                                <p class="m-0" t-field="o.currency_id.name"/>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.ref">
+                                <strong>Origen:</strong>
+                                <p class="m-0" t-field="o.ref"/>
+                            </div>
+                    <div class="col-auto col-3 mw-100 mb-2" t-if="o.l10n_mx_edi_usage" >
+                                <strong>Uso:</strong>
+                                <p class="m-0" t-field="o.l10n_mx_edi_usage"/>
+                            </div>
+                    <div class="col-auto col-3 mw-100 mb-2" t-if="o.l10n_mx_edi_payment_method_id" >
+                                <strong>Forma de pago:</strong>
+                                <p class="m-0" t-field="o.l10n_mx_edi_payment_method_id"/>
+                            </div>
+                    <div class="col-auto col-3 mw-100 mb-2" t-if="o.l10n_mx_edi_payment_policy">
+                                <strong>Politica de pago:</strong>
+                                <p class="m-0" t-field="o.l10n_mx_edi_payment_policy"/>
+                            </div>
+                        </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

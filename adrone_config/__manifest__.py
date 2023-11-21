@@ -50,6 +50,7 @@
         'reports/formato_tareas.xml',
         'wizard/wizard_import_flight.info.xml',
         'views/flight_sheet.xml',
+        'reports/report_invoices.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -39,11 +39,11 @@ class account_inherit(models.Model):
                 invoice_id.action_retry_edi_documents_error()
             # raise UserError(invoice_id)
 
-    @api.model
-    def action_post(self):
-        _logger.warning("post")
-        res = super(account_inherit, self).action_post()
-        return self.action_invoice_print()
+    # @api.model
+    # def action_post(self):
+    #     _logger.warning("post")
+    #     res = super(account_inherit, self).action_post()
+    #     return self.action_invoice_print()
 
 class account_line_inherit(models.Model):
     _inherit = 'account.move.line'

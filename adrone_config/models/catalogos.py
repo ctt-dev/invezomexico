@@ -18,3 +18,29 @@ class tipo_productos(models.Model):
     color = fields.Integer(
         string="Color"
     )
+
+class parcelas_(models.Model):
+    _name = 'adrone_config.parcelas'
+    _description = 'Parcelas'
+    _order = 'id desc'
+    
+    name = fields.Char(
+        string="Nombre"
+    )
+    
+    descripcion=fields.Char(
+        string="Descripción",
+    )
+
+class cultivos_(models.Model):
+    _name = 'adrone_config.cultivos'
+    _description = 'Cultivos'
+    _order = 'id desc'
+    
+    name = fields.Char(
+        string="Nombre"
+    )
+    
+    descripcion=fields.Char(
+        string="Descripción",
+    )

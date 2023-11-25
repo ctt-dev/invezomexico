@@ -9,27 +9,64 @@
                      <page string="Información Adrone">
                          <group>
                             <group>
-                                <field name="lugar" />
+                                <field name="parcela" />
                                 <field name="asignado" />
                                 <field name="auxiliar" />
-                                <field name="fecha_aplicar" />
+                                <field name="supervisor" />
+                                <!-- <field name="fecha_aplicar" />
+                                <field name="hora_inicio" widget="datime"/>
+                                <field name="hora_terminacion" widget="datetime"/> -->
+                                
                                 <!-- <field name="task_sequence" widget="sequence" options="{'sequence': 'ctt_adrone_sequence'}"/>
                                 <field name="task_sequence" widget="sequence" /> -->
                             </group>
                             <group>
-                                <field name="cultivo" />
+                                
+                                <field name="cultivo_id" />
                                 <field name="hectareas" />
                                 <field name="tipo_prod" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" force_save="1"/>
-                                <field name="volumen" />
-                                <field name="altura" />
-                                <field name="velocidad" />
-                                <field name="espacio_surcos" />
+                                <!-- <field name="volumen" string="Volumen" />
+                                <span class="o_form_label"> L/Ha </span>
+     -->
+                                <label for="volumen"/>
+                                <div class="d-flex">
+                                    <field name="volumen" />
+                                    <span class="o_form_label"> L/Ha</span>
+                                </div>
+                                    
+                                <label for="altura"/>
+                                <div class="d-flex">
+                                    <field name="altura" />
+                                    <span class="o_form_label"> M</span>
+                                </div>
+                                
+
+
+                                <label for="velocidad"/>
+                                <div class="d-flex">
+                                    <field name="velocidad" />
+                                    <span class="o_form_label"> M/s</span>
+                                </div>
+
+                                <label for="espacio_surcos"/>
+                                <div class="d-flex">
+                                    <field name="espacio_surcos" />
+                                    <span class="o_form_label"> M</span>
+                                </div>
+
                             </group>
                          </group>
                      </page>
                  </xpath>
+                <xpath expr="//group//group[1]//field[@name='user_ids']" position="after">
+                    <field name="planned_date_end" widget="daterange" options="{'related_start_date': 'planned_date_begin'}" attrs="{'required': [('planned_date_begin', '!=', False)]}"/>
+                 </xpath>
             </field>
         </record>
+
+        
+                 
+
 
         <record id="view_project_task_tree" model="ir.ui.view">
             <field name="name">project_task_tree</field>
@@ -37,11 +74,11 @@
             <field name="inherit_id" ref="industry_fsm.project_task_view_list_fsm"/>
             <field name="arch" type="xml">
                  <xpath expr="//tree//field[@name='planned_date_begin']" position="before">
-                    <field name="lugar" optional="show"/>
+                    <field name="parcela" optional="show"/>
                     <field name="asignado" optional="show"/>
                     <field name="auxiliar" optional="show"/>
-                    <field name="fecha_aplicar" optional="show"/>
-                    <field name="cultivo" optional="show"/>
+
+                    <field name="cultivo_id" optional="show"/>
                     <field name="hectareas" optional="show"/>
                     <field name="tipo_prod" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" force_save="1" optional="show"/>
                     <field name="volumen" optional="show"/>

@@ -28,46 +28,49 @@
                         <div t-if="doc.create_date" class="col-6 bm-2">
                             <center>
                                 <strong>Fecha de orden:</strong>
-                                <p t-field="doc.create_date" class="m-0" />
+                                <p t-esc="doc.planned_date_begin.strftime('%d-%m-%Y')" class="m-0"/>
+
                             </center>
                         </div>
                     </div>
                     <br/><br/><br/>
                     <div>
                         
-                        <table class="table">
+                        <table class="table" style="font-size:15px">
                             <tr>
                                 <td style="width: 25%"><strong>Cultivo: </strong></td>
-                                <td style="width: 25%"><span t-field="doc.cultivo"/></td>
+                                <td style="width: 25%"><span t-field="doc.cultivo_id.name"/></td>
                                 <td style="width: 25%"><strong>Parcela: </strong></td>
                                 <td style="width: 25%"><span t-field="doc.name"/></td>
                                 
                             </tr>
                             <tr>
                                 <td><strong>Lugar de aplicacion: </strong></td>
-                                <td><span t-field="doc.lugar"/></td>
+                                <td><span t-field="doc.parcela.name"/></td>
                                 <td><strong>Hora inicio: </strong></td>
-                                <td></td>
+                                <td><span t-esc="doc.planned_date_begin.strftime('%H:%M')" /></td>
+
                                 
                             </tr>
                             <tr>
                                 <td><strong>Area de aplicacion total: </strong></td>
-                                <td></td>
+                                <td><span t-field="doc.hectareas"/></td>
                                 <td><strong>Hora termino: </strong></td>
-                                <td></td>
+                                <td><span t-esc="doc.planned_date_end.strftime('%H:%M')"/></td>
+
                                 
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td colspan="2"><strong>Area de aplicacion total: </strong></td>
 
                                 <td colspan="2"></td>
                                 
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td colspan="4" align="center"><strong>Productos</strong></td>
                                
                             </tr>
-                           <tr><td colspan="4"><br/><br/><br/><br/></td></tr>
+                           <tr><td colspan="4"><span t-field="doc.description"/><br/><br/></td></tr>
                             <tr>
                                 <td colspan="1"><strong>Tipo</strong></td>
                                 <td colspan="3"><span t-field="doc.tipo_prod" widget="many2many_tags"/></td>
@@ -75,17 +78,17 @@
                             </tr>
                             <tr>
                                 <td><strong>Volumen de aplicación total</strong></td>
-                                <td><span t-field="doc.volumen" /></td>
+                                <td><span t-field="doc.volumen" /> <label align="right">L/Ha</label></td>
                                 <td><strong>Altura sobre cultivo</strong></td>
-                                <td><span t-field="doc.altura"/></td>
+                                <td><span t-field="doc.altura"/> <label align="right">M</label></td>
 
                                 
                             </tr>
                             <tr>
                                 <td><strong>Velocidad de vuelo</strong></td>
-                                <td><span t-field="doc.velocidad" /></td>
+                                <td><span t-field="doc.velocidad" /> <label align="right">M/s</label></td>
                                 <td><strong>Espacio entre pasadas</strong></td>
-                                <td><span t-field="doc.espacio_surcos" /></td>
+                                <td><span t-field="doc.espacio_surcos" /> <label align="right">M</label></td>
 
                                 
                             </tr>
@@ -97,7 +100,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2" align="center"><span t-field="doc.asignado"/></td>
-                                <td colspan="2" align="center">Supervisor</td>
+                                <td colspan="2" align="center"><span t-field="doc.supervisor"/></td>
                             </tr>
                         </table>
                     </div>

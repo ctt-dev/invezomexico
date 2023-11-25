@@ -10,14 +10,20 @@ class project_task_inherit(models.Model):
     _inherit = 'project.task'
     _description = 'Servicio externo'
 
-    lugar=fields.Char(
-        string="Lugar",
+    # lugar=fields.Char(
+    #     string="Nombre de parcela",
+    #     tacking=True,
+    # )
+
+    parcela=fields.Many2one(
+        "adrone_config.parcelas",
+        string="Nombre de parcela",
         tacking=True,
     )
 
     asignado=fields.Many2one(
         "hr.employee",
-        string="Asignado a",
+        string="Asignado a piloto",
         company_dependent=True,
         tacking=True,
     )
@@ -34,7 +40,13 @@ class project_task_inherit(models.Model):
         tacking=True,
     )
 
-    cultivo=fields.Char(
+    # cultivo=fields.Char(
+    #     string="Cultivo",
+    #     tacking=True,
+    # )
+
+    cultivo_id=fields.Many2one(
+        "adrone_config.cultivos",
         string="Cultivo",
         tacking=True,
     )
@@ -57,7 +69,7 @@ class project_task_inherit(models.Model):
     )
 
     volumen=fields.Char(
-        string="Volumen de solucion total",
+        string="Volumen de solución total",
         tacking=True,
     )
 
@@ -80,5 +92,22 @@ class project_task_inherit(models.Model):
         default=lambda self: self.env['ir.sequence'].next_by_code('project.task.sequence'),
         readonly=True,
     )
+
+    supervisor=fields.Char(
+        string="Supervisor de agrícola",
+        tracking=True,
+    )
+    
+    # hora_inicio=fields.Datetime(
+    #     string="Hora de inicio",
+    #     tracking=True,
+    # )
+
+    # hora_terminacion=fields.Datetime(
+    #     string="Hora de terminación",
+    #     tracking=True,
+    # )
+
+
 
 

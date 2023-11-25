@@ -27,5 +27,53 @@
                   action="tipo_producto"
                   parent="industry_fsm.fsm_menu_settings" 
                   sequence="1001" />
+
+        <record id="tree_view_parcelas" model="ir.ui.view">
+            <field name="name">tree.parcelas</field>
+            <field name="model">adrone_config.parcelas</field>
+            <field name="arch" type="xml">
+                <tree string="Parcelas" editable="top">
+                    <field name="name"/>
+                    <field name="descripcion"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="parcelas">
+            <field name="name">Parcelas</field>
+            <field name="res_model">adrone_config.parcelas</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="adrone_parcelas_menu" 
+                  name="Parcelas" 
+                  action="parcelas"
+                  parent="industry_fsm.fsm_menu_settings" 
+                  sequence="1002" />
+
+        <record id="tree_view_cultivos" model="ir.ui.view">
+            <field name="name">tree.cultivos</field>
+            <field name="model">adrone_config.cultivos</field>
+            <field name="arch" type="xml">
+                <tree string="Cultivos" editable="top">
+                    <field name="name"/>
+                    <field name="descripcion"/>
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="cultivos">
+            <field name="name">Cultivos</field>
+            <field name="res_model">adrone_config.cultivos</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="adrone_cultivos_menu" 
+                  name="Cultivos" 
+                  action="cultivos"
+                  parent="industry_fsm.fsm_menu_settings" 
+                  sequence="1003" />
+
+        
     </data>
 </odoo>

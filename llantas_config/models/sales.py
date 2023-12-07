@@ -14,7 +14,16 @@ class sale_order_inherit(models.Model):
         "llantas_config.marketplaces",
         string="Marketplace",
         tracking=True,
+        store=True,
         company_dependent=True,
+        
+    )
+
+    marketplace_name2 = fields.Char(
+        string="Canal de venta",
+        related="marketplace.name",
+        store=True,
+        # company_dependent=True,
     )
     
     comision=fields.Float(
@@ -37,6 +46,7 @@ class sale_order_inherit(models.Model):
     folio_venta=fields.Char(
         string="No. Venta",
         tracking=True,
+        store=True,
 
     )
 
@@ -159,7 +169,102 @@ class sale_order_inherit(models.Model):
              'folio_venta': False,
         })
         return super(sale_order_inherit, self).copy(default)
+        
+    # user = self.env.user
+    
+    def create_purchase(self):
+        for rec in self:
+            if rec.state == 'sale':
+                for line in rec.order_line:
+                    if line.proveedor_id:
+                        moneda = self.env['res.currency'].search([('name', '=', rec.currency_id.name)])
+                        if moneda:
+                            id_de_la_moneda = moneda.id
+                        else:
+                            raise UserError("Moneda no encontrada")
 
+                        if len(line.purchase_line_ids) == 0:
+                            nueva_cotizacion_compra = self.env['purchase.order'].create({
+                                'partner_id': line.proveedor_id.partner_id.id,
+                                'currency_id': id_de_la_moneda,
+                                'company_id': self.env.company.id,
+                            })
+                            
+                            purchase_line = self.env['purchase.order.line'].create({
+                                'order_id': nueva_cotizacion_compra.id,
+                                'product_id': line.product_id.id,
+                                'name': line.product_id.name,
+                                'product_qty': line.product_qty,
+                                'product_uom': line.product_uom.id,
+                                'price_unit': line.costo_proveedor,
+                                'sale_order_id':rec.id,
+                            })
+                            line.write({'purchase_line_ids': purchase_line})
+                            self.env['mail.message'].create({
+                                'model': 'sale.order',
+                                'res_id': self.id,
+                                'message_type': 'notification',
+                                'subtype_id': 2,
+                                'email_from': self.user_id.login,
+                                'author_id': self.user_id.id,
+                                'body': "Orden de compra generada "
+                            })
+                        else:
+                            purchase_id = False
+                            for purchase_line in line.purchase_line_ids:
+                                purchase_id = purchase_line.order_id
+                            purchase_id.write({
+                                'partner_id': line.proveedor_id.partner_id.id,
+                                'currency_id': id_de_la_moneda,
+                                'company_id': self.env.company.id,
+                            })
+                            for purchase_line in purchase_id.order_line:
+                                if purchase_line.sale_line_id.id == line.id:
+                                    # raise ValidationError(123)
+                                    purchase_line.write({
+                                        'product_id': line.product_id.id,
+                                        'name': line.product_id.name,
+                                        'product_qty': line.product_qty,
+                                        'product_uom': line.product_uom.id,
+                                        'price_unit': line.costo_proveedor,
+                                    })
+                            self.env['mail.message'].create({
+                                'model': 'sale.order',
+                                'res_id': self.id,
+                                'message_type': 'notification',
+                                'subtype_id': 2,
+                                'email_from': self.user_id.login,
+                                'author_id': self.user_id.id,
+                                'body': "Orden de compra actualizada "
+                            })
+                                    
+                        
+                        purchase_order_ids = self._get_purchase_orders().ids
+                        action = {
+                            'res_model': 'purchase.order',
+                            'type': 'ir.actions.act_window',
+                        }
+                        if len(purchase_order_ids) == 1:
+                            action.update({
+                                'view_mode': 'form',
+                                'res_id': purchase_order_ids[0],
+                            })
+                        else:
+                            action.update({
+                                'name': _("Purchase Order generated from %s", self.name),
+                                'domain': [('id', 'in', purchase_order_ids)],
+                                'view_mode': 'tree,form',
+                            })
+                        return action
+                        
+                        
+                    else:
+                        raise UserError("Se debe seleccionar un proveedor para cada línea de orden de venta")
+            
+            else:
+                raise UserError("La orden de venta necesita estar confirmada")
+            
+        
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'
     _description='Lineas de la orden de venta'
@@ -194,6 +299,75 @@ class sale_order_line_inherit(models.Model):
     def onchange_product_id_for_llantas_config(self):
         if self.product_id.id:
             self.name = self.product_id.name
-    
 
+    marketplace_id = fields.Char(
+        string="Canal de venta",
+        compute="_compute_marketplace_id",
+        store=True
+    )
+
+    @api.depends('order_id.marketplace.name')
+    def _compute_marketplace_id(self):
+        for line in self:
+            line.marketplace_id = line.order_id.marketplace.name
+    
+    link_venta=fields.Char(
+        string="Link de venta",
+        related="order_id.link_venta",
+        store=True
+    )
+    folio_venta=fields.Char(
+        string="Folio de venta",
+        related="order_id.folio_venta",
+        store=True
+    )
+    fecha_venta=fields.Datetime(
+        string="Fecha venta",
+        related="order_id.fecha_venta",
+        store=True
+    )
+    partner_id=fields.Many2one(
+        string="Cliente",
+        related="order_id.partner_id",
+        store=True
+    )
+    comprador=fields.Char(
+        string="Comprador",
+        related="order_id.comprador_id.name",
+        store=True
+    )
+    estado_venta=fields.Selection([
+        ('01','Pendiente'),
+        ('02','Debito en curso'),
+        ('03','Traspaso'),
+        ('04','Guia pendiente'),
+        ('05','Enviado'),
+        ('06','Entregado'),
+        ('07','Cerrado'),
+        ('08','Incidencia'),
+        ('09','Devolución'),], string="Estatus", related="order_id.ventas_status", store=True)
+    
+    comision=fields.Float(
+        string="Comisión",
+        related="order_id.comision",
+        store=True
+    )
+    envio=fields.Float(
+        string="Envio",
+        related="order_id.envio",
+        store=True
+    )
+
+    nombre_producto=fields.Char(
+        string="Producto",
+        related="product_id.product_tmpl_id.name",
+        store=True,
+        # company_dependent=True,
+    )
+
+    codigo_prod=fields.Char(
+        string="sku",
+        related="product_id.product_tmpl_id.default_code",
+        store=True
+    )
     

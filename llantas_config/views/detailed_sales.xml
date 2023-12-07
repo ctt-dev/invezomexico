@@ -1,0 +1,92 @@
+<odoo>
+    <data>        
+        <record id="view_ov_detalle_tree" model="ir.ui.view">
+            <field name="name">ov_a_detalle</field>
+            <field name="model">sale.order.line</field>
+            <field name="active">1</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="marketplace_id" optional="show"/>
+                    <field name="order_id" string="Folio venta Odoo"/>
+                    <field name="folio_venta" optional="show"/>
+                    
+                    <field name="link_venta" optional="hide"/>
+                    <field name="codigo_prod"/>
+                    <field name="nombre_producto"/>
+                    <field name="product_uom_qty" />
+                    <field name="qty_delivered" string="Delivered" optional="show"/>
+                    <field name="qty_invoiced" string="Invoiced" optional="show"/>
+                    <field name="product_uom" string="UoM" optional="show"/>
+                    <field name="fecha_venta" optional="show"/>
+                    <field name="proveedor_id" optional="show"/>
+                    <field name="costo_proveedor" optional="show"/>
+                    <field name="importe_descuento" optional="hide"/>
+                    <field name="precio_antes_dec" optional="hide"/>
+                    <field name="price_unit" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                    <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" optional="hide"/>
+                    <field name="discount" string="Disc.%"  optional="hide" widget="sol_discount"/>
+
+                    <field name="price_subtotal" widget="monetary"/>
+                    <field name="price_total" widget="monetary"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="partner_id" optional="show"/>
+                    <field name="comprador" optional="show"/>
+                    <field name="estado_venta" optional="show"/>
+                    <field name="comision" optional="show"/>
+                    <field name="envio" optional="show"/>
+                    
+                </tree>
+            </field>
+        </record>
+
+        <record id="llantas_config_ov_detalle_search" model="ir.ui.view">
+            <field name="name">ov_detalle</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+               <search string="Buscar">
+                    <field name="nombre_producto" string="Product" filter_domain="['|', ('codigo_prod', 'ilike', self), ('nombre_producto', 'ilike', self)]"/>
+                    <field name="marketplace_id" />
+                    <field name="proveedor_id"/>
+                    <field name="order_id" string="Folio venta Odoo"/>
+                    <field name="folio_venta" />
+                    <field name="codigo_prod"/>
+                    <field name="nombre_producto"/>
+                    <field name="comprador"/>
+                    <field name="partner_id" optional="show"/>
+                   <separator/>
+                    <filter name="fecha_venta" date="fecha_venta"/>
+                   <group expand="0" string="Group By">
+                        <filter name="nombre_producto" domain="[]" context="{'group_by': 'nombre_producto'}"/>
+                       <filter name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
+                       <filter name="marketplace_id" domain="[]" context="{'group_by': 'marketplace_id'}"/>
+                       <filter name="order_id" domain="[]" context="{'group_by': 'order_id'}"/>
+                       <filter name="comprador" domain="[]" context="{'group_by': 'comprador'}"/>
+                       <filter name="partner_id" domain="[]" context="{'group_by': 'partner_id'}"/>
+
+                    </group>
+
+
+
+                </search>
+            </field>
+        </record>
+        
+        
+        <record model="ir.actions.act_window" id="ov_detalle">
+            <field name="name">Ordenes de venta a detalle</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="llantas_config.view_ov_detalle_tree"/>
+            <field name="target">main</field>
+            <field name="context">{'create':False,'edit':False,'delete':True}</field>
+        </record>
+            
+        <menuitem id="llantas_config_ov_detalle_menu" 
+          name="Ordenes de venta a detalle" 
+          action="ov_detalle"
+          parent="sale.sale_order_menu" 
+          sequence="101" />
+
+        
+    </data>
+</odoo>

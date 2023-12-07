@@ -12,48 +12,48 @@ class project_task_inherit(models.Model):
 
     # lugar=fields.Char(
     #     string="Nombre de parcela",
-    #     tacking=True,
+    #     tracking=True,
     # )
 
     parcela=fields.Many2one(
         "adrone_config.parcelas",
         string="Nombre de parcela",
-        tacking=True,
+        tracking=True,
     )
 
     asignado=fields.Many2one(
         "hr.employee",
         string="Asignado a piloto",
         company_dependent=True,
-        tacking=True,
+        tracking=True,
     )
 
     auxiliar=fields.Many2one(
         "hr.employee",
         string="Auxiliar",
         company_dependent=True,
-        tacking=True,
+        tracking=True,
     )
 
     fecha_aplicar=fields.Datetime(
         string="Fecha para aplicar",
-        tacking=True,
+        tracking=True,
     )
 
     # cultivo=fields.Char(
     #     string="Cultivo",
-    #     tacking=True,
+    #     tracking=True,
     # )
 
     cultivo_id=fields.Many2one(
         "adrone_config.cultivos",
         string="Cultivo",
-        tacking=True,
+        tracking=True,
     )
 
     hectareas=fields.Char(
         string="Hectareas por aplicar",
-        tacking=True,
+        tracking=True,
     )
 
     tipo_producto=fields.Many2one(
@@ -65,22 +65,22 @@ class project_task_inherit(models.Model):
         "adrone_config.tipo_productos",
         # "name",
         string="Tipo producto",
-        tacking=True,
+        tracking=True,
     )
 
     volumen=fields.Char(
         string="Volumen de solución total",
-        tacking=True,
+        tracking=True,
     )
 
     altura=fields.Char(
         string="Altura sobre cultivo",
-        tacking=True,
+        tracking=True,
     )
 
     velocidad=fields.Char(
         string="Velocidad de vuelo",
-        tacking=True,
+        tracking=True,
     )
 
     espacio_surcos=fields.Char(

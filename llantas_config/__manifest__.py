@@ -55,9 +55,12 @@
         'views/tablero_detallado.xml',
         'views/res.xml',
         'views/pagos_marketplace.xml',
+        'views/detailed_sales.xml',
+        'views/wizard_subir_existencias.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+
 }

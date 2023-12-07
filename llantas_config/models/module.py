@@ -16,6 +16,7 @@ class ctrl_llantas(models.Model):
         "sale.order",
         string="Venta",
         store=True,
+        company_dependent=True,
     )
     
     name=fields.Char(
@@ -29,7 +30,7 @@ class ctrl_llantas(models.Model):
         "hr.employee",
         related="sale_id.comprador_id",
         string="Comprador",
-        # company_dependent=True,
+        company_dependent=True,
     )
 
 

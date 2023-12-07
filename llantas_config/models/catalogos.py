@@ -85,6 +85,7 @@ class marketplaces(models.Model):
 
     name = fields.Char(
         string="Nombre",
+        store=True
     )
 
     # display_name=fields.Char(

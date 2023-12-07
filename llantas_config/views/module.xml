@@ -16,13 +16,13 @@
                     <!-- <field name="productos_orden"/> -->
                     <field name="comision" optional="hide"/>
                     <field name="envio" optional="hide"/>
-                    <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
+                    <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/> -->
                     <field name="orden_compra" optional="hide"/>
                     <field name="tdp" />
                     <field name="detailed_info" widget="html" optional="hide"/>
                     <!-- <field name="guias" /> -->
                     <field name="no_recoleccion" optional="hide"/>
-                    <field name="factura_prov" optional="hide"/>
+                    <!-- <field name="factura_prov" optional="hide"/> -->
                     <field name="num_cliente" optional="hide"/>
                     <field name="factura_cliente" optional="hide"/>
                     <field name="status_id" />
@@ -56,7 +56,7 @@
                             <group string="Información proveedor" >
                                 <field name="marketplace" readonly="1"/>
                                 <!-- <field name="marketplace_id"/> -->
-                                <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/>
+                                <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/> -->
                                 <field name="orden_compra" readonly="1"/>
                                 <field name="tdp" readonly="1"/>
                                 
@@ -69,7 +69,7 @@
                                 <field name="envio" readonly="1"/>
                                 
                                 <field name="no_recoleccion" readonly="1"/>
-                                <field name="factura_prov" readonly="1"/>
+                                <!-- <field name="factura_prov" readonly="1"/> -->
                                 
                                 <field name="factura_cliente" readonly="1"/>
                                 

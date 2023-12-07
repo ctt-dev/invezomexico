@@ -5,6 +5,7 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                
                  <xpath expr="//group[@name='order_details']//field[@name='payment_term_id']" position="after">
                     
                      <field name="comprador_id" domain="['|',('category_ids','ilike','COMP'),('category_ids','ilike','Comp')]" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"/> 
@@ -39,6 +40,9 @@
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
                     <field name="importe_descuento" optional="show"  />
                     <field name="precio_antes_dec" optional="show" readonly="1" />
+                </xpath>
+                <xpath expr="//header" position="inside">
+                    <button name="create_purchase" type="object" string="Crear compra" class="btn-secondary" />
                 </xpath>
 
                 

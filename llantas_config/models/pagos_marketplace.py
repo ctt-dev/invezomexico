@@ -32,6 +32,7 @@ class marketplace_pagos(models.Model):
     sale_id=fields.Many2one(
         "sale.order",
         string="Folio interno",
+        company_dependent=True,
     )
     
     name = fields.Char(
@@ -42,7 +43,7 @@ class marketplace_pagos(models.Model):
         "llantas_config.marketplaces",
         string="Marketplace",
         related="sale_id.marketplace",
-        # company_dependent=True,
+        company_dependent=True,
     )
 
     total_comision=fields.Float(
@@ -110,6 +111,7 @@ class marketplace_pagos(models.Model):
     total_a_pagar=fields.Float(
         string="Total a pagar",
         compute="_total_a_pagar_compute",
+        company_dependent=True,
     )
     @api.depends('total_envio','total_comision','total_venta')
     def _total_a_pagar_compute(self):
@@ -173,7 +175,8 @@ class marketplace_pagos(models.Model):
         
     fecha_efectiva = fields.Date(
         string="Fecha efectiva de pago",
-        compute=calcular_fecha_pago
+        compute='calcular_fecha_pago',
+        company_dependent=True,
     )
 
     def cambiar_a_pagado(self):

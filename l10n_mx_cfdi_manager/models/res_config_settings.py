@@ -8,6 +8,5 @@ class res_config_settings_inheritance(models.TransientModel):
  
     fiel_ids=fields.Many2many(
         'l10n_mx.cfdi_fiel',
-        # string="FIELES"
-        string="FIEL documents"
+        string="FIELES"
     )

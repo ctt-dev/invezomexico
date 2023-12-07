@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="wz_account_move_related_doc" model="ir.ui.view">
-        <!-- <field name="name">Wizard Relacionar documento Account Move</field> -->
-        <field name="name">Wizard to link document to Account Move</field>
+        <field name="name">Wizard Relacionar documento Account Move</field>
         <field name="model">l10n_mx.cfdi_document_wizard</field>
         <field name="arch" type="xml">
             <form>
@@ -25,18 +24,15 @@
                     <notebook>
                         <!-- <page string="Documento"> -->
                         <page string="Document">
-                            <!-- <label for="cfdi_document" string="Documento CFDI"/> -->
-                            <label for="cfdi_document" string="CFDI document"/>
+                            <label for="cfdi_document" string="Documento CFDI"/>
                             <field name="cfdi_document" domain="[('date','=',date),('date','!=',False),('link_state','=','unlink'),('rfc_emisor','=',partner_id_vat),('type_comprobante','=',tipo_comprobante)]" options="{'no_create': True}" required="1"/>
                             <field name="metadata"/>
                         </page>
                     </notebook>
                 </sheet>
                 <footer>
-                    <!-- <button class="btn-primary" string="Guardar"  name="event_wizard" type="object"/> -->
-                    <button class="btn-primary" string="Save"  name="event_wizard" type="object"/>
-                    <!-- <button class="btn-primary" string="Cancelar" special="cancel"/> -->
-                    <button class="btn-primary" string="Cancel" special="cancel"/>
+                    <button class="btn-primary" string="Guardar"  name="event_wizard" type="object"/>
+                    <button class="btn-primary" string="Cancelar" special="cancel"/>
                 </footer>
             </form>
         </field>

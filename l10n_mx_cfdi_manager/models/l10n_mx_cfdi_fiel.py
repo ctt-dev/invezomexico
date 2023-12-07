@@ -19,40 +19,32 @@ from odoo.exceptions import ValidationError , UserError
 
 class l10n_mx_cfdi_fiel(models.Model):
     _name = 'l10n_mx.cfdi_fiel'
-    # _description = 'Modelo de la FIEL'
-    _description = 'FIEL'
+    _description = 'Modelo de la FIEL'
     
     company_id=fields.Many2one(
         'res.company',
-        # string="compañia"
-        string="Company"
+        string="Compañía"
     )
     fiel=fields.Binary(
         string="FIEL"
     )
     fiel_name=fields.Char(
-        # string="Nombre archivo Fiel"
-        string="FIEL filename"
+        string="Nombre archivo Fiel"
     )
     clave=fields.Binary(
-        # string="Clave"
-        string="Key"
+        string="Clave"
     )
     clave_name=fields.Char(
-        # string="Nombre archivo Clave"
-        string="Key filename"
+        string="Nombre archivo Clave"
     )
     emition_date=fields.Date(
-        # string="Fecha de emisión"
-        string="Issue date"
+        string="Fecha de emisión"
     )
     expiration_date=fields.Date(
-        # string="Fecha de expiración"
-        string="Expiration date"
+        string="Fecha de expiración"
     )
     serial_number=fields.Char(
-        # string="Numero serial"
-        string="Serial number"
+        string="Numero serial"
     )
     
     @api.constrains('fiel_name')
@@ -87,5 +79,4 @@ class l10n_mx_cfdi_fiel(models.Model):
                 self.emition_date = datetime_struct_from.strftime('%Y-%m-%d %H:%M:%S')
                 self.expiration_date = datetime_struct_to.strftime('%Y-%m-%d %H:%M:%S')
             except:
-                # raise ValidationError(("Error al leer el archivo"))
-                raise ValidationError(("Error reading file"))
+                raise ValidationError(("Error al leer el archivo"))

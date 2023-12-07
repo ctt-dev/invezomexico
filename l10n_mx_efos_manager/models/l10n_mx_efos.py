@@ -10,18 +10,15 @@ _EFOS_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/EFOS/'
 
 class l10n_mx_cfdi_fiel(models.Model):
     _name = 'l10n_mx.efos'
-    # _description = 'Modelo para efos'
-    _description = 'EFOS'
+    _description = 'Modelo para efos'
     
     partner_id = fields.Many2one(
         'res.partner',
-        # string="Contribuyente"
-        string="Partner"
+        string="Contribuyente"
     )  
     
     partner_id_vat = fields.Char(
-        # string="RFC",
-        string="Partner RFC",
+        string="RFC del contribuyente",
         related="partner_id.vat",
         store=True
     )    
@@ -31,13 +28,11 @@ class l10n_mx_cfdi_fiel(models.Model):
     )
     
     contribuyente = fields.Char(
-        # string="Nombre del contribuyente"
-        string="Partner name"
+        string="Nombre del contribuyente"
     )
     
     status = fields.Char(
-        # string="Situación del contribuyente"
-        string="Partner state"
+        string="Situación del contribuyente"
     )
     
     presunto_sat_char = fields.Char(

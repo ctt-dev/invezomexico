@@ -1,12 +1,12 @@
 <odoo>
     <data>
         <record id="l10n_mx_cfdi_manager" model="ir.module.category">
-           <field name="name">Vendor CFDI Manager</field>
+           <field name="name">Administrador de CFDI de proveedor</field>
            <field name="sequence">1</field>
         </record>
         
         <record id="l10n_mx_cfdi_manager_admin" model="res.groups">
-           <field name="name">CFDI Manager</field>
+           <field name="name">Administrador de CFDI</field>
            <field name="category_id" ref="l10n_mx_cfdi_manager"/>
         </record>
     </data>

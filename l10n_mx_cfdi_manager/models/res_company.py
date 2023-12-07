@@ -18,8 +18,7 @@ from odoo.exceptions import ValidationError , UserError
 
 class res_company_inheritance(models.Model):
     _inherit = 'res.company'
-    # _description = 'Modelo para agregar los certificados'
-    _description = 'Company'
+    _description = 'Modelo para agregar los certificados'
     
     fiel_ids=fields.One2many(
         'l10n_mx.cfdi_fiel',
@@ -29,26 +28,22 @@ class res_company_inheritance(models.Model):
     
     sat_account_incoming_journal_id = fields.Many2one(
         'account.journal',
-        # string = 'Diario de proveedores',
-        string = 'Vendor Journal',
+        string = 'Diario de proveedores',
         domain = "[('type','=','purchase')]"
     )
     
     sat_account_egress_journal_id = fields.Many2one(
         'account.journal',
-        # string = 'Diario de notas de credito'
-        string = 'Credit notes Journal'
+        string = 'Diario de notas de credito'
     )
     
     product_unspsc_code_for_gasoline = fields.Many2many(
         'product.unspsc.code',
-        # string="Códigos SAT para combustibles"
-        string="SAT codes for GAS and OIL"
+        string="Códigos SAT para combustibles"
     )
     
     dif_allowed = fields.Float(
-        # string="Variación permitida para vinculación de CFDI",
-        string="Allowed variation for CFDI vinculation",
+        string="Variación permitida para vinculación de CFDI",
         digits=(0,2),
         default=0.05,
         required=1
@@ -56,34 +51,28 @@ class res_company_inheritance(models.Model):
     
     generation_type = fields.Selection(
         [
-            # ('TC','Todos los conceptos'),
-            ('TC','Every invoice line'),
-            # ('IG','Impuestos Globales'),
-            ('IG','Global taxes'),
+            ('TC','Todos los conceptos'),
+            ('IG','Impuestos Globales'),
         ],
-        # string="Tipo de generación",
-        string="Generation type",
+        string="Tipo de generación",
         default="TC",
         required=1
     )
     
     days_for_status_check = fields.Integer(
-        # string="Número de días para revisar vigencias",
-        string="Number of days for state revision",
+        string="Número de días para revisar vigencias",
         default=3,
         required=1
     )
     
     sender_user_id = fields.Many2one(
         'res.users',
-        # string="Usuario emisor"
-        string="Sender user"
+        string="Usuario emisor"
     )
     
     receiver_user_ids = fields.Many2many(
         'res.users',
-        # string="Usuarios remitentes"
-        string="Receiver users"
+        string="Usuarios remitentes"
     )
     
 #     @api.onchange('fiel_ids')

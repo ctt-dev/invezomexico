@@ -21,89 +21,67 @@ _CFDI_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/CFDI/'
 
 class l10n_mx_cfdi_request(models.Model):
     _name = 'l10n_mx.cfdi_request'
-    # _description = 'Modelo de solicitud'
-    _description = 'Request'
+    _description = 'Modelo de solicitud'
     _order = 'id desc'
     
     
     id_solicitud=fields.Char(
-        # string="ID Solicitud"
-        string="Request ID"
+        string="ID Solicitud"
     )
     paquetes=fields.Char(
-        # string="Paquetes"
-        string="Packages"
+        string="Paquetes"
     )
     start_date=fields.Date(
-        # string="Fecha de inicio"
-        string="Start date"
+        string="Fecha de inicio"
     )
     end_date=fields.Date(
-        # string="Fecha de terminación"
-        string="End date"
+        string="Fecha de terminación"
     )
     rfc_consultant=fields.Char(
-        # string="RFC consultante"
-        string="Consultant RFC"
+        string="RFC consultante"
     )
     rfc_receptor=fields.Char(
-        # string="RFC receptor"
-        string="Receptor RFC"
+        string="RFC receptor"
     )
     rfc_emmiter=fields.Char(
-        # string="RFC emisor"
-        string="Emiter RFC"
+        string="RFC emisor"
     )
     state=fields.Selection(
         [
-            # ('0','Token inválido'),
-            ('0','Invalid token'),
-            # ('1','Aceptada'),
-            ('1','Accepted'),
-            # ('2','En proceso'),
-            ('2','In progress'),
-            # ('3','Terminada'),
-            ('3','Finished'),
-            # ('4','Error'),
+            ('0','Token inválido'),
+            ('1','Aceptada'),
+            ('2','En proceso'),
+            ('3','Terminada'),
             ('4','Error'),
-            # ('5','Rechazada'),
-            ('5','Rejected'),
-            # ('6','Vencida'),
-            ('6','Expired'),
+            ('5','Rechazada'),
+            ('6','Vencida'),
         ],
-        # string="Estado"
-        string="State"
+        string="Estado"
     )
     done=fields.Boolean(
-        # string="Listo",
-        string="Done",
+        string="Listo",
         default=False
     )
     
     docs_create = fields.Boolean(
-        # string="Documentos listos",
-        string="Created documents",
+        string="Documentos listos",
         default=False
     )
     
     cfdi_documents=fields.One2many(
         'l10n_mx.cfdi_document',
         'cfdi_request',
-        # string="Documentos CFDI"
-        string="CFDI documents"
+        string="Documentos CFDI"
     )
     attatch=fields.Binary(
-        # string="Adjunto"
-        string="Attachment"
+        string="Adjunto"
     )
     company_id=fields.Many2one(
         'res.company',
-        # string="ID de compañía"
-        string="Company"
+        string="ID de compañía"
     )
     total_documents=fields.Integer(
-        # string="No. Documentos"
-        string="Number of documents"
+        string="No. Documentos"
     )
     
     @api.onchange("company_id")
@@ -119,8 +97,7 @@ class l10n_mx_cfdi_request(models.Model):
         keys_id = self.env['l10n_mx.cfdi_fiel'].search([('company_id','=',record.company_id.id)])
         
         if not keys_id:
-            # raise UserError("No se encontraron llaves de la compañia")
-            raise UserError("Company keys not found.")
+            raise UserError("No se encontraron llaves de la compañia")
             
         fiel = self._read_fiel(keys_id)
         session = self._create_new_seassion(fiel)
@@ -206,8 +183,7 @@ class l10n_mx_cfdi_request(models.Model):
         try:
             result = v_descarga.verificar_descarga(session, self.rfc_consultant, self.id_solicitud)
         except:
-            # raise ValidationError("La petición no pudo verificarse correctamente, revise sus credenciales y RFC")
-            raise ValidationError("The request could not be verified successfully, check your credentials and RFC")
+            raise ValidationError("La petición no pudo verificarse correctamente, revise sus credenciales y RFC")
         self.write({
             'paquetes': ','.join(result['paquetes']),
             'state': result['estado_solicitud'],
@@ -368,8 +344,7 @@ class l10n_mx_cfdi_request(models.Model):
                     tax_list = self.env['account.tax'].search(['&',('amount','in',line['tasas']),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id)])
                     
                     move_line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                        # 'name': "Saldo pendiente " + line['description'] + " Tasa",
-                        'name': "Outstanding balance " + line['description'] + " Rate",
+                        'name': "Saldo pendiente " + line['description'] + " Tasa",
                         'move_id': account_move.id,
                         'quantity':  1,
                         'price_unit': float(line['base']),
@@ -380,8 +355,7 @@ class l10n_mx_cfdi_request(models.Model):
                     move_lines_list += move_line
 
                     move_line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                        # 'name': "Saldo pendiente " + ''.format(float(line['importe'])-float(line['base'])) + " Tasa",
-                        'name': "Outstanding balance " + ''.format(float(line['importe'])-float(line['base'])) + " Rate",
+                        'name': "Saldo pendiente " + ''.format(float(line['importe'])-float(line['base'])) + " Tasa",
                         'move_id': account_move.id,
                         'quantity':  1,
                         'price_unit': float(line['importe']) - float(line['base']),
@@ -406,8 +380,7 @@ class l10n_mx_cfdi_request(models.Model):
                     tax_list = tax_list + tax_rets
 
                     move_line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                        # 'name': "Saldo pendiente " + line['description'] + " Tasa",
-                        'name': "Outstanding balance " + line['description'] + " Rate",
+                        'name': "Saldo pendiente " + line['description'] + " Tasa",
                         'move_id': account_move.id,
                         'quantity':  1,
                         'price_unit': float(line['importe']),
@@ -424,12 +397,7 @@ class l10n_mx_cfdi_request(models.Model):
             diferencia = data['total']-account_move.amount_total
             if  diferencia == 0:
                 account_move.message_post(
-                    # body='FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b>'.format(
-                    #     data['uuid'],
-                    #     data['total'],
-                    #     '{:20,.2f}'.format(account_move.amount_total)
-                    # )
-                    body='INVOICE created from CFDI <b>[{}]</b>. \nTotal on CFDI: <b>{}</b> \nTotal on INVOICE: <b>{}</b>'.format(
+                    body='FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b>'.format(
                         data['uuid'],
                         data['total'],
                         '{:20,.2f}'.format(account_move.amount_total)
@@ -437,13 +405,7 @@ class l10n_mx_cfdi_request(models.Model):
                 )
             else:
                 account_move.message_post(
-                    # body = 'FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b> \nDiferencia: <b>{}</b>'.format(
-                    #     data['uuid'],
-                    #     data['total'],
-                    #     '{:20,.2f}'.format(account_move.amount_total),
-                    #     '{:20,.2f}'.format(abs(diferencia))
-                    # )
-                    body = 'INVOICE created from CFDI <b>[{}]</b>. \nTotal on CFDI: <b>{}</b> \nTotal on INVOICE: <b>{}</b> \Difference: <b>{}</b>'.format(
+                    body = 'FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b> \nDiferencia: <b>{}</b>'.format(
                         data['uuid'],
                         data['total'],
                         '{:20,.2f}'.format(account_move.amount_total),

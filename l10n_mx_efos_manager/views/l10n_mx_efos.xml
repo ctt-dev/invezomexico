@@ -5,10 +5,8 @@
             <field name="model">l10n_mx.efos</field>
             <field name="arch" type="xml">
                 <tree create="0" delete="0" editable="top">
-                    <!-- <field name="create_date" string="Actualización" readonly="1"/> -->
-                    <field name="create_date" string="Last update" readonly="1"/>
-                    <!-- <field name="partner_id" string="Contacto" optional="hide" readonly="1"/> -->
-                    <field name="partner_id" string="Partner" optional="hide" readonly="1"/>
+                    <field name="create_date" string="Actualización" readonly="1"/>
+                    <field name="partner_id" string="Contacto" optional="hide" readonly="1"/>
                     <field name="rfc" readonly="1"/>
                     <field name="contribuyente" optional="show" readonly="1"/>
                     <field name="status" readonly="1"/>
@@ -37,18 +35,15 @@
             <field name="model">l10n_mx.efos</field>
             <field name="arch" type="xml">
                 <search string="Search">
-                    <!-- <field name="partner_id" string="Contribuyente"/> -->
-                    <field name="partner_id" string="Partner"/>
+                    <field name="partner_id" string="Contribuyente"/>
                     <field name="partner_id_vat" string="RFC"/>
-                    <!-- <filter name="filter_by_partner_id_selected" string="EFOS registrados en Contactos" domain="[('partner_id', '!=', False)]"/> -->
-                    <filter name="filter_by_partner_id_selected" string="EFOS on Contacts" domain="[('partner_id', '!=', False)]"/>
+                    <filter name="filter_by_partner_id_selected" string="EFOS registrados en Contactos" domain="[('partner_id', '!=', False)]"/>
                     <filter name="filter_by_status_Presunto" string="Presuntos" domain="[('status', '=', 'Presunto')]"/>
                     <filter name="filter_by_status_Desvirtuado" string="Desvirtuado" domain="[('status', '=', 'Desvirtuado')]"/>
                     <filter name="filter_by_status_Definitivo" string="Definitivo" domain="[('status', '=', 'Definitivo')]"/>
                     <filter name="filter_by_status_Sentencia_Favorable" string="Sentencia Favorable" domain="[('status', '=', 'Sentencia Favorable')]"/>
                     <group expand="1" string="Group By">
-                        <!-- <filter string="Situación del contribuyente" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/> -->
-                        <filter string="Partner state" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
+                        <filter string="Situación del contribuyente" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
                     </group>
                 </search>
             </field>

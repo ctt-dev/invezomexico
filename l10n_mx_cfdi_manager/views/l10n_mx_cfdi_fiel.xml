@@ -10,18 +10,14 @@
                     <sheet>
                         <group>
                             <field name="fiel_name" invisible="1"/>
-                            <!-- <field name="fiel" string="FIEL (.key)" filename="fiel_name" widget="binary" required="1"/> -->
-                            <field name="fiel" string="Key (.key)" filename="fiel_name" widget="binary" required="1"/>
+                            <field name="fiel" string="FIEL (.key)" filename="fiel_name" widget="binary" required="1"/>
                             <field name="clave_name" invisible="1"/>
-                            <!-- <field name="clave" string="Clave (.cer)" filename="clave_name" widget="binary" required="1"/> -->
-                            <field name="clave" string="Certificate (.cer)" filename="clave_name" widget="binary" required="1"/>
+                            <field name="clave" string="Clave (.cer)" filename="clave_name" widget="binary" required="1"/>
                             <field name="company_id" readonly="1" save_force="1"/>
-                            <!-- <field name="serial_number" string="Contraseña" password="True" required="1"/> -->
-                            <field name="serial_number" string="Password" password="True" required="1"/>
+                            <field name="serial_number" string="Contraseña" password="True" required="1"/>
 <!--                             <label for="emition_date" string="Fechas"/> -->
                         </group>
-                        <!-- <group string="Fechas"> -->
-                        <group string="Dates">
+                        <group string="Fechas">
                             <group>
                                 <field name="emition_date" readonly="1" force_save="1"/>
                             </group>

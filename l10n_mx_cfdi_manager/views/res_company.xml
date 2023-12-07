@@ -6,8 +6,7 @@
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">    
                 <xpath expr="//notebook" position="inside">
-                    <!-- <page string="Sincronización SAT"> -->
-                    <page string="SAT synchronization">
+                    <page string="Sincronización SAT">
                         <group>
                             <group>
                                 <field name="sat_account_incoming_journal_id" options="{'no_create': True}"/>
@@ -27,8 +26,7 @@
                                 <div class="row o_settings_container">
                                     <field name="fiel_ids" context="{'default_company_id': id}">
                                         <tree>
-                                            <!-- <field name="serial_number" string="Contraseña" password="True"/> -->
-                                            <field name="serial_number" string="Password" password="True"/>
+                                            <field name="serial_number" string="Contraseña" password="True"/>
                                             <field name="fiel"/>
                                             <field name="clave"/>
                                             <field name="company_id"/>

@@ -38,19 +38,15 @@
         </record>
         
         <record id="act_l10n_mx_cfdi_adjust" model="ir.actions.act_window">
-            <!-- <field name="name">Ajustes</field> -->
-            <field name="name">Settings</field>
+            <field name="name">Ajustes</field>
             <field name="view_mode">form</field>
             <field name="res_model">res.config.settings</field>
             <field name="target">inline</field>
             <field name="context">{'module':'l10n_mx_cfdi_manager'}</field>
             <field name="view_id" ref="base_setup.res_config_settings_view_form"/>
             <field name="help" type="html">
-                <!-- <p class="o_view_nocontent_smiling_face">
-                    No hay configuraciones aún...
-                </p> -->
                 <p class="o_view_nocontent_smiling_face">
-                    No settings...
+                    No hay configuraciones aún...
                 </p>
             </field>
         </record>

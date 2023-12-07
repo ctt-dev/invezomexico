@@ -14,8 +14,7 @@ from cfdiclient import Autenticacion, Fiel
 
 class l10n_mx_cfdi_session(models.Model):
     _name = 'l10n_mx.cfdi_session'
-    # _description = 'Modelo de sesión'
-    _description = 'Sessión'
+    _description = 'Modelo de sesión'
     _order = 'id desc'
     
     
@@ -24,8 +23,7 @@ class l10n_mx_cfdi_session(models.Model):
     )
     company_id=fields.Many2one(
         'res.partner',
-        # string="ID de compañía"
-        string="Company"
+        string="ID de compañía"
     )
     
     @api.model

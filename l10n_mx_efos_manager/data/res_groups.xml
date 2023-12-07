@@ -1,7 +1,7 @@
 <odoo>
     <data>
         <record id="l10n_mx_efos_manager" model="ir.module.category">
-           <field name="name">EFOS Manager</field>
+           <field name="name">Administrador de EFOS</field>
            <field name="sequence">1</field>
         </record>
     </data>

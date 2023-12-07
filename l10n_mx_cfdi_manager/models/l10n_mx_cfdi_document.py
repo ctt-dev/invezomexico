@@ -15,8 +15,7 @@ from cfdiclient import Autenticacion, Fiel, SolicitaDescarga, VerificaSolicitudD
 
 class l10n_mx_cfdi_document(models.Model):
     _name = 'l10n_mx.cfdi_document'
-    # _description = 'Modelo de documentos'
-    _description = 'CFDI document'
+    _description = 'Modelo de documentos'
     _order = 'id desc'
     
     name = fields.Char(
@@ -25,45 +24,36 @@ class l10n_mx_cfdi_document(models.Model):
     
     cfdi_request=fields.Many2one(
         'l10n_mx.cfdi_request',
-        # string="Solicitud CFDI"
-        string="CFDI Reques"
+        string="Solicitud CFDI"
     )
     uuid=fields.Char(
-        string="UUID"
+        string="UUID*"
     )
     partner_id=fields.Many2one(
         'res.partner',
-        # string="ID de socio"
-        string="Partner"
+        string="ID de socio"
     )
     cfdi_state=fields.Char(
-        # string="Estado CFDI"
-        string="CFDI state"
+        string="Estado CFDI"
     )
     attatch=fields.Binary(
-        # string="Adjunto"
-        string="Attachment"
+        string="Adjunto"
     )
     attatch_name=fields.Char(
-        # string="Nombre del archivo"
-        string="Filename"
+        string="Nombre del archivo"
     )
     company_id=fields.Many2one(
         'res.company',
-        # string="ID de compañía"
-        string="Company"
+        string="ID de compañía"
     )
     rfc_emisor=fields.Char(
-        # string="RFC Emisor"
-        string="Emiter RFC"
+        string="RFC Emisor"
     )
     emisor=fields.Char(
-        # string="Emisor"
-        string="Emiter"
+        string="Emisor"
     )
     rfc_receptor=fields.Char(
-        # string="RFC Receptor"
-        string="Receptor RFC"
+        string="RFC Receptor"
     )
     total=fields.Float(
         string="Total"
@@ -79,28 +69,24 @@ class l10n_mx_cfdi_document(models.Model):
             rec.move_id = move_id
     move_id = fields.Many2one(
         'account.move',
-        # string="Factura relacionada",
-        string="Journal entry",
+        string="Factura relacionada",
         compute=compute_move_id
     )
     moves_ids=fields.One2many(
         'account.move',
         'cfdi_document',
-        # string="Facturas relacionadas"
-        string="Journal entries"
+        string="Facturas relacionadas"
     ) 
     date=fields.Date(
-        # string="Fecha"
-        string="Date"
+        string="Fecha"
     )
     
     metadata_pretty = fields.Text(
-        string="Metadata",
+        string="Metadata pretty",
         compute='_pretty_xml_data'
     )
     
     folio = fields.Char(
-        # string="Folio"
         string="Folio"
     )
     
@@ -114,19 +100,13 @@ class l10n_mx_cfdi_document(models.Model):
     
     type_comprobante = fields.Selection(
         [
-            # ('I', 'Ingreso'),
-            ('I', 'Income (Ingreso)'),
-            # ('E', 'Egreso'),
-            ('E', 'Discharged (Egreso)'),
-            # ('T', 'Traslado'),
-            ('T', 'Transfer (Traslado)'),
-            # ('P', 'Pago'),
-            ('P', 'Payment (Pago)'),
-            # ('N', 'Nomina')
-            ('N', 'Payroll (Nómina)')
+            ('I', 'Ingreso'),
+            ('E', 'Egreso'),
+            ('T', 'Traslado'),
+            ('P', 'Pago'),
+            ('N', 'Nomina')
         ],
-        # string="Tipo de documento",
-        string="Document type",
+        string="Tipo de documento",
         default="I"
     )
     
@@ -135,8 +115,7 @@ class l10n_mx_cfdi_document(models.Model):
     )
     
     get_cfdi_state = fields.Boolean(
-        # string="¿Obtener estado de CFDI?",
-        string="¿Get CFDI state?",
+        string="¿Obtener estado de CFDI?",
         default=False
     )
     
@@ -230,8 +209,7 @@ class l10n_mx_cfdi_document(models.Model):
     def show_bill(self):
         if self.move_id.id:
             return {
-                # 'name':'Asientos contables',
-                'name':'Journal entries',
+                'name':'Asientos contables',
                 'view_type':'form',
                 'view_mode':'tree',
                 'views' : [(False,'form')],
@@ -251,8 +229,7 @@ class l10n_mx_cfdi_document(models.Model):
         # # raise ValidationError(len(new_moves))
         if len(new_moves) == 1:
             return {
-                # 'name':'Asientos contables',
-                'name':'Journal entries',
+                'name':'Asientos contables',
                 'view_type':'form',
                 'view_mode':'tree',
                 'views' : [(False,'form')],
@@ -266,8 +243,7 @@ class l10n_mx_cfdi_document(models.Model):
         elif len(new_moves) > 1:
             return {
                 'type': 'ir.actions.act_window',
-                # 'name': 'Asientos Contables',
-                'name': 'Journal entries',
+                'name': 'Asientos Contables',
                 'view_type': 'tree',
                 'view_mode': 'tree',
                 'view_id': self.env.ref('account.view_in_invoice_tree').id,
@@ -282,8 +258,7 @@ class l10n_mx_cfdi_document(models.Model):
         #Check if UUID is already linked
         partner_bills = self.env['account.move'].search([('cfdi_document.uuid','=',self.uuid)])
         if len(partner_bills) > 0:
-            # raise ValidationError("El UUID del documento que seleccionó ya se encuentra relacionado. Se recomienda revisar el listado de los documentos vinculados relacionados a el RFC ''" + str(self.rfc_emisor) + "'' para continuar...")
-            raise ValidationError("The UUID of the document you selected is already linked. It is recommended to review the list of linked documents related to the RFC ''" + str(self.rfc_emisor) + "'' to continue...")
+            raise ValidationError("El UUID del documento que seleccionó ya se encuentra relacionado. Se recomienda revisar el listado de los documentos vinculados relacionados a el RFC ''" + str(self.rfc_emisor) + "'' para continuar...")
         
         data = self._read_cfdi(self.attatch)
         if data['rfc_receptor'] == self.env.company.vat:
@@ -377,13 +352,11 @@ class l10n_mx_cfdi_document(models.Model):
                         for imp in line['tasas']:
                             result = self.env['account.tax'].search([('amount','=',imp),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                             if len(result) == 0:
-                                # raise UserError("No se encontraron impuestos registrados con base al " + "{:.4f}".format(imp) + "%. Configurelo para continuar...")
-                                raise UserError("No registered taxes were found with a base of " + "{:.4f}".format(imp) + "%. Create it to continue...")
+                                raise UserError("No se encontraron impuestos registrados con base al " + "{:.4f}".format(imp) + "%. Configurelo para continuar...")
                             tax_list += result
                         tax_list_zero = self.env['account.tax'].search([('amount','=',0),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                         if len(tax_list_zero) == 0:
-                            # raise UserError("No se encontraron impuestos registrados con base al 0.00%. Configurelo para continuar...")
-                            raise UserError("No taxes registered with a base of 0.00% were found. Create it to continue...")
+                            raise UserError("No se encontraron impuestos registrados con base al 0.00%. Configurelo para continuar...")
 
                         move_line = self.env['account.move.line'].with_context(check_move_validity=False).create({
                             'name': line['description'],
@@ -416,8 +389,7 @@ class l10n_mx_cfdi_document(models.Model):
                         for ret in line['retenciones']:
                             result = self.env['account.tax'].search([('amount','=',ret),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                             if len(result) == 0:
-                                # raise UserError("No se encontraron retenciones registradas con base al " + "{:.4f}".format(ret) + "%. Configurela para continuar...")
-                                raise UserError("No registered retentions were found with a base of " + "{:.4f}".format(ret) + "%. Create it to continue...")
+                                raise UserError("No se encontraron retenciones registradas con base al " + "{:.4f}".format(ret) + "%. Configurela para continuar...")
                             tax_rets += result
                         for imp in line['tasas']:
                             result = self.env['account.tax'].search([('amount','=',imp),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
@@ -457,16 +429,14 @@ class l10n_mx_cfdi_document(models.Model):
                         base = traslado.getAttribute('Base')
                         if traslado.getAttribute('TipoFactor') == 'Tasa':
                             tasas.append(float(traslado.getAttribute('TasaOCuota'))*100)
-                            # name += "Tasa "+str(float(traslado.getAttribute('TasaOCuota'))*100)+", "
-                            name += "Rate "+str(float(traslado.getAttribute('TasaOCuota'))*100)+", "
+                            name += "Tasa "+str(float(traslado.getAttribute('TasaOCuota'))*100)+", "
     #                     if float(base) != importe and concepto.getAttribute('Unidad') == 'Litro':
                         if round(float(base),2) != round(float(importe),2):
                             is_gasoline = True
                     for retencion in retenciones:
                         if traslado.getAttribute('TipoFactor') == 'Tasa':
                             rets.append(round(-float(retencion.getAttribute('TasaOCuota'))*100,4))
-                            # name += "Retención "+str(round(-float(retencion.getAttribute('TasaOCuota'))*100,4))+", "
-                            name += "Retention "+str(round(-float(retencion.getAttribute('TasaOCuota'))*100,4))+", "
+                            name += "Retención "+str(round(-float(retencion.getAttribute('TasaOCuota'))*100,4))+", "
                     check = False
                     for line in lines:
                         if line['ref'] == name:
@@ -493,13 +463,11 @@ class l10n_mx_cfdi_document(models.Model):
                         for imp in line['tasas']:
                             result = self.env['account.tax'].search([('amount','=',imp),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                             if len(result) == 0:
-                                # raise UserError("No se encontraron impuestos registrados con base al " + "{:.4f}".format(imp) + "%. Configurelo para continuar...")
-                                raise UserError("No registered taxes were found with a base of " + "{:.4f}".format(imp) + "%. Create it to continue...")
+                                raise UserError("No se encontraron impuestos registrados con base al " + "{:.4f}".format(imp) + "%. Configurelo para continuar...")
                             tax_list += result
                         tax_list_zero = self.env['account.tax'].search([('amount','=',0),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                         if len(tax_list_zero) == 0:
-                            # raise UserError("No se encontraron impuestos registrados con base al 0.00%. Configurelo para continuar...")
-                            raise UserError("No taxes registered with a base of 0.00% were found. Create it to continue...")
+                            raise UserError("No se encontraron impuestos registrados con base al 0.00%. Configurelo para continuar...")
 
                         move_line = self.env['account.move.line'].with_context(check_move_validity=False).create({
                             'name': line['description'],
@@ -513,8 +481,7 @@ class l10n_mx_cfdi_document(models.Model):
                         move_lines_list += move_line
 
                         move_line = self.env['account.move.line'].with_context(check_move_validity=False).create({
-                            # 'name': line['description'] + " Tasa 0%",
-                            'name': line['description'] + " Rate 0%",
+                            'name': line['description'] + " Tasa 0%",
                             'move_id': account_move.id,
                             'quantity':  1,
                             'price_unit': float(line['importe']) - float(line['base']),
@@ -531,14 +498,12 @@ class l10n_mx_cfdi_document(models.Model):
                         for ret in line['retenciones']:
                             result = self.env['account.tax'].search([('amount','=',ret),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                             if len(result) == 0:
-                                # raise UserError("No se encontraron retenciones registradas con base al " + "{:.4f}".format(ret) + "%. Configurela para continuar...")
-                                raise UserError("No registered retentions were found with a base of " + "{:.4f}".format(ret) + "%. Create it to continue...")
+                                raise UserError("No se encontraron retenciones registradas con base al " + "{:.4f}".format(ret) + "%. Configurela para continuar...")
                             tax_rets += result
                         for imp in line['tasas']:
                             result = self.env['account.tax'].search([('amount','=',imp),('type_tax_use','=','purchase'),('cash_basis_transition_account_id.company_id.id','=',self.env.company.id),('active','=',True)], limit=1)
                             if len(result) == 0:
-                                # raise UserError("No se encontraron impuestos registrados con base al " + "{:.4f}".format(imp) + "%. Configurelo para continuar...")
-                                raise UserError("No taxes registered with a base of " + "{:.4f}".format(imp) + "%. Create it to continue...")
+                                raise UserError("No se encontraron impuestos registrados con base al " + "{:.4f}".format(imp) + "%. Configurelo para continuar...")
                             tax_list += result
     #                     tax_rets = self.env['account.tax'].search([('id','in',rets_id),('active','=',True)], limit=1)
 
@@ -563,12 +528,7 @@ class l10n_mx_cfdi_document(models.Model):
             diferencia = data['total']-account_move.amount_total
             if  diferencia == 0:
                 account_move.message_post(
-                    # body='FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b>'.format(
-                    #     data['uuid'],
-                    #     data['total'],
-                    #     '{:20,.2f}'.format(account_move.amount_total)
-                    # )
-                    body='INVOICE created from CFDI <b>[{}]</b>. \nTotal on CFDI: <b>{}</b> \nTotal on INVOICE: <b>{}</b>'.format(
+                    body='FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b>'.format(
                         data['uuid'],
                         data['total'],
                         '{:20,.2f}'.format(account_move.amount_total)
@@ -576,13 +536,7 @@ class l10n_mx_cfdi_document(models.Model):
                 )
             else:
                 account_move.message_post(
-                    # body = 'FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b> \nDiferencia: <b>{}</b>'.format(
-                    #     data['uuid'],
-                    #     data['total'],
-                    #     '{:20,.2f}'.format(account_move.amount_total),
-                    #     '{:20,.2f}'.format(abs(diferencia))
-                    # )
-                    body = 'INVOICE created from CFDI <b>[{}]</b>. \nTotal on CFDI: <b>{}</b> \nTotal on INVOICE: <b>{}</b> \nDifference: <b>{}</b>'.format(
+                    body = 'FACTURA creada a partir de CFDI <b>[{}]</b>. \nTotal CFDI: <b>{}</b> \nTotal FACTURA: <b>{}</b> \nDiferencia: <b>{}</b>'.format(
                         data['uuid'],
                         data['total'],
                         '{:20,.2f}'.format(account_move.amount_total),
@@ -591,8 +545,7 @@ class l10n_mx_cfdi_document(models.Model):
                 )
             return account_move
         else:
-            # raise UserError("El RFC receptor del documento XML no coincide con el RFC de la empresa")
-            raise UserError("The receptor RFC on XML document does not match with company RFC")
+            raise UserError("El RFC receptor del documento XML no coincide con el RFC de la empresa")
             
             
     def action_download_xml(self):

@@ -6,13 +6,11 @@ from odoo.exceptions import ValidationError , UserError
 
 class account_move(models.Model):
     _inherit = 'account.move'
-    # _description = 'Herencia para relacion cfdi - facturas'
-    _description = 'Journal Entry'
+    _description = 'Herencia para relacion cfdi - facturas'
     
     cfdi_document=fields.Many2one(
         'l10n_mx.cfdi_document',
-        # string="Documento relacionado"
-        string="Related document"
+        string="Documento relacionado"
     )
     
     def asignar_cfdi(self):
@@ -45,8 +43,7 @@ class account_move(models.Model):
         if self.cfdi_document:
             if self.cfdi_document.total != self.amount_total:
                 if round(abs(self.cfdi_document.total - self.amount_total),2) > self.env.company.dif_allowed:
-                    # raise UserError("La diferencia entre el total del asiento contable y el CFDI relacionado es mayor a $" + "{:.2f}".format(self.env.company.dif_allowed) + " pesos.")
-                    raise UserError("The difference between the total of journla entry and the related CFDI is greater than $" + "{:.2f}".format(self.env.company.dif_allowed) + " pesos.")
+                    raise UserError("La diferencia entre el total del asiento contable y el CFDI relacionado es mayor a $" + "{:.2f}".format(self.env.company.dif_allowed) + " pesos.")
         res = super(account_move, self).action_post()
         return res  
     

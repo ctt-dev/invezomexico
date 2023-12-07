@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Vendor CFDI Manager",
+    'name': "Administrador de CFDI de proveedor",
 
     'summary': """""",
 

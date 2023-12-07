@@ -5,8 +5,7 @@ from odoo.exceptions import ValidationError, UserError, Warning
 
 class res_partner(models.Model):
     _inherit = 'res.partner'
-    # _description = 'Herencia a contactos'
-    _description = 'Partners'
+    _description = 'Herencia a contactos'
     
     efos_ids = fields.One2many(
         'l10n_mx.efos',
@@ -22,8 +21,7 @@ class res_partner(models.Model):
                 efos_status = efos.status
             rec.efos_status = efos_status
     efos_status = fields.Char(
-        # string="Situación del contribuyente",
-        string="Partner state",
+        string="Situación del contribuyente",
         compute=compute_efos_status,
         store=True
     )

@@ -167,6 +167,7 @@
                     <field name="category_id" widget="many2one_tags"/>
                     <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
                     <field name="company_id" invisible="1"/>
+                    <field name="imagen"/>
                     <field name="color" widget="color_picker" required="0"/>
                 </tree>
             </field>
@@ -178,9 +179,11 @@
             <field name="arch" type="xml">
                 <form string="Resumen">
                     <sheet string="View">
+                        <field name="imagen" widget="image" class="oe_avatar" />
                         <!-- <header>
                             <button name="process_link" string="Procesar Link" type="object" class="btn-primary"/>
                         </header> -->
+                        
                         <div class="oe_button_box" />
     
                             <group string="Información" >
@@ -191,6 +194,7 @@
                                 <field name="category_id" readonly="0"/>
                                 <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
                                 <field name="company_id" invisible="1"/>
+                                
                                 <field name="color" widget="color_picker" required="0"/>
                             </group>
                             
@@ -273,6 +277,8 @@
                 <tree string="sku_marketplace" editable="top">
                     <field name="name"/>
                     <field name="product_id" required="1"/>
+                    <field name="marketplace"/>
+                    
                     <field name="color" widget="color_picker"/>
                 </tree>
             </field>
@@ -285,10 +291,35 @@
             <field name="target">current</field>
         </record>
         <menuitem id="llantas_sku_marketplace_menu" 
-                  name="Sku's Marketplace" 
+                  name="SKU alternos por marketplace" 
                   action="sku_marketplace"
                   parent="menu_ctt_llantas_catalogos_list" 
                   sequence="4" />
+
+        <record id="tree_view_almacenes_prov" model="ir.ui.view">
+            <field name="name">tree.almacenes_prov</field>
+            <field name="model">llantas_config.almacenes_prov</field>
+            <field name="arch" type="xml">
+                <tree string="almacenes proveedor" editable="top">
+                    <field name="partner_id" required="1"/>
+                    <field name="sucursal" required="1"/>
+                    <field name="almacen" required="1"/>
+                    <field name="almacen_proveedor" />
+                </tree>
+            </field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="almacenes_proveedores">
+            <field name="name">almacenes_prov</field>
+            <field name="res_model">llantas_config.almacenes_prov</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="llantas_almacenes_prov_menu" 
+                  name="Almacenes por proveedor" 
+                  action="almacenes_proveedores"
+                  parent="menu_ctt_llantas_catalogos_list" 
+                  sequence="5" />
         
 
     </data>

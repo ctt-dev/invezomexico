@@ -8,10 +8,18 @@
                     <field name="nombre_proveedor" />
                     <field name="sku" />
                     <field name="producto" />
+                    <field name="marca" />
+                    <field name="aplicacion" />
+                    <field name="modelo" />
+                    <field name="medida" />
+                    <field name="uso" />
                     <field name="nombre_almacen" />       
                     <field name="existencia" />
                     <field name="costo_sin_iva" />
-                    <field name="moneda" optional="hide"/>
+                    <field name="precio_lista" />
+                    <field name="precio_llantired" />
+                    <field name="precio_promocion" />
+                    <field name="tipo_moneda" optional="hide"/>
                     <field name="tipo_cambio" optional="hide"/>
                     <field name="fecha_actualizacion" optional="hide"/>
                     <field name="create_date" optional="hide"/>
@@ -31,7 +39,7 @@
                         <group string="Producto" >
                             <field name="sku" />
                             <field name="codigo_producto" />
-                            <field name="proveedor_id" />
+                            <field name="nombre_proveedor" />
                             <field name="producto" />
                             <!-- <field name="almacen" />        -->
                             
@@ -40,7 +48,7 @@
                             <field name="almacen" />       
                             <field name="existencia" />
                             <field name="costo_sin_iva" />
-                            <field name="moneda" />
+                            <field name="tipo_moneda" />
                             <field name="tipo_cambio" />
                         </group>
                         <group string="Informacion registro" >
@@ -81,6 +89,7 @@
                     <field name="arch" type="xml">
                         <tree string="Status">
                             <field name="name"/>
+                            <field name="proveedor_id"/>
                             <field name="url" />
                             <field name="company_id" />
                             <field name="color" widget="color_picker" required="0"/>
@@ -104,6 +113,7 @@
             
                                     <group string="Información" >
                                         <field name="name"/>
+                                        <field name="proveedor_id"/>
                                         <field name="url" />
                                         <field name="company_id" />
                                         <field name="color" widget="color_picker" required="0"/>
@@ -125,7 +135,7 @@
                 <record model="ir.actions.act_window" id="llantas_proveedores_links">
                     <field name="name">Proveedores links</field>
                     <field name="res_model">llantas_config.proveedores_links</field>
-                    <field name="view_mode">tree,form</field>
+                    <field name="view_mode">tree</field>
                     <field name="target">main</field>
                 </record>
                 

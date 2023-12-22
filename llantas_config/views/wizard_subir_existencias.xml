@@ -14,6 +14,11 @@
             <field name="arch" type="xml">
                 <form string="Importar Documento">
                     <group>
+                        <field name="proveedor_id" widget="list"/>
+                        <!-- <field name="proveedor"/> -->
+                        <field name="tipo_cambio" />
+                    </group>
+                    <group>
                         <field name="file_name" invisible="1"/>
                         <field name="file_data" filename="file_name" widget="binary"/>
                     </group>

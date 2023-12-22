@@ -18,6 +18,17 @@ class ctrl_llantas(models.Model):
         store=True,
         company_dependent=True,
     )
+
+    image = fields.Binary(
+        related="marketplace.imagen",
+        string="Imagen",
+    )
+
+    marketplace=fields.Many2one(
+        "llantas_config.marketplaces",
+        related="sale_id.marketplace",
+        string="Marketplace",
+    )
     
     name=fields.Char(
         related="sale_id.name",
@@ -51,11 +62,7 @@ class ctrl_llantas(models.Model):
         string="Cliente",
     )
 
-    marketplace=fields.Many2one(
-        "llantas_config.marketplaces",
-        related="sale_id.marketplace",
-        string="Marketplace",
-    )
+    
     
     # marketplace=fields.Char(
     #     related="sale_id.marketplace.name",

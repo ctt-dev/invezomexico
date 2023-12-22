@@ -17,6 +17,10 @@ access_llantas_config_llantas_config_carrier,llantas_config.carrier,model_llanta
 access_llantas_config_llantas_config_sku_marketplace,llantas_config.sku_marketplace,model_llantas_config_sku_marketplace,,1,1,1,1
 access_llantas_config_llantas_config_pagos_marketplace,llantas_config.pagos_marketplace,model_llantas_config_pagos_marketplace,,1,1,1,1
 access_llantas_config_llantas_config_ctt_prov_cargar_wizard,llantas_config.ctt_prov_cargar_wizard,model_llantas_config_ctt_prov_cargar_wizard,,1,1,1,1
+access_llantas_config_llantas_config_almacenes_prov,llantas_config.almacenes_prov,model_llantas_config_almacenes_prov,,1,1,1,1
+
+
+
 
 
 

@@ -126,6 +126,11 @@ class marketplaces(models.Model):
         string="Empresa",
     )
 
+    imagen=fields.Binary(
+        string="Imagen",
+        store=True,
+    )
+
     @api.model
     def create(self, values):
         values['company_id'] = self.env.company.id
@@ -162,6 +167,11 @@ class proveedores_link(models.Model):
     name = fields.Char(
         string="Nombre",
     )
+
+    proveedor_id=fields.Many2one(
+        "res.partner",
+        string="Proveedor relacionado",
+    )
     
     url= fields.Char(
         string="Url proveedor",
@@ -170,10 +180,15 @@ class proveedores_link(models.Model):
     color = fields.Integer(
         string="Color",
     )
+    
     company_id=fields.Many2one(
         "res.company",
         string="Empresa",
     )
+    
+
+
+    
 
     def process_link(self):
             url = urllib.request.urlopen(self.url) 
@@ -308,6 +323,12 @@ class sku_marketplaces(models.Model):
         required=True,
     )
 
+    marketplace=fields.Many2one(
+        "llantas_config.marketplaces",
+        string="Marketplace relacionado",
+        # company_dependent=True,
+    )
+    
     product_id=fields.Many2one(
         "product.template",
         string="Producto",
@@ -316,3 +337,34 @@ class sku_marketplaces(models.Model):
     color=fields.Integer(
         string="Color",
     )
+    
+class almacenes_proveedores(models.Model):
+    _name = 'llantas_config.almacenes_prov'
+    _description = 'Almacenes de proveedores'
+    _order = 'id desc'
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Proveedor",
+        tracking=True,
+        required=True
+    )
+
+    sucursal=fields.Char(
+        string="Sucursal",
+        tracking=True,
+        required=True
+    )
+    
+    almacen=fields.Integer(
+        string="Almacen",
+        tracking=True,
+        required=True
+    )
+
+    almacen_proveedor=fields.Char(
+        string="Almacen proveedor",
+        tracking=True,
+    )
+

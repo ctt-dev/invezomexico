@@ -5,12 +5,12 @@
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
                 <tree edit="0" sample="1">
-                    <field name="sale_id" optional="hide"/>
-                    <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
+                    <field name="sale_id" optional="hide" widget="many2one"/>
+                    <field name="comprador_id" domain="[('category_ids','like','COMP')]" widget="many2one"/>
                     <field name="no_venta" />
                     <field name="link_venta" optional="hide" widget="url"/>
-                    <field name="partner_name" />
-                    <field name="marketplace" />
+                    <field name="partner_name" widget="many2one"/>
+                    <field name="marketplace" widget="many2one"/>
 
                     <field name="fecha" />
                     <!-- <field name="productos_orden"/> -->
@@ -30,8 +30,49 @@
                     <field name="dias" readonly="1"/>
                     <field name="company_id" invisible="1"/>
                 </tree>
+                
             </field>
-        </record>    
+        </record>
+        <record id="view_llantas_kanban" model="ir.ui.view">
+            <field name="name">Kanban Resumen</field>
+            <field name="model">llantas_config.ctt_llantas</field>
+            <field name="arch" type="xml">
+                <kanban sample="1">
+                    <!-- Campos de la vista kanban -->
+                    <field name="id"/>
+                    <field name="sale_id"/>
+                    <field name="marketplace"/>
+                    <!-- Otros campos de la vista kanban -->
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                    <field name="image" widget="image"/>
+                                </div>
+                                <div class="oe_kanban_details d-flex flex-column justify-content-between">
+                                    <div>
+                                        <strong class="o_kanban_record_title" style="font-size:12px"><field name="marketplace" /></strong>
+                                        <br/><br/>
+                                        <ul>
+                                            <li>Folio: <field name="sale_id" widget="many2one"> (<field name="no_venta" />)</field></li>
+                                            <li>Comprador: <field name="comprador_id"/></li>
+                                            <li>Estatus: <field name="status_id"/></li>
+                                        </ul>
+
+                                        <!-- Otros campos de interés -->
+                                    </div>
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left"/>
+                                        <div class="oe_kanban_bottom_right"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
 
         
         <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
@@ -102,7 +143,7 @@
         <record id="ctt_llantas_action_ctrl_llantas_tree" model="ir.actions.act_window">
             <field name="name">Resumen</field>
             <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="view_mode">kanban,tree,form,graph,pivot</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">

@@ -83,22 +83,50 @@
             </field>
         </record>
 
+        <record id="llantas_config_proveedor_list_search" model="ir.ui.view">
+            <field name="name">Buscar</field>
+            <field name="model">llantas_config.ctt_prov</field>
+            <field name="arch" type="xml">
+               <search string="Buscar">
+                   <field name="codigo_producto" string="Producto" filter_domain="['|','|', ('codigo_producto', 'ilike', self),('sku', 'ilike', self),('producto','ilike',self)]"/>
+                    <field name="nombre_proveedor" string="Proveedor" filter_domain="[('nombre_proveedor', 'ilike', self)]"/>
+                    <field name="nombre_almacen" string="Almacen" filter_domain="[('almacen', 'ilike', self)]"/>
+                    
+
+                   <filter string="Productos con existencias" name="existencia" domain="[('existencia', '>', 0)]"/>
+                   <filter string="Costo en cero" name="costo_sin_iva" domain="[('costo_sin_iva', '=', 0)]"/>
+               
+                    <separator/>
+                   <group expand="0" string="Group By">
+                    <filter string="Proveedor" name="nombre_proveedor" domain="[]" context="{'group_by': 'nombre_proveedor'}"/>
+                    <!-- <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/> -->
+                    <filter string="Almacen" name="nombre_almacen" domain="[]" context="{'group_by': 'nombre_almacen'}"/>
+                    <filter string="Producto" name="producto" domain="[]" context="{'group_by': 'producto'}"/>
+                    <filter string="Sku" name="sku" domain="[]" context="{'group_by': 'sku'}"/>
+                       
+                       
+                    </group>
+                       
+                </search>
+            </field>
+        </record>
+
         <record id="tree_view_proveedores_links" model="ir.ui.view">
-                    <field name="name">link.Proveedores</field>
-                    <field name="model">llantas_config.proveedores_links</field>
-                    <field name="arch" type="xml">
-                        <tree string="Status">
-                            <field name="name"/>
-                            <field name="proveedor_id"/>
-                            <field name="url" />
-                            <field name="company_id" />
-                            <field name="color" widget="color_picker" required="0"/>
-                            <button name="process_link" string="Descargar existencias" type="object" class="btn-info"/>
-                            <button name="procesar_existencias_tiredirect" string="Procesar" type="object" class="btn-success"/>
-                            
-                        </tree>
-                    </field>
-                </record>
+            <field name="name">link.Proveedores</field>
+            <field name="model">llantas_config.proveedores_links</field>
+            <field name="arch" type="xml">
+                <tree string="Status" sample="1" multi_edit="1">
+                    <field name="name"/>
+                    <field name="proveedor_id"/>
+                    <field name="url" />
+                    <field name="company_id" />
+                    <field name="color" widget="color_picker" required="0"/>
+                    <button name="process_link" string="Descargar existencias" type="object" class="btn-info" attrs="{'invisible': [('url', '=', False)]}"/>
+                    <button name="procesar_existencias" string="Procesar" type="object" class="btn-success" attrs="{'invisible': [('proveedor_id', '=', False)]}"/>
+                    
+                </tree>
+            </field>
+        </record>
         
                 <record id="ctt_llantas_action_view_mproveedores_links_form" model="ir.ui.view">
                     <field name="name">form</field>

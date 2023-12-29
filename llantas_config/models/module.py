@@ -5,6 +5,7 @@ import datetime
 from odoo.exceptions import Warning
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
+from urllib.parse import urlparse
 _logger = logging.getLogger(__name__)
 
 class ctrl_llantas(models.Model): 
@@ -22,6 +23,11 @@ class ctrl_llantas(models.Model):
     image = fields.Binary(
         related="marketplace.imagen",
         string="Imagen",
+    )
+
+    company_image=fields.Binary(
+        related="company_id.logo",
+        string="Imagen empresa",
     )
 
     marketplace=fields.Many2one(
@@ -103,6 +109,14 @@ class ctrl_llantas(models.Model):
         # store=True,
     )
 
+    partner_id=fields.Many2one(
+        "res.partner",
+        related="orden_compra.partner_id",
+        string="Proveedor",
+    )
+
+    
+
     
 
     def compute_factura_prov(self):
@@ -113,17 +127,49 @@ class ctrl_llantas(models.Model):
         string="Factura proveedor",
         compute=compute_factura_prov
     )
-    
+
+
+    def open_sale_order(self):
+        """Método para abrir la orden de venta asociada."""
+        if self.sale_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'sale.order',
+                'res_id': self.sale_id.id,
+                'view_mode': 'form',
+                'view_id': False,
+                'target': 'current',
+            }
+
+
+    def open_orden_compra(self):
+        """Método para abrir el formulario de la orden de compra asociada."""
+        if self.orden_compra:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'purchase.order',
+                'res_id': self.orden_compra.id,
+                'view_mode': 'form',
+                'view_id': False,
+                'target': 'current',
+            }
+            
     num_cliente=fields.Char(
         related="partner_name.usuario_marketplace",
         string="Num. Cliente",
         tracking=True
     )
     
-    factura_cliente=fields.Char(
-        related="sale_id.invoice_ids.name",
+    factura_cliente=fields.Many2many(
+        related="sale_id.invoice_ids",
         string="Factura cliente",
         # tracking=True
+    )
+
+    show_si = fields.Boolean(
+        compute='_compute_show_si',
+        string='Mostrar SI',
+        store=False,
     )
 
     
@@ -152,8 +198,18 @@ class ctrl_llantas(models.Model):
         ('09','Devolución'),],
         related="sale_id.ventas_status",
         string="Status",
+                            
         store=True                                
     )
+
+    @api.onchange('status_id')
+    def _onchange_sale_id(self):
+        if self.status_id:
+            self.status_id = self.sale_id.ventas_status
+            # Actualizar el campo ventas_status en sale.order
+            self.sale_id.write({'ventas_status': self.status_id})
+        else:
+            self.status_id = False
     
     fecha=fields.Datetime(
         string="Fecha",
@@ -244,11 +300,22 @@ class ctrl_llantas(models.Model):
     #     string="Carrier",
     # )
 
-    link_venta=fields.Char(
+    link_venta = fields.Char(
         related="sale_id.link_venta",
         string="Link venta",
         store=True,
     )
+
+    def action_open_sale_url(self):
+        if self.link_venta:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': self.link_venta,
+                'target': 'new',
+            }
+        else:
+            # Puedes manejar el caso en el que no hay URL
+            raise UserError('No hay URL disponible.')
 
     no_venta=fields.Char(
         related="sale_id.folio_venta",

@@ -24,6 +24,8 @@
                     </group>
                     <footer>
                         <button name="import_data" string="Importar" type="object" class="btn-primary"/>
+                        <button name="dejar_en_cero" string="Existencias en 0" type="object" class="btn-warning"/>
+                        
                         <button special="cancel" string="Cancelar" class="btn-secondary"/>
                     </footer>
                 </form>

@@ -223,7 +223,7 @@ class proveedores_link(models.Model):
                 # 'type': 'ir.actions.act_window',
                 # 'target': 'new',
             # }
-    def procesar_existencias_tiredirect(self):
+    def procesar_existencias(self):
         moves=self.env['llantas_config.ctt_tiredirect_cargar'].search([])
         partner=self.env['res.partner'].search([('name','=','TIRE DIRECT S.A. DE C.V.')], limit=1)
         proveedor=partner.id

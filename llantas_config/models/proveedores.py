@@ -25,104 +25,172 @@ class WizardImportExistenciasProv(models.TransientModel):
         string="TC a importar",
     )
 
+
+    def dejar_en_cero(self):
+        # Set 'existencia' to 0 for all records with the same 'nombre_proveedor'
+        existing_proveedor = self.env['llantas_config.ctt_prov'].search([
+            ('nombre_proveedor', '=', self.proveedor_id.name),
+        ])
+        existing_proveedor.write({
+            'existencia': 0,
+        })
+               
+        
     def import_herrera_tires(self, record):
         fecha_actual = datetime.datetime.now()
-        try:
-            self.env['llantas_config.ctt_prov'].create({
-                'nombre_proveedor': self.proveedor_id.name,
-                'sku': record.get('Codigo'),
-                'producto': record.get('Titulo'),
-                'nombre_almacen': self.proveedor_id.name,
-                'existencia': record.get('Existencia'),
-                'costo_sin_iva': record.get('Costo antes de iva'),
-                'tipo_moneda': record.get('Moneda'),
-                'tipo_cambio': self.tipo_cambio,
-                'fecha_actualizacion': fecha_actual,
-            })
-        except UserError as e:
-            _logger.error(f"Error creating record: {e}")
-            self.env.cr.rollback()
-    
-    def import_futurama(self, record):
-        fecha_actual = datetime.datetime.now()
-        for almacen_column in ['MAT', 'VGR', 'VAL', 'IXT', 'QRT', 'GDL']:
+        
+        existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
+            ('nombre_proveedor', '=', self.proveedor_id.name),
+            ('sku', '=', record.get('Codigo'))
+        ])
+        if existing_records_same_proveedor:
+            # Update existing records with the new values
+            for existing_record in existing_records_same_proveedor:
+                existing_record.write({
+                    'existencia': record.get('Existencia'),
+                })
+        else:
+            # If the product doesn't exist, create a new record
             try:
-                self.env['llantas_config.ctt_prov'].create({
+                new_record = {
                     'nombre_proveedor': self.proveedor_id.name,
-                    'sku': record.get('CLAVE ARTICULO'),
-                    'producto': record.get('DESCRIPCIÓN'),
-                    'nombre_almacen': almacen_column,
-                    'existencia': record.get(almacen_column),
-                    'costo_sin_iva': record.get('MAYOREO'),
+                    'sku': record.get('Codigo'),
+                    'producto': record.get('Titulo'),
+                    'nombre_almacen': self.proveedor_id.name,
+                    'existencia': record.get('Existencia'),
+                    'costo_sin_iva': record.get('Costo antes de iva'),
                     'tipo_moneda': record.get('Moneda'),
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
-                    'marca': record.get('APLICACIÓN'),
-                    'aplicacion': record.get('MARCA'),
+                }
+                self.env['llantas_config.ctt_prov'].create(new_record)
+            except UserError as e:
+                _logger.error(f"Error creating record: {e}")
+    
+        return True
+    
+    def import_futurama(self, record):
+        fecha_actual = fields.Datetime.now()
+    
+        # Itera sobre los almacenes y actualiza la existencia para cada uno
+        for almacen_column in ['MAT', 'VGR', 'VAL', 'IXT', 'QRT', 'GDL']:
+            # Busca el registro con el SKU y el almacén específicos
+            existing_record = self.env['llantas_config.ctt_prov'].search([
+                ('sku', '=', record.get('CLAVE ARTICULO')),
+                ('nombre_almacen', '=', almacen_column)
+            ], limit=1)
+    
+            if existing_record:
+                # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
+                existing_record.write({'existencia': record.get(almacen_column)})
+            else:
+                # Si no existe, crea un nuevo registro
+                try:
+                    self.env['llantas_config.ctt_prov'].create({
+                        'nombre_proveedor': self.proveedor_id.name,
+                        'sku': record.get('CLAVE ARTICULO'),
+                        'producto': record.get('DESCRIPCIÓN'),
+                        'nombre_almacen': almacen_column,
+                        'existencia': record.get(almacen_column),
+                        'costo_sin_iva': record.get('MAYOREO'),
+                        'tipo_moneda': record.get('Moneda'),
+                        'tipo_cambio': self.tipo_cambio,
+                        'fecha_actualizacion': fecha_actual,
+                        'marca': record.get('APLICACIÓN'),
+                        'aplicacion': record.get('MARCA'),
+                    })
+                except UserError as e:
+                    _logger.error(f"Error creating record: {e}")
+                    self.env.cr.rollback()
+    
+        return True
+    
+    def import_import_treads(self, record):
+        fecha_actual = fields.Datetime.now()
+
+        # Update existing records with the same SKU to update 'existencia' field
+        existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
+            ('sku', '=', record.get('Articulo'))
+        ])
+
+        if existing_record_by_sku:
+            # If the product exists, update the 'existencia' field
+            existing_record_by_sku.write({'existencia': record.get('Stock')})
+        else:
+            # If the product doesn't exist, create a new record
+            it_trailer_usd = record.get('ITTrailerUSD')
+            if isinstance(it_trailer_usd, float):
+                it_trailer_usd = str(it_trailer_usd)
+
+            it_trailer_usd_cleaned = it_trailer_usd.replace('$', '').replace(',', '').strip()
+
+            if self.tipo_cambio > 1:
+                precio = float(it_trailer_usd_cleaned)
+                tipomoneda = 'USD'
+            else:
+                precio = float(it_trailer_usd_cleaned)
+                tipomoneda = 'MXN'
+
+            try:
+                self.env['llantas_config.ctt_prov'].create({
+                    'nombre_proveedor': self.proveedor_id.name,
+                    'sku': record.get('Articulo'),
+                    'producto': record.get('Descripción'),
+                    'nombre_almacen': self.proveedor_id.name,
+                    'existencia': record.get('Stock'),
+                    'costo_sin_iva': precio,
+                    'tipo_moneda': tipomoneda,
+                    'tipo_cambio': self.tipo_cambio,
+                    'fecha_actualizacion': fecha_actual,
+                    'marca': record.get('Marca'),
+                    'aplicacion': record.get('Segmento'),
+                    'modelo': record.get('Modelo'),
+                    'medida': record.get('Medida'),
+                    'uso': record.get('Uso'),
                 })
             except UserError as e:
                 _logger.error(f"Error creating record: {e}")
                 self.env.cr.rollback()
-    
-    def import_import_treads(self, record):
-        fecha_actual = datetime.datetime.now()
-        it_trailer_usd = record.get('ITTrailerUSD')
-        if isinstance(it_trailer_usd, float):
-            it_trailer_usd = str(it_trailer_usd)
-    
-        it_trailer_usd_cleaned = it_trailer_usd.replace('$', '').replace(',', '').strip()
-    
-        if self.tipo_cambio > 1:
-            precio = float(it_trailer_usd_cleaned)
-            tipomoneda = 'USD'
-        else:
-            precio = float(it_trailer_usd_cleaned)
-            tipomoneda = 'MXN'
-    
-        try:
-            self.env['llantas_config.ctt_prov'].create({
-                'nombre_proveedor': self.proveedor_id.name,
-                'sku': record.get('Articulo'),
-                'producto': record.get('Descripción'),
-                'nombre_almacen': self.proveedor_id.name,
-                'existencia': record.get('Stock'),
-                'costo_sin_iva': precio,
-                'tipo_moneda': tipomoneda,
-                'tipo_cambio': self.tipo_cambio,
-                'fecha_actualizacion': fecha_actual,
-                'marca': record.get('Marca'),
-                'aplicacion': record.get('Segmento'),
-                'modelo': record.get('Modelo'),
-                'medida': record.get('Medida'),
-                'uso': record.get('Uso'),
-            })
-        except UserError as e:
-            _logger.error(f"Error creating record: {e}")
-            self.env.cr.rollback()
+
+        return True
+
             
     def import_loyga(self, record):
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
             tipomoneda = 'MXN'
-        fecha_actual = datetime.datetime.now()
-        try:
-            self.env['llantas_config.ctt_prov'].create({
-                'nombre_proveedor': self.proveedor_id.name,
-                'sku': record.get('CODIGO'),
-                'producto': record.get('ARTICULO'),
-                'nombre_almacen': self.proveedor_id.name,
-                'existencia': record.get('EXISTENCIA'),
-                'costo_sin_iva': record.get('PRECIO'),
-                'tipo_moneda': tipomoneda,
-                'tipo_cambio': self.tipo_cambio,
-                'fecha_actualizacion': fecha_actual,
-                'modelo': record.get('MODELO'),
-                'marca': record.get('MARCA'),
-            })
-        except UserError as e:
-            _logger.error(f"Error creating record: {e}")
-            self.env.cr.rollback()
+        fecha_actual = fields.Datetime.now()
+
+        # Update existing records with the same SKU to update 'existencia' field
+        existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
+            ('sku', '=', record.get('CODIGO'))
+        ])
+
+        if existing_record_by_sku:
+            # If the product exists, update the 'existencia' field
+            existing_record_by_sku.write({'existencia': record.get('EXISTENCIA')})
+        else:
+            # If the product doesn't exist, create a new record
+            try:
+                self.env['llantas_config.ctt_prov'].create({
+                    'nombre_proveedor': self.proveedor_id.name,
+                    'sku': record.get('CODIGO'),
+                    'producto': record.get('ARTICULO'),
+                    'nombre_almacen': self.proveedor_id.name,
+                    'existencia': record.get('EXISTENCIA'),
+                    'costo_sin_iva': record.get('PRECIO'),
+                    'tipo_moneda': tipomoneda,
+                    'tipo_cambio': self.tipo_cambio,
+                    'fecha_actualizacion': fecha_actual,
+                    'modelo': record.get('MODELO'),
+                    'marca': record.get('MARCA'),
+                })
+            except UserError as e:
+                _logger.error(f"Error creating record: {e}")
+                self.env.cr.rollback()
+
+        return True
 
     def import_malpa(self, record):
         if self.tipo_cambio > 1:
@@ -134,58 +202,87 @@ class WizardImportExistenciasProv(models.TransientModel):
             it_precio_lista = str(it_precio_lista)
     
         precio_lista = it_precio_lista.replace('$', '').replace(',', '').strip()
-        
+    
         it_precio_llantired = record.get('PRECIO LLANTIRED')
         if isinstance(it_precio_llantired, float):
             it_precio_llantired = str(it_precio_llantired)
     
         precio_llantired = it_precio_llantired.replace('$', '').replace(',', '').strip()
-        
-        fecha_actual = datetime.datetime.now()
+    
+        fecha_actual = fields.Datetime.now()
+    
+        # Itera sobre los almacenes y actualiza la existencia para cada uno
         for almacen_column in ['01 HERMOSILLO', '04 NOGALES', '05 OBREGON', '06 NAVOJOA', '07 LOS MOCHIS', '10 GUADALAJARA']:
-            try:
-                self.env['llantas_config.ctt_prov'].create({
-                    'nombre_proveedor': self.proveedor_id.name,
-                    'sku': record.get('Producto'),
-                    'producto': record.get('Descripción'),
-                    'nombre_almacen': almacen_column,
-                    'existencia': record.get(almacen_column),
-                    'costo_sin_iva': precio_lista,
-                    'precio_llantired':precio_llantired,
-                    'tipo_moneda': record.get('Moneda'),
-                    'tipo_cambio': self.tipo_cambio,
-                    'fecha_actualizacion': fecha_actual,
-                    'marca': record.get('APLICACIÓN'),
-                    'aplicacion': record.get('MARCA'),
-                })
-            except UserError as e:
-                _logger.error(f"Error creating record: {e}")
-                self.env.cr.rollback()
-
+            # Busca el registro con el SKU y el almacén específicos
+            existing_record = self.env['llantas_config.ctt_prov'].search([
+                ('sku', '=', record.get('Producto')),
+                ('nombre_almacen', '=', almacen_column)
+            ], limit=1)
+    
+            if existing_record:
+                # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
+                existing_record.write({'existencia': record.get(almacen_column)})
+            else:
+                # Si no existe, crea un nuevo registro
+                try:
+                    self.env['llantas_config.ctt_prov'].create({
+                        'nombre_proveedor': self.proveedor_id.name,
+                        'sku': record.get('Producto'),
+                        'producto': record.get('Descripción'),
+                        'nombre_almacen': almacen_column,
+                        'existencia': record.get(almacen_column),
+                        'costo_sin_iva': precio_lista,
+                        'precio_llantired': precio_llantired,
+                        'tipo_moneda': record.get('Moneda'),
+                        'tipo_cambio': self.tipo_cambio,
+                        'fecha_actualizacion': fecha_actual,
+                        'marca': record.get('APLICACIÓN'),
+                        'aplicacion': record.get('MARCA'),
+                    })
+                except Exception as e:
+                    # Maneja las excepciones según sea necesario
+                    print(f"Error creating record: {e}")
+    
+        return True
     def import_new_tires(self, record):
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
             tipomoneda = 'MXN'
         it_precio_lista = record.get('PRECIO DE LISTA')
-        
-        fecha_actual = datetime.datetime.now()
+    
+        fecha_actual = fields.Datetime.now()
+    
+        # Itera sobre los almacenes y actualiza la existencia para cada uno
         for almacen_column in ['1 Bodega', '2 Carmelo', '3 Muestras', '5 Calle7', '6 Piedras', '7 Cuerna', '8 Portales']:
-            try:
-                self.env['llantas_config.ctt_prov'].create({
-                    'nombre_proveedor': self.proveedor_id.name,
-                    'sku': record.get('Producto'),
-                    'producto': record.get('Descripción'),
-                    'nombre_almacen': almacen_column,
-                    'existencia': record.get(almacen_column),
-                    'costo_sin_iva': record.get('MAYOREO'),
-                    'tipo_moneda': record.get('Moneda'),
-                    'tipo_cambio': self.tipo_cambio,
-                    'fecha_actualizacion': fecha_actual,
-                })
-            except UserError as e:
-                _logger.error(f"Error creating record: {e}")
-                self.env.cr.rollback()
+            # Busca el registro con el SKU y el almacén específicos
+            existing_record = self.env['llantas_config.ctt_prov'].search([
+                ('sku', '=', record.get('Producto')),
+                ('nombre_almacen', '=', almacen_column)
+            ], limit=1)
+    
+            if existing_record:
+                # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
+                existing_record.write({'existencia': record.get(almacen_column)})
+            else:
+                # Si no existe, crea un nuevo registro
+                try:
+                    self.env['llantas_config.ctt_prov'].create({
+                        'nombre_proveedor': self.proveedor_id.name,
+                        'sku': record.get('Producto'),
+                        'producto': record.get('Descripción'),
+                        'nombre_almacen': almacen_column,
+                        'existencia': record.get(almacen_column),
+                        'costo_sin_iva': record.get('MAYOREO'),
+                        'tipo_moneda': record.get('Moneda'),
+                        'tipo_cambio': self.tipo_cambio,
+                        'fecha_actualizacion': fecha_actual,
+                    })
+                except UserError as e:
+                    _logger.error(f"Error creating record: {e}")
+                    self.env.cr.rollback()
+    
+        return True
 
     def import_radialpros(self, record):
         if self.tipo_cambio > 1:
@@ -193,71 +290,113 @@ class WizardImportExistenciasProv(models.TransientModel):
         else:
             tipomoneda = 'MXN'
         it_precio_lista = record.get('PRECIO DE LISTA')
-        
-        fecha_actual = datetime.datetime.now()
-        try:
-            self.env['llantas_config.ctt_prov'].create({
-                'nombre_proveedor': self.proveedor_id.name,
-                'sku': record.get('SKU'),
-                'producto': record.get('Descripción'),
-                'nombre_almacen': record.get('Almacé n'),
-                'existencia': record.get('Stock'),
-                'costo_sin_iva': record.get('Mayoreo DLLS'),
-                'precio_promocion': record.get('PROMOCIONDLLS'),
-                'tipo_moneda': tipomoneda,
-                'tipo_cambio': self.tipo_cambio,
-                'fecha_actualizacion': fecha_actual,
-                'modelo': record.get('Modelo'),
-                'marca': record.get('Marca'),
-                'uso': record.get('Uso'),
-                'medida': record.get('medida'),
-                'aplicacion': record.get('Segmento'),
-            })
-        except UserError as e:
-            _logger.error(f"Error creating record: {e}")
-            self.env.cr.rollback()
 
-    def convert_to_float(value, default=0.0):
-        try:
-            return float(value)
-        except (ValueError, TypeError):
-            return default
-        
-    def import_tbc(self, record):
-        precio_lista = record.get('PRECIO DE LISTA')
-        precio_cliente = record.get('PRECIO_CLIENTE')
+        fecha_actual = fields.Datetime.now()
 
-        precio_lista = convert_to_float(precio_lista)
-        precio_cliente = convert_to_float(precio_cliente)
-        
-        if self.tipo_cambio > 1:
-            tipomoneda = 'USD'
+        # Update existing records with the same proveedor_id.name to set 'existencia' to 0
+        existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
+            ('nombre_proveedor', '=', self.proveedor_id.name)
+        ])
+
+        for existing_record in existing_records_same_proveedor:
+            existing_record.write({'existencia': 0})
+
+        # Update existing records with the same SKU to update 'existencia' field
+        existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
+            ('sku', '=', record.get('SKU'))
+        ])
+
+        if existing_record_by_sku:
+            # If the product exists, update the 'existencia' field
+            existing_record_by_sku.write({'existencia': record.get('Stock')})
         else:
-            tipomoneda = 'MXN'
-        
-        fecha_actual = datetime.datetime.now()
-            
-        for almacen_column in ['LOCAL', 'GDL', 'CENTRAL']:
+            # If the product doesn't exist, create a new record
             try:
                 self.env['llantas_config.ctt_prov'].create({
                     'nombre_proveedor': self.proveedor_id.name,
-                    'sku': record.get('ARTÍCULO'),
-                    'producto': record.get('DESCRIPCIÓN'),
-                    'nombre_almacen': almacen_column,
-                    'existencia': record.get(almacen_column),
-                    'precio_lista':precio_lista,
-                    'costo_sin_iva': precio_cliente,
-                    'tipo_moneda': record.get('Moneda'),
+                    'sku': record.get('SKU'),
+                    'producto': record.get('Descripción'),
+                    'nombre_almacen': record.get('Almacé n'),
+                    'existencia': record.get('Stock'),
+                    'costo_sin_iva': record.get('Mayoreo DLLS'),
+                    'precio_promocion': record.get('PROMOCIONDLLS'),
+                    'tipo_moneda': tipomoneda,
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
-                    'marca': record.get('MARCA'),
+                    'modelo': record.get('Modelo'),
+                    'marca': record.get('Marca'),
+                    'uso': record.get('Uso'),
+                    'medida': record.get('medida'),
+                    'aplicacion': record.get('Segmento'),
                 })
             except UserError as e:
                 _logger.error(f"Error creating record: {e}")
                 self.env.cr.rollback()
+
+    def convert_to_float(self, value, default=0.0):
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return default
+
+    def import_tbc(self, record):
+        precio_lista = record.get('PRECIO DE LISTA')
+        precio_cliente = record.get('PRECIO_CLIENTE')
     
+        precio_lista = self.convert_to_float(precio_lista)
+        precio_cliente = self.convert_to_float(precio_cliente)
+    
+        if self.tipo_cambio > 1:
+            tipomoneda = 'USD'
+        else:
+            tipomoneda = 'MXN'
+    
+        fecha_actual = fields.Datetime.now()
+    
+        # Update existing records with the same proveedor_id.name to set 'existencia' to 0
+        existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
+            ('nombre_proveedor', '=', self.proveedor_id.name)
+        ])
+    
+        for existing_record in existing_records_same_proveedor:
+            existing_record.write({'existencia': 0})
+    
+        # Itera sobre los almacenes y actualiza la existencia para cada uno
+        for almacen_column in ['LOCAL', 'GDL', 'CENTRAL']:
+            # Busca el registro con el SKU y el almacén específicos
+            existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
+                ('sku', '=', record.get('ARTÍCULO')),
+                ('nombre_almacen', '=', almacen_column)
+            ], limit=1)
+    
+            if existing_record_by_sku:
+                # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
+                existing_record_by_sku.write({'existencia': record.get(almacen_column)})
+            else:
+                # Si no existe, crea un nuevo registro
+                try:
+                    self.env['llantas_config.ctt_prov'].create({
+                        'nombre_proveedor': self.proveedor_id.name,
+                        'sku': record.get('ARTÍCULO'),
+                        'producto': record.get('DESCRIPCIÓN'),
+                        'nombre_almacen': almacen_column,
+                        'existencia': record.get(almacen_column),
+                        'precio_lista': precio_lista,
+                        'costo_sin_iva': precio_cliente,
+                        'tipo_moneda': record.get('Moneda'),
+                        'tipo_cambio': self.tipo_cambio,
+                        'fecha_actualizacion': fecha_actual,
+                        'marca': record.get('MARCA'),
+                    })
+                except UserError as e:
+                    _logger.error(f"Error creating record: {e}")
+                    self.env.cr.rollback()
+    
+        return True
+                
+
+
     def import_data(self):
-        
         file_path = tempfile.gettempdir() + '/file.xlsx'
         data = self.file_data
     
@@ -268,12 +407,9 @@ class WizardImportExistenciasProv(models.TransientModel):
             excel_data = pd.read_excel(file_path, engine='openpyxl')
         except ImportError:
             try:
-                # Intenta leer como archivo .xls
                 excel_data = pd.read_excel(file_path, engine='xlrd')
             except Exception as e:
                 raise UserError(f"Error reading Excel file: {e}")
-    
-        # self.fecha_actual = datetime.datetime.now()
     
         switch_proveedor = {
             'Herrera tires': self.import_herrera_tires,
@@ -284,14 +420,28 @@ class WizardImportExistenciasProv(models.TransientModel):
             'New tires':self.import_new_tires,
             'RadialPros':self.import_radialpros,
             'Tbc': self.import_tbc,
-            # Agrega otros proveedores según sea necesario
         }
     
         import_func = switch_proveedor.get(self.proveedor_id.name)
     
         if import_func:
-            for _, record in excel_data.iterrows():
-                import_func(record)
+            # Inicia una transacción
+            with self.env.cr.savepoint():
+                try:
+                    for _, record in excel_data.iterrows():
+                        with self.env.cr.savepoint():
+                            import_func(record)
+                except UserError as e:
+                    _logger.error(f"Error importing data: {e}")
+                    # No lances un UserError aquí, solo imprime el mensaje en el log
+                    # Puedes agregar más información de depuración según sea necesario
+                    # continue  # Continúa con la siguiente iteración del bucle
+    
+        else:
+            raise UserError(_("Función de importación no encontrada para el proveedor seleccionado."))
+    
+        return True
+
             
     
 class ctrl_llantas(models.Model): 

@@ -3,6 +3,7 @@ import logging
 import json
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
+
 _logger = logging.getLogger(__name__)
 import datetime
 import urllib.request 
@@ -157,7 +158,26 @@ class marketplaces(models.Model):
     #         'type': 'ir.actions.act_window',
     #         'target': 'new',
     #     }
-        
+
+
+class proveedores_link_wizard(models.TransientModel):
+    _name = 'llantas_config.proveedores_links_wizard'
+    _description = 'Links proveedores'
+
+    proveedores_links_id=fields.Many2one(
+        "llantas_config.proveedores_links",
+        string="Proveedor",
+    )
+    
+    def action_button_procesar(self):
+
+        if self.proveedores_links_id.name == 'Tiredirect':
+            # raise UserError(str(self.proveedores_links_id.name))
+            self.proveedores_links_id.procesar_tiredirect(record)
+        else:
+            # raise UserError(str(self.proveedores_links_id.name)+"123")
+            self.proveedores_links_id.procesar()
+
 class proveedores_link(models.Model):
     _name = 'llantas_config.proveedores_links'
     _description = 'Links proveedores'
@@ -187,7 +207,15 @@ class proveedores_link(models.Model):
     )
     
 
-
+    def action_open_modal(self):
+        return {
+            'name': 'Importar existencia de proveedores',
+            'type': 'ir.actions.act_window',
+            'res_model': 'llantas_config.proveedores_links_wizard',
+            'view_mode': 'form',
+            'view_id': self.env.ref('llantas_config.view_wizard_existencias_proveedor_form').id,
+            'target': 'new',
+        }
     
 
     def process_link(self):
@@ -223,7 +251,109 @@ class proveedores_link(models.Model):
                 # 'type': 'ir.actions.act_window',
                 # 'target': 'new',
             # }
-    def procesar_existencias(self):
+    # def procesar_existencias(self):
+    #     for record in self:
+    #         proveedor_id = record.proveedor_id
+
+    #         if proveedor_id.name == 'TIRE DIRECT S.A. DE C.V.':
+    #             self.env['llantas_config.ctt_tiredirect_cargar'].procesar_tiredirect(record)
+    #         else:
+    #             self.env['llantas_config.proveedores_links'].action_button_procesar(record)
+          
+
+    #     return True
+
+    
+
+    def procesar(self):
+        count_actualizados = 0
+        count_agregados = 0
+        count_sin_encontrar = 0
+        sku_proveedor_procesados = set()
+    
+        moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
+        partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
+        proveedor = partner.id
+        # raise UserError(str(partner.name))
+        fecha_actual = datetime.datetime.now()
+    
+        if moves:
+            for mov in moves:
+                if mov.tipo_moneda == 'MXN':
+                    moneda = 33
+                elif mov.tipo_moneda == 'USD':
+                    moneda = 2
+                else:
+                    moneda = 33
+    
+                lines = self.env['product.template'].search([('default_code', '=', mov.sku)])
+                if lines:
+                    for line in lines:
+                        sku_proveedor = (line.id, proveedor)
+    
+                        if sku_proveedor not in sku_proveedor_procesados:
+                            proveedores = self.env['product.supplierinfo'].search([
+                                ('product_tmpl_id', '=', line.id),
+                                ('partner_id', '=', proveedor)],
+                                limit=1)
+    
+                            try:
+                                if proveedores.exists():
+                                    proveedores_existente = proveedores.filtered(lambda p: p.partner_id == proveedor)
+                                    if proveedores_existente:
+                                        print(f"SKU {mov.sku} ya procesado para el proveedor {proveedor.name}. Omitiendo.")
+                                    else:
+                                        proveedores.write({
+                                            'partner_id': proveedor,
+                                            'currency_id': moneda,
+                                            'price': mov.costo_sin_iva * mov.tipo_cambio,
+                                            'ultima_actualizacion': fecha_actual,
+                                            'tipo_cambio': mov.tipo_cambio,
+                                            'precio_neto': mov.costo_sin_iva,
+                                            'tipo_moneda_proveedor': mov.tipo_moneda,
+                                        })
+                                        count_actualizados += 1
+                                else:
+                                    self.env['product.supplierinfo'].create({
+                                        'partner_id': proveedor,
+                                        'product_tmpl_id': line.id, 
+                                        'currency_id': moneda,
+                                        'price': mov.costo_sin_iva * mov.tipo_cambio,
+                                        'ultima_actualizacion': fecha_actual,
+                                        'tipo_cambio': mov.tipo_cambio,
+                                        'precio_neto': mov.costo_sin_iva,
+                                        'tipo_moneda_proveedor': mov.tipo_moneda,
+                                    })
+                                    count_agregados += 1
+    
+                                sku_proveedor_procesados.add(sku_proveedor)
+                            except Exception as e:
+                                error_message = f"No se pudo agregar el nuevo registro para SKU {mov.sku} y proveedor {proveedor}: {e}"
+                                print(error_message)
+                                raise UserError(error_message)
+                        else:
+                            print(f"SKU {mov.sku} y proveedor {proveedor} ya procesados. Omitiendo.")
+                else:
+                    count_sin_encontrar += 1
+    
+        # print(f"Registros actualizados: {count_actualizados}")
+        # print(f"Nuevos registros agregados: {count_agregados}")
+        # print(f"Registros no encontrados: {count_sin_encontrar}")
+        # print(f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.")
+        
+        return {            
+           'type': 'ir.actions.client',
+           'tag': 'display_notification',            
+           'params': {
+               'type': 'success',                
+               'sticky': False,
+               'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",   
+               # 'reload': True,  # Solicita recargar la vista actual
+            }
+        }
+
+        
+    def procesar_tiredirect(self):
         moves=self.env['llantas_config.ctt_tiredirect_cargar'].search([])
         partner=self.env['res.partner'].search([('name','=','TIRE DIRECT S.A. DE C.V.')], limit=1)
         proveedor=partner.id

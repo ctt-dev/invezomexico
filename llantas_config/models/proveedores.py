@@ -37,6 +37,9 @@ class WizardImportExistenciasProv(models.TransientModel):
                
         
     def import_herrera_tires(self, record):
+        count_updated = 0
+        count_created = 0
+        
         fecha_actual = datetime.datetime.now()
         
         existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
@@ -49,6 +52,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                 existing_record.write({
                     'existencia': record.get('Existencia'),
                 })
+                count_updated += 1
         else:
             # If the product doesn't exist, create a new record
             try:
@@ -64,12 +68,16 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'fecha_actualizacion': fecha_actual,
                 }
                 self.env['llantas_config.ctt_prov'].create(new_record)
+                count_created += 1
             except UserError as e:
                 _logger.error(f"Error creating record: {e}")
     
-        return True
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
     
     def import_futurama(self, record):
+        count_updated = 0
+        count_created = 0
+        
         fecha_actual = fields.Datetime.now()
     
         # Itera sobre los almacenes y actualiza la existencia para cada uno
@@ -83,6 +91,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
                 existing_record.write({'existencia': record.get(almacen_column)})
+                count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
                 try:
@@ -99,13 +108,17 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'marca': record.get('APLICACIÓN'),
                         'aplicacion': record.get('MARCA'),
                     })
+                    count_created += 1
                 except UserError as e:
                     _logger.error(f"Error creating record: {e}")
                     self.env.cr.rollback()
     
-        return True
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
     
     def import_import_treads(self, record):
+        count_updated = 0
+        count_created = 0
+        
         fecha_actual = fields.Datetime.now()
 
         # Update existing records with the same SKU to update 'existencia' field
@@ -116,6 +129,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
             existing_record_by_sku.write({'existencia': record.get('Stock')})
+            count_updated += 1
         else:
             # If the product doesn't exist, create a new record
             it_trailer_usd = record.get('ITTrailerUSD')
@@ -148,14 +162,18 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'medida': record.get('Medida'),
                     'uso': record.get('Uso'),
                 })
+                count_created += 1
             except UserError as e:
                 _logger.error(f"Error creating record: {e}")
                 self.env.cr.rollback()
 
-        return True
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
 
             
     def import_loyga(self, record):
+        count_updated = 0
+        count_created = 0
+        
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
@@ -170,6 +188,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
             existing_record_by_sku.write({'existencia': record.get('EXISTENCIA')})
+            count_updated += 1
         else:
             # If the product doesn't exist, create a new record
             try:
@@ -186,13 +205,17 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'modelo': record.get('MODELO'),
                     'marca': record.get('MARCA'),
                 })
+                count_created += 1
             except UserError as e:
                 _logger.error(f"Error creating record: {e}")
                 self.env.cr.rollback()
 
-        return True
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
 
     def import_malpa(self, record):
+        count_updated = 0
+        count_created = 0
+        
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
@@ -222,6 +245,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
                 existing_record.write({'existencia': record.get(almacen_column)})
+                count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
                 try:
@@ -239,12 +263,16 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'marca': record.get('APLICACIÓN'),
                         'aplicacion': record.get('MARCA'),
                     })
+                    count_created += 1
                 except Exception as e:
                     # Maneja las excepciones según sea necesario
                     print(f"Error creating record: {e}")
     
-        return True
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
+        
     def import_new_tires(self, record):
+        count_updated = 0
+        count_created = 0
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
@@ -264,6 +292,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
                 existing_record.write({'existencia': record.get(almacen_column)})
+                count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
                 try:
@@ -278,45 +307,44 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'tipo_cambio': self.tipo_cambio,
                         'fecha_actualizacion': fecha_actual,
                     })
+                    count_created += 1
                 except UserError as e:
                     _logger.error(f"Error creating record: {e}")
                     self.env.cr.rollback()
     
-        return True
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
 
     def import_radialpros(self, record):
+        count_updated = 0
+        count_created = 0
+    
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
             tipomoneda = 'MXN'
-        it_precio_lista = record.get('PRECIO DE LISTA')
-
+        
         fecha_actual = fields.Datetime.now()
-
-        # Update existing records with the same proveedor_id.name to set 'existencia' to 0
-        existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
-            ('nombre_proveedor', '=', self.proveedor_id.name)
+        sku = record.get('SKU')
+        nombre_almacen = record.get('Almacé n')
+    
+        # Update existing records with the same SKU and almacen to update 'existencia' field
+        existing_record = self.env['llantas_config.ctt_prov'].search([
+            ('sku', '=', sku),
+            ('nombre_almacen', '=', nombre_almacen),
         ])
-
-        for existing_record in existing_records_same_proveedor:
-            existing_record.write({'existencia': 0})
-
-        # Update existing records with the same SKU to update 'existencia' field
-        existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
-            ('sku', '=', record.get('SKU'))
-        ])
-
-        if existing_record_by_sku:
+    
+        if existing_record:
             # If the product exists, update the 'existencia' field
-            existing_record_by_sku.write({'existencia': record.get('Stock')})
+            existing_record.write({'existencia': record.get('Stock')})
+            count_updated += 1
         else:
             # If the product doesn't exist, create a new record
             try:
                 self.env['llantas_config.ctt_prov'].create({
                     'nombre_proveedor': self.proveedor_id.name,
-                    'sku': record.get('SKU'),
+                    'sku': sku,
                     'producto': record.get('Descripción'),
-                    'nombre_almacen': record.get('Almacé n'),
+                    'nombre_almacen': nombre_almacen,
                     'existencia': record.get('Stock'),
                     'costo_sin_iva': record.get('Mayoreo DLLS'),
                     'precio_promocion': record.get('PROMOCIONDLLS'),
@@ -329,10 +357,13 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'medida': record.get('medida'),
                     'aplicacion': record.get('Segmento'),
                 })
+                count_created += 1
             except UserError as e:
                 _logger.error(f"Error creating record: {e}")
                 self.env.cr.rollback()
-
+    
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
+    
     def convert_to_float(self, value, default=0.0):
         try:
             return float(value)
@@ -340,6 +371,9 @@ class WizardImportExistenciasProv(models.TransientModel):
             return default
 
     def import_tbc(self, record):
+        count_updated = 0
+        count_created = 0
+        
         precio_lista = record.get('PRECIO DE LISTA')
         precio_cliente = record.get('PRECIO_CLIENTE')
     
@@ -351,15 +385,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         else:
             tipomoneda = 'MXN'
     
-        fecha_actual = fields.Datetime.now()
-    
-        # Update existing records with the same proveedor_id.name to set 'existencia' to 0
-        existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
-            ('nombre_proveedor', '=', self.proveedor_id.name)
-        ])
-    
-        for existing_record in existing_records_same_proveedor:
-            existing_record.write({'existencia': 0})
+        fecha_actual = fields.Datetime.now()        
     
         # Itera sobre los almacenes y actualiza la existencia para cada uno
         for almacen_column in ['LOCAL', 'GDL', 'CENTRAL']:
@@ -372,6 +398,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             if existing_record_by_sku:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
                 existing_record_by_sku.write({'existencia': record.get(almacen_column)})
+                count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
                 try:
@@ -388,15 +415,76 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'fecha_actualizacion': fecha_actual,
                         'marca': record.get('MARCA'),
                     })
+                    count_created += 1
                 except UserError as e:
                     _logger.error(f"Error creating record: {e}")
                     self.env.cr.rollback()
     
-        return True
-                
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
 
+    def import_tersa(self, record):
+        count_updated = 0
+        count_created = 0
+
+        # Agrega un registro de log para rastrear la ejecución del código
+        _logger.info(f"Importing record: {record}")
+
+        if self.tipo_cambio > 1:
+            tipomoneda = 'USD'
+        else:
+            tipomoneda = 'MXN'
+
+        fecha_actual = fields.Datetime.now()
+
+        # Busca registros existentes con el mismo SKU y el mismo nombre de almacén
+        existing_records = self.env['llantas_config.ctt_prov'].search([
+            ('sku', '=', record.get('Columna1')),
+            ('nombre_almacen', '=', record.get('Columna10'))
+        ])
+
+        if existing_records:
+            # Si existen registros, actualiza el campo 'existencia' en cada uno
+            for existing_record in existing_records:
+                existing_record.write({'existencia': record.get('Columna12')})
+                count_updated += 1
+        else:
+            # Si no existen registros, crea uno nuevo
+            try:
+                self.env['llantas_config.ctt_prov'].create({
+                    'nombre_proveedor': self.proveedor_id.name,
+                    'sku': record.get('Columna1'),
+                    'producto': record.get('Columna2'),
+                    'nombre_almacen': record.get('Columna10'),
+                    'existencia': record.get('Columna12'),
+                    'costo_sin_iva': record.get('Columna14'),
+                    'tipo_moneda': record.get('Columna15'),
+                    'tipo_cambio': self.tipo_cambio,
+                    'fecha_actualizacion': fecha_actual,
+                    'modelo': record.get('Columna6'),
+                    'marca': record.get('Columna5'),
+                    'uso': record.get('Columna4'),
+                    'medida': record.get('Columna3'),
+                })
+                count_created += 1
+            except Exception as e:
+                # Maneja excepciones de manera más específica y registra los detalles
+                _logger.error(f"Error creating record: {e}")
+                self.env.cr.rollback()
+
+        # Agrega un registro de log con información sobre la importación
+        _logger.info(f"Import summary: {count_updated} records updated, {count_created} records created")
+
+        # Retorna un diccionario con información sobre la importación
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
 
     def import_data(self):
+        count_updated_total = 0
+        count_created_total = 0
+    
+        # ... (código existente)
+    
+        
+            
         file_path = tempfile.gettempdir() + '/file.xlsx'
         data = self.file_data
     
@@ -420,17 +508,22 @@ class WizardImportExistenciasProv(models.TransientModel):
             'New tires':self.import_new_tires,
             'RadialPros':self.import_radialpros,
             'Tbc': self.import_tbc,
+            'Tersa':self.import_tersa,
         }
+
+        
     
         import_func = switch_proveedor.get(self.proveedor_id.name)
     
         if import_func:
-            # Inicia una transacción
             with self.env.cr.savepoint():
                 try:
                     for _, record in excel_data.iterrows():
                         with self.env.cr.savepoint():
-                            import_func(record)
+                            result = import_func(record)
+                            count_updated_total += result.get('count_updated', 0)
+                            count_created_total += result.get('count_created', 0)
+                            proveedor = result.get('proveedor')
                 except UserError as e:
                     _logger.error(f"Error importing data: {e}")
                     # No lances un UserError aquí, solo imprime el mensaje en el log
@@ -440,7 +533,16 @@ class WizardImportExistenciasProv(models.TransientModel):
         else:
             raise UserError(_("Función de importación no encontrada para el proveedor seleccionado."))
     
-        return True
+        return {            
+           'type': 'ir.actions.client',
+           'tag': 'display_notification',            
+           'params': {
+               'type': 'success',                
+               'sticky': False,
+               'message': f"Archivo importado correctamente. Registros actualizados: {count_updated_total}, Registros creados: {count_created_total}, proveedor: {proveedor}",    
+               'reload': True,  # Solicita recargar la vista actual
+            }        
+        }   
 
             
     

@@ -122,7 +122,7 @@
                     <field name="company_id" />
                     <field name="color" widget="color_picker" required="0"/>
                     <button name="process_link" string="Descargar existencias" type="object" class="btn-info" attrs="{'invisible': [('url', '=', False)]}"/>
-                    <button name="procesar_existencias" string="Procesar" type="object" class="btn-success" attrs="{'invisible': [('proveedor_id', '=', False)]}"/>
+                    <button name="action_open_modal" string="Procesar" type="object" class="btn-success" attrs="{'invisible': [('proveedor_id', '=', False)]}" context="{'default_proveedores_links_id':active_id}"/>
                     
                 </tree>
             </field>
@@ -172,6 +172,31 @@
                           action="llantas_proveedores_links"
                           parent="menu_ctt_llantas_marketplace_list" 
                           sequence="102" />
+
+                <record id="action_view_import_existencias_proveedores" model="ir.actions.act_window">
+            <field name="name">Importar existencias proveedores</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">llantas_config.ctt_prov_cargar_wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_wizard_existencias_proveedor_form" model="ir.ui.view">
+            <field name="name">Importar existencia de proveedores</field>
+            <field name="model">llantas_config.proveedores_links_wizard</field>
+            <field name="arch" type="xml">
+                <form string="Importar Documento">
+                        <span>¿Deseas procesar el proveedor <field name="proveedores_links_id" readonly="1"/>?</span>
+
+
+                    <footer>
+                        <button name="action_button_procesar" string="Procesar" type="object" class="btn-primary"/>
+                        
+                        <button special="cancel" string="Cancelar" class="btn-secondary"/>
+                    </footer>
+                </form>
+           </field>
+        </record>
 
 
 

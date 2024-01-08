@@ -251,17 +251,17 @@ class proveedores_link(models.Model):
                 # 'type': 'ir.actions.act_window',
                 # 'target': 'new',
             # }
-    # def procesar_existencias(self):
-    #     for record in self:
-    #         proveedor_id = record.proveedor_id
+    def procesar_existencias(self):
+        for record in self:
+            proveedor_id = record.proveedor_id
 
-    #         if proveedor_id.name == 'TIRE DIRECT S.A. DE C.V.':
-    #             self.env['llantas_config.ctt_tiredirect_cargar'].procesar_tiredirect(record)
-    #         else:
-    #             self.env['llantas_config.proveedores_links'].action_button_procesar(record)
+            if proveedor_id.name == 'TIRE DIRECT S.A. DE C.V.':
+                self.env['llantas_config.ctt_tiredirect_cargar'].procesar_tiredirect(record)
+            else:
+                self.env['llantas_config.proveedores_links'].procesar(record)
           
 
-    #     return True
+        return True
 
     
 
@@ -311,6 +311,8 @@ class proveedores_link(models.Model):
                                             'tipo_cambio': mov.tipo_cambio,
                                             'precio_neto': mov.costo_sin_iva,
                                             'tipo_moneda_proveedor': mov.tipo_moneda,
+                                            'product_name': mov.producto,
+                                            'product_code': mov.sku,
                                         })
                                         count_actualizados += 1
                                 else:
@@ -323,6 +325,8 @@ class proveedores_link(models.Model):
                                         'tipo_cambio': mov.tipo_cambio,
                                         'precio_neto': mov.costo_sin_iva,
                                         'tipo_moneda_proveedor': mov.tipo_moneda,
+                                        'product_name': mov.producto,
+                                        'product_code': mov.sku,
                                     })
                                     count_agregados += 1
     
@@ -341,15 +345,15 @@ class proveedores_link(models.Model):
         # print(f"Registros no encontrados: {count_sin_encontrar}")
         # print(f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.")
         
-        return {            
-           'type': 'ir.actions.client',
-           'tag': 'display_notification',            
-           'params': {
-               'type': 'success',                
-               'sticky': False,
-               'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",   
-               # 'reload': True,  # Solicita recargar la vista actual
-            }
+            return {            
+               'type': 'ir.actions.client',
+               'tag': 'display_notification',            
+               'params': {
+                   'type': 'success',                
+                   'sticky': False,
+                   'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",   
+                   # 'reload': True,  # Solicita recargar la vista actual
+                }
         }
 
         

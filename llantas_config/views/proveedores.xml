@@ -122,7 +122,7 @@
                     <field name="company_id" />
                     <field name="color" widget="color_picker" required="0"/>
                     <button name="process_link" string="Descargar existencias" type="object" class="btn-info" attrs="{'invisible': [('url', '=', False)]}"/>
-                    <button name="action_open_modal" string="Procesar" type="object" class="btn-success" attrs="{'invisible': [('proveedor_id', '=', False)]}" context="{'default_proveedores_links_id':active_id}"/>
+                    <button name="procesar_existencias" string="Procesar" type="object" class="btn-success" attrs="{'invisible': [('proveedor_id', '=', False)]}" context="{'default_proveedores_links_id':active_id}"/>
                     
                 </tree>
             </field>

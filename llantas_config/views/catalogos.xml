@@ -1,9 +1,9 @@
 <odoo>
     <data>
-        <menuitem id="llantas_config_catalogos" 
-                          name="Catálogos" 
-                          parent="stock.menu_stock_config_settings" 
-                          sequence="1001" />
+        <menuitem id="llantas_config.menu_ctt_llantas_catalogos_list"
+          name="Catálogos"
+          parent="stock.menu_stock_config_settings"
+          sequence="1001" />
         
         <menuitem id="llantas_config_catalogos_sale" 
                               name="Catálogos" 

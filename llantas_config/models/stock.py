@@ -27,6 +27,11 @@ class sale_order_inherit(models.Model):
         tracking=True,
     )
 
+    link_guia=fields.Char(
+        string="Link guia",
+        tracking=True,
+    )
+
     tdp=fields.Char(
         string="Referencia de compra (TDP)",
         related="purchase_id.partner_ref",

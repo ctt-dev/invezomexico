@@ -57,6 +57,7 @@
         'views/pagos_marketplace.xml',
         'views/detailed_sales.xml',
         'views/wizard_subir_existencias.xml',
+        'reports/purchase.xml',
         'reports/Reporte_cotizacion_Racko.xml',
     ],
     # only loaded in demonstration mode

@@ -44,6 +44,12 @@
                 <xpath expr="//header" position="inside">
                     <button name="create_purchase" type="object" string="Crear compra" class="btn-secondary" />
                 </xpath>
+                <xpath expr="//group[@name='order_details']" position="after">
+                    <group>
+                        <field name="detailed_info" readonly="1" widget="html" attrs="{'invisible': [('state', 'in', ['draft', 'send'])]}"/>
+                    </group>
+                </xpath>
+                
 
                 
             </field>

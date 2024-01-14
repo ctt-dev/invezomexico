@@ -4,31 +4,32 @@
             <field name="name">Resumen</field>
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
-                <tree edit="0" sample="1">
-                    <field name="sale_id" optional="hide" widget="many2one"/>
+                <tree sample="1" multi_edit="1">
                     <field name="comprador_id" domain="[('category_ids','like','COMP')]" widget="many2one"/>
                     <field name="no_venta" />
                     <field name="link_venta" optional="hide" widget="url"/>
-                    <field name="partner_name" widget="many2one"/>
+                    
+                    <field name="sale_id" optional="show" widget="many2one"/>
+                    <field name="num_cliente" optional="hide"/>
+                    <field name="marketplace_name"/>
                     <field name="marketplace" widget="many2one"/>
-
+                    <field name="partner_id" widget="many2one" />
+                    <field name="partner_name" widget="many2one"/>
+                    <field name="orden_compra" optional="show" widget="many2one"/>
+                    <field name="link_guia" widget="url"/>
+                    <field name="no_recoleccion" optional="show"/>
+                    <field name="tdp" />
+                    <field name="factura_prov" readonly="1" optional="hide"/>
+                    <field name="factura_cliente" optional="hide"/>
+                    <field name="status_id" decoration-danger="status_id == '01'" decoration-info="status_id == '03'" decoration-muted="status_id == '04'" decoration-success="status_id == '05'" decoration-primary="status_id == '06'"  widget="badge" decoration-warning="status_id == '02'" />
                     <field name="fecha" />
+                    <field name="dias" readonly="1"/>
                     <!-- <field name="productos_orden"/> -->
                     <field name="comision" optional="hide"/>
                     <field name="envio" optional="hide"/>
-                    <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/> -->
-                    <field name="partner_id" widget="many2one" />
-                    <field name="orden_compra" optional="hide"/>
-                    <field name="tdp" />
-                    <field name="detailed_info" widget="html" optional="hide"/>
-                    <!-- <field name="guias" /> -->
-                    <field name="no_recoleccion" optional="hide"/>
-                    <!-- <field name="factura_prov" optional="hide"/> -->
-                    <field name="num_cliente" optional="hide"/>
-                    <field name="factura_cliente" optional="hide"/>
-                    <field name="status_id" />
+                   
                     <field name="comentarios" optional="hide"/>
-                    <field name="dias" readonly="1"/>
+                    
                     <field name="company_id" invisible="1"/>
                 </tree>
                 
@@ -175,7 +176,7 @@
         <record id="ctt_llantas_action_ctrl_llantas_tree" model="ir.actions.act_window">
             <field name="name">Resumen</field>
             <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">kanban,tree,form,graph,pivot</field>
+            <field name="view_mode">tree,kanban,form,graph,pivot</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
@@ -199,6 +200,7 @@
                     <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>
                     <field name="status_id" string="Status" filter_domain="[('status_id', 'ilike', self)]"/>
                     <field name="proveedor_id" string="Proveedor" />
+                    <field name="marketplace_name"/>
                     <field name="tdp" filter_domain="[('tdp', 'ilike', self)]"/>
 
                    <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>
@@ -207,7 +209,7 @@
                     <separator/>
                    <group expand="0" string="Group By">
                     <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
-                    <!-- <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/> -->
+                    <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
                     <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
                     <filter string="Status" name="status_id" domain="[]" context="{'group_by': 'status_id'}"/>
                     <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>

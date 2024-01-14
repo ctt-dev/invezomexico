@@ -8,14 +8,14 @@ import datetime
 
 class sale_order_inherit(models.Model):
     _inherit = 'sale.order'
-    _description='Orden de venta'
+    _description = 'Orden de venta'
 
     marketplace = fields.Many2one(
         "llantas_config.marketplaces",
         string="Marketplace",
         tracking=True,
-        store=True,
         company_dependent=True,
+        # store=True,
         
     )
 
@@ -23,7 +23,6 @@ class sale_order_inherit(models.Model):
         string="Canal de venta",
         related="marketplace.name",
         store=True,
-        # company_dependent=True,
     )
     
     comision=fields.Float(
@@ -263,7 +262,37 @@ class sale_order_inherit(models.Model):
             
             else:
                 raise UserError("La orden de venta necesita estar confirmada")
-            
+
+
+    @api.depends('picking_ids','picking_ids.carrier_tracking_ref')
+    def compute_detailed_info(self):
+        for rec in self:
+            detailed_info = ""
+            detailed_info += "<table class='table'>"
+            detailed_info += "<tr>"
+            detailed_info += "<th>Entrega</th>"
+            detailed_info += "<th>Carrier</th>"
+            detailed_info += "<th>Guía</th>"
+            detailed_info += "<th>Link</th>"
+            detailed_info += "<th>Estado</th>"
+            detailed_info += "</tr>"
+            for orden in rec.picking_ids:
+                detailed_info += "<tr>"
+                detailed_info += "<td>"+str(orden.display_name)+"</td>"
+                detailed_info += "<td>"+str(orden.carrier.display_name)+"</td>"
+                detailed_info += "<td>"+str(orden.carrier_tracking_ref)+"</td>"
+                detailed_info += "<td>"+str(orden.link_guia)+"</td>"
+                detailed_info += "<td>"+str(orden.state)+"</td>"
+            detailed_info += "</tr>"
+            detailed_info += "</table>"
+                # detailed_info += str(orden.display_name) + "<table><tr><td>Carrier:</td><td>" + str(orden.carrier.display_name) + "</td></tr><tr><td>Rastreo: </td><td>" + str(orden.carrier_tracking_ref) + "</td></tr></table>"
+            # detailed_info = detailed_info[:-2]
+            rec.detailed_info = detailed_info
+    detailed_info = fields.Html(
+        string="Información de entrega",
+        compute=compute_detailed_info,
+        # store=True
+    )
         
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'
@@ -329,7 +358,7 @@ class sale_order_line_inherit(models.Model):
     partner_id=fields.Many2one(
         string="Cliente",
         related="order_id.partner_id",
-        store=True
+        store=True,
     )
     comprador=fields.Char(
         string="Comprador",

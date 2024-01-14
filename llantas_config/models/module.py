@@ -5,7 +5,7 @@ import datetime
 from odoo.exceptions import Warning
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse, urljoin
 _logger = logging.getLogger(__name__)
 
 class ctrl_llantas(models.Model): 
@@ -13,7 +13,7 @@ class ctrl_llantas(models.Model):
     _description = "Llantas"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    sale_id=fields.Many2one(
+    sale_id = fields.Many2one(
         "sale.order",
         string="Venta",
         store=True,
@@ -23,19 +23,37 @@ class ctrl_llantas(models.Model):
     image = fields.Binary(
         related="marketplace.imagen",
         string="Imagen",
+        store=True,
     )
 
-    company_image=fields.Binary(
+    company_image = fields.Binary(
         related="company_id.logo",
         string="Imagen empresa",
+        store=True,
     )
 
-    marketplace=fields.Many2one(
+    marketplace = fields.Many2one(
         "llantas_config.marketplaces",
         related="sale_id.marketplace",
         string="Marketplace",
+        company_dependent=True,
+        store=True,
     )
+
     
+
+    @api.depends('sale_id.marketplace.name')
+    def _compute_marketplace_id(self):
+        for line in self:
+            line.marketplace_name = line.sale_id.marketplace.name
+    marketplace_name = fields.Char(
+        string="Canal de venta",
+        compute="_compute_marketplace_id",
+        store=True,
+    )
+
+
+
     name=fields.Char(
         related="sale_id.name",
         string="Nombre",
@@ -51,54 +69,21 @@ class ctrl_llantas(models.Model):
     )
 
 
-    # venta=fields.Char(
-    #     string="Venta",
-    #     tracking=True
-    # )
-    
-    # cliente=fields.Char(
-        
-    #     string="Cliente",
-    #     tracking=True
-    # )    
-
     partner_name=fields.Many2one(
         "res.partner",
         related="sale_id.partner_id",
         string="Cliente",
+        store=True,
     )
 
-    
-    
-    # marketplace=fields.Char(
-    #     related="sale_id.marketplace.name",
-    #     string="Marketplace",
-    #     # company_dependent=True,
-    # )
-
-    
-    # @api.onchange("sale_id")
-    # def onchange_sale_id(self):
-    #     for rec in self:
-    #         rec.proveedor_id = rec.sale_id._get_purchase_orders().partner_id
     proveedor_id=fields.Many2one(
         "res.partner",
         string="Proveedor",
+        store=True,
         # compute=compute_proveedor_id,
         # store=True,
     )
-   
-    # proveedor=fields.Char(
-    #     string="Proveedor",
-    #     store=True,
-    #     related="proveedor_id.name",
-        
-    # )
-    # registro=fields.Boolean(
-    #     string="Registro",
-    #     tracking=True
-        
-    # )
+
     def compute_orden_compra(self):
         for rec in self:
             rec.orden_compra = rec.sale_id._get_purchase_orders().id
@@ -157,7 +142,7 @@ class ctrl_llantas(models.Model):
     num_cliente=fields.Char(
         related="partner_name.usuario_marketplace",
         string="Num. Cliente",
-        tracking=True
+        tracking=True,
     )
     
     factura_cliente=fields.Many2many(
@@ -205,8 +190,7 @@ class ctrl_llantas(models.Model):
     @api.onchange('status_id')
     def _onchange_sale_id(self):
         if self.status_id:
-            self.status_id = self.sale_id.ventas_status
-            # Actualizar el campo ventas_status en sale.order
+
             self.sale_id.write({'ventas_status': self.status_id})
         else:
             self.status_id = False
@@ -257,12 +241,16 @@ class ctrl_llantas(models.Model):
             detailed_info += "<th>Entrega</th>"
             detailed_info += "<th>Carrier</th>"
             detailed_info += "<th>Guía</th>"
+            detailed_info += "<th>Link</th>"
+            detailed_info += "<th>Estado</th>"
             detailed_info += "</tr>"
             for orden in rec.orden_entrega:
                 detailed_info += "<tr>"
                 detailed_info += "<td>"+str(orden.display_name)+"</td>"
                 detailed_info += "<td>"+str(orden.carrier.display_name)+"</td>"
                 detailed_info += "<td>"+str(orden.carrier_tracking_ref)+"</td>"
+                detailed_info += "<td>"+str(orden.link_guia)+"</td>"
+                detailed_info += "<td>"+str(orden.state)+"</td>"
             detailed_info += "</tr>"
             detailed_info += "</table>"
                 # detailed_info += str(orden.display_name) + "<table><tr><td>Carrier:</td><td>" + str(orden.carrier.display_name) + "</td></tr><tr><td>Rastreo: </td><td>" + str(orden.carrier_tracking_ref) + "</td></tr></table>"
@@ -273,6 +261,16 @@ class ctrl_llantas(models.Model):
         compute=compute_detailed_info,
         # store=True
     )
+
+    link_guia = fields.Char(string="Link guia",related="orden_entrega.link_guia")
+
+    def open_link_guia(self):
+        return {
+            "type": "ir.actions.act_url",
+            "url": self.link_guia,
+            "target": "new",
+        }
+    
 
     carrier = fields.Many2one(
         "llantas_config.carrier",
@@ -287,8 +285,9 @@ class ctrl_llantas(models.Model):
             rec.no_recoleccion = rec.sale_id._get_purchase_orders().picking_ids.no_recoleccion
     no_recoleccion=fields.Char(
         compute=compute_no_recoleccion,
-        string="No. Recoleccion",
+        string="No. Recolección",
     )
+
     # no_recoleccion=fields.Char(
     #     string="No. Recoleccion", 
     #     related="sale_id.picking_ids.no_recoleccion",
@@ -371,5 +370,6 @@ class ctrl_llantas(models.Model):
         related="productos_orden.product_id.name",
         string="Producto",
     )
-    
+
+    archivo_adjunto = fields.Binary(string='Archivo Adjunto', attachment=True)
 

@@ -689,6 +689,11 @@ class sku_marketplaces(models.Model):
         # company_dependent=True,
     )
     
+    Proveedor_id=fields.Many2one(
+        "res.partner",
+        string="Proveedor"
+    )
+    
     product_id=fields.Many2one(
         "product.template",
         string="Producto",

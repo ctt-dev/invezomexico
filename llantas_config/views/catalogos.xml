@@ -278,7 +278,7 @@
                     <field name="name"/>
                     <field name="product_id" required="1"/>
                     <field name="marketplace"/>
-                    
+                    <field name="Proveedor_id"/>
                     <field name="color" widget="color_picker"/>
                 </tree>
             </field>

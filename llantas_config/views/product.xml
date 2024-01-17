@@ -6,6 +6,7 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
                  <xpath expr="//page[@name='general_information']//group//group[@name='group_general']//field[@name='product_tooltip']" position="after">
+                     <field name="es_llanta"/>
                      <field name="sku_alternos" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
                      <field name="marca_llanta" />
                      <field name="modelo_llanta" />
@@ -144,6 +145,50 @@
                 
             </field>
         </record>
+
+        <record id="view_product_template_kanban_inherit" model="ir.ui.view">
+            <field name="name">Product_template_kanban_inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activity_state']" position="after">
+                    <div>
+                        
+                        <field name="alto"/>
+                         <field name="ancho" />
+                         <field name="rin" />
+                         <field name="modelo_llanta" />
+                         <field name="marca_llanta" />
+                         <field name="medida_llanta" />
+                        <field name="es_llanta"/>
+                    </div>
+                </xpath>
+                <xpath expr="//div[@name='product_lst_price']" position="after">
+                    <div attrs="{'invisible': [('es_llanta', '=', False)]}">
+                        <table>
+                            <tr>
+                                <td><b>Alto:</b></td>
+                                <td><field name="alto"/></td>
+                                <td><b>Ancho:</b></td>
+                                <td><field name="ancho"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Rin:</b></td>
+                                <td><field name="rin"/></td>
+                                <td><b>Marca:</b></td>
+                                <td><field name="marca_llanta"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Medida:</b></td>
+                                <td><field name="medida_llanta"/></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </xpath>
+            </field>
+        </record>
         
         <record id="view_product_search" model="ir.ui.view">
             <field name="name">productos_search</field>
@@ -153,6 +198,12 @@
                  <xpath expr="//search//field[@name='name']" position="replace">
                     <field name="name" string="Product" filter_domain="['|', '|', '|', '|', ('default_code', 'ilike', self), ('product_variant_ids.default_code', 'ilike', self),('name', 'ilike', self), ('barcode', 'ilike', self), ('sku_alternos', 'ilike', self)]"/>
                      <field name="name" string="Sku alterno" filter_domain="[('sku_alternos', 'ilike', self)]"/>
+                     <field name="alto" class="oe_inline"/>
+                     <field name="ancho" class="oe_inline"/>
+                     <field name="rin" />
+                     <field name="modelo_llanta" />
+                     <field name="marca_llanta" />
+                     <field name="medida_llanta" />
                 </xpath>
             </field>
         </record>

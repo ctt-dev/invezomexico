@@ -40,8 +40,6 @@ class ctrl_llantas(models.Model):
         store=True,
     )
 
-    
-
     @api.depends('sale_id.marketplace.name')
     def _compute_marketplace_id(self):
         for line in self:
@@ -102,8 +100,6 @@ class ctrl_llantas(models.Model):
 
     
 
-    
-
     def compute_factura_prov(self):
         for rec in self:
             rec.factura_prov = rec.sale_id._get_purchase_orders().invoice_ids
@@ -145,18 +141,41 @@ class ctrl_llantas(models.Model):
         tracking=True,
     )
     
-    factura_cliente=fields.Many2many(
-        related="sale_id.invoice_ids",
+    factura_cliente = fields.Many2many(
+        'account.move',
         string="Factura cliente",
-        # tracking=True
+        related="sale_id.invoice_ids",
+        options="{'action': 'action_open_invoice'}",
     )
 
+    # Relación inversa para navegar desde la factura a la orden de venta
+    factura_cliente_relacion = fields.Many2many(
+        'llantas_config.ctt_llantas',
+        'ctt_llantas_rel',
+        'ctt_llantas_id',
+        'factura_cliente_relacion_id',
+        'Facturas relacionadas',
+    )
+
+    @api.depends('factura_cliente')
+    def _compute_factura_cliente_relacion(self):
+        for record in self:
+            record.factura_cliente_relacion = record
+    
     show_si = fields.Boolean(
         compute='_compute_show_si',
         string='Mostrar SI',
         store=False,
     )
 
+    def action_show_related_invoices(self):
+        # Obtén las facturas relacionadas con sale_id.invoice_ids
+        invoices = self.sale_id.invoice_ids
+    
+        # Abre la vista tree con las facturas relacionadas
+        action = self.env.ref('account.action_move_out_invoice_type').read()[0]
+        action['domain'] = [('id', 'in', invoices.ids)]
+        return action
     
     
     # factura_cliente2=fields.Char(
@@ -200,11 +219,19 @@ class ctrl_llantas(models.Model):
         store=True
     )
     
-    dias=fields.Integer(
-        string="Dias",
-        store=True,
-    )
-
+    dias = fields.Integer(string="Días transcurridos", compute='_compute_dias', store=True, readonly=True)
+    
+    @api.depends('fecha')
+    def _compute_dias(self):
+        records=env['llantas_config.ctt_llantas'].search([])
+        if records:
+          for rec in records:
+            if rec.fecha:
+              fecha_hoy = datetime.datetime.today()
+              dias_transcurridos = fecha_hoy - rec.fecha
+              # raise UserError(dias_transcurridos.days)
+              rec.write({'dias': int(dias_transcurridos.days)})
+        
     comentarios=fields.Char(
         string="Comentarios",
         tracking=True

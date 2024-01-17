@@ -80,7 +80,11 @@ class product_template_inherit(models.Model):
     )
 
     
-
+    es_llanta=fields.Boolean(
+        string="Es llanta?",
+        tracking=True,
+    )
+    
 class product_product_inherit(models.Model):
     _inherit = 'product.product'
     _description='Producto'
@@ -141,6 +145,9 @@ class product_product_inherit(models.Model):
             product_ids = self._search(args, limit=limit, access_rights_uid=name_get_uid)
         return product_ids
 
+
+    
+    
 class product_product_inherit(models.Model):
     _inherit = 'product.supplierinfo'
     _description='Producto'

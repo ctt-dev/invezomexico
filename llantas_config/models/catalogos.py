@@ -15,7 +15,7 @@ class marca_llanta(models.Model):
     _order = 'id desc'
     
     name = fields.Char(string="Nombre",required=False)
-    color = fields.Integer(string="Color",required=True)
+    color = fields.Integer(string="Color",required=False)
 
 class modelo_llanta(models.Model):
     _name = 'llantas_config.modelo_llanta'
@@ -23,7 +23,7 @@ class modelo_llanta(models.Model):
     _order = 'id desc'
     
     name = fields.Char(string="Nombre",required=False)
-    color = fields.Integer(string="Color",required=True)
+    color = fields.Integer(string="Color",required=False)
 
 class medida_llanta(models.Model):
     _name = 'llantas_config.medida_llanta'
@@ -31,7 +31,7 @@ class medida_llanta(models.Model):
     _order = 'id desc'
 
     name = fields.Char(string="Nombre",required=False)
-    color = fields.Integer(string="Color",required=True)
+    color = fields.Integer(string="Color",required=False)
 
 # class status(models.Model):
 #     _name = 'llantas_config.status'
@@ -64,7 +64,7 @@ class almacen(models.Model):
         "res.partner",
         string="Proveedor",
     )
-    color = fields.Integer(string="Color",required=True)
+    color = fields.Integer(string="Color",required=False)
 
 class marketplaces(models.Model):
     _name = 'llantas_config.marketplaces'

@@ -98,15 +98,10 @@ class project_task_inherit(models.Model):
         tracking=True,
     )
     
-    # hora_inicio=fields.Datetime(
-    #     string="Hora de inicio",
-    #     tracking=True,
-    # )
-
-    # hora_terminacion=fields.Datetime(
-    #     string="Hora de terminación",
-    #     tracking=True,
-    # )
+    purchase_order=fields.Char(
+        string="Orden de compra",
+        tracking=True,
+    )
 
 
 

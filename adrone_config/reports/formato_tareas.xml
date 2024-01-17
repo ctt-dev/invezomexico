@@ -18,14 +18,20 @@
                 <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout"> 
                     <h1><center>Orden de aplicación</center></h1><br/><br/><br/>
-                    <div id="informations" class="row mt-2 mb-32">
-                        <div t-if="doc.partner_id" class="col-6 bm-2">
+                    <div id="informations" class="row mt-3 mb-32">
+                        <div t-if="doc.partner_id" class="col-4 bm-3">
                             <center>
                                 <strong>Cliente:</strong>
                                 <span t-field="doc.partner_id.name" class="m-0" />
                             </center>
                         </div>
-                        <div t-if="doc.create_date" class="col-6 bm-2">
+                        <div t-if="doc.partner_id" class="col-4 bm-2">
+                            <center>
+                                <strong>Orden de compra:</strong>
+                                <span t-field="doc.purchase_order" class="m-0" />
+                            </center>
+                        </div>
+                        <div t-if="doc.create_date" class="col-4 bm-2">
                             <center>
                                 <strong>Fecha de orden:</strong>
                                 <p t-esc="doc.planned_date_begin.strftime('%d-%m-%Y')" class="m-0"/>
@@ -38,10 +44,11 @@
                         
                         <table class="table" style="font-size:15px">
                             <tr>
-                                <td style="width: 25%"><strong>Cultivo: </strong></td>
-                                <td style="width: 25%"><span t-field="doc.cultivo_id.name"/></td>
-                                <td style="width: 25%"><strong>Parcela: </strong></td>
-                                <td style="width: 25%"><span t-field="doc.name"/></td>
+                                <td style="width: 20%"><strong>Cultivo: </strong></td>
+                                <td style="width: 20%"><span t-field="doc.cultivo_id.name"/></td>
+                                <td style="width: 20%"><strong>Parcela: </strong></td>
+                                <td style="width: 20%"><span t-field="doc.name"/></td>
+                                
                                 
                             </tr>
                             <tr>

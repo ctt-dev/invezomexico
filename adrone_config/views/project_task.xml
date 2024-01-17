@@ -13,6 +13,7 @@
                                 <field name="asignado" />
                                 <field name="auxiliar" />
                                 <field name="supervisor" />
+                                <field name="purchase_order"/>
                                 <!-- <field name="fecha_aplicar" />
                                 <field name="hora_inicio" widget="datime"/>
                                 <field name="hora_terminacion" widget="datetime"/> -->

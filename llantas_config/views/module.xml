@@ -19,18 +19,21 @@
                     <field name="link_guia" widget="url"/>
                     <field name="no_recoleccion" optional="show"/>
                     <field name="tdp" />
-                    <field name="factura_prov" readonly="1" optional="hide"/>
-                    <field name="factura_cliente" optional="hide"/>
+                    <field name="factura_prov" readonly="1" optional="hide" widget="many2one"/>
+                    <field name="factura_cliente" optional="hide" widget="many2many_tags" attrs="{'invisible': [('factura_prov', '=', False),('factura_prov', '!=', True)]}"/>
+                    <button string="Ver facturas clientes" type="object" class="oe_highlight" name="action_show_related_invoices"/>
+                    <!-- <field name="factura_cliente_id" widget="many2one"/> -->
                     <field name="status_id" decoration-danger="status_id == '01'" decoration-info="status_id == '03'" decoration-muted="status_id == '04'" decoration-success="status_id == '05'" decoration-primary="status_id == '06'"  widget="badge" decoration-warning="status_id == '02'" />
                     <field name="fecha" />
                     <field name="dias" readonly="1"/>
                     <!-- <field name="productos_orden"/> -->
                     <field name="comision" optional="hide"/>
                     <field name="envio" optional="hide"/>
-                   
+                
                     <field name="comentarios" optional="hide"/>
                     
                     <field name="company_id" invisible="1"/>
+                    
                 </tree>
                 
             </field>
@@ -96,6 +99,13 @@
             </field>
         </record>
         
+        <record id="action_open_invoice" model="ir.actions.act_window">
+            <field name="name">Open Invoice</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account.view_move_form"/>
+            <field name="view_mode">form,tree</field>
+        </record>
 
         
         <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
@@ -157,13 +167,18 @@
                             </group>
                         </group>
                         <button string="Facturar" type="object" class="btn-info" name="open_sale_order" attrs="{'invisible': [('factura_cliente', '=', False)]}"/>
-                        <group string="Factura cliente" attrs="{'invisible': [('factura_cliente', '!=', False),('factura_cliente', '!=', True)]}">
+                        <group string="Factura cliente" >
+                            <!-- attrs="{'invisible': [('factura_cliente', '!=', False),('factura_cliente', '!=', True)]}"> -->
                             <field name="factura_cliente" readonly="1" />
                         </group>
                         <group>
                             <field name="comentarios"/>
                         </group>
+
                     </sheet>
+
+                        
+
                     <div class="oe_chatter">
                         <!-- <field name="message_follower_ids" widget="mail_followers"/>
                         <field name="activity_ids" widget="mail_activity"/> -->

@@ -23,7 +23,7 @@
                     <field name="factura_cliente" optional="hide" widget="many2many_tags" attrs="{'invisible': [('factura_prov', '=', False),('factura_prov', '!=', True)]}"/>
                     <button string="Ver facturas clientes" type="object" class="oe_highlight" name="action_show_related_invoices"/>
                     <!-- <field name="factura_cliente_id" widget="many2one"/> -->
-                    <field name="status_id" decoration-danger="status_id == '01'" decoration-info="status_id == '03'" decoration-muted="status_id == '04'" decoration-success="status_id == '05'" decoration-primary="status_id == '06'"  widget="badge" decoration-warning="status_id == '02'" />
+                    <field name="status_id" readonly="0" decoration-danger="status_id == '01'" decoration-info="status_id == '03'" decoration-muted="status_id == '04'" decoration-success="status_id == '05'" decoration-primary="status_id == '06'"  widget="badge" decoration-warning="status_id == '02'" />
                     <field name="fecha" />
                     <field name="dias" readonly="1"/>
                     <!-- <field name="productos_orden"/> -->
@@ -133,8 +133,8 @@
                                 <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/> -->
                                 <field name="orden_compra" readonly="1"/>
                                 <field name="factura_prov" readonly="1" attrs="{'invisible': [('factura_prov', '=', False)]}"/>
-                                <button string="Registrar facturar" type="object" class="btn-info" name="open_orden_compra" attrs="{'invisible': [('factura_prov', '=', True),('orden_compra', '!=', False)]}"/>
-                                
+                                <button string="Registrar facturar" type="object" name="open_orden_compra" attrs="{'invisible': [('factura_prov', '!=', False), ('orden_compra', '!=', True)]}"/>
+
                                 <field name="partner_id" readonly="1" attrs="{'invisible': [('factura_prov', '=', False)]}"/>
                                 <field name="tdp" readonly="1" attrs="{'invisible': [('factura_prov', '=', False)]}"/>
                                 
@@ -165,8 +165,9 @@
                                 <field name="dias" readonly="1"/>
                                 
                             </group>
+                            
                         </group>
-                        <button string="Facturar" type="object" class="btn-info" name="open_sale_order" attrs="{'invisible': [('factura_cliente', '=', False)]}"/>
+                        <button string="Facturar" type="object" name="open_sale_order" attrs="{'invisible': [('factura_cliente', '=', False)]}"/>
                         <group string="Factura cliente" >
                             <!-- attrs="{'invisible': [('factura_cliente', '!=', False),('factura_cliente', '!=', True)]}"> -->
                             <field name="factura_cliente" readonly="1" />
@@ -174,7 +175,31 @@
                         <group>
                             <field name="comentarios"/>
                         </group>
-
+                    <notebook colspan="4">
+                        <page string="Adjuntos">
+                            <group string="Adjuntos" >
+                                    <field name="sale_id_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    <field name="orden_compra_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    <field name="factura_prov_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    
+                                </group>
+                        </page>
+                    </notebook>
                     </sheet>
 
                         

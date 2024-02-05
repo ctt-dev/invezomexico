@@ -264,11 +264,17 @@ class sale_order_inherit(models.Model):
                 raise UserError("La orden de venta necesita estar confirmada")
 
 
-    @api.depends('picking_ids','picking_ids.carrier_tracking_ref')
-    def compute_detailed_info(self):
+    detailed_info = fields.Html(
+        string="Información de entrega",
+        compute='_compute_detailed_info',
+        inverse='_set_detailed_info',
+        # store=True
+    )
+
+    @api.depends('picking_ids', 'picking_ids.carrier_tracking_ref')
+    def _compute_detailed_info(self):
         for rec in self:
-            detailed_info = ""
-            detailed_info += "<table class='table'>"
+            detailed_info = "<table class='table'>"
             detailed_info += "<tr>"
             detailed_info += "<th>Entrega</th>"
             detailed_info += "<th>Carrier</th>"
@@ -276,24 +282,36 @@ class sale_order_inherit(models.Model):
             detailed_info += "<th>Link</th>"
             detailed_info += "<th>Estado</th>"
             detailed_info += "</tr>"
+            
             for orden in rec.picking_ids:
                 detailed_info += "<tr>"
-                detailed_info += "<td>"+str(orden.display_name)+"</td>"
-                detailed_info += "<td>"+str(orden.carrier.display_name)+"</td>"
-                detailed_info += "<td>"+str(orden.carrier_tracking_ref)+"</td>"
-                detailed_info += "<td>"+str(orden.link_guia)+"</td>"
-                detailed_info += "<td>"+str(orden.state)+"</td>"
-            detailed_info += "</tr>"
+                detailed_info += "<td>{}</td>".format(orden.display_name)
+                detailed_info += "<td>{}</td>".format(orden.carrier.display_name)
+                detailed_info += "<td>{}</td>".format(orden.carrier_tracking_ref)
+                detailed_info += "<td>{}</td>".format(orden.link_guia)
+                detailed_info += "<td>{}</td>".format(orden.state)
+                detailed_info += "</tr>"
+
             detailed_info += "</table>"
-                # detailed_info += str(orden.display_name) + "<table><tr><td>Carrier:</td><td>" + str(orden.carrier.display_name) + "</td></tr><tr><td>Rastreo: </td><td>" + str(orden.carrier_tracking_ref) + "</td></tr></table>"
-            # detailed_info = detailed_info[:-2]
             rec.detailed_info = detailed_info
-    detailed_info = fields.Html(
-        string="Información de entrega",
-        compute=compute_detailed_info,
-        # store=True
+
+    def _set_detailed_info(self):
+        for rec in self:
+            # Verifica si el campo 'carrier_tracking_ref' pertenece a 'stock.picking'
+            if rec.picking_ids:
+                # Tomamos el primer registro de picking_ids y actualizamos su carrier_tracking_ref
+                picking = rec.picking_ids[0]
+                picking.write({'carrier_tracking_ref': rec.detailed_info})
+            # Puedes agregar el código aquí para procesar la entrada del usuario si es necesario
+            # Puedes acceder al valor ingresado por el usuario con rec.detailed_info
+            pass
+
+
+    detailed_name=fields.Char(
+        string="Folio entrega",
+        related="picking_ids.name",
     )
-        
+    
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'
     _description='Lineas de la orden de venta'

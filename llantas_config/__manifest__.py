@@ -59,6 +59,7 @@
         'views/wizard_subir_existencias.xml',
         'reports/purchase.xml',
         'reports/Reporte_cotizacion_Racko.xml',
+        'controllers/website.py',
     ],
     # only loaded in demonstration mode
     'demo': [

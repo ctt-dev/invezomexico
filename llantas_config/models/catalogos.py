@@ -173,7 +173,7 @@ class proveedores_link_wizard(models.TransientModel):
 
         if self.proveedores_links_id.name == 'Tiredirect':
             # raise UserError(str(self.proveedores_links_id.name))
-            self.proveedores_links_id.procesar_tiredirect(record)
+            self.proveedores_links_id.procesar_tiredirect()
         else:
             # raise UserError(str(self.proveedores_links_id.name)+"123")
             self.proveedores_links_id.procesar()

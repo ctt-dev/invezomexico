@@ -223,7 +223,7 @@ class ctrl_llantas(models.Model):
     
     @api.depends('fecha')
     def _compute_dias(self):
-        records=env['llantas_config.ctt_llantas'].search([])
+        records=self.env['llantas_config.ctt_llantas'].search([])
         if records:
           for rec in records:
             if rec.fecha:
@@ -400,3 +400,34 @@ class ctrl_llantas(models.Model):
 
     archivo_adjunto = fields.Binary(string='Archivo Adjunto', attachment=True)
 
+
+
+    def compute_sale_id_attachment_ids(self):
+        for rec in self:
+            attachment_ids = rec.env['ir.attachment'].search([('res_model','=','sale.order'),('res_id','=',rec.sale_id.id)])
+            rec.sale_id_attachment_ids = attachment_ids
+    sale_id_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        string="Orden de venta - Adjuntos",
+        compute=compute_sale_id_attachment_ids
+    )
+
+    def compute_orden_compra_attachment_ids(self):
+        for rec in self:
+            attachment_ids = rec.env['ir.attachment'].search([('res_model','=','purchase.order'),('res_id','=',rec.orden_compra.id)])
+            rec.orden_compra_attachment_ids = attachment_ids
+    orden_compra_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        string="Orden de compra - Adjuntos",
+        compute=compute_orden_compra_attachment_ids
+    )
+
+    def compute_factura_prov_attachment_ids(self):
+        for rec in self:
+            attachment_ids = rec.env['ir.attachment'].search([('res_model','=','account.move'),('res_id','=',rec.factura_prov.id)])
+            rec.factura_prov_attachment_ids = attachment_ids
+    factura_prov_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        string="Factura de proveedor - Adjuntos",
+        compute=compute_factura_prov_attachment_ids
+    )

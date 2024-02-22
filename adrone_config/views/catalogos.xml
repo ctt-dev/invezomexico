@@ -4,6 +4,10 @@
                           name="Catalogo tipo de productos" 
                           parent="industry_fsm.fsm_menu_settings" 
                           sequence="1001" /> -->
+        <menuitem id="adrone_config_catalogos_menu" 
+                  name="Catálogos Adrone" 
+                  parent="sale.menu_sale_config" 
+                  sequence="1700" />
         
         <record id="tree_view_tipo_producto" model="ir.ui.view">
             <field name="name">tree.tipo_producto</field>
@@ -69,10 +73,10 @@
             <field name="target">current</field>
         </record>
         
-        <menuitem id="adrone_config_catalogos_menu" 
+        <!-- <menuitem id="adrone_config_catalogos_menu" 
                   name="Catálogos Adrone" 
                   parent="sale.menu_sale_config" 
-                  sequence="1700" />
+                  sequence="1700" /> -->
         
         <menuitem id="adrone_cultivos_menu" 
                   name="Cultivos" 

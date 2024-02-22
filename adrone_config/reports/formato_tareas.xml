@@ -3,7 +3,7 @@
     <data>
         <report
             id="report_control_de_aplicacion"
-            model="project.task"
+            model="sale.order"
             string="Control de aplicaciones"
             report_type="qweb-pdf"
             name="adrone_config.report_control_de_aplicaciones"
@@ -34,7 +34,7 @@
                         <div t-if="doc.create_date" class="col-4 bm-2">
                             <center>
                                 <strong>Fecha de orden:</strong>
-                                <p t-esc="doc.planned_date_begin.strftime('%d-%m-%Y')" class="m-0"/>
+                                <p t-esc="doc.fecha_inicio.strftime('%d-%m-%Y')" class="m-0"/>
 
                             </center>
                         </div>
@@ -55,7 +55,7 @@
                                 <td><strong>Lugar de aplicacion: </strong></td>
                                 <td><span t-field="doc.parcela.name"/></td>
                                 <td><strong>Hora inicio: </strong></td>
-                                <td><span t-esc="doc.planned_date_begin.strftime('%H:%M')" /></td>
+                                <td><span t-esc="doc.fecha_inicio.strftime('%H:%M')" /></td>
 
                                 
                             </tr>
@@ -63,7 +63,7 @@
                                 <td><strong>Area de aplicacion total: </strong></td>
                                 <td><span t-field="doc.hectareas"/></td>
                                 <td><strong>Hora termino: </strong></td>
-                                <td><span t-esc="doc.planned_date_end.strftime('%H:%M')"/></td>
+                                <td><span t-esc="doc.fecha_fin.strftime('%H:%M')"/></td>
 
                                 
                             </tr>

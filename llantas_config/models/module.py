@@ -50,13 +50,10 @@ class ctrl_llantas(models.Model):
         store=True,
     )
 
-
-
     name=fields.Char(
         related="sale_id.name",
         string="Nombre",
         tracking=True,
-        store=True,
     )
 
     comprador_id=fields.Many2one(
@@ -64,6 +61,7 @@ class ctrl_llantas(models.Model):
         related="sale_id.comprador_id",
         string="Comprador",
         company_dependent=True,
+        store=True,
     )
 
 
@@ -71,13 +69,11 @@ class ctrl_llantas(models.Model):
         "res.partner",
         related="sale_id.partner_id",
         string="Cliente",
-        store=True,
     )
 
     proveedor_id=fields.Many2one(
         "res.partner",
         string="Proveedor",
-        store=True,
         # compute=compute_proveedor_id,
         # store=True,
     )
@@ -135,18 +131,29 @@ class ctrl_llantas(models.Model):
                 'target': 'current',
             }
             
-    num_cliente=fields.Char(
-        related="partner_name.usuario_marketplace",
-        string="Num. Cliente",
-        tracking=True,
-    )
+    # num_cliente=fields.Char(
+    #     related="partner_name.usuario_marketplace",
+    #     string="Num. Cliente",
+    # )
     
     factura_cliente = fields.Many2many(
         'account.move',
         string="Factura cliente",
         related="sale_id.invoice_ids",
         options="{'action': 'action_open_invoice'}",
+        required=False,  # Permitir que el campo sea nulo
     )
+
+    factura_cliente_count = fields.Integer(
+        string="Número de facturas de cliente",
+        compute='_compute_factura_cliente_count',
+        store=True
+    )
+
+    @api.depends('factura_cliente')
+    def _compute_factura_cliente_count(self):
+        for record in self:
+            record.factura_cliente_count = len(record.factura_cliente)
 
     # Relación inversa para navegar desde la factura a la orden de venta
     factura_cliente_relacion = fields.Many2many(
@@ -202,8 +209,7 @@ class ctrl_llantas(models.Model):
         ('09','Devolución'),],
         related="sale_id.ventas_status",
         string="Status",
-                            
-        store=True                                
+        tracking=True,
     )
 
     @api.onchange('status_id')
@@ -216,7 +222,6 @@ class ctrl_llantas(models.Model):
     
     fecha=fields.Datetime(
         string="Fecha",
-        store=True
     )
     
     dias = fields.Integer(string="Días transcurridos", compute='_compute_dias', store=True, readonly=True)
@@ -240,8 +245,16 @@ class ctrl_llantas(models.Model):
     orden_entrega=fields.One2many(
         "stock.picking",
         "carrier_tracking_ref",
-        string="No. Guia",
+        string="Salidas",
         related="sale_id.picking_ids",
+        # store=True,
+    )
+
+    orden_recepcion=fields.Many2many(
+        "stock.picking",
+        "name",
+        string="Entradas",
+        related="orden_compra.picking_ids",
         # store=True,
     )
 
@@ -259,7 +272,7 @@ class ctrl_llantas(models.Model):
         # store=True
     )
 
-    @api.depends('orden_entrega','orden_entrega.carrier_tracking_ref')
+    @api.depends('orden_entrega', 'orden_entrega.carrier_tracking_ref','sale_id')
     def compute_detailed_info(self):
         for rec in self:
             detailed_info = ""
@@ -273,22 +286,30 @@ class ctrl_llantas(models.Model):
             detailed_info += "</tr>"
             for orden in rec.orden_entrega:
                 detailed_info += "<tr>"
-                detailed_info += "<td>"+str(orden.display_name)+"</td>"
-                detailed_info += "<td>"+str(orden.carrier.display_name)+"</td>"
-                detailed_info += "<td>"+str(orden.carrier_tracking_ref)+"</td>"
-                detailed_info += "<td>"+str(orden.link_guia)+"</td>"
-                detailed_info += "<td>"+str(orden.state)+"</td>"
-            detailed_info += "</tr>"
+                detailed_info += "<td>" + str(orden.display_name) + "</td>"
+                if isinstance(orden.carrier, models.Model):  # Verifica si orden.carrier es un registro de modelo
+                    detailed_info += "<td>" + rec.sale_id.carrier_id.name + "</td>"
+                else:
+                    detailed_info += "<td></td>"  # O alguna indicación de que no hay ningún valor
+                detailed_info += "<td>" + str(orden.carrier_tracking_ref) + "</td>"
+                detailed_info += "<td>" + str(orden.link_guia) + "</td>"
+                detailed_info += "<td>" + str(orden.state) + "</td>"
+                detailed_info += "</tr>"
+    
             detailed_info += "</table>"
-                # detailed_info += str(orden.display_name) + "<table><tr><td>Carrier:</td><td>" + str(orden.carrier.display_name) + "</td></tr><tr><td>Rastreo: </td><td>" + str(orden.carrier_tracking_ref) + "</td></tr></table>"
-            # detailed_info = detailed_info[:-2]
             rec.detailed_info = detailed_info
+    
     detailed_info = fields.Html(
         string="Información detallada",
         compute=compute_detailed_info,
-        # store=True
     )
-
+    
+    carrier = fields.Many2one(
+        "llantas_config.carrier",
+        string="Carrier",
+        related="sale_id.carrier_id",
+    )
+    
     link_guia = fields.Char(string="Link guia",related="orden_entrega.link_guia")
 
     def open_link_guia(self):
@@ -299,22 +320,23 @@ class ctrl_llantas(models.Model):
         }
     
 
-    carrier = fields.Many2one(
-        "llantas_config.carrier",
-        string="Carrier",
-        store=True,
-        # related="orden_entrega.carrier",
-        # store=True
-    )
+    
 
     def compute_no_recoleccion(self):
         for rec in self:
-            rec.no_recoleccion = rec.sale_id._get_purchase_orders().picking_ids.no_recoleccion
+            tdp = ""
+            try:
+                no_recoleccion = rec.no_recoleccion
+                if no_recoleccion:
+                    tdp = ", ".join(str(picking_id.no_recoleccion) for picking_id in rec.sale_id._get_purchase_orders().picking_ids if picking_id.no_recoleccion)
+            except Exception as e:
+                tdp = ""
+                _logger.error("Error al calcular no_recoleccion: %s", str(e))
+            rec.tdp = tdp
     no_recoleccion=fields.Char(
         compute=compute_no_recoleccion,
         string="No. Recolección",
     )
-
     # no_recoleccion=fields.Char(
     #     string="No. Recoleccion", 
     #     related="sale_id.picking_ids.no_recoleccion",
@@ -329,7 +351,6 @@ class ctrl_llantas(models.Model):
     link_venta = fields.Char(
         related="sale_id.link_venta",
         string="Link venta",
-        store=True,
     )
 
     def action_open_sale_url(self):
@@ -364,7 +385,11 @@ class ctrl_llantas(models.Model):
 
     def compute_tdp(self):
         for rec in self:
-            rec.tdp = rec.sale_id._get_purchase_orders().partner_ref
+            tdp = ""
+            for purchase_id in rec.sale_id._get_purchase_orders():
+                if purchase_id.partner_ref:
+                    tdp += str(purchase_id.partner_ref) + ", "
+            rec.tdp = tdp[:-2]
     tdp=fields.Char(
         string="Referencia compra (TDP)",
         compute=compute_tdp
@@ -390,7 +415,6 @@ class ctrl_llantas(models.Model):
         "sale.order.line",
         string="Líneas de la orden",
         related="sale_id.lineas_orden",
-        store=True,
     )
 
     producto=fields.Char(

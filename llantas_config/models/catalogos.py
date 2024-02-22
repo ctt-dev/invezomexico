@@ -171,7 +171,7 @@ class proveedores_link_wizard(models.TransientModel):
     
     def action_button_procesar(self):
 
-        if self.proveedores_links_id.name == 'Tiredirect':
+        if self.proveedores_links_id.name == 'Tire Direct':
             # raise UserError(str(self.proveedores_links_id.name))
             self.proveedores_links_id.procesar_tiredirect()
         else:
@@ -285,8 +285,12 @@ class proveedores_link(models.Model):
                     moneda = 2
                 else:
                     moneda = 33
-    
-                lines = self.env['product.template'].search([('default_code', '=', mov.sku)])
+                lines = self.env['product.template'].search([
+                    '|',
+                    ('default_code', '=', mov.sku),
+                    ('sku_alternos.name', 'in', [mov.sku])
+                ])
+
                 if lines:
                     for line in lines:
                         sku_proveedor = (line.id, proveedor)
@@ -364,7 +368,12 @@ class proveedores_link(models.Model):
               moneda=33
             if mov.moneda_currency=='USD':
               moneda=2
-            lines=self.env['product.template'].search([('default_code','=',mov.clave_parte)])
+            lines = self.env['product.template'].search([
+                '|',
+                ('default_code', '=', mov.clave_parte),
+                ('sku_alternos.name', 'in', [mov.clave_parte])
+            ])
+
             if lines:
               for line in lines:
                 proveedores=self.env['product.supplierinfo'].search([('product_tmpl_id','=',line.id),('partner_id','=',proveedor)])
@@ -442,6 +451,11 @@ class carriers(models.Model):
         required=True,
     )
 
+    company_id=fields.Many2one(
+        "res.company",
+        string="Empresa",
+    )
+
 class sku_marketplaces(models.Model):
     _name = 'llantas_config.sku_marketplace'
     _description = 'Catalogo de sku'
@@ -496,5 +510,62 @@ class almacenes_proveedores(models.Model):
     almacen_proveedor=fields.Char(
         string="Almacen proveedor",
         tracking=True,
+    )
+
+class compatibilidad(models.Model):
+    _name = 'llantas_config.compatibilidad'
+    _description = 'Compatibilidad de llanta'
+    _order = 'id desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    def name_get(self):
+        res = super(compatibilidad, self).name_get()
+        data = []
+        for e in self:
+            display_value = ''
+            display_value += str(e.brand_id.name)
+            display_value += ' / '
+            display_value += str(e.model_id.name) or ""
+            display_value += ' / '
+            display_value += str(e.year) or ""
+            display_value += ' / '
+            display_value += str(e.version) or ""
+            display_value += ' / '
+            display_value += str(e.medida) or ""
+            data.append((e.id, display_value))
+        return data
+
+    ##Campo para product.product
+    # compatibilidad_ids = fields.One2many(
+    #     'product_id',
+    #     'llantas_config.compatibilidad',
+    #     string = "Modelos de auto compatibles"
+    # )
+
+    product_id = fields.Many2one(
+        'product.template',
+        string = "Producto"
+    )
+
+    brand_id = fields.Many2one(
+        'fleet.vehicle.model.brand',
+        string = "Marca"
+    )
+
+    model_id = fields.Many2one(
+        'fleet.vehicle.model',
+        string = "Modelo"
+    )
+
+    year = fields.Integer(
+        string="Año"
+    )
+
+    version = fields.Char(
+        string="Versión"
+    )
+
+    medida = fields.Char(
+        string="Medida"
     )
 

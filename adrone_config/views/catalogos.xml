@@ -25,8 +25,8 @@
         <menuitem id="adrone_tipo_producto_menu" 
                   name="Tipo de producto" 
                   action="tipo_producto"
-                  parent="industry_fsm.fsm_menu_settings" 
-                  sequence="1001" />
+                  parent="adrone_config.adrone_config_catalogos_menu" 
+                  sequence="2" />
 
         <record id="tree_view_parcelas" model="ir.ui.view">
             <field name="name">tree.parcelas</field>
@@ -48,8 +48,8 @@
         <menuitem id="adrone_parcelas_menu" 
                   name="Parcelas" 
                   action="parcelas"
-                  parent="industry_fsm.fsm_menu_settings" 
-                  sequence="1002" />
+                  parent="adrone_config.adrone_config_catalogos_menu" 
+                  sequence="3" />
 
         <record id="tree_view_cultivos" model="ir.ui.view">
             <field name="name">tree.cultivos</field>
@@ -68,12 +68,18 @@
             <field name="view_mode">tree</field>
             <field name="target">current</field>
         </record>
+        
+        <menuitem id="adrone_config_catalogos_menu" 
+                  name="Catálogos Adrone" 
+                  parent="sale.menu_sale_config" 
+                  sequence="1700" />
+        
         <menuitem id="adrone_cultivos_menu" 
                   name="Cultivos" 
                   action="cultivos"
-                  parent="industry_fsm.fsm_menu_settings" 
-                  sequence="1003" />
+                  parent="adrone_config.adrone_config_catalogos_menu" 
+                  sequence="4" />
 
-        
     </data>
+    
 </odoo>

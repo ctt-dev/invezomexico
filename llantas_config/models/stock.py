@@ -10,10 +10,10 @@ class sale_order_inherit(models.Model):
     _inherit = 'stock.picking'
     _description='stock_picking'
 
-    carrier=fields.Many2one(
-        "llantas_config.carrier",
+    carrier=fields.Char(
         string="Carrier",
-        tracking=True
+        related="sale_id.carrier_id.name",
+        readonly=True,
     )
 
     no_venta=fields.Char(
@@ -25,11 +25,13 @@ class sale_order_inherit(models.Model):
     no_recoleccion=fields.Char(
         string="No. Recoleccion",
         tracking=True,
+        
     )
 
     link_guia=fields.Char(
         string="Link guia",
-        tracking=True,
+        related="sale_id.link_guia",
+        readonly=True,
     )
 
     tdp=fields.Char(
@@ -40,6 +42,12 @@ class sale_order_inherit(models.Model):
     fecha_entrega=fields.Date(
         string="Fecha entrega",
         tracking=True
+    )
+
+    carrier_tracking_ref=fields.Char(
+        string="Guia de rastreo",
+        related="sale_id.guia",
+        readonly=True,
     )
 
     

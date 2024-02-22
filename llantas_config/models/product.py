@@ -84,11 +84,23 @@ class product_template_inherit(models.Model):
         string="Es llanta?",
         tracking=True,
     )
-    
+
+    es_paquete=fields.Boolean(
+        string="Es paquete?",
+        tracking=True,
+    )
+
+    compatibilidad_ids = fields.One2many(
+        'llantas_config.compatibilidad',
+        'product_id',
+        string = "Modelos de auto compatibles"
+    )
 class product_product_inherit(models.Model):
     _inherit = 'product.product'
     _description='Producto'
 
+    
+    
     # @api.model
     # def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
     #     domain = args or []

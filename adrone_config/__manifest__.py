@@ -37,7 +37,7 @@
         'mrp',
         'delivery',
         'industry_fsm',
-        
+        'llantas_config'
     ],
 
     # always loaded
@@ -46,11 +46,12 @@
         'views/views.xml',
         'views/templates.xml',
         'views/catalogos.xml',
-        'views/project_task.xml',
+        # 'views/project_task.xml',
         'reports/formato_tareas.xml',
         'wizard/wizard_import_flight.info.xml',
         'views/flight_sheet.xml',
-        'reports/report_invoices.xml'
+        'reports/report_invoices.xml',
+        'views/sale.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -9,9 +9,9 @@
                     <field name="no_venta" />
                     <field name="link_venta" optional="hide" widget="url"/>
                     
-                    <field name="sale_id" optional="show" widget="many2one"/>
-                    <field name="num_cliente" optional="hide"/>
-                    <field name="marketplace_name"/>
+                    <field name="sale_id" string="SO" optional="show" widget="many2one"/>
+                    <!-- <field name="num_cliente" optional="hide"/> -->
+                    <!-- <field name="marketplace_name"/> -->
                     <field name="marketplace" widget="many2one"/>
                     <field name="partner_id" widget="many2one" />
                     <field name="partner_name" widget="many2one"/>
@@ -132,11 +132,12 @@
                                 <!-- <field name="marketplace_id"/> -->
                                 <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/> -->
                                 <field name="orden_compra" readonly="1"/>
-                                <field name="factura_prov" readonly="1" attrs="{'invisible': [('factura_prov', '=', False)]}"/>
-                                <button string="Registrar facturar" type="object" name="open_orden_compra" attrs="{'invisible': [('factura_prov', '!=', False), ('orden_compra', '!=', True)]}"/>
+                                
 
-                                <field name="partner_id" readonly="1" attrs="{'invisible': [('factura_prov', '=', False)]}"/>
-                                <field name="tdp" readonly="1" attrs="{'invisible': [('factura_prov', '=', False)]}"/>
+                                <field name="partner_id" readonly="1" />
+                                <field name="tdp" readonly="1" />
+                                <field name="factura_prov" readonly="1" />
+                                <button string="Registrar facturar" type="object" class="btn-success" name="open_orden_compra" attrs="{'invisible': ['|',('factura_prov', '=', True),('orden_compra','=',False)]}"/>
                                 
                                 
                             </group> 
@@ -144,38 +145,40 @@
                                 <field name="no_venta" readonly="1"/>
                                 <field name="link_venta" readonly="1" widget="url"/>
                                 
-                                <field name="num_cliente" readonly="1"/>
+                                <!-- <field name="num_cliente" readonly="1"/> -->
                                 <field name="comision" readonly="1"/>
                                 <field name="envio" readonly="1"/>
                                 
                                 <field name="no_recoleccion" readonly="1"/>
-                                
-                                
-                                
-                                
-                                
-                            </group>
-                            <group string="Informacion pedido" >
-                                <!-- <field name="orden_entrega" readonly="1" widget="many2many_tags"/> -->
-                                <!-- <field name="carrier" />
-                                <field name="guias" readonly="1"/> -->
-                                <field name="detailed_info" readonly="1" widget="html"/>
                                 <field name="status_id" readonly="0"/>
-                                <field name="fecha" readonly="1"/>
-                                <field name="dias" readonly="1"/>
+                                
+                                
+                                
                                 
                             </group>
                             
+                            
                         </group>
-                        <button string="Facturar" type="object" name="open_sale_order" attrs="{'invisible': [('factura_cliente', '=', False)]}"/>
-                        <group string="Factura cliente" >
-                            <!-- attrs="{'invisible': [('factura_cliente', '!=', False),('factura_cliente', '!=', True)]}"> -->
+                        <field name="factura_cliente_count" invisible="1"/>
+                        <button string="Facturar" type="object" name="open_sale_order" attrs="{'invisible': [('factura_cliente_count','!=',0)]}"/>
+                        <group string="Factura cliente" attrs="{'invisible': [('factura_cliente_count','=',0)]}" >
                             <field name="factura_cliente" readonly="1" />
                         </group>
+
+
                         <group>
                             <field name="comentarios"/>
                         </group>
                     <notebook colspan="4">
+                        <page string="Información de traslados">
+                            <group string="Salidas">
+                                <field name="orden_entrega"/>
+                            </group>
+                            <group string="Entradas">
+                                <field name="orden_recepcion" />
+                            </group>
+                        </page>
+
                         <page string="Adjuntos">
                             <group string="Adjuntos" >
                                     <field name="sale_id_attachment_ids" readonly="1">
@@ -199,6 +202,7 @@
                                     
                                 </group>
                         </page>
+                        
                     </notebook>
                     </sheet>
 

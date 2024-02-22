@@ -37,6 +37,7 @@
         'website_sale',
         'mrp',
         'delivery',
+        'fleet',
     ],
 
     # always loaded
@@ -59,7 +60,10 @@
         'views/wizard_subir_existencias.xml',
         'reports/purchase.xml',
         'reports/Reporte_cotizacion_Racko.xml',
-        # 'controllers/website.py',
+        # 'reports/new_invoice.xml',
+        'views/account_move.xml',
+        'reports/report_invoice.xml',
+        'views/res_company.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

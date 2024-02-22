@@ -16,6 +16,7 @@
 
 
                      <field name="envio" attrs="{'invisible': [('mostrar_envio', '!=', True)]}" />
+                     <field name="commitment_date"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
@@ -47,7 +48,12 @@
                 <xpath expr="//page[@name='other_information']" position="after">
                     <page string="Envio">
                         <group>
-                            <field name="detailed_info" readonly="0" widget="html" attrs="{'invisible': [('state', 'in', ['draft', 'send'])]}"/>
+                            <!-- <field name="detailed_info" readonly="0" widget="html" attrs="{'invisible': [('state', 'in', ['draft', 'send'])]}"/> -->
+                            <field name="traspaso_name" readonly="1"/>
+                            <field name="carrier_id"/>
+                            <field name="guia" readonly="0"/>
+                            <field name="link_guia" readonly="0" widget="url"/>
+                            <field name="estado_traspaso" readonly="1"/>
                         </group>
                     </page>
                 </xpath>

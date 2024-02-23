@@ -5,3 +5,4 @@ from . import catalogos
 # from . import project_task
 from . import flight_sheet
 from . import sale
+from . import res_company

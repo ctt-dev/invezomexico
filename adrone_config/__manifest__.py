@@ -52,6 +52,7 @@
         'views/flight_sheet.xml',
         'reports/report_invoices.xml',
         'views/sale.xml',
+        'views/res_company.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

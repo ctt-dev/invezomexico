@@ -6,7 +6,7 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                  <xpath expr="//page[@name='order_lines']" position="after"  >
-                     <page string="Información Adrone" attrs="{'invisible': [('invezo_company', '=', False)]}">
+                     <page string="Información Adrone" attrs="{'invisible': [('is_adrone', '=', False)]}">
                          <group string="Fecha de aplicación">
                              <label for="fecha_inicio" string="Planeación" />
                                 <div class="w-100">
@@ -21,7 +21,7 @@
                          <group string="Información sobre la aplicación">
                              
                             <group>
-                                <field name="invezo_company" invisible="1"/>
+                                <field name="is_adrone" invisible="1"/>
                                 <field name="parcela" />
                                 <field name="asignado" />
                                 <field name="auxiliar" />

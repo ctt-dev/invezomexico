@@ -98,9 +98,9 @@ class sale_order_inherit(models.Model):
         tracking=True,
     )
 
-    invezo_company=fields.Boolean(
-        string="Invezo?",
-        related="company_id.formato_invezo",
+    is_adrone=fields.Boolean(
+        string="Adrone?",
+        related="company_id.is_adrone",
     )
 
     fecha_inicio=fields.Datetime(

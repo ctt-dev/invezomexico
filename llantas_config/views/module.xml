@@ -17,7 +17,7 @@
                     <field name="partner_name" widget="many2one"/>
                     <field name="orden_compra" optional="show" widget="many2one"/>
                     <field name="link_guia" widget="url"/>
-                    <field name="no_recoleccion" optional="show"/>
+                    <field name="no_recoleccion2" optional="show"/>
                     <field name="tdp" />
                     <field name="factura_prov" readonly="1" optional="hide" widget="many2one"/>
                     <field name="factura_cliente" optional="hide" widget="many2many_tags" attrs="{'invisible': [('factura_prov', '=', False),('factura_prov', '!=', True)]}"/>
@@ -149,7 +149,7 @@
                                 <field name="comision" readonly="1"/>
                                 <field name="envio" readonly="1"/>
                                 
-                                <field name="no_recoleccion" readonly="1"/>
+                                <field name="no_recoleccion2" readonly="1"/>
                                 <field name="status_id" readonly="0"/>
                                 
                                 

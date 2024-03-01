@@ -90,10 +90,24 @@ class product_template_inherit(models.Model):
         tracking=True,
     )
 
+    pkg_type = fields.Selection(
+        selection=[
+            ('2', '2'),
+            ('4', '4')
+        ],
+        string="Cantidad",
+        default="2",
+        required=True
+    )
+
     compatibilidad_ids = fields.One2many(
         'llantas_config.compatibilidad',
         'product_id',
         string = "Modelos de auto compatibles"
+    )
+
+    es_llanta=fields.Boolean(
+        string="Es llanta",
     )
 class product_product_inherit(models.Model):
     _inherit = 'product.product'

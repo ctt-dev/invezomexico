@@ -7,6 +7,7 @@
                 <tree edit="0" sample="1">
                     <field name="nombre_proveedor" />
                     <field name="sku" />
+                    <field name="sku_interno" />
                     <field name="producto" />
                     <field name="marca" />
                     <field name="aplicacion" />
@@ -91,6 +92,7 @@
                    <field name="codigo_producto" string="Producto" filter_domain="['|','|', ('codigo_producto', 'ilike', self),('sku', 'ilike', self),('producto','ilike',self)]"/>
                     <field name="nombre_proveedor" string="Proveedor" filter_domain="[('nombre_proveedor', 'ilike', self)]"/>
                     <field name="nombre_almacen" string="Almacen" filter_domain="[('almacen', 'ilike', self)]"/>
+                    <field name="sku" string="Sku" filter_domain="['|',('sku', 'ilike', self),('sku_interno', 'ilike', self)]"/>
                     
 
                    <filter string="Productos con existencias" name="existencia" domain="[('existencia', '>', 0)]"/>

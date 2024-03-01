@@ -170,13 +170,14 @@ class proveedores_link_wizard(models.TransientModel):
     )
     
     def action_button_procesar(self):
+        self.proveedores_links_id.procesar()
 
-        if self.proveedores_links_id.name == 'Tire Direct':
-            # raise UserError(str(self.proveedores_links_id.name))
-            self.proveedores_links_id.procesar_tiredirect()
-        else:
-            # raise UserError(str(self.proveedores_links_id.name)+"123")
-            self.proveedores_links_id.procesar()
+        # if self.proveedores_links_id.name == 'Tire Direct':
+        #     # raise UserError(str(self.proveedores_links_id.name))
+        #     self.proveedores_links_id.procesar_tiredirect()
+        # else:
+        #     # raise UserError(str(self.proveedores_links_id.name)+"123")
+        #     self.proveedores_links_id.procesar()
 
 class proveedores_link(models.Model):
     _name = 'llantas_config.proveedores_links'
@@ -216,53 +217,55 @@ class proveedores_link(models.Model):
             'view_id': self.env.ref('llantas_config.view_wizard_existencias_proveedor_form').id,
             'target': 'new',
         }
-    
 
     def process_link(self):
-            url = urllib.request.urlopen(self.url) 
-            data = json.loads(url.read().decode()) 
-            for x in data["objects"]["ResponseRow"]:
-                self.env['llantas_config.ctt_tiredirect_cargar'].create({
-                    'description_description': x["Descripcion_Description"],
-                    'clave_parte': x["Clave_Parte"],
-                    'moneda_currency': x["Moneda_Currency"],
-                    'TC': x["TC"],
-                    'ES': x["ES"],
-                    'FS': x["FS"],
-                    'Existencia_Stock': x["Existencia_Stock"],
+        url = urllib.request.urlopen(self.url) 
+        data = json.loads(url.read().decode()) 
+    
+        for x in data["objects"]["ResponseRow"]:
+            try:
+                FS = float(x["FS"])
+            except:
+                FS = 0
+            try:
+                TC = float(x["TC"])
+            except:
+                TC = 0
+    
+            if x["Moneda_Currency"] == 'MXN':
+                costo = FS
+            else:
+                costo = FS * TC
+    
+            existing_record = self.env['llantas_config.ctt_prov'].search([('sku', '=', x["Clave_Parte"])], limit=1)
+            if existing_record:
+                existing_record.write({
+                    'existencia': x["Existencia_Stock"],
+                    'costo_sin_iva': costo,
                 })
-
-            return {            
-               'type': 'ir.actions.client',
-               'tag': 'display_notification',            
-               'params': {
-                   'type': 'success',                
-                   'sticky': False,
-                   'message': ("Se descargaron las existencias correctamente."),            
-                }        
-            }
-            # return {
-            #     raise UserError('Existencias cargadas, a continuación de clic en procesar')
-                # 'name': 'Cargar existencias',
-                # 'view_type': 'tree',
-                # 'view_mode': 'tree',
-                # 'view_id': self.env.ref('llantas_config.view_tiredirect_tree_cargar').id,
-                # 'res_model': 'llantas_config.ctt_tiredirect_cargar',
-                # 'type': 'ir.actions.act_window',
-                # 'target': 'new',
-            # }
-    # def procesar_existencias(self):
-    #     for record in self:
-    #         proveedor_id = record.proveedor_id
-
-    #         if proveedor_id.name == 'TIRE DIRECT S.A. DE C.V.':
-    #             self.env['llantas_config.ctt_tiredirect_cargar'].procesar_tiredirect(record)
-    #         else:
-    #             self.env['llantas_config.proveedores_links'].action_button_procesar(record)
-          
-
-    #     return True
-
+            else:
+                self.env['llantas_config.ctt_prov'].create({
+                    'producto': x["Descripcion_Description"],
+                    'sku': x["Clave_Parte"],
+                    'tipo_moneda': x["Moneda_Currency"],
+                    'tipo_cambio': TC,
+                    'aplicacion': x["Tipo_Type"],
+                    'marca': x["Marca_Brand"],
+                    'modelo': x["Modelo_Pattern"],
+                    'costo_sin_iva': costo,
+                    'existencia': x["Existencia_Stock"],
+                    'nombre_proveedor': 'Tire Direct',
+                })
+    
+        return {            
+           'type': 'ir.actions.client',
+           'tag': 'display_notification',            
+           'params': {
+               'type': 'success',                
+               'sticky': False,
+               'message': ("Se descargaron las existencias correctamente."),            
+            }        
+        }
     
 
     def procesar(self):
@@ -293,6 +296,8 @@ class proveedores_link(models.Model):
 
                 if lines:
                     for line in lines:
+                        if line.es_paquete == False:
+                            mov.write({'sku_interno':line.default_code})
                         sku_proveedor = (line.id, proveedor)
     
                         if sku_proveedor not in sku_proveedor_procesados:
@@ -315,6 +320,7 @@ class proveedores_link(models.Model):
                                             'tipo_cambio': mov.tipo_cambio,
                                             'precio_neto': mov.costo_sin_iva,
                                             'tipo_moneda_proveedor': mov.tipo_moneda,
+                                            'product_code': mov.sku,
                                         })
                                         count_actualizados += 1
                                 else:
@@ -327,6 +333,7 @@ class proveedores_link(models.Model):
                                         'tipo_cambio': mov.tipo_cambio,
                                         'precio_neto': mov.costo_sin_iva,
                                         'tipo_moneda_proveedor': mov.tipo_moneda,
+                                        'product_code': mov.sku,
                                     })
                                     count_agregados += 1
     
@@ -358,7 +365,7 @@ class proveedores_link(models.Model):
 
         
     def procesar_tiredirect(self):
-        moves=self.env['llantas_config.ctt_tiredirect_cargar'].search([])
+        moves=self.env['llantas_config.ctt_prov'].search(['nombre_proveedor','=','Tire Direct'])
         partner=self.env['res.partner'].search([('name','=','TIRE DIRECT S.A. DE C.V.')], limit=1)
         proveedor=partner.id
         fecha_actual=datetime.datetime.now()
@@ -404,7 +411,7 @@ class proveedores_link(models.Model):
                     'tipo_moneda_proveedor':mov.moneda_currency,
                   })
                   
-              mov.unlink()
+              # mov.unlink()
 
         return {            
            'type': 'ir.actions.client',
@@ -449,6 +456,14 @@ class carriers(models.Model):
     name = fields.Char(
         string="Nombre",
         required=True,
+    )
+
+    url=fields.Char(
+        string="Url"
+    )
+
+    is_trackeable=fields.Boolean(
+        string="Rastreable?"
     )
 
     company_id=fields.Many2one(

@@ -82,6 +82,7 @@
             <th name="th_quantity" class="text-center"><strong>Cant.</strong></th>
             <th name="uom_po_id" class="text-center"><strong>Unidades</strong></th>
             <th name="default_code" class="text-center"><strong>Código</strong></th>
+            <th name="no_pedimento" class="text-center"><strong>Codigo proveedor</strong></th>
         </xpath>
         <xpath expr="//th[@name='th_price_unit']" position="replace">
             <th name="th_price_unit" class="text-center"><strong>Precio por unidad</strong></th>
@@ -104,6 +105,9 @@
             </td>
             <td class="text-end">
                 <span t-field="line.product_id.default_code"/>
+            </td>
+            <td class="text-end">
+                <span t-field="line.codigo_proveedor"/>
             </td>
         </xpath>
         <xpath expr="//table[1]" position="after">

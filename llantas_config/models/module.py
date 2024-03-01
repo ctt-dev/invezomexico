@@ -98,7 +98,12 @@ class ctrl_llantas(models.Model):
 
     def compute_factura_prov(self):
         for rec in self:
-            rec.factura_prov = rec.sale_id._get_purchase_orders().invoice_ids
+            purchase_orders = rec.sale_id._get_purchase_orders()
+            if purchase_orders and purchase_orders.invoice_ids:
+                rec.factura_prov = purchase_orders.invoice_ids[0]
+            else:
+                rec.factura_prov = False
+
     factura_prov=fields.Many2one(
         "account.move",
         string="Factura proveedor",
@@ -318,10 +323,6 @@ class ctrl_llantas(models.Model):
             "url": self.link_guia,
             "target": "new",
         }
-    
-
-    
-
     def compute_no_recoleccion(self):
         for rec in self:
             tdp = ""
@@ -337,10 +338,10 @@ class ctrl_llantas(models.Model):
         compute=compute_no_recoleccion,
         string="No. Recolección",
     )
-    # no_recoleccion=fields.Char(
-    #     string="No. Recoleccion", 
-    #     related="sale_id.picking_ids.no_recoleccion",
-    # )
+    no_recoleccion2=fields.Char(
+        string="No. Recoleccion", 
+        related="sale_id.picking_ids.no_recoleccion",
+    )
 
     # carrier_id=fields.Many2one(
     #     "llantas_config.carrier",
@@ -428,8 +429,11 @@ class ctrl_llantas(models.Model):
 
     def compute_sale_id_attachment_ids(self):
         for rec in self:
-            attachment_ids = rec.env['ir.attachment'].search([('res_model','=','sale.order'),('res_id','=',rec.sale_id.id)])
-            rec.sale_id_attachment_ids = attachment_ids
+            attachment_ids = rec.env['ir.attachment'].search([('res_model', '=', 'sale.order'), ('res_id', '=', rec.sale_id.id)])
+            if attachment_ids:
+                rec.sale_id_attachment_ids = attachment_ids
+            else:
+                rec.sale_id_attachment_ids = False
     sale_id_attachment_ids = fields.Many2many(
         'ir.attachment',
         string="Orden de venta - Adjuntos",
@@ -439,7 +443,10 @@ class ctrl_llantas(models.Model):
     def compute_orden_compra_attachment_ids(self):
         for rec in self:
             attachment_ids = rec.env['ir.attachment'].search([('res_model','=','purchase.order'),('res_id','=',rec.orden_compra.id)])
-            rec.orden_compra_attachment_ids = attachment_ids
+            if attachment_ids:
+                rec.orden_compra_attachment_ids = attachment_ids
+            else:
+                rec.orden_compra_attachment_ids = False
     orden_compra_attachment_ids = fields.Many2many(
         'ir.attachment',
         string="Orden de compra - Adjuntos",
@@ -449,9 +456,15 @@ class ctrl_llantas(models.Model):
     def compute_factura_prov_attachment_ids(self):
         for rec in self:
             attachment_ids = rec.env['ir.attachment'].search([('res_model','=','account.move'),('res_id','=',rec.factura_prov.id)])
-            rec.factura_prov_attachment_ids = attachment_ids
+            if attachment_ids:
+                rec.factura_prov_attachment_ids = attachment_ids
+            else:
+                rec.factura_prov_attachment_ids = False
+                
     factura_prov_attachment_ids = fields.Many2many(
         'ir.attachment',
         string="Factura de proveedor - Adjuntos",
         compute=compute_factura_prov_attachment_ids
     )
+
+

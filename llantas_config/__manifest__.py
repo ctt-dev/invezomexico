@@ -64,6 +64,9 @@
         'views/account_move.xml',
         'reports/report_invoice.xml',
         'views/res_company.xml',
+        # 'views/product_pricelist_item.xml',
+        'views/purchase.xml',
+        'reports/sale_order.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

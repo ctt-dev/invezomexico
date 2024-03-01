@@ -51,6 +51,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             for existing_record in existing_records_same_proveedor:
                 existing_record.write({
                     'existencia': record.get('Existencia'),
+                    'costo_sin_iva': record.get('Costo antes de iva'),
                 })
                 count_updated += 1
         else:
@@ -128,7 +129,7 @@ class WizardImportExistenciasProv(models.TransientModel):
 
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
-            existing_record_by_sku.write({'existencia': record.get('Stock')})
+            existing_record_by_sku.write({'existencia': record.get('Stock'),'costo_sin_iva': precio * self.tipo_cambio,})
             count_updated += 1
         else:
             # If the product doesn't exist, create a new record
@@ -152,7 +153,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('Descripción'),
                     'nombre_almacen': self.proveedor_id.name,
                     'existencia': record.get('Stock'),
-                    'costo_sin_iva': precio,
+                    'costo_sin_iva': precio * self.tipo_cambio,
                     'tipo_moneda': tipomoneda,
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
@@ -317,7 +318,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_radialpros(self, record):
         count_updated = 0
         count_created = 0
-    
+        promociones = 0
         if self.tipo_cambio > 1:
             tipomoneda = 'USD'
         else:
@@ -335,9 +336,11 @@ class WizardImportExistenciasProv(models.TransientModel):
     
         if existing_record:
             # If the product exists, update the 'existencia' field
-            existing_record.write({'existencia': record.get('Stock')})
+            existing_record.write({'existencia': record.get('Stock'),'costo_sin_iva': record.get('Mayoreo DLLS') * self.tipo_cambio,})
             count_updated += 1
         else:
+            if record.get('PROMOCIONDLLS'):
+                promociones=record.get('PROMOCIONDLLS')
             # If the product doesn't exist, create a new record
             try:
                 self.env['llantas_config.ctt_prov'].create({
@@ -346,8 +349,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('Descripción'),
                     'nombre_almacen': nombre_almacen,
                     'existencia': record.get('Stock'),
-                    'costo_sin_iva': record.get('Mayoreo DLLS'),
-                    'precio_promocion': record.get('PROMOCIONDLLS'),
+                    'costo_sin_iva': record.get('Mayoreo DLLS') * self.tipo_cambio,
+                    'precio_promocion': promociones,
                     'tipo_moneda': tipomoneda,
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
@@ -649,6 +652,10 @@ class ctrl_llantas(models.Model):
     precio_lista=fields.Float(
         string="Precio lista",
     )
+
+    sku_interno=fields.Char(
+        string="Sku interno"
+    )
     
 class ProductSupplierinfoInherited(models.Model):
     _inherit = 'product.supplierinfo'
@@ -663,7 +670,8 @@ class ProductSupplierinfoInherited(models.Model):
             display_value += str(e.price) or ""
             display_value += ' ['
             display_value += str(e.currency_id.name) or ""
-            display_value += ']'
+            display_value += '] - '
+            display_value += str(e.product_code) or ""
             data.append((e.id, display_value))
         return data
 

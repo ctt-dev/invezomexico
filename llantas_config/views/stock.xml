@@ -13,6 +13,7 @@
                 </xpath>
                 <xpath expr="//group[@name='carrier_data']//field[@name='carrier']" position="after">
                      <field name="link_guia"  string="Link guia" widget="url"/>
+                    <field name="rastreador" string="Guia" widget="url"/>
                 </xpath>
                 
             </field>

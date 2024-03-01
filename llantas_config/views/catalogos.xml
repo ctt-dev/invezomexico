@@ -251,6 +251,8 @@
             <field name="arch" type="xml">
                 <tree string="Carrier" editable="bottom">
                     <field name="name"/>
+                    <field name="url"/>
+                    <field name="is_trackeable" />
                     
                 </tree>
             </field>

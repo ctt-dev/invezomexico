@@ -187,6 +187,7 @@ class sale_order_inherit(models.Model):
                                 'partner_id': line.proveedor_id.partner_id.id,
                                 'currency_id': id_de_la_moneda,
                                 'company_id': self.env.company.id,
+                                'picking_type_id':self.warehouse_id.in_type_id.id,
                             })
                             if line.product_id.product_tmpl_id.es_paquete == False:
                                 purchase_line = self.env['purchase.order.line'].create({
@@ -197,6 +198,8 @@ class sale_order_inherit(models.Model):
                                     'product_uom': line.product_uom.id,
                                     'price_unit': line.costo_proveedor,
                                     'sale_order_id':rec.id,
+                                    'no_pedimento':line.no_pedimento,
+                                    'codigo_proveedor': line.codigo_proveedor,
                                 })
                                 line.write({'purchase_line_ids': purchase_line})
                                 self.env['mail.message'].create({
@@ -220,6 +223,7 @@ class sale_order_inherit(models.Model):
                                             'product_uom': line.product_uom.id,
                                             'price_unit': line.costo_proveedor,
                                             'sale_order_id':rec.id,
+                                            'codigo_proveedor': line.codigo_proveedor,
                                         })
                                         line.write({'purchase_line_ids': purchase_line})
                                         self.env['mail.message'].create({
@@ -239,6 +243,7 @@ class sale_order_inherit(models.Model):
                                 'partner_id': line.proveedor_id.partner_id.id,
                                 'currency_id': id_de_la_moneda,
                                 'company_id': self.env.company.id,
+                                'picking_type_id':self.warehouse_id.in_type_id.id,
                             })
                             for purchase_line in purchase_id.order_line:
                                 if purchase_line.sale_line_id.id == line.id:
@@ -260,6 +265,8 @@ class sale_order_inherit(models.Model):
                                             'product_qty': line.product_qty,
                                             'product_uom': line.product_uom.id,
                                             'price_unit': line.costo_proveedor,
+                                            'no_pedimento':line.no_pedimento,
+                                            'codigo_proveedor': line.codigo_proveedor,
                                         })
                             self.env['mail.message'].create({
                                 'model': 'sale.order',
@@ -416,6 +423,12 @@ class sale_order_line_inherit(models.Model):
         tracking=True,
     )
 
+    codigo_proveedor=fields.Char(
+        related="proveedor_id.product_code",
+        string="Codigo proveedor",
+        trackin=True,
+    )
+
     importe_descuento=fields.Float(
         string="Importe descuento",
     )
@@ -503,14 +516,14 @@ class sale_order_line_inherit(models.Model):
         related="product_id.product_tmpl_id.default_code",
         store=True
     )
-
-    # @api.onchange('product_id')
+    ##Listas de precios
+    # @api.onchange('product_id','proveedor_id')
     # def onchange_product_id_for_llantired(self):
-    #     if not self.id:
-    #         if self.order_id._origin:
-    #             if self.product_id.id:
-    #                 if len(self.order_id.seller_ids) == 0:
-    #                     if self.env['sale.order.line'].search_count([('order_id', '=', self.order_id._origin.id), ('product_id.product_tmpl_id.es_paquete', '=', True)]) > 0:
-    #                         raise UserError("El producto es un paquete")
+    #     if self.product_id.id:
+    #         self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
+           
 
-    
+    no_pedimento=fields.Char(
+        string="# pedimiento",
+        traking=True,
+    )

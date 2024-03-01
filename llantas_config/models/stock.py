@@ -57,23 +57,23 @@ class sale_order_inherit(models.Model):
 
     
 
-    def _compute_rastreador(self):
-        for rec in self:
-            carriers = self.env['llantas_config.carrier'].search([('is_trackeable', '=', True)])
-            link = ''
-            if carriers:
-                for carrier in carriers:
-                    if carrier.name == 'DHL':
-                        link = 'https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=' + str(rec.carrier_tracking_ref) + '&submit=1'
-                    elif carrier.name == 'FEDEX':
-                        link = 'https://www.fedex.com/wtrk/track/?action=track&trackingnumber=' + str(rec.carrier_tracking_ref) + '&cntry_code=mx&locale=es_mx'
-                    else:
-                        link = str(carrier.url) + str(rec.carrier_tracking_ref)
+    # def _compute_rastreador(self):
+    #     for rec in self:
+    #         carriers = self.env['llantas_config.carrier'].search([('is_trackeable', '=', True)])
+    #         link = ''
+    #         if carriers:
+    #             for carrier in carriers:
+    #                 if carrier.name == 'DHL':
+    #                     link = 'https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=' + str(rec.carrier_tracking_ref) + '&submit=1'
+    #                 elif carrier.name == 'FEDEX':
+    #                     link = 'https://www.fedex.com/wtrk/track/?action=track&trackingnumber=' + str(rec.carrier_tracking_ref) + '&cntry_code=mx&locale=es_mx'
+    #                 else:
+    #                     link = str(carrier.url) + str(rec.carrier_tracking_ref)
 
-                rec.rastreador = link
-    rastreador = fields.Char(
-        string="Guía", 
-        compute="_compute_rastreador", 
-        readonly=True
-    )
+    #             rec.rastreador = link
+    # rastreador = fields.Char(
+    #     string="Guía", 
+    #     compute="_compute_rastreador", 
+    #     readonly=True
+    # )
     

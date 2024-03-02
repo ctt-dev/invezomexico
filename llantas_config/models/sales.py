@@ -385,24 +385,24 @@ class sale_order_inherit(models.Model):
         related="picking_ids.name",
     )
 
-    def crear_actividad(self):
-        for rec in self:
-            if rec.comprador_id:
-                actividad_tipo_id = self.env.ref('mail.mail_activity_data_todo').id
-                model_sale_order_id = self.env.ref('sale.model_sale_order').id
-                if rec.comprador_id.user_id.id:
-                    rec.env['mail.activity'].create({
-                        'res_model': 'sale.order',
-                        'res_model_id': model_sale_order_id,
-                        'res_id': rec.id,
-                        'activity_type_id': actividad_tipo_id,
-                        'summary': 'Orden de venta pendiente ',
-                        'date_deadline': fields.Datetime.now(),
-                        'user_id': rec.comprador_id.user_id.id,
-                        'note': '',
-                    })
-                else:
-                    raise UserError("Debe seleccionar un usuario de compras válido")
+  #  def crear_actividad(self):
+   #     for rec in self:
+    #        if rec.comprador_id:
+                #actividad_tipo_id = self.env.ref('mail.mail_activity_data_todo').id
+                #model_sale_order_id = self.env.ref('sale.model_sale_order').id
+ #               if rec.comprador_id.user_id.id:
+                    #rec.env['mail.activity'].create({
+                        #'res_model': 'sale.order',
+                        #'res_model_id': model_sale_order_id,
+                        #'res_id': rec.id,
+                        #'activity_type_id': actividad_tipo_id,
+                        #'summary': 'Orden de venta pendiente ',
+                        #'date_deadline': fields.Datetime.now(),
+                        #'user_id': rec.comprador_id.user_id.id,
+                        #'note': '',
+ #                   })
+ #               else:
+#                    raise UserError("Debe seleccionar un usuario de compras válido")
 
     
 class sale_order_line_inherit(models.Model):

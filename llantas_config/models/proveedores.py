@@ -39,6 +39,9 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_herrera_tires(self, record):
         count_updated = 0
         count_created = 0
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         
         fecha_actual = datetime.datetime.now()
         
@@ -51,7 +54,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             for existing_record in existing_records_same_proveedor:
                 existing_record.write({
                     'existencia': record.get('Existencia'),
-                    'costo_sin_iva': record.get('Costo antes de iva'),
+                    'costo_sin_iva': record.get('Costo antes de iva') * tipo_cambio
                 })
                 count_updated += 1
         else:
@@ -63,8 +66,9 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('Titulo'),
                     'nombre_almacen': self.proveedor_id.name,
                     'existencia': record.get('Existencia'),
-                    'costo_sin_iva': record.get('Costo antes de iva'),
-                    'tipo_moneda': record.get('Moneda'),
+                    'costo_sin_iva': record.get('Costo antes de iva') * tipo_cambio,
+                    # 'tipo_moneda': record.get('Moneda'),
+                    'tipo_moneda': 'MXN',
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
                 }
@@ -78,7 +82,9 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_futurama(self, record):
         count_updated = 0
         count_created = 0
-        
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         fecha_actual = fields.Datetime.now()
     
         # Itera sobre los almacenes y actualiza la existencia para cada uno
@@ -91,7 +97,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column)})
+                existing_record.write({'existencia': record.get(almacen_column),'costo_sin_iva': record.get('MAYOREO') * tipo_cambio})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -102,8 +108,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'producto': record.get('DESCRIPCIÓN'),
                         'nombre_almacen': almacen_column,
                         'existencia': record.get(almacen_column),
-                        'costo_sin_iva': record.get('MAYOREO'),
-                        'tipo_moneda': record.get('Moneda'),
+                        'costo_sin_iva': record.get('MAYOREO') * tipo_cambio,
+                        'tipo_moneda': 'MXN',
                         'tipo_cambio': self.tipo_cambio,
                         'fecha_actualizacion': fecha_actual,
                         'marca': record.get('APLICACIÓN'),
@@ -119,32 +125,28 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_import_treads(self, record):
         count_updated = 0
         count_created = 0
-        
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         fecha_actual = fields.Datetime.now()
 
         # Update existing records with the same SKU to update 'existencia' field
         existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
             ('sku', '=', record.get('Articulo'))
         ])
-
-        if existing_record_by_sku:
-            # If the product exists, update the 'existencia' field
-            existing_record_by_sku.write({'existencia': record.get('Stock'),'costo_sin_iva': precio * self.tipo_cambio,})
-            count_updated += 1
-        else:
-            # If the product doesn't exist, create a new record
-            it_trailer_usd = record.get('ITTrailerUSD')
+         it_trailer_usd = record.get('ITTrailerUSD')
             if isinstance(it_trailer_usd, float):
                 it_trailer_usd = str(it_trailer_usd)
 
             it_trailer_usd_cleaned = it_trailer_usd.replace('$', '').replace(',', '').strip()
-
-            if self.tipo_cambio > 1:
-                precio = float(it_trailer_usd_cleaned)
-                tipomoneda = 'USD'
-            else:
-                precio = float(it_trailer_usd_cleaned)
-                tipomoneda = 'MXN'
+        
+        if existing_record_by_sku:
+            # If the product exists, update the 'existencia' field
+            existing_record_by_sku.write({'existencia': record.get('Stock'),'costo_sin_iva': it_trailer_usd_cleaned})
+            count_updated += 1
+        else:
+            # If the product doesn't exist, create a new record
+           
 
             try:
                 self.env['llantas_config.ctt_prov'].create({
@@ -153,8 +155,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('Descripción'),
                     'nombre_almacen': self.proveedor_id.name,
                     'existencia': record.get('Stock'),
-                    'costo_sin_iva': precio * self.tipo_cambio,
-                    'tipo_moneda': tipomoneda,
+                    'costo_sin_iva': it_trailer_usd_cleaned,
+                    'tipo_moneda': 'MXN',
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
                     'marca': record.get('Marca'),
@@ -174,11 +176,9 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_loyga(self, record):
         count_updated = 0
         count_created = 0
-        
-        if self.tipo_cambio > 1:
-            tipomoneda = 'USD'
-        else:
-            tipomoneda = 'MXN'
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         fecha_actual = fields.Datetime.now()
 
         # Update existing records with the same SKU to update 'existencia' field
@@ -188,7 +188,7 @@ class WizardImportExistenciasProv(models.TransientModel):
 
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
-            existing_record_by_sku.write({'existencia': record.get('EXISTENCIA')})
+            existing_record_by_sku.write({'existencia': record.get('EXISTENCIA'), 'costo_sin_iva': record.get('PRECIO') * tipo_cambio})
             count_updated += 1
         else:
             # If the product doesn't exist, create a new record
@@ -199,8 +199,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('ARTICULO'),
                     'nombre_almacen': self.proveedor_id.name,
                     'existencia': record.get('EXISTENCIA'),
-                    'costo_sin_iva': record.get('PRECIO'),
-                    'tipo_moneda': tipomoneda,
+                    'costo_sin_iva': record.get('PRECIO') * tipo_cambio,
+                    'tipo_moneda': 'MXN',
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
                     'modelo': record.get('MODELO'),
@@ -216,11 +216,10 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_malpa(self, record):
         count_updated = 0
         count_created = 0
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         
-        if self.tipo_cambio > 1:
-            tipomoneda = 'USD'
-        else:
-            tipomoneda = 'MXN'
         it_precio_lista = record.get('PRECIO DE LISTA')
         if isinstance(it_precio_lista, float):
             it_precio_lista = str(it_precio_lista)
@@ -245,7 +244,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column)})
+                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_lista * tipo_cambio})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -256,9 +255,9 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'producto': record.get('Descripción'),
                         'nombre_almacen': almacen_column,
                         'existencia': record.get(almacen_column),
-                        'costo_sin_iva': precio_lista,
+                        'costo_sin_iva': precio_lista * tipo_cambio,
                         'precio_llantired': precio_llantired,
-                        'tipo_moneda': record.get('Moneda'),
+                        'tipo_moneda': 'MXN',
                         'tipo_cambio': self.tipo_cambio,
                         'fecha_actualizacion': fecha_actual,
                         'marca': record.get('APLICACIÓN'),
@@ -274,10 +273,9 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_new_tires(self, record):
         count_updated = 0
         count_created = 0
-        if self.tipo_cambio > 1:
-            tipomoneda = 'USD'
-        else:
-            tipomoneda = 'MXN'
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         it_precio_lista = record.get('PRECIO DE LISTA')
     
         fecha_actual = fields.Datetime.now()
@@ -292,7 +290,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column)})
+                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': record.get('MAYOREO') * tipo_cambio})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -303,8 +301,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'producto': record.get('Descripción'),
                         'nombre_almacen': almacen_column,
                         'existencia': record.get(almacen_column),
-                        'costo_sin_iva': record.get('MAYOREO'),
-                        'tipo_moneda': record.get('Moneda'),
+                        'costo_sin_iva': record.get('MAYOREO') * tipo_cambio,
+                        'tipo_moneda': 'MXN',
                         'tipo_cambio': self.tipo_cambio,
                         'fecha_actualizacion': fecha_actual,
                     })
@@ -319,10 +317,10 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         promociones = 0
-        if self.tipo_cambio > 1:
-            tipomoneda = 'USD'
-        else:
-            tipomoneda = 'MXN'
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
+        
         
         fecha_actual = fields.Datetime.now()
         sku = record.get('SKU')
@@ -336,7 +334,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
         if existing_record:
             # If the product exists, update the 'existencia' field
-            existing_record.write({'existencia': record.get('Stock'),'costo_sin_iva': record.get('Mayoreo DLLS') * self.tipo_cambio,})
+            existing_record.write({'existencia': record.get('Stock'),'costo_sin_iva': record.get('Mayoreo DLLS') * tipo_cambio})
             count_updated += 1
         else:
             if record.get('PROMOCIONDLLS'):
@@ -349,9 +347,9 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('Descripción'),
                     'nombre_almacen': nombre_almacen,
                     'existencia': record.get('Stock'),
-                    'costo_sin_iva': record.get('Mayoreo DLLS') * self.tipo_cambio,
+                    'costo_sin_iva': record.get('Mayoreo DLLS') * tipo_cambio,
                     'precio_promocion': promociones,
-                    'tipo_moneda': tipomoneda,
+                    'tipo_moneda': 'MXN',
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
                     'modelo': record.get('Modelo'),
@@ -376,6 +374,9 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_tbc(self, record):
         count_updated = 0
         count_created = 0
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         
         precio_lista = record.get('PRECIO DE LISTA')
         precio_cliente = record.get('PRECIO_CLIENTE')
@@ -400,7 +401,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record_by_sku:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record_by_sku.write({'existencia': record.get(almacen_column)})
+                existing_record_by_sku.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_cliente * tipo_cambios})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -412,8 +413,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'nombre_almacen': almacen_column,
                         'existencia': record.get(almacen_column),
                         'precio_lista': precio_lista,
-                        'costo_sin_iva': precio_cliente,
-                        'tipo_moneda': record.get('Moneda'),
+                        'costo_sin_iva': precio_cliente * tipo_cambios,
+                        'tipo_moneda': 'MXN',
                         'tipo_cambio': self.tipo_cambio,
                         'fecha_actualizacion': fecha_actual,
                         'marca': record.get('MARCA'),
@@ -428,14 +429,12 @@ class WizardImportExistenciasProv(models.TransientModel):
     def import_tersa(self, record):
         count_updated = 0
         count_created = 0
-
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00
+            tipo_cambio = self.tipo_cambio
         # Agrega un registro de log para rastrear la ejecución del código
         _logger.info(f"Importing record: {record}")
 
-        if self.tipo_cambio > 1:
-            tipomoneda = 'USD'
-        else:
-            tipomoneda = 'MXN'
 
         fecha_actual = fields.Datetime.now()
 
@@ -448,7 +447,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         if existing_records:
             # Si existen registros, actualiza el campo 'existencia' en cada uno
             for existing_record in existing_records:
-                existing_record.write({'existencia': record.get('Columna12')})
+                existing_record.write({'existencia': record.get('Columna12'), 'costo_sin_iva': record.get('Columna14') * tipo_cambio})
                 count_updated += 1
         else:
             # Si no existen registros, crea uno nuevo
@@ -459,8 +458,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                     'producto': record.get('Columna2'),
                     'nombre_almacen': record.get('Columna10'),
                     'existencia': record.get('Columna12'),
-                    'costo_sin_iva': record.get('Columna14'),
-                    'tipo_moneda': record.get('Columna15'),
+                    'costo_sin_iva': record.get('Columna14') * tipo_cambio,
+                    'tipo_moneda': 'MXN',
                     'tipo_cambio': self.tipo_cambio,
                     'fecha_actualizacion': fecha_actual,
                     'modelo': record.get('Columna6'),

@@ -247,7 +247,7 @@ class proveedores_link(models.Model):
                 self.env['llantas_config.ctt_prov'].create({
                     'producto': x["Descripcion_Description"],
                     'sku': x["Clave_Parte"],
-                    'tipo_moneda': x["Moneda_Currency"],
+                    'tipo_moneda': 'MXN',
                     'tipo_cambio': TC,
                     'aplicacion': x["Tipo_Type"],
                     'marca': x["Marca_Brand"],
@@ -285,7 +285,7 @@ class proveedores_link(models.Model):
                 if mov.tipo_moneda == 'MXN':
                     moneda = 33
                 elif mov.tipo_moneda == 'USD':
-                    moneda = 2
+                    moneda = 33
                 else:
                     moneda = 33
                 lines = self.env['product.template'].search([
@@ -305,7 +305,6 @@ class proveedores_link(models.Model):
                                 ('product_tmpl_id', '=', line.id),
                                 ('partner_id', '=', proveedor)],
                                 limit=1)
-    
                             try:
                                 if proveedores.exists():
                                     proveedores_existente = proveedores.filtered(lambda p: p.partner_id == proveedor)
@@ -315,11 +314,11 @@ class proveedores_link(models.Model):
                                         proveedores.write({
                                             'partner_id': proveedor,
                                             'currency_id': moneda,
-                                            'price': mov.costo_sin_iva * mov.tipo_cambio,
+                                            'price': mov.costo_sin_iva,
                                             'ultima_actualizacion': fecha_actual,
                                             'tipo_cambio': mov.tipo_cambio,
                                             'precio_neto': mov.costo_sin_iva,
-                                            'tipo_moneda_proveedor': mov.tipo_moneda,
+                                            'tipo_moneda_proveedor': 'MXN',
                                             'product_code': mov.sku,
                                         })
                                         count_actualizados += 1
@@ -328,11 +327,11 @@ class proveedores_link(models.Model):
                                         'partner_id': proveedor,
                                         'product_tmpl_id': line.id, 
                                         'currency_id': moneda,
-                                        'price': mov.costo_sin_iva * mov.tipo_cambio,
+                                        'price': mov.costo_sin_iva,
                                         'ultima_actualizacion': fecha_actual,
                                         'tipo_cambio': mov.tipo_cambio,
                                         'precio_neto': mov.costo_sin_iva,
-                                        'tipo_moneda_proveedor': mov.tipo_moneda,
+                                        'tipo_moneda_proveedor': 'MXN',
                                         'product_code': mov.sku,
                                     })
                                     count_agregados += 1

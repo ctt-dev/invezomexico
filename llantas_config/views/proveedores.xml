@@ -17,6 +17,8 @@
                     <field name="nombre_almacen" />       
                     <field name="existencia" />
                     <field name="costo_sin_iva" />
+                    <field name="tipo_moneda" optional="show"/>
+                    <field name="tipo_cambio" optional="hide"/>
                     <field name="precio_lista" />
                     <field name="precio_llantired" />
                     <field name="precio_promocion" />

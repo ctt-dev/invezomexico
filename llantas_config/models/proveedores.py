@@ -40,7 +40,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         
         fecha_actual = datetime.datetime.now()
@@ -83,7 +83,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         fecha_actual = fields.Datetime.now()
     
@@ -126,7 +126,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         fecha_actual = fields.Datetime.now()
 
@@ -134,11 +134,10 @@ class WizardImportExistenciasProv(models.TransientModel):
         existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
             ('sku', '=', record.get('Articulo'))
         ])
-         it_trailer_usd = record.get('ITTrailerUSD')
-            if isinstance(it_trailer_usd, float):
-                it_trailer_usd = str(it_trailer_usd)
-
-            it_trailer_usd_cleaned = it_trailer_usd.replace('$', '').replace(',', '').strip()
+        it_trailer_usd = record.get('ITTrailerUSD')
+        if isinstance(it_trailer_usd, float):
+            it_trailer_usd = str(it_trailer_usd)
+        it_trailer_usd_cleaned = it_trailer_usd.replace('$', '').replace(',', '').strip()
         
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
@@ -177,7 +176,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         fecha_actual = fields.Datetime.now()
 
@@ -217,7 +216,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         
         it_precio_lista = record.get('PRECIO DE LISTA')
@@ -274,7 +273,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         it_precio_lista = record.get('PRECIO DE LISTA')
     
@@ -318,7 +317,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_created = 0
         promociones = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         
         
@@ -375,7 +374,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         
         precio_lista = record.get('PRECIO DE LISTA')
@@ -430,7 +429,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated = 0
         count_created = 0
         tipo_cambio = 1
-        if self.tipo_cambio != 0.00
+        if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         # Agrega un registro de log para rastrear la ejecución del código
         _logger.info(f"Importing record: {record}")

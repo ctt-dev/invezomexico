@@ -5,7 +5,7 @@
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
                 <tree sample="1" multi_edit="1">
-                    <field name="comprador_id" domain="[('category_ids','like','COMP')]" widget="many2one"/>
+                    <field name="comprador_id" />
                     <field name="no_venta" />
                     <field name="link_venta" optional="hide" widget="url"/>
                     
@@ -24,6 +24,7 @@
                     <button string="Ver facturas clientes" type="object" class="oe_highlight" name="action_show_related_invoices"/>
                     <!-- <field name="factura_cliente_id" widget="many2one"/> -->
                     <field name="status_id" readonly="0" decoration-danger="status_id == '01'" decoration-info="status_id == '03'" decoration-muted="status_id == '04'" decoration-success="status_id == '05'" decoration-primary="status_id == '06'"  widget="badge" decoration-warning="status_id == '02'" />
+                    <!-- <field name="status_id" readonly="0" forcesave="1"/> -->
                     <field name="fecha" />
                     <field name="dias" readonly="1"/>
                     <!-- <field name="productos_orden"/> -->
@@ -171,11 +172,12 @@
                         </group>
                     <notebook colspan="4">
                         <page string="Información de traslados">
-                            <group string="Salidas">
-                                <field name="orden_entrega"/>
-                            </group>
+                            
                             <group string="Entradas">
                                 <field name="orden_recepcion" />
+                            </group>
+                            <group string="Salidas">
+                                <field name="orden_entrega"/>
                             </group>
                         </page>
 
@@ -254,7 +256,9 @@
                    <group expand="0" string="Group By">
                     <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
                     <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
-                    <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
+                    <filter string="Comprador" name="comprador_name" domain="[]" context="{'group_by': 'comprador_name'}"/>
+
+
                     <filter string="Status" name="status_id" domain="[]" context="{'group_by': 'status_id'}"/>
                     <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
                     <filter string="Order Date" name="fecha" domain="[]" context="{'group_by': 'fecha'}"/>

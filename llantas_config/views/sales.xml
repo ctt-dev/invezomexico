@@ -16,6 +16,7 @@
 
 
                      <field name="envio" attrs="{'invisible': [('mostrar_envio', '!=', True)]}" />
+                     <field name="warehouse_id" />
                      <field name="commitment_date"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
@@ -35,7 +36,7 @@
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="before">
                     <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
                     <field name="costo_proveedor" readonly="1" optional="show"  />
-                    <field name="no_pedimento" />
+                    <field name="no_pedimento" optional="show"/>
                     <field name="codigo_proveedor" invisible="1" />
                     
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->

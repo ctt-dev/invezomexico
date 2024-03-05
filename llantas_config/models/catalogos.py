@@ -320,6 +320,8 @@ class proveedores_link(models.Model):
                                             'precio_neto': mov.costo_sin_iva,
                                             'tipo_moneda_proveedor': 'MXN',
                                             'product_code': mov.sku,
+                                            'existencia_actual':mov.existencia,
+                                            'company_id': False,
                                         })
                                         count_actualizados += 1
                                 else:
@@ -333,6 +335,8 @@ class proveedores_link(models.Model):
                                         'precio_neto': mov.costo_sin_iva,
                                         'tipo_moneda_proveedor': 'MXN',
                                         'product_code': mov.sku,
+                                        'existencia_actual':mov.existencia,
+                                        'company_id': False,
                                     })
                                     count_agregados += 1
     

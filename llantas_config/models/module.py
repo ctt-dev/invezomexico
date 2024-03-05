@@ -55,16 +55,26 @@ class ctrl_llantas(models.Model):
         string="Nombre",
         tracking=True,
     )
-
-    comprador_id=fields.Many2one(
+    
+    comprador_id = fields.Many2one(
         "hr.employee",
         related="sale_id.comprador_id",
         string="Comprador",
         company_dependent=True,
         store=True,
     )
-
-
+    
+    comprador_name = fields.Char(
+        string="Nombre del Comprador",
+        related="sale_id.comprador_id.name",
+        store=True,
+    )
+    
+    @api.depends('sale_id.comprador_id.name')
+    def _compute_comprador_name(self):
+        for line in self:
+            line.comprador_name = line.sale_id.comprador_id.name
+   
     partner_name=fields.Many2one(
         "res.partner",
         related="sale_id.partner_id",

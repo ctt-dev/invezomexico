@@ -15,4 +15,4 @@ from . import website
 from . import account_move
 from . import res_company
 from . import purchase
-# from . import product_pricelist_item
+from . import product_pricelist_item

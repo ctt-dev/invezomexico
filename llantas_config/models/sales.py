@@ -208,7 +208,7 @@ class sale_order_inherit(models.Model):
                                     'message_type': 'notification',
                                     'subtype_id': 2,
                                     'email_from': self.user_id.login,
-                                    'author_id': self.user_id.id,
+                                    'author_id': self.user_id.parent_id.id,
                                     'body': "Orden de compra generada "
                                 })
                             else:
@@ -232,7 +232,7 @@ class sale_order_inherit(models.Model):
                                             'message_type': 'notification',
                                             'subtype_id': 2,
                                             'email_from': self.user_id.login,
-                                            'author_id': self.user_id.id,
+                                            'author_id': self.user_id.parent_id.id,
                                             'body': "Orden de compra generada "
                                         })
                         else:
@@ -385,24 +385,24 @@ class sale_order_inherit(models.Model):
         related="picking_ids.name",
     )
 
-  #  def crear_actividad(self):
-   #     for rec in self:
-    #        if rec.comprador_id:
-                #actividad_tipo_id = self.env.ref('mail.mail_activity_data_todo').id
-                #model_sale_order_id = self.env.ref('sale.model_sale_order').id
- #               if rec.comprador_id.user_id.id:
-                    #rec.env['mail.activity'].create({
-                        #'res_model': 'sale.order',
-                        #'res_model_id': model_sale_order_id,
-                        #'res_id': rec.id,
-                        #'activity_type_id': actividad_tipo_id,
-                        #'summary': 'Orden de venta pendiente ',
-                        #'date_deadline': fields.Datetime.now(),
-                        #'user_id': rec.comprador_id.user_id.id,
-                        #'note': '',
- #                   })
- #               else:
-#                    raise UserError("Debe seleccionar un usuario de compras válido")
+    def crear_actividad(self):
+        for rec in self:
+            if rec.comprador_id:
+                actividad_tipo_id = self.env.ref('mail.mail_activity_data_todo').id
+                model_sale_order_id = self.env.ref('sale.model_sale_order').id
+                if rec.comprador_id.user_id.id:
+                    rec.env['mail.activity'].create({
+                        'res_model': 'sale.order',
+                        'res_model_id': model_sale_order_id,
+                        'res_id': rec.id,
+                        'activity_type_id': actividad_tipo_id,
+                        'summary': 'Orden de venta pendiente ',
+                        'date_deadline': fields.Datetime.now(),
+                        'user_id': rec.comprador_id.user_id.id,
+                        'note': '',
+                    })
+                else:
+                    raise UserError("Debe seleccionar un usuario de compras válido")
 
     
 class sale_order_line_inherit(models.Model):
@@ -516,11 +516,11 @@ class sale_order_line_inherit(models.Model):
         related="product_id.product_tmpl_id.default_code",
         store=True
     )
-    ##Listas de precios
-    # @api.onchange('product_id','proveedor_id')
-    # def onchange_product_id_for_llantired(self):
-    #     if self.product_id.id:
-    #         self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
+    #Listas de precios
+    @api.onchange('product_id','proveedor_id')
+    def onchange_product_id_for_llantired(self):
+        if self.product_id.id:
+            self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
            
 
     no_pedimento=fields.Char(

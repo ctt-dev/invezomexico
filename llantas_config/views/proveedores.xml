@@ -16,6 +16,7 @@
                     <field name="uso" />
                     <field name="nombre_almacen" />       
                     <field name="existencia" />
+                    <!-- <field name="product_id_qty_available" /> -->
                     <field name="costo_sin_iva" />
                     <field name="tipo_moneda" optional="show"/>
                     <field name="tipo_cambio" optional="hide"/>

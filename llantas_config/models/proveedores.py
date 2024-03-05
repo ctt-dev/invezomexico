@@ -34,6 +34,115 @@ class WizardImportExistenciasProv(models.TransientModel):
         existing_proveedor.write({
             'existencia': 0,
         })
+        
+    def llanti_bodega(self):
+        count_updated = 0
+        count_created = 0
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00:
+            tipo_cambio = self.tipo_cambio
+        
+        fecha_actual = datetime.datetime.now()
+    
+        if self.proveedor_id.name == 'Llantired':
+            quant_ids = self.env['stock.quant'].search([('location_id.usage','=','internal'),('company_id.name','=','LLANTIRED')])
+            product_list = []
+            for quant_id in quant_ids:
+                if quant_id.product_id.id not in product_list:
+                    product_list.append(quant_id.product_id.id)
+    
+            for product in product_list:
+                product_id = self.env['product.product'].browse(product)
+                quant_ids = self.env['stock.quant'].search([('product_id','=',product_id.id),('location_id.usage','=','internal'),('company_id.name','=','LLANTIRED')])
+                quantity = 0
+                for quant_id in quant_ids:
+                    quantity += quant_id.quantity
+                
+                existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
+                    ('nombre_proveedor', '=', self.proveedor_id.name),
+                    ('sku_interno', '=', product_id.default_code)
+                ])
+                if existing_records_same_proveedor:
+                    # Update existing records with the new values
+                    for existing_record in existing_records_same_proveedor:
+                        existing_record.write({
+                            'existencia': quantity,
+                            'costo_sin_iva': product_id.standard_price
+                        })
+                        count_updated += 1
+                else:
+                    # If the product doesn't exist, create a new record
+                    try:
+                        new_record = {
+                            'nombre_proveedor': self.proveedor_id.name,
+                            'sku_interno': product_id.default_code,
+                            'producto': product_id.name,
+                            'nombre_almacen': 'Llantired',
+                            'existencia': quantity,
+                            'costo_sin_iva': product_id.standard_price,
+                            # 'tipo_moneda': record.get('Moneda'),
+                            'tipo_moneda': 'MXN',
+                            'tipo_cambio': 1,
+                            'fecha_actualizacion': fecha_actual,
+                        }
+                        self.env['llantas_config.ctt_prov'].create(new_record)
+                        count_created += 1
+                    except UserError as e:
+                        _logger.error(f"Error creating record: {e}")
+            
+            return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
+
+
+        
+        elif self.proveedor_id.name == 'La bodega':
+            quant_ids = self.env['stock.quant'].search([('location_id.usage','=','internal'),('company_id.name','=','LA BODEGA LLANTAS Y ACCESORIOS')])
+            product_list = []
+            for quant_id in quant_ids:
+                if quant_id.product_id.id not in product_list:
+                    product_list.append(quant_id.product_id.id)
+    
+            for product in product_list:
+                product_id = self.env['product.product'].browse(product)
+                quant_ids = self.env['stock.quant'].search([('product_id','=',product_id.id),('location_id.usage','=','internal'),('company_id.name','=','LA BODEGA LLANTAS Y ACCESORIOS')])
+                quantity = 0
+                for quant_id in quant_ids:
+                    quantity += quant_id.quantity
+                
+                existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
+                    ('nombre_proveedor', '=', self.proveedor_id.name),
+                    ('sku_interno', '=', product_id.default_code)
+                ])
+                if existing_records_same_proveedor:
+                    # Update existing records with the new values
+                    for existing_record in existing_records_same_proveedor:
+                        existing_record.write({
+                            'existencia': quantity,
+                            'costo_sin_iva': product_id.standard_price
+                        })
+                        count_updated += 1
+                else:
+                    # If the product doesn't exist, create a new record
+                    try:
+                        new_record = {
+                            'nombre_proveedor': self.proveedor_id.name,
+                            'sku_interno': product_id.default_code,
+                            'producto': product_id.name,
+                            'nombre_almacen': 'Llantired',
+                            'existencia': quantity,
+                            'costo_sin_iva': product_id.standard_price,
+                            # 'tipo_moneda': record.get('Moneda'),
+                            'tipo_moneda': 'MXN',
+                            'tipo_cambio': 1,
+                            'fecha_actualizacion': fecha_actual,
+                        }
+                        self.env['llantas_config.ctt_prov'].create(new_record)
+                        count_created += 1
+                    except UserError as e:
+                        _logger.error(f"Error creating record: {e}")
+            
+            return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
+        else:
+            raise UserError('Proveedor incorrecto')
                
         
     def import_herrera_tires(self, record):
@@ -400,7 +509,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record_by_sku:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record_by_sku.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_cliente * tipo_cambios})
+                existing_record_by_sku.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_cliente * tipo_cambio})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -412,7 +521,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'nombre_almacen': almacen_column,
                         'existencia': record.get(almacen_column),
                         'precio_lista': precio_lista,
-                        'costo_sin_iva': precio_cliente * tipo_cambios,
+                        'costo_sin_iva': precio_cliente * tipo_cambio,
                         'tipo_moneda': 'MXN',
                         'tipo_cambio': self.tipo_cambio,
                         'fecha_actualizacion': fecha_actual,
@@ -618,6 +727,25 @@ class ctrl_llantas(models.Model):
     sku=fields.Char(
         string="Sku",
     )
+
+    # @api.depends('sku')
+    # def compute_product_id(self):
+    #     for rec in self:
+    #         product = rec.env['product.product']
+    #         products = rec.env['product.product'].search([('default_code','=',rec.sku)])
+    #         if len(products) > 0:
+    #             product = products[0]
+    #         rec.product_id = product
+    # product_id = fields.Many2one(
+    #     'product.product',
+    #     string="Producto",
+    #     compute=compute_product_id
+    # )
+
+    # product_id_qty_available = fields.Float(
+    #     string="Cantidad de producto",
+    #     related="product_id.qty_available"
+    # )
 
     aplicacion=fields.Char(
         string="Aplicación",

@@ -111,7 +111,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                 
                 existing_records_same_proveedor = self.env['llantas_config.ctt_prov'].search([
                     ('nombre_proveedor', '=', self.proveedor_id.name),
-                    ('sku_interno', '=', product_id.default_code)
+                    ('sku_interno', '=', product_id.default_code),
+                    ('sku', '=', product_id.default_code)
                 ])
                 if existing_records_same_proveedor:
                     # Update existing records with the new values
@@ -135,6 +136,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                             'tipo_moneda': 'MXN',
                             'tipo_cambio': 1,
                             'fecha_actualizacion': fecha_actual,
+                            'sku': product_id.default_code,
                         }
                         self.env['llantas_config.ctt_prov'].create(new_record)
                         count_created += 1

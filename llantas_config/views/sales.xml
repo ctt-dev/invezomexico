@@ -53,7 +53,7 @@
                         <group>
                             <!-- <field name="detailed_info" readonly="0" widget="html" attrs="{'invisible': [('state', 'in', ['draft', 'send'])]}"/> -->
                             <field name="traspaso_name" readonly="1"/>
-                            <field name="carrier_id"/>
+                            <field name="llantas_config_carrier_id"/>
                             <field name="guia" readonly="0"/>
                             <field name="link_guia" readonly="0" widget="url"/>
                             <field name="estado_traspaso" readonly="1"/>

@@ -12,7 +12,7 @@ class sale_order_inherit(models.Model):
 
     carrier=fields.Char(
         string="Carrier",
-        related="sale_id.carrier_id.name",
+        related="sale_id.llantas_config_carrier_id.name",
         readonly=True,
     )
 

@@ -338,7 +338,7 @@ class sale_order_inherit(models.Model):
         ('cancel','Cancelado'),
     ], string="Estado publicación", related="picking_ids.state", tracking=True, store=True)
 
-    carrier_id=fields.Many2one(
+    llantas_config_carrier_id=fields.Many2one(
         "llantas_config.carrier",
         string="Carrier", 
         tracking=True

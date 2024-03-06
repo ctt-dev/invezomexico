@@ -25,7 +25,6 @@ class WizardImportExistenciasProv(models.TransientModel):
         string="TC a importar",
     )
 
-
     def dejar_en_cero(self):
         # Set 'existencia' to 0 for all records with the same 'nombre_proveedor'
         existing_proveedor = self.env['llantas_config.ctt_prov'].search([

@@ -114,6 +114,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                     ('sku_interno', '=', product_id.default_code),
                     ('sku', '=', product_id.default_code)
                 ])
+                # raise UserError(str(product_id.name)+' #'+str(quantity))
                 if existing_records_same_proveedor:
                     # Update existing records with the new values
                     for existing_record in existing_records_same_proveedor:
@@ -355,7 +356,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_lista * tipo_cambio})
+                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': float(precio_lista) * tipo_cambio})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -366,7 +367,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                         'producto': record.get('Descripción'),
                         'nombre_almacen': almacen_column,
                         'existencia': record.get(almacen_column),
-                        'costo_sin_iva': precio_lista * tipo_cambio,
+                        'costo_sin_iva': float(precio_lista) * tipo_cambio,
                         'precio_llantired': precio_llantired,
                         'tipo_moneda': 'MXN',
                         'tipo_cambio': self.tipo_cambio,

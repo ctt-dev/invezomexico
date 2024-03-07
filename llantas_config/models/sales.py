@@ -519,7 +519,7 @@ class sale_order_line_inherit(models.Model):
     #Listas de precios
     @api.onchange('product_id','proveedor_id')
     def onchange_product_id_for_llantired(self):
-        if self.product_id.id:
+        if self.product_id.id and self.order_id.id and self.order_id.partner_id.id and self.order_id.pricelist_id.id:
             self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
            
 

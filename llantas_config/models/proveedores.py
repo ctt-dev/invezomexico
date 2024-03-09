@@ -67,7 +67,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                     for existing_record in existing_records_same_proveedor:
                         existing_record.write({
                             'existencia': quantity,
-                            'costo_sin_iva': product_id.standard_price
+                            'costo_sin_iva': product_id.standard_price,
+                            'fecha_actualizacion': fecha_actual,
                         })
                         count_updated += 1
                 else:
@@ -120,7 +121,8 @@ class WizardImportExistenciasProv(models.TransientModel):
                     for existing_record in existing_records_same_proveedor:
                         existing_record.write({
                             'existencia': quantity,
-                            'costo_sin_iva': product_id.standard_price
+                            'costo_sin_iva': product_id.standard_price,
+                            'fecha_actualizacion': fecha_actual,
                         })
                         count_updated += 1
                 else:
@@ -167,7 +169,8 @@ class WizardImportExistenciasProv(models.TransientModel):
             for existing_record in existing_records_same_proveedor:
                 existing_record.write({
                     'existencia': record.get('Existencia'),
-                    'costo_sin_iva': record.get('Costo antes de iva') * tipo_cambio
+                    'costo_sin_iva': record.get('Costo antes de iva') * tipo_cambio,
+                    'fecha_actualizacion': fecha_actual,
                 })
                 count_updated += 1
         else:
@@ -210,7 +213,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column),'costo_sin_iva': record.get('MAYOREO') * tipo_cambio})
+                existing_record.write({'existencia': record.get(almacen_column),'costo_sin_iva': record.get('MAYOREO') * tipo_cambio,'fecha_actualizacion': fecha_actual,})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -254,7 +257,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
-            existing_record_by_sku.write({'existencia': record.get('Stock'),'costo_sin_iva': float(it_trailer_usd_cleaned) * tipo_cambio})
+            existing_record_by_sku.write({'existencia': record.get('Stock'),'costo_sin_iva': float(it_trailer_usd_cleaned) * tipo_cambio,'fecha_actualizacion': fecha_actual,})
             count_updated += 1
         else:
             # If the product doesn't exist, create a new record
@@ -300,7 +303,7 @@ class WizardImportExistenciasProv(models.TransientModel):
 
         if existing_record_by_sku:
             # If the product exists, update the 'existencia' field
-            existing_record_by_sku.write({'existencia': record.get('EXISTENCIA'), 'costo_sin_iva': record.get('PRECIO') * tipo_cambio})
+            existing_record_by_sku.write({'existencia': record.get('EXISTENCIA'), 'costo_sin_iva': record.get('PRECIO') * tipo_cambio,'fecha_actualizacion': fecha_actual,})
             count_updated += 1
         else:
             # If the product doesn't exist, create a new record
@@ -356,7 +359,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': float(precio_lista) * tipo_cambio})
+                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': float(precio_lista) * tipo_cambio,'fecha_actualizacion': fecha_actual,})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -402,7 +405,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': record.get('MAYOREO') * tipo_cambio})
+                existing_record.write({'existencia': record.get(almacen_column), 'costo_sin_iva': record.get('MAYOREO') * tipo_cambio,'fecha_actualizacion': fecha_actual,})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -446,7 +449,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
         if existing_record:
             # If the product exists, update the 'existencia' field
-            existing_record.write({'existencia': record.get('Stock'),'costo_sin_iva': record.get('Mayoreo DLLS') * tipo_cambio})
+            existing_record.write({'existencia': record.get('Stock'),'costo_sin_iva': record.get('Mayoreo DLLS') * tipo_cambio,'fecha_actualizacion': fecha_actual,})
             count_updated += 1
         else:
             if record.get('PROMOCIONDLLS'):
@@ -513,7 +516,7 @@ class WizardImportExistenciasProv(models.TransientModel):
     
             if existing_record_by_sku:
                 # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
-                existing_record_by_sku.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_cliente * tipo_cambio})
+                existing_record_by_sku.write({'existencia': record.get(almacen_column), 'costo_sin_iva': precio_cliente * tipo_cambio,'fecha_actualizacion': fecha_actual,})
                 count_updated += 1
             else:
                 # Si no existe, crea un nuevo registro
@@ -559,7 +562,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         if existing_records:
             # Si existen registros, actualiza el campo 'existencia' en cada uno
             for existing_record in existing_records:
-                existing_record.write({'existencia': record.get('Columna12'), 'costo_sin_iva': record.get('Columna14') * tipo_cambio})
+                existing_record.write({'existencia': record.get('Columna12'), 'costo_sin_iva': record.get('Columna14') * tipo_cambio,'fecha_actualizacion': fecha_actual})
                 count_updated += 1
         else:
             # Si no existen registros, crea uno nuevo
@@ -793,7 +796,9 @@ class ProductSupplierinfoInherited(models.Model):
     def name_get(self):
         res = super(ProductSupplierinfoInherited, self).name_get()
         data = []
+        
         for e in self:
+            ultima_actualizacion_formateada = e.ultima_actualizacion.strftime("%d/%m/%Y %I:%M:%S %p")
             display_value = ''
             display_value += str(e.partner_id.name)
             display_value += ' - $'
@@ -801,7 +806,10 @@ class ProductSupplierinfoInherited(models.Model):
             display_value += ' ['
             display_value += str(e.currency_id.name) or ""
             display_value += '] - '
-            display_value += str(e.product_code) or ""
+            display_value += ' Existencia actual: '
+            display_value += str(e.existencia_actual) or ""
+            display_value += ' - Ultima actualización: '
+            display_value += ultima_actualizacion_formateada or ""
             data.append((e.id, display_value))
         return data
 

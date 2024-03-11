@@ -16,8 +16,7 @@ class ctrl_llantas(models.Model):
     sale_id = fields.Many2one(
         "sale.order",
         string="Venta",
-        store=True,
-        company_dependent=True,
+        store=True
     )
 
     image = fields.Binary(
@@ -66,14 +65,13 @@ class ctrl_llantas(models.Model):
     
     comprador_name = fields.Char(
         string="Nombre del Comprador",
-        related="sale_id.comprador_id.name",
+        compute="_compute_comprador_name",
         store=True,
     )
-    
-    @api.depends('sale_id.comprador_id.name')
+    @api.depends('sale_id','sale_id.comprador_id','sale_id.comprador_id.name')
     def _compute_comprador_name(self):
-        for line in self:
-            line.comprador_name = line.sale_id.comprador_id.name
+        for rec in self:
+            rec.comprador_name = rec.sale_id.comprador_id.name
    
     partner_name=fields.Many2one(
         "res.partner",
@@ -88,6 +86,7 @@ class ctrl_llantas(models.Model):
         # store=True,
     )
 
+    @api.depends('sale_id')
     def compute_orden_compra(self):
         for rec in self:
             rec.orden_compra = rec.sale_id._get_purchase_orders().id
@@ -95,7 +94,7 @@ class ctrl_llantas(models.Model):
         "purchase.order",
         compute=compute_orden_compra,
         string="Orden de compra",
-        # store=True,
+        store=True,
     )
 
     partner_id=fields.Many2one(
@@ -212,20 +211,31 @@ class ctrl_llantas(models.Model):
     #     string="Status",
     # )
 
-    status_id = fields.Selection([
-        ('01','Pendiente'),
-        ('02','Debito en curso'),
-        ('03','Traspaso'),
-        ('04','Guia pendiente'),
-        ('05','Enviado'),
-        ('06','Entregado'),
-        ('07','Cerrado'),
-        ('08','Incidencia'),
-        ('09','Devolución'),],
-        related="sale_id.ventas_status",
+    @api.depends('sale_id','sale_id.ventas_status')
+    def compute_status_id(self):
+        for rec in self:
+            # raise UserError("compute_status_id")
+            rec.status_id = rec.sale_id.ventas_status
+            _logger.warning("compute_status_id --> " + str(rec.status_id))
+    status_id = fields.Selection(
+        [
+            ('01','Pendiente'),
+            ('02','Debito en curso'),
+            ('03','Traspaso'),
+            ('04','Guia pendiente'),
+            ('05','Enviado'),
+            ('06','Entregado'),
+            ('07','Cerrado'),
+            ('08','Incidencia'),
+            ('09','Devolución'),
+        ],
+        compute=compute_status_id,
+        inverse=compute_status_id,
         string="Status",
         tracking=True,
+        store=True
     )
+    
 
     @api.onchange('status_id')
     def _onchange_sale_id(self):
@@ -410,7 +420,7 @@ class ctrl_llantas(models.Model):
     def create(self, values):
         if 'sale_id' in values:
             sale_id = self.env['sale.order'].browse(values['sale_id'])
-            values['proveedor_id'] = sale_id._get_purchase_orders().partner_id
+            values['proveedor_id'] = sale_id._get_purchase_orders().partner_id.id
         return super(ctrl_llantas, self).create(values)
     
     def write(self, values):

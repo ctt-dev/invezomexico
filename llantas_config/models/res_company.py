@@ -13,4 +13,5 @@ class res_company_inherit(models.Model):
     formato_invezo=fields.Boolean(
         string="Formato Invezo",
         tracking=True,
+        default=False
     )

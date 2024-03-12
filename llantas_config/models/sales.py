@@ -15,9 +15,19 @@ class sale_order_inherit(models.Model):
         string="Marketplace",
         tracking=True,
         company_dependent=True,
-        # store=True,
+        store=True,
         
     )
+
+    marketplace_name = fields.Char(
+        string="Marketplace",
+        compute="_compute_marketplace_name",
+        store=True,
+    )
+    @api.depends('marketplace','marketplace.name')
+    def _compute_marketplace_name(self):
+        for rec in self:
+            rec.marketplace_name = rec.marketplace.name
 
     marketplace_name2 = fields.Char(
         string="Canal de venta",

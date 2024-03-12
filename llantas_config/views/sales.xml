@@ -41,6 +41,33 @@
                     
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->
                 </xpath>
+                <xpath expr="//page[@name='order_lines']//tree//field[@name='product_template_id']" position="replace">
+                    <field 
+                        name="product_template_id" 
+                        string="Product" 
+                        invisible="1" 
+                        attrs="{
+                            'readonly': [('product_updatable', '=', False)],
+                            'required': [('display_type', '=', False)],
+                        }"
+                        context="{
+                            'partner_id': parent.partner_id,
+                            'quantity': product_uom_qty,
+                            'pricelist': parent.pricelist_id,
+                            'uom': product_uom,
+                            'company_id': parent.company_id,
+                            'default_list_price': price_unit,
+                            'default_description_sale': name
+                        }"
+                        options="{
+                            'no_open': True,
+                            'no_create_edit': True
+                        }"
+                        domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                        widget="sol_product_many2one" 
+                    />
+
+                </xpath>
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
                     <field name="importe_descuento" optional="show"  />
                     <field name="precio_antes_dec" optional="show" readonly="1" />
@@ -72,7 +99,7 @@
             <field name="inherit_id" ref="sale.view_quotation_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//tree//field[@name='name']" position="before">
-                    <field name="marketplace" />
+                    <field name="marketplace_name" />
                     
                     <field name="folio_venta" optional="show"/>
                     <field name="fecha_venta" optional="hide" />
@@ -91,7 +118,7 @@
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//search//group//filter[@name='salesperson']" position="after">
-                    <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/>
+                    <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
                     
                 </xpath>
             </field>

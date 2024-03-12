@@ -86,7 +86,6 @@ class ctrl_llantas(models.Model):
         # store=True,
     )
 
-    @api.depends('sale_id')
     def compute_orden_compra(self):
         for rec in self:
             rec.orden_compra = rec.sale_id._get_purchase_orders().id
@@ -94,7 +93,6 @@ class ctrl_llantas(models.Model):
         "purchase.order",
         compute=compute_orden_compra,
         string="Orden de compra",
-        store=True,
     )
 
     partner_id=fields.Many2one(

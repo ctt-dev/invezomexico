@@ -798,7 +798,10 @@ class ProductSupplierinfoInherited(models.Model):
         data = []
         
         for e in self:
-            ultima_actualizacion_formateada = e.ultima_actualizacion.strftime("%d/%m/%Y %I:%M:%S %p")
+            ultima_actualizacion_formateada = ""
+            if e.ultima_actualizacion:
+                ultima_actualizacion_formateada = e.ultima_actualizacion.strftime("%d/%m/%Y %I:%M:%S %p")
+            
             display_value = ''
             display_value += str(e.partner_id.name)
             display_value += ' - $'
@@ -809,9 +812,10 @@ class ProductSupplierinfoInherited(models.Model):
             display_value += ' Existencia actual: '
             display_value += str(e.existencia_actual) or ""
             display_value += ' - Ultima actualización: '
-            display_value += ultima_actualizacion_formateada or ""
+            display_value += ultima_actualizacion_formateada
             data.append((e.id, display_value))
         return data
+
 
 class ctrl_llantas(models.Model): 
     _name = "llantas_config.ctt_prov_cargar"

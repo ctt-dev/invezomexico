@@ -18,6 +18,7 @@
                      <field name="envio" attrs="{'invisible': [('mostrar_envio', '!=', True)]}" />
                      <field name="warehouse_id" />
                      <field name="commitment_date"/>
+                     <field name="tipo_factura" />
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
@@ -92,11 +93,20 @@
             <field name="arch" type="xml">
                 <xpath expr="//search//group//filter[@name='salesperson']" position="after">
                     <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
+                </xpath>
+                <xpath expr="//search//filter[@name='my_sale_orders_filter']" position="after">
+                    <filter string="Fecha de venta" name="fecha_venta" date="fecha_venta"/>
+                    
+                </xpath>
+                <xpath expr="//search//group//filter[@name='order_month']" position="after">
+                    <filter string="Fecha de venta" name="fecha_venta" domain="[]" context="{'group_by': 'fecha_venta'}"/>
                     
                 </xpath>
             </field>
         </record>
        
+       
         
+
     </data>
 </odoo>

@@ -77,7 +77,12 @@ class ctrl_llantas(models.Model):
         "res.partner",
         related="sale_id.partner_id",
         string="Cliente",
+        store=True,
     )
+
+    tipo_factura = fields.Selection([
+        ('01','Publico en general'),
+        ('02','Cliente')], string="Tipo de facturación", store=True, tracking=True, related="sale_id.tipo_factura")
 
     proveedor_id=fields.Many2one(
         "res.partner",

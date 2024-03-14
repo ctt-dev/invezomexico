@@ -400,21 +400,35 @@ class sale_order_inherit(models.Model):
             if rec.comprador_id:
                 actividad_tipo_id = self.env.ref('mail.mail_activity_data_todo').id
                 model_sale_order_id = self.env.ref('sale.model_sale_order').id
-                if rec.comprador_id.user_id.id:
-                    rec.env['mail.activity'].create({
-                        'res_model': 'sale.order',
-                        'res_model_id': model_sale_order_id,
-                        'res_id': rec.id,
-                        'activity_type_id': actividad_tipo_id,
-                        'summary': 'Orden de venta pendiente ',
-                        'date_deadline': fields.Datetime.now(),
-                        'user_id': rec.comprador_id.user_id.id,
-                        'note': '',
-                    })
-                else:
-                    raise UserError("Debe seleccionar un usuario de compras válido")
-
+                
+                existing_activity = rec.env['mail.activity'].search([
+                    ('res_model', '=', 'sale.order'),
+                    ('res_id', '=', rec.id),
+                    ('activity_type_id', '=', actividad_tipo_id),
+                    ('user_id', '=', rec.comprador_id.user_id.id if rec.comprador_id.user_id.id else False)
+                ])
     
+                if not existing_activity:
+                    if rec.comprador_id.user_id.id:
+                        rec.env['mail.activity'].create({
+                            'res_model': 'sale.order',
+                            'res_model_id': model_sale_order_id,
+                            'res_id': rec.id,
+                            'activity_type_id': actividad_tipo_id,
+                            'summary': 'Orden de venta pendiente',
+                            'date_deadline': fields.Datetime.now(),
+                            'user_id': rec.comprador_id.user_id.id,
+                            'note': '',
+                        })
+                    else:
+                        raise UserError("Debe seleccionar un usuario de compras válido")
+                else:
+                    pass
+
+    tipo_factura = fields.Selection([
+        ('01','Publico en general'),
+        ('02','Cliente')], string="Tipo de facturación", store=True, tracking=True)
+
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'
     _description='Lineas de la orden de venta'

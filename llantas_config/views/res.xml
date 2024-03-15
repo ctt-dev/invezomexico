@@ -8,6 +8,10 @@
                 <xpath expr="//sheet//group//group[2]//field[@name='category_id']" position="after">
                     <field name="usuario_marketplace"/>
                 </xpath>
+                <xpath expr="//group[@name='purchase']" position="inside">
+                    <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento"/>
+                    <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje"/>
+                </xpath>
             </field>
         </record>
         <record id="form_view_res_partner_inherit_search" model="ir.ui.view">

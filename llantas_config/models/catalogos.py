@@ -267,146 +267,52 @@ class proveedores_link(models.Model):
             }        
         }
     
-    # def procesar(self):
-    #     count_actualizados = 0
-    #     count_agregados = 0
-    #     count_sin_encontrar = 0
-    #     sku_proveedor_procesados = set()
-    #     moneda=self.env['res.currency'].search([('name','=','MXN')])
-    #     moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
-    #     partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
-    #     proveedor = partner.id
-    #     fecha_actual = datetime.datetime.now()
-    
-    #     if moves:
-    #         # Agrupar movimientos por proveedor y SKU, sumando la existencia
-    #         movimientos_agrupados = {}
-    #         for mov in moves:
-    #             clave = (mov.sku, proveedor)
-    #             if clave not in movimientos_agrupados:
-    #                 movimientos_agrupados[clave] = 0
-    #             movimientos_agrupados[clave] += mov.existencia
-    
-    #         for (sku, proveedor), existencia_total in movimientos_agrupados.items():
-    #             lines = self.env['product.template'].search([
-    #                 '|',
-    #                 ('default_code', '=', sku),
-    #                 ('sku_alternos.name', 'in', [sku])
-    #             ])
-    #             if lines:
-    #                 for line in lines:
-    #                     if line.es_paquete == False:
-    #                         mov.write({'sku_interno': line.default_code})
-    #                     sku_proveedor = (line.id, proveedor)
-    
-    #                     if sku_proveedor not in sku_proveedor_procesados:
-    #                         proveedores = self.env['product.supplierinfo'].search([
-    #                             ('product_tmpl_id', '=', line.id),
-    #                             ('partner_id', '=', proveedor)],
-    #                             limit=1)
-    #                         try:
-    #                             if proveedores.exists():
-    #                                 proveedores_existente = proveedores.filtered(lambda p: p.partner_id == proveedor)
-    #                                 if proveedores_existente:
-    #                                     print(f"SKU {sku} ya procesado para el proveedor {partner.name}. Omitiendo.")
-    #                                 else:
-    #                                     proveedores.write({
-    #                                         'partner_id': proveedor,
-    #                                         'currency_id': moneda.id,
-    #                                         'price': mov.costo_sin_iva,
-    #                                         'ultima_actualizacion': fecha_actual,
-    #                                         'tipo_cambio': mov.tipo_cambio,
-    #                                         'precio_neto': mov.costo_sin_iva,
-    #                                         'tipo_moneda_proveedor': 'MXN',
-    #                                         'product_code': sku,
-    #                                         'existencia_actual': existencia_total,
-    #                                         'company_id': False,
-    #                                     })
-    #                                     count_actualizados += 1
-    #                             else:
-    #                                 self.env['product.supplierinfo'].create({
-    #                                     'partner_id': proveedor,
-    #                                     'product_tmpl_id': line.id,
-    #                                     'currency_id': moneda,
-    #                                     'price': mov.costo_sin_iva,
-    #                                     'ultima_actualizacion': fecha_actual,
-    #                                     'tipo_cambio': mov.tipo_cambio,
-    #                                     'precio_neto': mov.costo_sin_iva,
-    #                                     'tipo_moneda_proveedor': 'MXN',
-    #                                     'product_code': sku,
-    #                                     'existencia_actual': existencia_total,
-    #                                     'company_id': False,
-    #                                 })
-    #                                 count_agregados += 1
-    
-    #                             sku_proveedor_procesados.add(sku_proveedor)
-    #                         except Exception as e:
-    #                             error_message = f"No se pudo agregar el nuevo registro para SKU {sku} y proveedor {partner.name}: {e}"
-    #                             print(error_message)
-    #                             raise UserError(error_message)
-    #                     else:
-    #                         print(f"SKU {sku} y proveedor {partner.name} ya procesados. Omitiendo.")
-    #             else:
-    #                 count_sin_encontrar += 1
-    
-    #     return {
-    #         'type': 'ir.actions.client',
-    #         'tag': 'display_notification',
-    #         'params': {
-    #             'type': 'success',
-    #             'sticky': False,
-    #             'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",
-    #             # 'reload': True,  # Solicita recargar la vista actual
-    #         }
-    #     }
-
-    
-
     def procesar(self):
         count_actualizados = 0
         count_agregados = 0
         count_sin_encontrar = 0
         sku_proveedor_procesados = set()
-        moneda = self.env['res.currency'].search([('name','=','MXN')]).id
+        moneda=self.env['res.currency'].search([('name','=','MXN')])
         moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
         partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
         proveedor = partner.id
         fecha_actual = datetime.datetime.now()
-        
+    
         if moves:
-            movimientos_agrupados = defaultdict(int)
+            # Agrupar movimientos por proveedor y SKU, sumando la existencia
+            movimientos_agrupados = {}
             for mov in moves:
                 clave = (mov.sku, proveedor)
+                if clave not in movimientos_agrupados:
+                    movimientos_agrupados[clave] = 0
                 movimientos_agrupados[clave] += mov.existencia
-        
-            sku_lines = {}
-            for sku, prov in movimientos_agrupados.keys():
+    
+            for (sku, proveedor), existencia_total in movimientos_agrupados.items():
                 lines = self.env['product.template'].search([
                     '|',
                     ('default_code', '=', sku),
                     ('sku_alternos.name', 'in', [sku])
                 ])
-                sku_lines[(sku, prov)] = lines
-        
-            for (sku, proveedor), existencia_total in movimientos_agrupados.items():
-                lines = sku_lines[(sku, proveedor)]
                 if lines:
                     for line in lines:
                         if line.es_paquete == False:
                             mov.write({'sku_interno': line.default_code})
                         sku_proveedor = (line.id, proveedor)
-        
+    
                         if sku_proveedor not in sku_proveedor_procesados:
                             proveedores = self.env['product.supplierinfo'].search([
                                 ('product_tmpl_id', '=', line.id),
                                 ('partner_id', '=', proveedor)],
                                 limit=1)
                             try:
-                                if proveedores:
-                                    if not proveedores.filtered(lambda p: p.partner_id == proveedor):
-                                        vals = {
+                                if proveedores.exists():
+                                    proveedores_existente = proveedores.filtered(lambda p: p.partner_id == proveedor)
+                                    if proveedores_existente:
+                                        print(f"SKU {sku} ya procesado para el proveedor {partner.name}. Omitiendo.")
+                                    else:
+                                        proveedores.write({
                                             'partner_id': proveedor,
-                                            'currency_id': moneda,
+                                            'currency_id': moneda.id,
                                             'price': mov.costo_sin_iva,
                                             'ultima_actualizacion': fecha_actual,
                                             'tipo_cambio': mov.tipo_cambio,
@@ -415,11 +321,10 @@ class proveedores_link(models.Model):
                                             'product_code': sku,
                                             'existencia_actual': existencia_total,
                                             'company_id': False,
-                                        }
-                                        self.env['product.supplierinfo'].create(vals)
-                                        count_agregados += 1
+                                        })
+                                        count_actualizados += 1
                                 else:
-                                    vals = {
+                                    self.env['product.supplierinfo'].create({
                                         'partner_id': proveedor,
                                         'product_tmpl_id': line.id,
                                         'currency_id': moneda,
@@ -431,10 +336,9 @@ class proveedores_link(models.Model):
                                         'product_code': sku,
                                         'existencia_actual': existencia_total,
                                         'company_id': False,
-                                    }
-                                    self.env['product.supplierinfo'].create(vals)
+                                    })
                                     count_agregados += 1
-        
+    
                                 sku_proveedor_procesados.add(sku_proveedor)
                             except Exception as e:
                                 error_message = f"No se pudo agregar el nuevo registro para SKU {sku} y proveedor {partner.name}: {e}"
@@ -444,7 +348,7 @@ class proveedores_link(models.Model):
                             print(f"SKU {sku} y proveedor {partner.name} ya procesados. Omitiendo.")
                 else:
                     count_sin_encontrar += 1
-        
+    
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -455,6 +359,102 @@ class proveedores_link(models.Model):
                 # 'reload': True,  # Solicita recargar la vista actual
             }
         }
+
+    
+
+    # def procesar(self):
+    #     count_actualizados = 0
+    #     count_agregados = 0
+    #     count_sin_encontrar = 0
+    #     sku_proveedor_procesados = set()
+    #     moneda = self.env['res.currency'].search([('name','=','MXN')]).id
+    #     moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
+    #     partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
+    #     proveedor = partner.id
+    #     fecha_actual = datetime.datetime.now()
+        
+    #     if moves:
+    #         movimientos_agrupados = defaultdict(int)
+    #         for mov in moves:
+    #             clave = (mov.sku, proveedor)
+    #             movimientos_agrupados[clave] += mov.existencia
+        
+    #         sku_lines = {}
+    #         for sku, prov in movimientos_agrupados.keys():
+    #             lines = self.env['product.template'].search([
+    #                 '|',
+    #                 ('default_code', '=', sku),
+    #                 ('sku_alternos.name', 'in', [sku])
+    #             ])
+    #             sku_lines[(sku, prov)] = lines
+        
+    #         for (sku, proveedor), existencia_total in movimientos_agrupados.items():
+    #             lines = sku_lines[(sku, proveedor)]
+    #             if lines:
+    #                 for line in lines:
+    #                     if line.es_paquete == False:
+    #                         mov.write({'sku_interno': line.default_code})
+    #                     sku_proveedor = (line.id, proveedor)
+        
+    #                     if sku_proveedor not in sku_proveedor_procesados:
+    #                         proveedores = self.env['product.supplierinfo'].search([
+    #                             ('product_tmpl_id', '=', line.id),
+    #                             ('partner_id', '=', proveedor)],
+    #                             limit=1)
+    #                         try:
+    #                             if proveedores:
+    #                                 if not proveedores.filtered(lambda p: p.partner_id == proveedor):
+    #                                     vals = {
+    #                                         'partner_id': proveedor,
+    #                                         'currency_id': moneda,
+    #                                         'price': mov.costo_sin_iva,
+    #                                         'ultima_actualizacion': fecha_actual,
+    #                                         'tipo_cambio': mov.tipo_cambio,
+    #                                         'precio_neto': mov.costo_sin_iva,
+    #                                         'tipo_moneda_proveedor': 'MXN',
+    #                                         'product_code': sku,
+    #                                         'existencia_actual': existencia_total,
+    #                                         'company_id': False,
+    #                                     }
+    #                                     self.env['product.supplierinfo'].create(vals)
+    #                                     count_agregados += 1
+    #                             else:
+    #                                 vals = {
+    #                                     'partner_id': proveedor,
+    #                                     'product_tmpl_id': line.id,
+    #                                     'currency_id': moneda,
+    #                                     'price': mov.costo_sin_iva,
+    #                                     'ultima_actualizacion': fecha_actual,
+    #                                     'tipo_cambio': mov.tipo_cambio,
+    #                                     'precio_neto': mov.costo_sin_iva,
+    #                                     'tipo_moneda_proveedor': 'MXN',
+    #                                     'product_code': sku,
+    #                                     'existencia_actual': existencia_total,
+    #                                     'company_id': False,
+    #                                 }
+    #                                 self.env['product.supplierinfo'].create(vals)
+    #                                 count_agregados += 1
+        
+    #                             sku_proveedor_procesados.add(sku_proveedor)
+    #                         except Exception as e:
+    #                             error_message = f"No se pudo agregar el nuevo registro para SKU {sku} y proveedor {partner.name}: {e}"
+    #                             print(error_message)
+    #                             raise UserError(error_message)
+    #                     else:
+    #                         print(f"SKU {sku} y proveedor {partner.name} ya procesados. Omitiendo.")
+    #             else:
+    #                 count_sin_encontrar += 1
+        
+    #     return {
+    #         'type': 'ir.actions.client',
+    #         'tag': 'display_notification',
+    #         'params': {
+    #             'type': 'success',
+    #             'sticky': False,
+    #             'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",
+    #             # 'reload': True,  # Solicita recargar la vista actual
+    #         }
+    #     }
 
         
     def procesar_tiredirect(self):

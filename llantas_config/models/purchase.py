@@ -10,10 +10,6 @@ class purchase_order_line_inherit(models.Model):
     _inherit = 'purchase.order.line'
     _description = 'lineas orden de compra'
 
-    no_pedimento=fields.Char(
-        string="# pedimiento",
-        trackin=True,
-    )
 
     codigo_proveedor=fields.Char(
         string="Codigo proveedor",

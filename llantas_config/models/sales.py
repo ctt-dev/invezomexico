@@ -82,7 +82,8 @@ class sale_order_inherit(models.Model):
     
     
     
-
+    purchase_order = fields.Char(string="Purchase Order")
+    
     link_venta=fields.Char(
         string="Link de venta",
         tracking=True,
@@ -212,7 +213,6 @@ class sale_order_inherit(models.Model):
                                     'product_uom': line.product_uom.id,
                                     'price_unit': line.costo_proveedor,
                                     'sale_order_id':rec.id,
-                                    'no_pedimento':line.no_pedimento,
                                     'codigo_proveedor': line.codigo_proveedor,
                                 })
                                 line.write({'purchase_line_ids': purchase_line})
@@ -279,7 +279,6 @@ class sale_order_inherit(models.Model):
                                             'product_qty': line.product_qty,
                                             'product_uom': line.product_uom.id,
                                             'price_unit': line.costo_proveedor,
-                                            'no_pedimento':line.no_pedimento,
                                             'codigo_proveedor': line.codigo_proveedor,
                                         })
                             self.env['mail.message'].create({
@@ -550,8 +549,3 @@ class sale_order_line_inherit(models.Model):
         if self.product_id.id and self.order_id.id and self.order_id.partner_id.id and self.order_id.pricelist_id.id:
             self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
            
-
-    no_pedimento=fields.Char(
-        string="# pedimiento",
-        traking=True,
-    )

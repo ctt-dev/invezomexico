@@ -66,7 +66,6 @@
                     <thead style="display: table-row-group">
                         <tr>
                             <th name="th_description" class="text-start">Descripción</th>
-                            <th name="no_pedimento" class="text-start"># Pedimento</th>
                             <th name="th_quantity" class="text-end">Cantidad</th>
                             <th name="th_priceunit" class="text-end">Precio Unitario</th>
                             <th name="th_discount" t-if="display_discount" class="text-end">
@@ -92,7 +91,6 @@
                                 <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
                                     <t t-if="not line.display_type">
                                         <td name="td_name"><span t-field="line.name"/></td>
-                                        <td name="no_pedimento"><span t-field="line.no_pedimento"/></td>
                                         <td name="td_quantity" class="text-end">
                                             <span t-field="line.product_uom_qty"/>
                                             <span t-field="line.product_uom"/>

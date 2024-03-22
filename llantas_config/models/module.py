@@ -35,7 +35,6 @@ class ctrl_llantas(models.Model):
         "llantas_config.marketplaces",
         related="sale_id.marketplace",
         string="Marketplace",
-        company_dependent=True,
         store=True,
     )
 
@@ -59,7 +58,6 @@ class ctrl_llantas(models.Model):
         "hr.employee",
         related="sale_id.comprador_id",
         string="Comprador",
-        company_dependent=True,
         store=True,
     )
     

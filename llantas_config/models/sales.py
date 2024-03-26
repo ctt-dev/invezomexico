@@ -52,7 +52,6 @@ class sale_order_inherit(models.Model):
         "hr.employee",
         string="Comprador",
         tracking=True,
-        company_dependent=True,
         store=True,
     )
 

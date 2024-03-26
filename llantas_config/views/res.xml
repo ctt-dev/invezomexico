@@ -12,6 +12,14 @@
                     <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento"/>
                     <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje"/>
                 </xpath>
+                <xpath expr="//page[@name='sales_purchases']" position="after">
+                    <page string="Pronto pago">
+                        <tree string="Pronto pago" editable="top">
+                            <field name="name"/>
+                            <field name="color" widget="color_picker"/>
+                        </tree>
+                    </page>
+                </xpath>
             </field>
         </record>
         <record id="form_view_res_partner_inherit_search" model="ir.ui.view">

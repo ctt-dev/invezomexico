@@ -76,6 +76,7 @@
                     
                     <field name="folio_venta" optional="show"/>
                     <field name="fecha_venta" optional="hide" />
+                    <field name="comprador_id" widget="many2one" optional="show"/>
                     <field name="status_ventas" widget="many2one_tags" />
                         <!-- domain="[('product_tmpl_id','=','order_line.product_template_id')]"/> -->
                 </xpath>
@@ -99,6 +100,7 @@
                 </xpath>
                 <xpath expr="//search//group//filter[@name='order_month']" position="after">
                     <filter string="Fecha de venta" name="fecha_venta" domain="[]" context="{'group_by': 'fecha_venta'}"/>
+                    <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
                     
                 </xpath>
             </field>

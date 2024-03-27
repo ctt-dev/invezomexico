@@ -765,4 +765,47 @@ class compatibilidad(models.Model):
     medida = fields.Char(
         string="Medida"
     )
+    
+class pronto_pago(models.Model):
+    _name = 'llantas_config.pronto_pago'
+    _description = 'Pronto pago'
+    _order = 'id desc'
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
+
+    def name_get(self):
+        res = super(pronto_pago, self).name_get()
+        data = []
+        for e in self:
+            display_value = ''
+            display_value += str(e.name)
+            display_value += ' - '
+            display_value += str(e.pronto_pago_porcentaje) or ""
+            display_value += '%'
+            data.append((e.id, display_value))
+        return data
+        
+    name=fields.Char(
+        string="Nombre",
+    )
+    
+    pronto_pago_dias_vencimiento = fields.Integer(
+        string="Días para vencimiento"
+    )
+
+    pronto_pago_porcentaje = fields.Float(
+        string="Porcentaje de descuento"
+    )
+
+    product_category = fields.Many2one(
+        "product.category",
+        string="Categoria de producto",
+        # tracking=True,
+        store=True,
+    )
+
+    partner_id=fields.Many2one(
+        "res.partner",
+        string="Contacto",
+        store=True,
+    )
 

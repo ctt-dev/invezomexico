@@ -35,3 +35,10 @@ class contactos(models.Model):
         for rec in self:
             if rec.pronto_pago_porcentaje < 0 or rec.pronto_pago_porcentaje > 100:
                 raise ValidationError("Solo puede registrar un descuento de entre el 0% y 100% para pronto pago. Corrija para continuar...")
+
+    pronto_pago=fields.One2many(
+        "llantas_config.pronto_pago",
+        "partner_id",
+        string="Pronto pago",
+        store=True,
+    )

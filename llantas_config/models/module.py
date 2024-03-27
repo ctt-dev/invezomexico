@@ -89,13 +89,16 @@ class ctrl_llantas(models.Model):
         # store=True,
     )
 
+    @api.depends('sale_id')
     def compute_orden_compra(self):
         for rec in self:
-            rec.orden_compra = rec.sale_id._get_purchase_orders().id
+            rec.orden_compra = rec.sale_id._get_purchase_orders().id if rec.sale_id else False
+
     orden_compra=fields.Many2one(
         "purchase.order",
         compute=compute_orden_compra,
         string="Orden de compra",
+        store=True,
     )
 
     partner_id=fields.Many2one(
@@ -106,6 +109,7 @@ class ctrl_llantas(models.Model):
 
     
 
+    @api.depends('sale_id')
     def compute_factura_prov(self):
         for rec in self:
             purchase_orders = rec.sale_id._get_purchase_orders()
@@ -113,12 +117,38 @@ class ctrl_llantas(models.Model):
                 rec.factura_prov = purchase_orders.invoice_ids[0]
             else:
                 rec.factura_prov = False
-
+    
     factura_prov=fields.Many2one(
         "account.move",
         string="Factura proveedor",
-        compute=compute_factura_prov
+        compute=compute_factura_prov,
+        store=True
     )
+    
+    total_facturado = fields.Float(
+        string="Total Facturado",
+        related="factura_prov.total_facturado",
+    )
+
+
+    pronto_pago_fecha_vencimiento=fields.Date(
+        string="Fecha vencimiento PP",
+        related="factura_prov.pronto_pago_fecha_vencimiento"
+    )
+    pronto_pago_dias_para_vencimiento=fields.Integer(
+        string="Dias para vencimiento PP",
+        related="factura_prov.pronto_pago_dias_para_vencimiento"
+    )
+    pronto_pago_descuento=fields.Float(
+        string="Descuento PP",
+        related="factura_prov.pronto_pago_descuento"
+    )
+    pronto_pago_total_con_descuento=fields.Float(
+        string="Total con PP",
+        related="factura_prov.pronto_pago_total_con_descuento"
+    )
+
+    
 
 
     def open_sale_order(self):
@@ -488,4 +518,14 @@ class ctrl_llantas(models.Model):
         compute=compute_factura_prov_attachment_ids
     )
 
+
+    payment_status = fields.Selection([
+        ('not_paid', 'Sin pagar'),
+        ('in_payment', 'En proceso de pago'),
+        ('paid', 'Pagado'),
+        ('partial', 'Pagado parcialmente'),
+        ('reversed', 'Revertido'),
+        ('invoicing_legacy', 'Sistema anterior de facturación')
+    ], string='Estado de Pago', related="factura_prov.payment_state", store=True)
+    
 

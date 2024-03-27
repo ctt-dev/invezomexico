@@ -8,16 +8,19 @@
                 <xpath expr="//sheet//group//group[2]//field[@name='category_id']" position="after">
                     <field name="usuario_marketplace"/>
                 </xpath>
-                <xpath expr="//group[@name='purchase']" position="inside">
-                    <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento"/>
-                    <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje"/>
-                </xpath>
                 <xpath expr="//page[@name='sales_purchases']" position="after">
                     <page string="Pronto pago">
-                        <tree string="Pronto pago" editable="top">
-                            <field name="name"/>
-                            <field name="color" widget="color_picker"/>
-                        </tree>
+                        <div>
+                            <field name="pronto_pago">
+                                <tree string="Pronto pago" editable="top">
+                                    <field name="name"/>
+                                    <field name="pronto_pago_dias_vencimiento" string="Días de vencimiento"/>
+                                    <field name="pronto_pago_porcentaje" string="Porcentaje"/>
+                                    <field name="product_category" options="{'no_create_edit': True}"/>
+                                    <field name="partner_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </div>
                     </page>
                 </xpath>
             </field>

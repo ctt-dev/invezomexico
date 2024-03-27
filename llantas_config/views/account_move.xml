@@ -8,13 +8,18 @@
                 <xpath expr="//page[@name='invoice_tab']//field//tree//field[@name='account_id']" position="after">
                     <field name="no_pedimento"/>
                 </xpath>
-                <xpath expr="//field[@name='tax_cash_basis_origin_move_id']" position="before">
-                    <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento"/>
-                    <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje"/>
-                    <field name="pronto_pago_fecha_vencimiento"/>
-                    <field name="pronto_pago_dias_para_vencimiento"/>
-                    <field name="pronto_pago_descuento"/>
-                    <field name="pronto_pago_total_con_descuento"/>
+                <xpath expr="//page[@name='invoice_tab']" position="after">
+                    <page string="Info pronto pago">
+                        <div>
+                            <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento" readonly="1"/>
+                            <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje" readonly="1"/>
+                            <field name="pronto_pago_fecha_vencimiento" readonly="1"/>
+                            <field name="pronto_pago_dias_para_vencimiento" readonly="1"/>
+                            <field name="pronto_pago_descuento" readonly="1"/>
+                            <field name="pronto_pago_total_con_descuento" readonly="1"/>
+                            <field name="total_facturado" invisible="1" readonly="1" />
+                        </div>
+                    </page>
                 </xpath>
             </field>
         </record>

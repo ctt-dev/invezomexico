@@ -72,13 +72,8 @@ class account_move_inherit(models.Model):
         store=False
     )
 
-    @api.depends('pronto_pago_porcentaje','amount_total')
-    def compute_pronto_pago_descuento(self):
-        for rec in self:
-            rec.pronto_pago_descuento = rec.amount_total * (rec.pronto_pago_porcentaje / 100)
     pronto_pago_descuento = fields.Float(
         string="Pronto pago - Descuento",
-        compute=compute_pronto_pago_descuento,
         store=True
     )
 
@@ -89,5 +84,13 @@ class account_move_inherit(models.Model):
     pronto_pago_total_con_descuento = fields.Float(
         string="Pronto pago - Total con descuento",
         compute=compute_pronto_pago_total_con_descuento,
-        store=True
+    )
+
+    @api.depends('amount_total')
+    def compute_total_facturado(self):
+        for rec in self:
+            rec.total_facturado = rec.amount_total
+    total_facturado = fields.Float(
+        string="Pronto pago - Total con descuento",
+        compute=compute_total_facturado,
     )

@@ -1,5 +1,6 @@
 <odoo>
     <data>
+
         <record id="view_llantas_tree" model="ir.ui.view">
             <field name="name">Resumen</field>
             <field name="model">llantas_config.ctt_llantas</field>
@@ -15,7 +16,7 @@
                     <field name="marketplace" widget="many2one"/>
                     <field name="partner_id" widget="many2one" />
                     <field name="partner_name" widget="many2one"/>
-                    <field name="orden_compra" optional="show" widget="many2one"/>
+                    <field name="orden_compra" optional="show" widget="many2one" decoration-danger="orden_compra == False"/>
                     <field name="link_guia" widget="url"/>
                     <field name="no_recoleccion2" optional="show"/>
                     <field name="tdp" />

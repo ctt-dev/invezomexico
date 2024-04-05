@@ -41,6 +41,24 @@
                 <h2 t-if="o.state in ['purchase', 'done']">Orden de compra #<span t-field="o.name"/></h2>
                 <h2 t-if="o.state == 'cancel'">Orden de compra cancelada #<span t-field="o.name"/></h2>
             </div>
+            <div class="row mt-4 mb32" style="auto">
+                <div class="col-3 bm-2" t-if="o.auto_sale_order_id">
+                    <strong>Orden de venta:</strong>
+                    <p t-field="o.auto_sale_order_id.name" class="m-0"/>
+                </div>
+                <div t-if="o.auto_sale_order_id.marketplace.name" class="col-3 bm-2">
+                    <strong>Marketplace:</strong>
+                    <p t-field="o.auto_sale_order_id.marketplace.name" class="m-0"/>
+                </div>
+                <div t-if="o.auto_sale_order_id.partner_id.name" class="col-3 bm-2">
+                    <strong>Cliente:</strong>
+                    <p t-field="o.auto_sale_order_id.partner_id.name" class="m-1"/>
+                </div>
+                <div class="col-3 bm-2">
+                    <strong>Fecha venta:</strong>
+                    <p t-field="o.auto_sale_order_id.fecha_venta" class="m-0"/>
+                </div>
+            </div>
         </xpath>
         <xpath expr="//div[@t-if='o.user_id']" position="replace">
             <div t-if="o.user_id" class="col-3 bm-2">
@@ -138,6 +156,54 @@
                     </tr>
                 </thead>
             </table>
+             <!-- <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Orden de venta:</strong></td>
+                    <td><span t-field="o.auto_sale_order_id.name"/></td>
+                </tr>
+                <tr >
+                    <td><strong>Marketplace:</strong></td>
+                    <td><span t-field="o.auto_sale_order_id.marketplace.name"/></td>
+                </tr>
+                <tr >
+                    <td><strong>Cliente:</strong></td>
+                    <td><span t-field="o.auto_sale_order_id.partner_id.name"/></td>
+                </tr>
+                <tr>
+                    <td><strong>Fecha venta:</strong></td>
+                    <td><span t-field="o.auto_sale_order_id.fecha_venta"/></td>
+                </tr>
+            </tbody>
+        </table> -->
         </xpath>
+        <!-- <xpath expr="//div[@t-if='o.user_id']" position="after">
+            <div class="row mt-4 mb32"  >
+                <div class="col-3 bm-2" t-if="o.auto_sale_order_id">
+                    <strong>Orden de venta:</strong>
+                    <p t-field="o.auto_sale_order_id.name" class="m-0"/>
+                </div>
+                <div t-if="o.auto_sale_order_id.marketplace.name" class="col-3 bm-2">
+                    <strong>Marketplace:</strong>
+                    <p t-field="o.auto_sale_order_id.marketplace.name" class="m-0"/>
+                </div>
+                <div t-if="o.auto_sale_order_id.partner_id.name" class="col-3 bm-2">
+                    <strong>Cliente:</strong>
+                    <p t-field="o.auto_sale_order_id.partner_id.name" class="m-0"/>
+                </div>
+                <div t-elif="o.auto_sale_order_id.fecha_venta" class="col-3 bm-2">
+                    <strong>Fecha venta:</strong>
+                    <p t-field="o.auto_sale_order_id.fecha_venta" class="m-0"/>
+                </div>
+            </div>
+        </xpath>
+         -->
+        
     </template>
 </odoo>

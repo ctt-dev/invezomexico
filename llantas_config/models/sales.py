@@ -205,6 +205,7 @@ class sale_order_inherit(models.Model):
                                 'currency_id': id_de_la_moneda,
                                 'company_id': self.env.company.id,
                                 'picking_type_id':self.warehouse_id.in_type_id.id,
+                                'auto_sale_order_id':self.id,
                             })
                             if line.product_id.product_tmpl_id.es_paquete == False:
                                 purchase_line = self.env['purchase.order.line'].create({
@@ -216,6 +217,7 @@ class sale_order_inherit(models.Model):
                                     'price_unit': line.costo_proveedor,
                                     'sale_order_id':rec.id,
                                     'codigo_proveedor': line.codigo_proveedor,
+                                    
                                 })
                                 line.write({'purchase_line_ids': purchase_line})
                                 self.env['mail.message'].create({

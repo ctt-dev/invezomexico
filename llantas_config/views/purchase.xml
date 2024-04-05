@@ -16,8 +16,8 @@
                     <field name="product_category" invisible="1"/>
                     <field name="proveedor" invisible="1"/>
                     
+                    
                 </xpath>
-                
                 <!-- <xpath expr="//field[@name='partner_ref']" position="after">
                     <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento"/>
                     <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje"/>

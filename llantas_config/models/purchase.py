@@ -90,7 +90,6 @@ class purchase_order_inherit(models.Model):
         
         return invoice_vals
 
-
     # @api.onchange('partner_id')
     # def update_pronto_pago_data(self):
     #     self.pronto_pago_dias_vencimiento = self.partner_id.pronto_pago_dias_vencimiento

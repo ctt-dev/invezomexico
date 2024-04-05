@@ -107,8 +107,6 @@ class ctrl_llantas(models.Model):
         string="Proveedor",
     )
 
-    
-
     @api.depends('sale_id')
     def compute_factura_prov(self):
         for rec in self:
@@ -122,7 +120,6 @@ class ctrl_llantas(models.Model):
         "account.move",
         string="Factura proveedor",
         compute=compute_factura_prov,
-        store=True
     )
     
     total_facturado = fields.Float(

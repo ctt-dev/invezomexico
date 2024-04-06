@@ -42,7 +42,7 @@
                 <h2 t-if="o.state == 'cancel'">Orden de compra cancelada #<span t-field="o.name"/></h2>
             </div>
             <div class="row mt-4 mb32" style="auto">
-                <div class="col-3 bm-2" t-if="o.auto_sale_order_id">
+                <div class="col-3 bm-2" t-if="o.auto_sale_order_id.name">
                     <strong>Orden de venta:</strong>
                     <p t-field="o.auto_sale_order_id.name" class="m-0"/>
                 </div>
@@ -54,7 +54,7 @@
                     <strong>Cliente:</strong>
                     <p t-field="o.auto_sale_order_id.partner_id.name" class="m-1"/>
                 </div>
-                <div class="col-3 bm-2">
+                <div class="col-3 bm-2" t-if="o.auto_sale_order_id.fecha_venta">
                     <strong>Fecha venta:</strong>
                     <p t-field="o.auto_sale_order_id.fecha_venta" class="m-0"/>
                 </div>

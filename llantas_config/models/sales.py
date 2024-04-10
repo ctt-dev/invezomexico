@@ -68,15 +68,27 @@ class sale_order_inherit(models.Model):
             venta_ids=self.env['sale.order'].search([('folio_venta','=',values['folio_venta']),('folio_venta','!=',False)])
             if len(venta_ids) > 0:
                 raise UserError('El número de venta debe ser único.')
-            # Realizar operaciones adicionales si es necesario
+        guia = values.get('guia', self.guia)
+        if guia:
+            ventas = self.env['sale.order'].search([
+                    ('guia', '=', guia),
+                    ('guia', 'not in', [False, ""]),
+                    ('guia', '!=', False),])
+            if len(ventas) > 0:
+                raise UserError('El número de guía debe ser único.')
         return super(sale_order_inherit, self).create(values) 
-        
+
+    
     def write(self, values):
         for rec in self:
             if 'folio_venta' in values:
                 venta_ids=rec.env['sale.order'].search([('folio_venta','=',values['folio_venta']),('id','!=',rec.id),('folio_venta','!=',False)])
                 if len(venta_ids) > 0:
                     raise UserError('El número de venta debe ser único.')
+            if 'guia' in values:
+                ventas = rec.env['sale.order'].search([('guia','=',values['guia']),('id','!=',rec.id),('guia','!=',False)])
+                if len(ventas) > 0:
+                    raise UserError('El número de guía debe ser único.')
         return super(sale_order_inherit, self).write(values)
     
     
@@ -182,7 +194,8 @@ class sale_order_inherit(models.Model):
     def copy(self, default=None):
         default = dict(default or {})
         default.update({
-             'folio_venta': False,
+            'folio_venta': False,
+            'guia':False
         })
         return super(sale_order_inherit, self).copy(default)
         
@@ -192,131 +205,136 @@ class sale_order_inherit(models.Model):
         for rec in self:
             if rec.state == 'sale':
                 for line in rec.order_line:
-                    if line.proveedor_id:
-                        moneda = self.env['res.currency'].search([('name', '=', rec.currency_id.name)])
-                        if moneda:
-                            id_de_la_moneda = moneda.id
-                        else:
-                            raise UserError("Moneda no encontrada")
-
-                        if len(line.purchase_line_ids) == 0:
-                            nueva_cotizacion_compra = self.env['purchase.order'].create({
-                                'partner_id': line.proveedor_id.partner_id.id,
-                                'currency_id': id_de_la_moneda,
-                                'company_id': self.env.company.id,
-                                'picking_type_id':self.warehouse_id.in_type_id.id,
-                                'auto_sale_order_id':self.id,
-                            })
-                            if line.product_id.product_tmpl_id.es_paquete == False:
-                                purchase_line = self.env['purchase.order.line'].create({
-                                    'order_id': nueva_cotizacion_compra.id,
-                                    'product_id': line.product_id.id,
-                                    'name': line.product_id.name,
-                                    'product_qty': line.product_qty,
-                                    'product_uom': line.product_uom.id,
-                                    'price_unit': line.costo_proveedor,
-                                    'sale_order_id':rec.id,
-                                    'codigo_proveedor': line.codigo_proveedor,
-                                    
+                    if 	rec.amount_total < (line.product_uom_qty * line.costo_proveedor):
+                        raise UserError("La creación de la orden de compra no es posible en este momento debido a que el total de la orden de compra excede el total de la orden de venta asociada.")
+                    if line.qty_available_today > 0:
+                        raise UserError("Actualmente, no es posible generar una orden de compra debido a que hay productos disponibles en stock. Se recomienda revisar el inventario existente antes de generar una nueva orden de compra.")
+                    else:
+                        if line.proveedor_id:
+                            moneda = self.env['res.currency'].search([('name', '=', rec.currency_id.name)])
+                            if moneda:
+                                id_de_la_moneda = moneda.id
+                            else:
+                                raise UserError("Moneda no encontrada")
+    
+                            if len(line.purchase_line_ids) == 0:
+                                nueva_cotizacion_compra = self.env['purchase.order'].create({
+                                    'partner_id': line.proveedor_id.partner_id.id,
+                                    'currency_id': id_de_la_moneda,
+                                    'company_id': self.env.company.id,
+                                    'picking_type_id':self.warehouse_id.in_type_id.id,
+                                    'auto_sale_order_id':self.id,
                                 })
-                                line.write({'purchase_line_ids': purchase_line})
+                                if line.product_id.product_tmpl_id.es_paquete == False:
+                                    purchase_line = self.env['purchase.order.line'].create({
+                                        'order_id': nueva_cotizacion_compra.id,
+                                        'product_id': line.product_id.id,
+                                        'name': line.product_id.name,
+                                        'product_qty': line.product_qty,
+                                        'product_uom': line.product_uom.id,
+                                        'price_unit': line.costo_proveedor,
+                                        'sale_order_id':rec.id,
+                                        'codigo_proveedor': line.codigo_proveedor,
+                                        
+                                    })
+                                    line.write({'purchase_line_ids': purchase_line})
+                                    self.env['mail.message'].create({
+                                        'model': 'sale.order',
+                                        'res_id': self.id,
+                                        'message_type': 'notification',
+                                        'subtype_id': 2,
+                                        'email_from': self.user_id.login,
+                                        'author_id': self.user_id.parent_id.id,
+                                        'body': "Orden de compra generada "
+                                    })
+                                else:
+                                    lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
+                                    if lmateriales:
+                                        for lmat in lmateriales:
+                                            purchase_line = self.env['purchase.order.line'].create({
+                                                'order_id': nueva_cotizacion_compra.id,
+                                                'product_id': lmat.product_id.id,
+                                                'name': lmat.product_id.product_tmpl_id.name,
+                                                'product_qty': lmat.product_qty,
+                                                'product_uom': line.product_uom.id,
+                                                'price_unit': line.costo_proveedor,
+                                                'sale_order_id':rec.id,
+                                                'codigo_proveedor': line.codigo_proveedor,
+                                            })
+                                            line.write({'purchase_line_ids': purchase_line})
+                                            self.env['mail.message'].create({
+                                                'model': 'sale.order',
+                                                'res_id': self.id,
+                                                'message_type': 'notification',
+                                                'subtype_id': 2,
+                                                'email_from': self.user_id.login,
+                                                'author_id': self.user_id.parent_id.id,
+                                                'body': "Orden de compra generada "
+                                            })
+                            else:
+                                purchase_id = False
+                                for purchase_line in line.purchase_line_ids:
+                                    purchase_id = purchase_line.order_id
+                                purchase_id.write({
+                                    'partner_id': line.proveedor_id.partner_id.id,
+                                    'currency_id': id_de_la_moneda,
+                                    'company_id': self.env.company.id,
+                                    'picking_type_id':self.warehouse_id.in_type_id.id,
+                                })
+                                for purchase_line in purchase_id.order_line:
+                                    if purchase_line.sale_line_id.id == line.id:
+                                        lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
+                                        if lmateriales:
+                                            for lmat in lmateriales:
+                                                purchase_line.write({
+                                                    'product_id': lmat.product_id.id,
+                                                    'name': lmat.product_id.product_tmpl_id.name,
+                                                    'product_qty': lmat.product_qty,
+                                                    'product_uom': line.product_uom.id,
+                                                    'price_unit': line.costo_proveedor,                                               
+                                                })
+                                        else:
+                                            # raise ValidationError(123)
+                                            purchase_line.write({
+                                                'product_id': line.product_id.id,
+                                                'name': line.product_id.name,
+                                                'product_qty': line.product_qty,
+                                                'product_uom': line.product_uom.id,
+                                                'price_unit': line.costo_proveedor,
+                                                'codigo_proveedor': line.codigo_proveedor,
+                                            })
                                 self.env['mail.message'].create({
                                     'model': 'sale.order',
                                     'res_id': self.id,
                                     'message_type': 'notification',
                                     'subtype_id': 2,
                                     'email_from': self.user_id.login,
-                                    'author_id': self.user_id.parent_id.id,
-                                    'body': "Orden de compra generada "
+                                    'author_id': self.user_id.id,
+                                    'body': "Orden de compra actualizada "
+                                })
+                                        
+                            
+                            purchase_order_ids = self._get_purchase_orders().ids
+                            action = {
+                                'res_model': 'purchase.order',
+                                'type': 'ir.actions.act_window',
+                            }
+                            if len(purchase_order_ids) == 1:
+                                action.update({
+                                    'view_mode': 'form',
+                                    'res_id': purchase_order_ids[0],
                                 })
                             else:
-                                lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
-                                if lmateriales:
-                                    for lmat in lmateriales:
-                                        purchase_line = self.env['purchase.order.line'].create({
-                                            'order_id': nueva_cotizacion_compra.id,
-                                            'product_id': lmat.product_id.id,
-                                            'name': lmat.product_id.product_tmpl_id.name,
-                                            'product_qty': lmat.product_qty,
-                                            'product_uom': line.product_uom.id,
-                                            'price_unit': line.costo_proveedor,
-                                            'sale_order_id':rec.id,
-                                            'codigo_proveedor': line.codigo_proveedor,
-                                        })
-                                        line.write({'purchase_line_ids': purchase_line})
-                                        self.env['mail.message'].create({
-                                            'model': 'sale.order',
-                                            'res_id': self.id,
-                                            'message_type': 'notification',
-                                            'subtype_id': 2,
-                                            'email_from': self.user_id.login,
-                                            'author_id': self.user_id.parent_id.id,
-                                            'body': "Orden de compra generada "
-                                        })
+                                action.update({
+                                    'name': _("Purchase Order generated from %s", self.name),
+                                    'domain': [('id', 'in', purchase_order_ids)],
+                                    'view_mode': 'tree,form',
+                                })
+                            return action
+                            
+                            
                         else:
-                            purchase_id = False
-                            for purchase_line in line.purchase_line_ids:
-                                purchase_id = purchase_line.order_id
-                            purchase_id.write({
-                                'partner_id': line.proveedor_id.partner_id.id,
-                                'currency_id': id_de_la_moneda,
-                                'company_id': self.env.company.id,
-                                'picking_type_id':self.warehouse_id.in_type_id.id,
-                            })
-                            for purchase_line in purchase_id.order_line:
-                                if purchase_line.sale_line_id.id == line.id:
-                                    lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
-                                    if lmateriales:
-                                        for lmat in lmateriales:
-                                            purchase_line.write({
-                                                'product_id': lmat.product_id.id,
-                                                'name': lmat.product_id.product_tmpl_id.name,
-                                                'product_qty': lmat.product_qty,
-                                                'product_uom': line.product_uom.id,
-                                                'price_unit': line.costo_proveedor,                                               
-                                            })
-                                    else:
-                                        # raise ValidationError(123)
-                                        purchase_line.write({
-                                            'product_id': line.product_id.id,
-                                            'name': line.product_id.name,
-                                            'product_qty': line.product_qty,
-                                            'product_uom': line.product_uom.id,
-                                            'price_unit': line.costo_proveedor,
-                                            'codigo_proveedor': line.codigo_proveedor,
-                                        })
-                            self.env['mail.message'].create({
-                                'model': 'sale.order',
-                                'res_id': self.id,
-                                'message_type': 'notification',
-                                'subtype_id': 2,
-                                'email_from': self.user_id.login,
-                                'author_id': self.user_id.id,
-                                'body': "Orden de compra actualizada "
-                            })
-                                    
-                        
-                        purchase_order_ids = self._get_purchase_orders().ids
-                        action = {
-                            'res_model': 'purchase.order',
-                            'type': 'ir.actions.act_window',
-                        }
-                        if len(purchase_order_ids) == 1:
-                            action.update({
-                                'view_mode': 'form',
-                                'res_id': purchase_order_ids[0],
-                            })
-                        else:
-                            action.update({
-                                'name': _("Purchase Order generated from %s", self.name),
-                                'domain': [('id', 'in', purchase_order_ids)],
-                                'view_mode': 'tree,form',
-                            })
-                        return action
-                        
-                        
-                    else:
-                        raise UserError("Se debe seleccionar un proveedor para cada línea de orden de venta")
+                            raise UserError("Se debe seleccionar un proveedor para cada línea de orden de venta")
             
             else:
                 raise UserError("La orden de venta necesita estar confirmada")
@@ -337,9 +355,21 @@ class sale_order_inherit(models.Model):
     
     
     guia=fields.Char(
-        string="Guia de rastreo",
+        string="Guía de rastreo",
         tracking=True
     )
+    
+    # @api.model
+    # def create(self, values):
+    #     guia = values.get('guia', self.guia)
+    #     if guia:
+    #         ventas = rec.env['sale.order'].search([
+    #                 ('guia', '=', guia),
+    #                 ('guia', 'not in', [False, ""]),
+    #                 ('guia', '!=', False),])
+    #         if len(ventas) > 0:
+    #             raise UserError('El número de guía debe ser único.')
+    #     return super(sale_order_inherit, self).create(values)
     
     link_guia=fields.Char(
         string="Link guia",

@@ -18,7 +18,7 @@
                     <field name="partner_name" widget="many2one"/>
                     <field name="orden_compra" optional="show" widget="many2one" decoration-danger="orden_compra == False"/>
                     <field name="link_guia" widget="url"/>
-                    <field name="no_recoleccion2" optional="show"/>
+                    <field name="no_recoleccion" optional="show"/>
                     <field name="tdp" />
                     <field name="factura_prov" readonly="1" optional="hide" widget="many2one"/>
                     <field name="total_facturado" optional="hide" readonly="1" />
@@ -170,7 +170,7 @@
                                 <field name="comision" readonly="1"/>
                                 <field name="envio" readonly="1"/>
                                 
-                                <field name="no_recoleccion2" readonly="1"/>
+                                <field name="no_recoleccion" readonly="1"/>
                                 <field name="status_id" readonly="0"/>
                                 
                                 
@@ -268,6 +268,8 @@
                     <field name="proveedor_id" string="Proveedor" />
                     <field name="marketplace_name"/>
                     <field name="tdp" filter_domain="[('tdp', 'ilike', self)]"/>
+                   <field name="orden_compra" filter_domain="[('orden_compra', 'ilike', self)]"/>
+                   <field name="factura_prov" filter_domain="[('factura_prov', 'ilike', self)]"/>
                    <field name="orden_compra" filter_domain="[('orden_compra', 'ilike', self)]"/>
 
                    <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>

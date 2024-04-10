@@ -6,7 +6,11 @@
              <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='invoice_tab']//field//tree//field[@name='account_id']" position="after">
-                    <field name="no_pedimento"/>
+                    <!-- <field name="no_pedimento"/> -->
+                    <field name="pronto_pago"/>
+                    <field name="product_category" invisible="1"/>
+                    <field name="proveedor" invisible="1"/>
+                    <field name="dias_transcurridos" invisible="0"/>
                 </xpath>
                 <xpath expr="//page[@name='invoice_tab']" position="after">
                     <page string="Info pronto pago">
@@ -21,6 +25,9 @@
                         </group>
                     </page>
                 </xpath>
+                <!-- <xpath expr="//page[@name='invoice_tab']//field/tree//field[@name='discount']" position="after">
+                        <field name="pronto_pago"/>
+                </xpath> -->
             </field>
         </record>
         
@@ -39,6 +46,10 @@
                 <xpath expr="//field[@name='company_currency_id']" position="before">
                     <field name="pronto_pago_descuento" sum="pronto_pago_descuento" optional="hide"/>
                     <field name="pronto_pago_total_con_descuento" sum="pronto_pago_total_con_descuento" optional="hide"/>
+                    </xpath>
+                <xpath expr="//field[@name='state']" position="before">
+                    <field name="cfdi_document" optional="hide"/>
+                    
                 </xpath>
             </field>
         </record>

@@ -9,20 +9,31 @@
                     <field name="codigo_proveedor"/>
                     
                 </xpath>
-                <xpath expr="//page[@name='products']//field//tree//field[@name='price_subtotal']" position="after">
-                    <field name="pronto_pago" /> 
-                    <field name="descuento" widget="monetary" readonly="1"/>
-                    <field name="total_pronto_pago" widget="monetary" style="background-color: #c8e6c9;"  readonly="1"/>
-                    <field name="product_category" invisible="1"/>
-                    <field name="proveedor" invisible="1"/>
+                <!-- <xpath expr="//page[@name='products']//field//tree//field[@name='price_subtotal']" position="after"> -->
+                    <!-- <field name="pronto_pago" />  -->
+                    <!-- <field name="descuento" widget="monetary" readonly="1"/> -->
+                    <!-- <field name="total_pronto_pago" widget="monetary" style="background-color: #c8e6c9;"  readonly="1"/> -->
+                    <!-- <field name="product_category" invisible="1"/> -->
+                    <!-- <field name="proveedor" invisible="1"/> -->
                     
                     
-                </xpath>
+                <!-- </xpath> -->
                 <!-- <xpath expr="//field[@name='partner_ref']" position="after">
                     <field name="pronto_pago_dias_vencimiento" string="Pronto pago - Días de vencimiento"/>
                     <field name="pronto_pago_porcentaje" string="Pronto pago - Porcentaje"/>
                     <field name="pronto_pago" />
                 </xpath> -->
+            </field>
+        </record>
+        <record id="view_purchase_order_search" model="ir.ui.view">
+            <field name="name">purchase.orderinherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search//field[@name='partner_id']" position="after">
+                    <field name="partner_ref"/>
+                    
+                </xpath>
             </field>
         </record>
 

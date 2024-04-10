@@ -87,13 +87,14 @@ class ctrl_llantas(models.Model):
         string="Proveedor",
         # compute=compute_proveedor_id,
         # store=True,
+        # default=lambda self: self.env['ir.model.data']._xmlid_to_res_id('llantas_config.res_partner_sin_proveedor_por_defecto'),
+        # required=True
     )
 
     @api.depends('sale_id')
     def compute_orden_compra(self):
         for rec in self:
             rec.orden_compra = rec.sale_id._get_purchase_orders().id if rec.sale_id else False
-
     orden_compra=fields.Many2one(
         "purchase.order",
         compute=compute_orden_compra,
@@ -120,6 +121,7 @@ class ctrl_llantas(models.Model):
         "account.move",
         string="Factura proveedor",
         compute=compute_factura_prov,
+        store=True,
     )
     
     total_facturado = fields.Float(
@@ -374,24 +376,10 @@ class ctrl_llantas(models.Model):
             "url": self.link_guia,
             "target": "new",
         }
-    def compute_no_recoleccion(self):
-        for rec in self:
-            tdp = ""
-            try:
-                no_recoleccion = rec.no_recoleccion
-                if no_recoleccion:
-                    tdp = ", ".join(str(picking_id.no_recoleccion) for picking_id in rec.sale_id._get_purchase_orders().picking_ids if picking_id.no_recoleccion)
-            except Exception as e:
-                tdp = ""
-                _logger.error("Error al calcular no_recoleccion: %s", str(e))
-            rec.tdp = tdp
+
     no_recoleccion=fields.Char(
-        compute=compute_no_recoleccion,
+        related="orden_compra.picking_ids.no_recoleccion",
         string="No. Recolección",
-    )
-    no_recoleccion2=fields.Char(
-        string="No. Recoleccion", 
-        related="sale_id.picking_ids.no_recoleccion",
     )
 
     # carrier_id=fields.Many2one(

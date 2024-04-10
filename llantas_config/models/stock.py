@@ -22,6 +22,12 @@ class sale_order_inherit(models.Model):
         tracking=True,
     )
 
+    marketplace=fields.Char(
+        related="sale_id.marketplace.name",
+        string="Marketplace",
+        tracking=True,
+    )
+
     no_recoleccion=fields.Char(
         string="No. Recoleccion",
         tracking=True,
@@ -56,6 +62,8 @@ class sale_order_inherit(models.Model):
     # )
 
     
+    
+            
 
     # def _compute_rastreador(self):
     #     for rec in self:

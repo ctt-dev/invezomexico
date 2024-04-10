@@ -26,6 +26,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet//group//group[2]//field[@name='origin']" position="after">
                     <field name="no_venta" readonly="1"/>
+                    <field name="marketplace" readonly="1"/>
                     <field name="fecha_entrega" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                     <field name="no_recoleccion" attrs="{'invisible': [('picking_type_code', '!=', 'incoming')], 'readonly': [('state', 'in', ('done', 'cancel'))]}" />
                     

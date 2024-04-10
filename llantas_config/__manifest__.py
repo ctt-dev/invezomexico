@@ -34,6 +34,7 @@
         'website',
         'account_accountant',
         'purchase',
+        # 'purchase_stock',
         'website_sale',
         'mrp',
         'delivery',
@@ -43,6 +44,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'data/res_partner.xml',
         'views/templates.xml',
         'views/views.xml',
         'views/catalogos.xml',

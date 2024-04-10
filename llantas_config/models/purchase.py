@@ -6,7 +6,8 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 import datetime
 
-    
+# from odoo.addons.purchase.models.purchase import PurchaseOrder as Purchase
+
 class purchase_order_line_inherit(models.Model):
     _inherit = 'purchase.order.line'
     _description = 'lineas orden de compra'
@@ -18,77 +19,103 @@ class purchase_order_line_inherit(models.Model):
         tracking=True
     )
 
-    product_category = fields.Many2one(
-        "product.category",
-        string="Categoría de producto",
-        related="product_id.categ_id",
-        store=True,
-    )
-
-    proveedor = fields.Many2one(
-        "res.partner",
-        string="Proveedor",
-        related="partner_id",
-        store=True,
-    )
-
-    pronto_pago = fields.Many2one(
-        "llantas_config.pronto_pago",
-        string="Pronto pago",
-        store=True,
-        domain="[('product_category','=', product_category), ('partner_id','=', proveedor)]"
-    )
-
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        if self.product_id:
-            self.product_category = self.product_id.categ_id
-
-    @api.onchange('partner_id')
-    def _onchange_partner_id(self):
-        if self.partner_id:
-            self.proveedor = self.partner_id
-
-    @api.depends('pronto_pago', 'pronto_pago.pronto_pago_porcentaje', 'product_qty', 'price_unit', 'taxes_id')
-    def _total_pronto_pago_compute(self):
-        for rec in self:
-            total_orden = (rec.product_qty * rec.price_unit) * (1 + (rec.taxes_id.amount / 100))
-            rec.descuento = total_orden * (rec.pronto_pago.pronto_pago_porcentaje / 100)
-            total_con_descuento = total_orden - rec.descuento
-            rec.total_pronto_pago = total_con_descuento
-    total_pronto_pago=fields.Float(
-        string="Total pronto pago",
-        compute='_total_pronto_pago_compute',
-    )
-    descuento=fields.Float(
-        string="Descuento",
-        compute='_total_pronto_pago_compute',
-    )
-    
-    
 class purchase_order_inherit(models.Model):
     _inherit = 'purchase.order'
-    _description = 'Orden de compra'
-    
-    def _prepare_invoice(self):
-        invoice_vals = super()._prepare_invoice()
-        
-        # Inicializamos variables para almacenar la suma de días de vencimiento y el porcentaje de pronto pago
-        total_dias_vencimiento = 0
-        total_porcentaje_pronto_pago = 0
-        total_descuento = 0
-        
-        # Iteramos sobre las líneas de pedido para calcular la suma de días de vencimiento y el porcentaje de pronto pago
-        for line in self.order_line:
-            if line.pronto_pago:
-                total_descuento += line.descuento
+    _description = 'lineas orden de compra'
 
-        # Guardamos los resultados en las variables correspondientes de invoice_vals
-        invoice_vals['pronto_pago_dias_vencimiento'] = line.pronto_pago.pronto_pago_dias_vencimiento
-        invoice_vals['pronto_pago_porcentaje'] = line.pronto_pago.pronto_pago_porcentaje
-        invoice_vals['pronto_pago_descuento'] = total_descuento
+    @api.model
+    def _default_picking_type(self):
+        return False
+
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        p_type = self.picking_type_id
+        if not(p_type and p_type.code == 'incoming' and (p_type.warehouse_id.company_id == self.company_id or not p_type.warehouse_id)):
+            self.picking_type_id = False
+            # self.picking_type_id = self._get_picking_type(self.company_id.id)
+    
+    picking_type_id = fields.Many2one(
+        'stock.picking.type',
+        string='Tipo de Picking',
+        domain="[('code','=','incoming'), '|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]",
+        groups="stock.group_stock_multi_locations",
+        # states=Purchase.READONLY_STATES,
+        required=True,
+        help="This will determine operation type of incoming shipment",
+        default=_default_picking_type  # Establece el valor predeterminado como False para que el campo esté vacío al cargar el formulario
+    )
+
+    # product_category = fields.Many2one(
+    #     "product.category",
+    #     string="Categoría de producto",
+    #     related="product_id.categ_id",
+    #     store=True,
+    # )
+
+    # proveedor = fields.Many2one(
+    #     "res.partner",
+    #     string="Proveedor",
+    #     related="partner_id",
+    #     store=True,
+    # )
+
+    # pronto_pago = fields.Many2one(
+    #     "llantas_config.pronto_pago",
+    #     string="Pronto pago",
+    #     store=True,
+    #     domain="[('product_category','=', product_category), ('partner_id','=', proveedor)]"
+    # )
+
+    # @api.onchange('product_id')
+    # def _onchange_product_id(self):
+    #     if self.product_id:
+    #         self.product_category = self.product_id.categ_id
+
+    # @api.onchange('partner_id')
+    # def _onchange_partner_id(self):
+    #     if self.partner_id:
+    #         self.proveedor = self.partner_id
+
+    # @api.depends('pronto_pago', 'pronto_pago.pronto_pago_porcentaje', 'product_qty', 'price_unit', 'taxes_id')
+    # def _total_pronto_pago_compute(self):
+    #     for rec in self:
+    #         total_orden = (rec.product_qty * rec.price_unit) * (1 + (rec.taxes_id.amount / 100))
+    #         rec.descuento = total_orden * (rec.pronto_pago.pronto_pago_porcentaje / 100)
+    #         total_con_descuento = total_orden - rec.descuento
+    #         rec.total_pronto_pago = total_con_descuento
+    # total_pronto_pago=fields.Float(
+    #     string="Total pronto pago",
+    #     compute='_total_pronto_pago_compute',
+    # )
+    # descuento=fields.Float(
+    #     string="Descuento",
+    #     compute='_total_pronto_pago_compute',
+    # )
+    
+    
+# class purchase_order_inherit(models.Model):
+#     _inherit = 'purchase.order'
+#     _description = 'Orden de compra'
+    
+    # def _prepare_invoice(self):
+    #     invoice_vals = super()._prepare_invoice()
         
-        return invoice_vals
+    #     # Inicializamos variables para almacenar la suma de días de vencimiento y el porcentaje de pronto pago
+    #     total_dias_vencimiento = 0
+    #     total_porcentaje_pronto_pago = 0
+    #     total_descuento = 0
+        
+    #     # Iteramos sobre las líneas de pedido para calcular la suma de días de vencimiento y el porcentaje de pronto pago
+    #     for line in self.order_line:
+    #         if line.pronto_pago:
+    #             total_descuento += line.descuento
+
+    #     # Guardamos los resultados en las variables correspondientes de invoice_vals
+    #     invoice_vals['pronto_pago_dias_vencimiento'] = line.pronto_pago.pronto_pago_dias_vencimiento
+    #     invoice_vals['pronto_pago_porcentaje'] = line.pronto_pago.pronto_pago_porcentaje
+    #     invoice_vals['pronto_pago_descuento'] = total_descuento
+        
+    #     return invoice_vals
 
     # @api.onchange('partner_id')
     # def update_pronto_pago_data(self):

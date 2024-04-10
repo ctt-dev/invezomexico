@@ -3,6 +3,7 @@ import logging
 import json
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
+from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 import datetime
 
@@ -10,10 +11,45 @@ class account_move_line_inherit(models.Model):
     _inherit = 'account.move.line'
     _description='Account move line'
 
-    no_pedimento=fields.Char(
-        string="No. Pedimento",
-        tracking=True,
+    # no_pedimento=fields.Char(
+    #     string="No. Pedimento",
+    #     tracking=True,
+    # )
+
+    product_category = fields.Many2one(
+        "product.category",
+        string="Categoría de producto",
+        related="product_id.categ_id",
+        store=True,
     )
+    
+    proveedor = fields.Many2one(
+        "res.partner",
+        string="Proveedor",
+        related="partner_id",
+        store=True,
+    )
+
+    
+    dias_transcurridos = fields.Integer(string="Días transcurridos", compute='_compute_dias_transcurridos', store=True)
+    
+    pronto_pago = fields.Many2one(
+        "llantas_config.pronto_pago",
+        string="Pronto pago",
+        domain="[('product_category','=', product_category), ('partner_id','=', proveedor), ('pronto_pago_dias_vencimiento','>=', dias_transcurridos)]"
+    )
+
+    @api.depends('invoice_date')
+    def _compute_dias_transcurridos(self):
+        today_datetime = datetime.datetime.today()
+        for factura in self:
+            if factura.invoice_date:
+                invoice_datetime = datetime.datetime.combine(factura.invoice_date, datetime.datetime.min.time())
+                days_diff = (today_datetime - invoice_datetime).days
+                factura.dias_transcurridos = days_diff
+            else:
+                factura.dias_transcurridos = 0
+
 
 class account_move_inherit(models.Model):
     _inherit = 'account.move'

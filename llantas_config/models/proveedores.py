@@ -594,6 +594,67 @@ class WizardImportExistenciasProv(models.TransientModel):
         # Retorna un diccionario con información sobre la importación
         return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
 
+    def import_tres_siglos(self, record):
+        count_updated = 0
+        count_created = 0
+        tipo_cambio = 1
+        if self.tipo_cambio != 0.00:
+            tipo_cambio = self.tipo_cambio
+        
+        precio_lista = record.get('Mayoreo +100pz')
+        precio_cliente = record.get('Mayoreo +100pz')
+    
+        precio_lista = self.convert_to_float(precio_lista)
+        precio_cliente = self.convert_to_float(precio_cliente)
+    
+        if self.tipo_cambio > 1:
+            tipomoneda = 'USD'
+        else:
+            tipomoneda = 'MXN'
+    
+        fecha_actual = fields.Datetime.now()        
+        
+        # Itera sobre los almacenes y actualiza la existencia para cada uno
+        for almacen_column in ['CENTRAL', 'MACRO CED']:
+            almacen_value = record.get(almacen_column)
+            if almacen_value is not None:
+                almacen_value = str(almacen_value)
+                almacen_value = float(almacen_value.replace('+', ''))
+            else:
+                almacen_value = None
+    
+            # Busca el registro con el SKU y el almacén específicos
+            existing_record_by_sku = self.env['llantas_config.ctt_prov'].search([
+                ('sku', '=', record.get('Clave')),
+                ('nombre_almacen', '=', almacen_column)
+            ], limit=1)
+    
+            if existing_record_by_sku:
+                # Si el producto ya existe para ese SKU y almacén, actualiza la existencia
+                existing_record_by_sku.write({'existencia': almacen_value, 'costo_sin_iva': precio_cliente * tipo_cambio,'fecha_actualizacion': fecha_actual,})
+                count_updated += 1
+            else:
+                # Si no existe, crea un nuevo registro
+                try:
+                    self.env['llantas_config.ctt_prov'].create({
+                        'nombre_proveedor': self.proveedor_id.name,
+                        'sku': record.get('Clave'),
+                        'producto': record.get('Descripción'),
+                        'nombre_almacen': almacen_column,
+                        'existencia': almacen_value,
+                        'precio_lista': precio_lista,
+                        'costo_sin_iva': precio_cliente * tipo_cambio,
+                        'tipo_moneda': 'MXN',
+                        'tipo_cambio': self.tipo_cambio,
+                        'fecha_actualizacion': fecha_actual,
+                    })
+                    count_created += 1
+                except UserError as e:
+                    _logger.error(f"Error creating record: {e}")
+                    self.env.cr.rollback()
+    
+        return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}
+    
     def import_data(self):
         count_updated_total = 0
         count_created_total = 0
@@ -626,6 +687,7 @@ class WizardImportExistenciasProv(models.TransientModel):
             'RadialPros':self.import_radialpros,
             'Tbc': self.import_tbc,
             'Tersa':self.import_tersa,
+            'Tres siglos': self.import_tres_siglos,
         }
 
         

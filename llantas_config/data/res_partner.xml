@@ -1,0 +1,7 @@
+<odoo>
+    <data>
+        <record model="res.partner" id="res_partner_sin_proveedor_por_defecto">
+            <field name="name">Sin proveedor</field>
+        </record>
+    </data>
+</odoo>

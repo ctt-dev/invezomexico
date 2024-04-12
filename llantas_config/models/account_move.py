@@ -30,13 +30,33 @@ class account_move_line_inherit(models.Model):
         store=True,
     )
 
-    
+    pronto_pago_dias_vencimiento = fields.Integer(
+        string="Pronto pago - Días para vencimiento",
+        related="pronto_pago.pronto_pago_dias_vencimiento"
+    )
+
+    pronto_pago_porcentaje = fields.Float(
+        string="Pronto pago - Porcentaje de descuento",
+        related="pronto_pago.pronto_pago_porcentaje"
+    )
+
+    @api.onchange('dias_transcurridos')
+    def onchange_dias_transcurridos(self): 
+        # raise UserError("onchange_dias_transcurridos")
+        for rec in self:
+            pronto_pago_id = False
+            pronto_pago_ids = rec.env['llantas_config.pronto_pago'].search([('product_category','=', rec.product_category.id),('partner_id','=', rec.proveedor.id),('pronto_pago_dias_vencimiento','>=', rec.dias_transcurridos)],limit=1)
+            if len(pronto_pago_ids) > 0:
+                pronto_pago_id = pronto_pago_ids[0]
+            rec.pronto_pago = pronto_pago_id
+            
     dias_transcurridos = fields.Integer(string="Días transcurridos", compute='_compute_dias_transcurridos', store=True)
     
+    # @api.onchange('dias_transcurridos')
     pronto_pago = fields.Many2one(
         "llantas_config.pronto_pago",
         string="Pronto pago",
-        domain="[('product_category','=', product_category), ('partner_id','=', proveedor), ('pronto_pago_dias_vencimiento','>=', dias_transcurridos)]"
+        domain="[('product_category','=', product_category), ('partner_id','=', proveedor), ('pronto_pago_dias_vencimiento','>=', dias_transcurridos)]",
     )
 
     @api.depends('invoice_date')
@@ -54,6 +74,12 @@ class account_move_line_inherit(models.Model):
 class account_move_inherit(models.Model):
     _inherit = 'account.move'
     _description='Account move line'
+
+    @api.onchange('invoice_date')
+    def onchange_invoice_date_update_pronto_pago(self):
+        for rec in self:
+            for line in rec.line_ids:
+                line.onchange_dias_transcurridos()
     
     @api.onchange('partner_id')
     def update_pronto_pago_data(self):
@@ -61,11 +87,13 @@ class account_move_inherit(models.Model):
         self.pronto_pago_porcentaje = self.partner_id.pronto_pago_porcentaje
 
     pronto_pago_dias_vencimiento = fields.Integer(
-        string="Pronto pago - Días para vencimiento"
+        string="Pronto pago - Días para vencimiento",
+        related="line_ids.pronto_pago_dias_vencimiento"
     )
 
     pronto_pago_porcentaje = fields.Float(
-        string="Pronto pago - Porcentaje de descuento"
+        string="Pronto pago - Porcentaje de descuento",
+        related="line_ids.pronto_pago_porcentaje"
     )
     
     @api.constrains('pronto_pago_dias_vencimiento')
@@ -108,9 +136,14 @@ class account_move_inherit(models.Model):
         store=False
     )
 
+    @api.depends('pronto_pago_porcentaje', 'amount_total')
+    def _total_pronto_pago_compute(self):
+        for rec in self:
+            rec.pronto_pago_descuento = rec.amount_total * (rec.pronto_pago_porcentaje / 100)    
+
     pronto_pago_descuento = fields.Float(
         string="Pronto pago - Descuento",
-        store=True
+        compute='_total_pronto_pago_compute',
     )
 
     @api.depends('pronto_pago_descuento','amount_total')

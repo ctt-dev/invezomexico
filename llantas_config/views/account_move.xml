@@ -10,7 +10,7 @@
                     <field name="pronto_pago"/>
                     <field name="product_category" invisible="1"/>
                     <field name="proveedor" invisible="1"/>
-                    <field name="dias_transcurridos" invisible="0"/>
+                    <field name="dias_transcurridos" invisible="0" force_save="1"/>
                 </xpath>
                 <xpath expr="//page[@name='invoice_tab']" position="after">
                     <page string="Info pronto pago">

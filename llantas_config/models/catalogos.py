@@ -281,9 +281,22 @@ class proveedores_link(models.Model):
         
         # Diccionario para almacenar las existencias agrupadas por SKU y proveedor
         existencias_por_sku_proveedor = defaultdict(float)
+        for move in moves:
+            lines = self.env['product.template'].search([
+                    '|',
+                    ('default_code', '=', move.sku),
+                    ('sku_alternos.name', 'in', [move.sku])
+                ])
+            if lines:
+                for lin in lines:
+                    if lin.es_paquete:
+                        continue  # Omitir líneas que son paquetes
+                    move.write({'sku_interno': lin.default_code})  
+                        
         
         for mov in moves:
             existencias_por_sku_proveedor[(mov.sku, proveedor)] += mov.existencia
+            
         
         for (sku, proveedor), existencia_total in existencias_por_sku_proveedor.items():
             lines = self.env['product.template'].search([
@@ -295,6 +308,7 @@ class proveedores_link(models.Model):
                 for line in lines:
                     if line.es_paquete:
                         continue  # Omitir líneas que son paquetes
+                      
                     sku_proveedor = (line.id, proveedor)
                     if sku_proveedor not in sku_proveedor_procesados:
                         # Obtener todos los movimientos asociados al SKU y proveedor
@@ -574,7 +588,7 @@ class proveedores_link(models.Model):
                       'existencia_actual':mov.Existencia_Stock,
                       'currency_id':33,
                       'price':mov.FS * mov.TC,
-                      'ultima_actualizacion':fecha_actual,
+                      'ultima_actualizacion': fecha_actual,
                       'tipo_cambio':mov.TC,
                       'precio_neto':mov.FS,
                       'tipo_moneda_proveedor':mov.moneda_currency,
@@ -587,7 +601,7 @@ class proveedores_link(models.Model):
                     'existencia_actual':mov.Existencia_Stock,
                     'currency_id':33,
                     'price':mov.FS * mov.TC,
-                    'ultima_actualizacion':fecha_actual,
+                    'ultima_actualizacion': fecha_actual,
                     'tipo_cambio':mov.TC,
                     'precio_neto':mov.FS,
                     'tipo_moneda_proveedor':mov.moneda_currency,

@@ -277,7 +277,7 @@ class proveedores_link(models.Model):
         moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
         partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
         proveedor = partner.id
-        fecha_actual = fields.Date.today()
+        fecha_actual = datetime.datetime.today()
         
         # Diccionario para almacenar las existencias agrupadas por SKU y proveedor
         existencias_por_sku_proveedor = defaultdict(float)
@@ -291,7 +291,8 @@ class proveedores_link(models.Model):
                 for lin in lines:
                     if lin.es_paquete:
                         continue  # Omitir líneas que son paquetes
-                    move.write({'sku_interno': lin.default_code})  
+                    if move.sku_interno == False:
+                        move.write({'sku_interno': lin.default_code})  
                         
         
         for mov in moves:

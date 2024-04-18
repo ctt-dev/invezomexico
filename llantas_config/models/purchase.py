@@ -23,6 +23,12 @@ class purchase_order_inherit(models.Model):
     _inherit = 'purchase.order'
     _description = 'lineas orden de compra'
 
+    auto_sale_order_id=fields.Many2one(
+        "sale.order",
+        string="Orden venta",
+        store=True,
+    )
+
     @api.model
     def _default_picking_type(self):
         return False

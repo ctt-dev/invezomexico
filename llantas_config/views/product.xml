@@ -250,6 +250,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='qty_available']" position="replace">
                     <field name="qty_available" widget="product_suppliers" attrs="{'invisible':[('show_on_hand_qty_status_button', '=', False)]}" optional="show" decoration-danger="qty_available &lt; 0"/>
+                    <!-- <field name="seller_ids"/> -->
                 </xpath>
             </field>
         </record>

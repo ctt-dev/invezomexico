@@ -2,11 +2,64 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="llantas_config.productSuppliersWidget" owl="1">
-        <t t-esc="props.value"/>
-        <!-- <div class="tooltip"> 
-            <span class="tooltip_value" t-esc="props.value"/>
-        </div> -->
+        <t t-if="state.visible">
+            <div>
+                <span class="tooltip-icon"><t t-esc="props.value"/> <i class="fa fa-info-circle"/></span>
+                <div class="tooltip">
+                    <div class="border container">
+                        <div class="row">
+                            <h4 class="suppliers-title">Detalles</h4>
+                        </div>
+                        <div class="row">
+                            <!-- <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <td>Proveedor</td>
+                                        <td>Existencia actual</td>
+                                        <td>Ultima actualización</td>
+                                        <td>Precio</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.lines" t-as="line" t-key="line_index">
+                                        <td><span t-esc="line.partner_id[1]"/></td>
+                                        <td><span t-esc="line.existencia_actual"/></td>
+                                        <td><span t-esc="line.ultima_actualizacion"/></td>
+                                        <td><span t-esc="line.price"/> <span t-esc="line.currency_id[1]"/></td>
+                                    </tr>
+                                </tbody>
+                            </table> -->
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <td class="left-align">Proveedor</td>
+                                        <td class="right-align">Existencia actual</td>
+                                        <td class="right-align">Ultima actualización</td>
+                                        <td class="right-align">Precio</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.lines" t-as="line" t-key="line_index">
+                                        <td class="left-align"><span t-esc="line.partner_id[1]"/></td>
+                                        <td class="right-align"><span t-esc="line.existencia_actual"/></td>
+                                        <td class="right-align"><span t-esc="line.ultima_actualizacion"/></td>
+                                        <td class="right-align"><span t-esc="line.price"/> <span t-esc="line.currency_id[1]"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <t t-esc="props.value"/>
+        </t>
     </t>
 
 
 </templates>
+
+        <!-- <div class="tooltip"> 
+            <span class="tooltip_value" t-esc="props.value"/>
+        </div> -->

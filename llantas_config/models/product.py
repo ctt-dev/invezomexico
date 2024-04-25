@@ -109,6 +109,17 @@ class product_template_inherit(models.Model):
     es_llanta=fields.Boolean(
         string="Es llanta",
     )
+
+    qty_suppliers_total = fields.Float(
+        string="Cantidad de proveedores",
+        compute="_compute_suppliers_total"
+    )
+
+    def _compute_suppliers_total(self):
+        for rec in self:
+            total = sum(seller.existencia_actual for seller in rec.seller_ids)
+            rec.qty_suppliers_total = total
+
 class product_product_inherit(models.Model):
     _inherit = 'product.product'
     _description='Producto'

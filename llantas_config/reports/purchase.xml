@@ -43,8 +43,9 @@
             </div>
             <div class="row mt-4 mb32" style="auto">
                 <div class="col-3 bm-2" t-if="o.auto_sale_order_id.name">
-                    <strong>Orden de venta:</strong>
+                    <strong>Orden de venta/No venta:</strong>
                     <p t-field="o.auto_sale_order_id.name" class="m-0"/>
+                    <p t-field="o.auto_sale_order_id.folio_venta" class="m-0"/>
                 </div>
                 <div t-if="o.auto_sale_order_id.marketplace.name" class="col-3 bm-2">
                     <strong>Marketplace:</strong>

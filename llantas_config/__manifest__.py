@@ -69,6 +69,7 @@
         'views/product_pricelist_item.xml',
         'views/purchase.xml',
         'reports/sale_order.xml',
+        'reports/report_picking.xml',
         # 'views/style.css',
     ],
     # only loaded in demonstration mode

@@ -11,24 +11,6 @@
                             <h4 class="suppliers-title">Detalles</h4>
                         </div>
                         <div class="row">
-                            <!-- <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <td>Proveedor</td>
-                                        <td>Existencia actual</td>
-                                        <td>Ultima actualización</td>
-                                        <td>Precio</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr t-foreach="state.lines" t-as="line" t-key="line_index">
-                                        <td><span t-esc="line.partner_id[1]"/></td>
-                                        <td><span t-esc="line.existencia_actual"/></td>
-                                        <td><span t-esc="line.ultima_actualizacion"/></td>
-                                        <td><span t-esc="line.price"/> <span t-esc="line.currency_id[1]"/></td>
-                                    </tr>
-                                </tbody>
-                            </table> -->
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
@@ -46,6 +28,13 @@
                                         <td class="right-align"><span t-esc="line.price"/> <span t-esc="line.currency_id[1]"/></td>
                                     </tr>
                                 </tbody>
+                                <tfoot>
+                                    <!-- <t t-set="total_existencia" t-value="sum(lines.mapped('existencia_actual'))"/> -->
+                                    <tr>
+                                        <td colspan="3">Total de existencia actual:</td>
+                                        <td><t t-esc="state.totalExistencia"/></td>
+                                    </tr>
+                                </foot>
                             </table>
                         </div>
                     </div>
@@ -57,9 +46,4 @@
         </t>
     </t>
 
-
 </templates>
-
-        <!-- <div class="tooltip"> 
-            <span class="tooltip_value" t-esc="props.value"/>
-        </div> -->

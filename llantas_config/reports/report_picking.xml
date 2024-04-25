@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_picking_document_for_llantas" inherit_id="stock.report_picking">
+        <xpath expr="//table[1]" position="before">
+            <div class="row mt-4 mb32" style="auto">
+                <div class="col-3 bm-2" t-if="o.sale_id.name">
+                    <strong>Orden de venta/No venta:</strong>
+                    <p t-field="o.sale_id.name" class="m-0"/>
+                    <p t-field="o.sale_id.folio_venta" class="m-0"/>
+                </div>
+                <div t-if="o.sale_id.marketplace.name" class="col-3 bm-2">
+                    <strong>Marketplace:</strong>
+                    <p t-field="o.sale_id.marketplace.name" class="m-0"/>
+                </div>
+                <div t-if="o.carrier" class="col-3 bm-2">
+                    <strong>Carrier:</strong>
+                    <p t-field="o.carrier" class="m-1"/>
+                </div>
+                <div class="col-3 bm-2" t-if="o.carrier_tracking_ref">
+                    <strong>Guia:</strong>
+                    <p t-field="o.carrier_tracking_ref" class="m-0"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

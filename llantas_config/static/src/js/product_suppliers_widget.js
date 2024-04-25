@@ -13,15 +13,12 @@ export class ProductSuppliersWidget extends Component {
         this.state = useState({
             lines: [],
             visible: false,
+            totalExistencia: 0,
         });
 
         this.resId = this.props.record.resId;
 
         onWillStart(() => this.searchSupplierInfo(this.resId));
-
-        console.log(this);
-        // console.log(this.state.visible);
-        console.log(this.props.value);
     }
 
     async searchSupplierInfo(resId) {
@@ -30,8 +27,11 @@ export class ProductSuppliersWidget extends Component {
             [["product_tmpl_id","=",resId]], 
             ["partner_id","existencia_actual","ultima_actualizacion","price","currency_id"]
         );
+        const totalExistencia = results.reduce((acc, line) => acc + line.existencia_actual, 0);
+        
         this.state.lines = results;
         this.state.visible = results.length > 0;
+        this.state.totalExistencia = totalExistencia;
     }
 }
 

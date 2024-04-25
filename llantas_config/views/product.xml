@@ -249,8 +249,8 @@
             <field name="inherit_id" ref="product.product_template_tree_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='qty_available']" position="replace">
-                    <field name="qty_available" widget="product_suppliers" attrs="{'invisible':[('show_on_hand_qty_status_button', '=', False)]}" optional="show" decoration-danger="qty_available &lt; 0"/>
-                    <!-- <field name="seller_ids"/> -->
+                    <field name="qty_available" />
+                    <field name="qty_suppliers_total" widget="product_suppliers" attrs="{'invisible':[('show_on_hand_qty_status_button', '=', False)]}" optional="show" decoration-danger="qty_available &lt; 0"/>
                 </xpath>
             </field>
         </record>

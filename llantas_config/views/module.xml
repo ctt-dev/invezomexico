@@ -20,6 +20,7 @@
                     <field name="link_guia" widget="url"/>
                     <field name="no_recoleccion" optional="show"/>
                     <field name="tdp" />
+                    <field name="orden_entrega" widget="many2many_tags" optional="hide"/>
                     <field name="factura_prov" readonly="1" optional="hide" widget="many2one"/>
                     <field name="total_facturado" optional="hide" readonly="1" />
                     <field name="payment_status" widget="badge" decoration-danger="payment_status == 'not_paid'" decoration-warning="payment_status in ('partial', 'in_payment')" decoration-success="payment_status in ('paid', 'reversed')" attrs="{'invisible': [('payment_status', 'in', ('invoicing_legacy'))]}" optional="show"/>
@@ -260,7 +261,7 @@
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
                <search string="Buscar">
-                   <field name="sale_id" string="Venta" filter_domain="['|',('sale_id', 'ilike', self),('no_venta', 'ilike', self)]"/>
+                   <field name="sale_id" string="Venta" filter_domain="['|','|',('sale_id', 'ilike', self),('no_venta', 'ilike', self),('orden_entrega','ilike',self)]"/>
                     <field name="partner_name" string="Cliente" filter_domain="[('partner_name', 'ilike', self)]"/>
                     <!-- <field name="marketplace" string="Marketplace" filter_domain="[('marketplace', 'ilike', self)]"/> -->
                     <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>

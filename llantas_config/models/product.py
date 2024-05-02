@@ -106,9 +106,6 @@ class product_template_inherit(models.Model):
         string = "Modelos de auto compatibles"
     )
 
-    es_llanta=fields.Boolean(
-        string="Es llanta",
-    )
 
     qty_suppliers_total = fields.Float(
         string="Cantidad de proveedores",

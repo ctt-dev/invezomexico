@@ -34,7 +34,7 @@ class autofacturador(CustomerPortal):
         return values
 
 
-    @http.route(['/autofacturador/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_search(self, order_id, access_token=None, report_type=None, download=False, **kw):
         values = {}
         values.update({
@@ -42,7 +42,7 @@ class autofacturador(CustomerPortal):
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
 
-    @http.route(['/autofacturador/error/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/error/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_search_error(self, order_id,error, access_token=None, report_type=None, download=False, **kw):
         values = {}
         values.update({
@@ -51,7 +51,7 @@ class autofacturador(CustomerPortal):
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
 
-    @http.route(['/autofacturador/xml_report/<int:invoice_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/xml_report/<string:invoice_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal__xml_report(self, invoice_id, wizard=None, access_token=None, report_type=None, download=False, **kw):
         # model("account.edi.document"):wizard
         # create workbook object from xlsxwriter library
@@ -83,12 +83,16 @@ class autofacturador(CustomerPortal):
         bytes_of_zipfile = in_memory.getvalue()
         return request.make_response(bytes_of_zipfile,[('Content-Type', 'application/zip'),('Content-Disposition', 'attachment; filename=%s.zip;' % file_name)])
 
-    @http.route(['/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/formulario/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_form(self, order_id, cantidad, access_token=None, report_type=None, download=False, **kw):
         values = {}
         try:
             pagos = request.env['l10n_mx_edi.payment.method'].search([])
-            factura = request.env['sale.order'].search([('folio_venta', '=', order_id), ('amount_total', '=', cantidad)])
+            factura = request.env['sale.order'].search([('folio_venta', '=', '144d444'), ('amount_total', '=', 3081)])
+            #factura = request.env['sale.order'].search([('id', '!=', '0')], limit=1)
+            _logger.warning(factura)
+            _logger.warning(request.env.company.display_name)
+            _logger.warning(request.env.user.display_name)
             if(factura):
                 if(not factura['state'] == 'sale'):
                     raise ValidationError(_("La orden no ha sido confirmada"))
@@ -170,7 +174,7 @@ class autofacturador(CustomerPortal):
         except (MissingError) as e:
             raise e
 
-    @http.route(['/autofacturador/timbrar/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/timbrar/<string:order_id>'], type='http', auth="public", website=True)
     def portal_my_factura_timbrar(self, order_id, access_token=None, report_type=None, download=False, **kw):
         factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
         facturador = request.env['sale.advance.payment.inv'].sudo().create({
@@ -186,7 +190,7 @@ class autofacturador(CustomerPortal):
         else:
             return request.redirect(mensaje)
         
-    @http.route(['/autofacturador/timbrado/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/timbrado/<string:order_id>'], type='http', auth="public", website=True)
     def portal_my_factura_timbrado(self, order_id, access_token=None, report_type=None, download=False, **kw):
         values = {
                     'order_id' : order_id,

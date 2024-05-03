@@ -12,7 +12,7 @@
                             >
               <t t-if="error">
               </t>
-              <t t-esle="">
+              <t t-else="">
                   <button  type="button" class="btn btn-primary">Descargar</button>
               </t>
               </a>

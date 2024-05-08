@@ -7,11 +7,13 @@ import pytz
 import logging
 import io
 import base64
+from odoo.http import request, route
 from xml.dom import minidom
 from xml.etree import ElementTree
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError , UserError
 from cfdiclient import Autenticacion, Fiel, SolicitaDescarga, VerificaSolicitudDescarga, DescargaMasiva, Validacion
+from lxml.objectify import fromstring
 
 class l10n_mx_cfdi_document(models.Model):
     _name = 'l10n_mx.cfdi_document'
@@ -118,6 +120,42 @@ class l10n_mx_cfdi_document(models.Model):
         string="¿Obtener estado de CFDI?",
         default=False
     )
+
+    journal_id = fields.Many2one(
+        'account.journal',
+        string="Diario"
+    )
+
+    pdf_preview=fields.Binary(
+        string="Previsualización PDF"
+    )
+
+    pdf_preview_name=fields.Char(
+        string="Nombre del archivo - Previsualización PDF"
+    )
+
+    def generate_pdf_preview(self):
+        pdf = request.env['ir.actions.report'].sudo()._render_qweb_pdf('l10n_mx_cfdi_manager.l10n_mx_cfdi_document_report', [self.id])[0]
+        self.pdf_preview = base64.b64encode(pdf)
+        self.pdf_preview_name = self.name+".pdf"
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Documento CFDI',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': self.env.ref('l10n_mx_cfdi_manager.l10n_mx_cfdi_document_form').id,
+            'res_model': 'l10n_mx.cfdi_document',
+            'res_id': self.id,
+            'target': 'new',
+        }
+        
+    def compute_currency_id(self):
+        for rec in self:
+            rec.currency_id = rec.env['res.currency'].search([('name','=',rec.get_cfdi_data('Moneda'))])
+    currency_id = fields.Many2one(
+        'res.currency',
+        compute=compute_currency_id
+    )
     
     def _get_full_path(self):    
         for rec in self:
@@ -221,6 +259,21 @@ class l10n_mx_cfdi_document(models.Model):
                 'context': "{'edit':1}",
             }
         
+    def show_document(self):
+        if self.id:
+            return {
+                'name':'Documento CFDI',
+                'view_type':'form',
+                'view_mode':'tree',
+                'views' : [(False,'form')],
+                'res_model':'l10n_mx.cfdi_document',
+                'view_id':self.env.ref('l10n_mx_cfdi_manager.l10n_mx_cfdi_document_form').id,
+                'type':'ir.actions.act_window',
+                'res_id':self.id,
+                'target':'current',
+                'context': "{'edit':1}",
+            }
+        
     def create_bill_showing_new_record(self):
         new_moves = self.env['account.move']
         for rec in self:
@@ -253,6 +306,137 @@ class l10n_mx_cfdi_document(models.Model):
                 'domain': [('id','in',new_moves.ids)],
                 'target': 'current',
             }
+
+    def get_cfdi_data(self, attribute): 
+        # Get data from cfdi:Comprobante and tfd:TimbreFiscalDigital sections
+        metadata_pretty = str(self.metadata_pretty)
+        index_1 = metadata_pretty.find(attribute)
+        metadata_pretty_rest = metadata_pretty[index_1+len(attribute)+2:]
+        index_2 = metadata_pretty_rest.find('"')
+        if index_1 >= 0 and index_2 >= 0:
+            return str(metadata_pretty_rest[0:index_2])
+        else:
+            return ""
+
+    def get_cfdi_data_from_string(self, string, attribute):
+        # Get data from cfdi:Comprobante and tfd:TimbreFiscalDigital sections
+        metadata_pretty = str(string)
+        index_1 = metadata_pretty.find(attribute)
+        metadata_pretty_rest = metadata_pretty[index_1+len(attribute)+2:]
+        index_2 = metadata_pretty_rest.find('"')
+        return str(metadata_pretty_rest[0:index_2])
+
+    def get_cfdi_conceptos_data(self):
+        ## Get conceptos section
+        metadata_pretty = str(self.metadata_pretty)
+        index_1 = metadata_pretty.find("<cfdi:Conceptos>")
+        index_2 = metadata_pretty.find("</cfdi:Conceptos>")
+        conceptos_data = metadata_pretty[index_1+len("<cfdi:Conceptos>"):index_2]
+        
+        conceptos_list = []
+        break_loop = False
+        c = 0
+        ## Get data from each concept
+        while break_loop == False:
+            c += 1
+            final_len = ("</cfdi:Concepto>")
+            concepto_index_1 = conceptos_data.find("<cfdi:Concepto")
+            concepto_index_2 = conceptos_data.find("</cfdi:Concepto>",concepto_index_1)
+            concepto_data = conceptos_data[concepto_index_1+len("<cfdi:Concepto"):concepto_index_2+len("</cfdi:Concepto>")]
+            if concepto_index_2 < 0:
+                concepto_index_2 = conceptos_data.find("/>",concepto_index_1)
+                concepto_data = conceptos_data[concepto_index_1+len("<cfdi:Concepto"):concepto_index_2+len("/>")]
+                final_len = len("/>")
+            # raise UserError(str(concepto_index_2))
+            # if c == 2:
+            #     raise UserError(str(concepto_data))
+
+            ## Get impuestos section
+            impuestos_index_1 = concepto_data.find("<cfdi:Impuestos>")
+            impuestos_index_2 = concepto_data.find("</cfdi:Impuestos>")
+            impuestos_data = concepto_data[impuestos_index_1+len("<cfdi:Impuestos>"):impuestos_index_2]
+            impuestos_list = []
+            break_impuestos_loop = False
+            ## Get data from each impuesto
+            while break_impuestos_loop == False:
+                impuesto_index_1 = impuestos_data.find("<cfdi:Traslado ")
+                impuesto_index_2 = impuestos_data.find("/>")
+                impuesto_data = impuestos_data[impuesto_index_1+len("<cfdi:Traslado "):impuesto_index_2+len("/>")]
+                if impuesto_index_1 > 0:
+                    impuestos_list.append(
+                        dict({
+                            'Base': self.get_cfdi_data_from_string(impuesto_data, "Base"),
+                            'Impuesto': self.get_cfdi_data_from_string(impuesto_data, "Impuesto"),
+                            'TipoFactor': self.get_cfdi_data_from_string(impuesto_data, "TipoFactor"),
+                            'TasaOCuota': self.get_cfdi_data_from_string(impuesto_data, "TasaOCuota"),
+                            'Importe': self.get_cfdi_data_from_string(impuesto_data, "Importe"),
+                        })
+                    )
+                    impuestos_data = impuestos_data[impuesto_index_2+len("/>"):]
+                    # raise UserError(str(impuestos_data))
+                else:
+                    break_impuestos_loop = True
+            # raise UserError(str(impuestos_list))
+            
+            if concepto_index_1 > 0:
+                conceptos_list.append(
+                    dict({
+                        'ClaveProdServ': self.get_cfdi_data_from_string(concepto_data, "ClaveProdServ"),
+                        'NoIdentificacion': self.get_cfdi_data_from_string(concepto_data, "NoIdentificacion"),
+                        'Cantidad': self.get_cfdi_data_from_string(concepto_data, "Cantidad"),
+                        'Unidad': self.get_cfdi_data_from_string(concepto_data, "Unidad"),
+                        'ClaveUnidad': self.get_cfdi_data_from_string(concepto_data, "ClaveUnidad"),
+                        'Descripcion': self.get_cfdi_data_from_string(concepto_data, "Descripcion"),
+                        'ValorUnitario': self.get_cfdi_data_from_string(concepto_data, "ValorUnitario"),
+                        'Importe': self.get_cfdi_data_from_string(concepto_data, "Importe"),
+                        'ObjetoImp': self.get_cfdi_data_from_string(concepto_data, "ObjetoImp"),
+                        'Impuestos': impuestos_list
+                    })
+                )
+                conceptos_data = conceptos_data[len(concepto_data)+len("<cfdi:Concepto"):] 
+            else:
+                break_loop = True
+            # if c == 3:
+            #     raise UserError(str(conceptos_data))
+        return conceptos_list
+
+
+    def get_cfdi_impuestos_data(self):
+        ##Get all conceptos
+        conceptos_list = self.get_cfdi_conceptos_data()
+        impuestos_name_list = []
+        impuestos_list = []
+        for concepto in conceptos_list:
+            for impuesto in concepto['Impuestos']:
+                # raise UserError(str(impuesto))
+                impuesto_name = str(impuesto['Impuesto']) + "-" + str(impuesto['TipoFactor']) + "-" + str(impuesto['TasaOCuota'])
+                # raise UserError(str(impuesto_name))
+                if impuesto_name not in impuestos_name_list:
+                    impuestos_name_list.append(impuesto_name)
+
+        for impuesto_name in impuestos_name_list:
+            importe_total = 0
+            base_total = 0
+            for concepto in conceptos_list:
+                for impuesto in concepto['Impuestos']:
+                    if impuesto['Impuesto'] == impuesto_name[0:3] and impuesto['TipoFactor'] == impuesto_name[4:8] and impuesto['TasaOCuota'] == impuesto_name[9:17]:
+                        base_total += float(impuesto['Base'])
+                        importe_total += float(impuesto['Importe'])
+            
+            impuestos_list.append(
+                dict({
+                    'Base': base_total,
+                    'Impuesto': impuesto_name[0:3],
+                    'TipoFactor': impuesto_name[4:8],
+                    'TasaOCuota': impuesto_name[9:17],
+                    'Importe': importe_total,
+                })
+            )
+        return impuestos_list
+
+    def get_qr_section_data(self):
+        cfdi_data = base64.decodebytes(self.attatch)
+        return self.env['account.move']._l10n_mx_edi_decode_cfdi_etree(fromstring(cfdi_data))
         
     def create_bill(self):
         #Check if UUID is already linked
@@ -275,15 +459,12 @@ class l10n_mx_cfdi_document(models.Model):
                     partner = p
                     prev_invoice_count = len(p.invoice_ids)
                 
-#             partner = self.env['res.partner'].search([('vat','=',data['rfc_emisor']),('is_company','=',True)])
             if len(partner) < 1:
-                try:
-                    partner = self.env['res.partner'].create({
-                        'name': data['emisor'],
-                        'vat': data['rfc_emisor']
-                    })
-                except:
-                    pass
+                partner = self.env['res.partner'].create({
+                    'name': data['emisor'],
+                    'vat': data['rfc_emisor'],
+                    'country_id': self.env['ir.model.data']._xmlid_to_res_id('base.mx')
+                })
             payment_term = self.env['account.payment.term'].with_context(lang='es_MX').search([('name', '=', data['metodo_pago'])])
             if len(payment_term) == 0:
                 if partner.property_supplier_payment_term_id.id:
@@ -292,6 +473,10 @@ class l10n_mx_cfdi_document(models.Model):
             currency_id = self.env['res.currency'].search([('name','=',data['moneda'])], limit=1)
             if len(currency_id) == 0:
                 currency_id = self.env.company.currency_id
+
+            journal_id = self.env.company.sat_account_incoming_journal_id.id if data['type'] == 'I' else self.env.company.sat_account_egress_journal_id.id
+            if self.journal_id.id:
+                journal_id = self.journal_id.id
                     
             account_move = self.env['account.move'].create({
                 'partner_id': partner.id,
@@ -300,7 +485,7 @@ class l10n_mx_cfdi_document(models.Model):
                 'state': 'draft',
                 'move_type': 'in_invoice' if data['type'] == 'I' else 'in_refund',
                 'extract_state': 'no_extract_requested',
-                'journal_id': self.env.company.sat_account_incoming_journal_id.id if data['type'] == 'I' else self.env.company.sat_account_egress_journal_id.id,
+                'journal_id': journal_id,
                 'l10n_mx_edi_sat_status': 'undefined',
                 'currency_id': currency_id.id,
                 'invoice_payment_term_id': payment_term.id if payment_term else None,
@@ -572,3 +757,15 @@ class l10n_mx_cfdi_document(models.Model):
                 },
                 force_send=True,
             )
+
+    def show_preview(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Documento CFDI',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': self.env.ref('l10n_mx_cfdi_manager.l10n_mx_cfdi_document_form').id,
+            'res_model': 'l10n_mx.cfdi_document',
+            'res_id': self.id,
+            'target': 'new',
+        }

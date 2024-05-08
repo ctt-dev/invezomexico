@@ -39,7 +39,8 @@
         'views/l10n_mx_cfdi_request.xml',
         'views/l10n_mx_cfdi_fiel.xml',
         'views/res_company.xml',
-        'views/wizard_l10n_mx_cfdi_document.xml'
+        'views/wizard_l10n_mx_cfdi_document.xml',
+        'reports/l10n_mx_cfdi_document.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -21,10 +21,16 @@
                                 <field name="cfdi_state" readonly="1"/>
                                 <field name="get_cfdi_state" readonly="1" groups="base.group_no_one"/>
                                 <field name="attatch_name" invisible="1"/>
-                                <field name="attatch" filename="attatch_name" widget="binary" readonly="1"/><br/>
+                                <field name="pdf_preview_name" invisible="1" force_save="1"/>
+                                <field name="attatch" string="XML" filename="attatch_name" widget="binary" readonly="1"/>
+                                <field name="pdf_preview" string="PDF" filename="pdf_preview_name" widget="binary" readonly="1" attrs="{'invisible':[('pdf_preview','=',False)]}"/>
+                                <button name="generate_pdf_preview" type="object" string="Generar PDF" attrs="{'invisible':[('pdf_preview','!=',False)]}"/>
                             </group>
                         </group>
                         <notebook>
+                            <page string="PDF" attrs="{'invisible':[('pdf_preview','=',False)]}">
+                                <field name="pdf_preview" widget="pdf_viewer" readonly="1" force_save="1"/>
+                            </page>
                             <page string="Datos">
                                 <field name="metadata_pretty"/>
                             </page>
@@ -69,26 +75,29 @@
             <field name="name">Documentos</field>
             <field name="model">l10n_mx.cfdi_document</field>
             <field name="arch" type="xml">
-                <tree create="false" edit="false">
-                    <field name="date" string="Fecha"/>
-                    <field name="rfc_emisor" string="RFC Emisor"/>
-                    <field name="emisor" string="Emisor" optional="hide"/>
-                    <field name="type_comprobante" optional="hide"/>
-                    <field name="uuid" string="UUID"/>
-                    <field name="folio" string="Folio" optional="hide"/>
-                    <field name="total" string="Total" optional="hide"/>
-                    <field name="cfdi_state" string="Estado" optional="show"/>
-                    <field name="get_cfdi_state" groups="base.group_no_one" optional="hide"/>
-                    <field name="move_id" optional="hide"/>
+                <tree create="false" editable="top">
+                    <field name="date" string="Fecha" readonly="1"/>
+                    <field name="rfc_emisor" string="RFC Emisor" readonly="1"/>
+                    <field name="emisor" string="Emisor" readonly="1" optional="hide"/>
+                    <field name="type_comprobante" readonly="1" optional="hide"/>
+                    <field name="uuid" string="UUID" readonly="1"/>
+                    <field name="folio" string="Folio" readonly="1" optional="hide"/>
+                    <field name="total" string="Total" readonly="1" optional="hide"/>
+                    <field name="cfdi_state" string="Estado" readonly="1" optional="show"/>
+                    <field name="get_cfdi_state" readonly="1" groups="base.group_no_one" optional="hide"/>
+                    <field name="move_id" readonly="1" optional="hide"/>
                     <field name="attatch_name" invisible="1"/>
-                    <field name="attatch" filename="attatch_name" widget="binary"/>
-                    <field name="cfdi_request" optional="hide"/>
-                    <field name="link_state" optional="hide"/>
-                    <field name="moves_ids" string="Factura" widget="many2many_tags" optional="hide"/>
+                    <field name="attatch" readonly="1" filename="attatch_name" widget="binary"/>
+                    <field name="cfdi_request" readonly="1" optional="hide"/>
+                    <field name="link_state" readonly="1" optional="hide"/>
+                    <field name="moves_ids" string="Factura" readonly="1" widget="many2many_tags" optional="hide"/>
+                    <field name="journal_id" options="{'no_open': True, 'no_create': True}" domain="[('type','=','purchase')]"/>
+                    <!-- <button name="show_document" type="object" icon="fa-arrow-right"/> -->
                     <button name="create_bill_showing_new_record" type="object" icon="fa-file-o" string="Crear Factura" attrs="{'invisible':[('link_state','=','link')]}"/>
 <!--                     <button name="create_bill" type="object" icon="fa-file-o" string="Crear Factura" attrs="{'invisible':[('link_state','=','link')]}"/> -->
                     <button name="show_bill" type="object" icon="fa-eye" string="Ver Factura" attrs="{'invisible':[('link_state','=','unlink')]}"/>
                     <button name="verify_state" type="object" icon="fa-refresh" string="Verificar Estado"/>
+                    <button name="show_preview" type="object" icon="fa-eye" string="Ver"/>
                 </tree>
             </field>
         </record>
@@ -104,8 +113,7 @@
                     'search_default_group_by_date': 1,
                     'search_default_group_by_emisor': 1,
                     'create':0, 
-                    'delete': 0, 
-                    'edit': 0
+                    'delete': 0
                 }
             </field>
             <field name="search_view_id" ref="view_l10n_mx_cfdi_document_filter"/>

@@ -102,13 +102,29 @@ class ctrl_llantas(models.Model):
         store=True,
     )
 
+    
+
+    @api.depends('marketplace','marketplace.name')
+    def _compute_marketplace_name(self):
+        for rec in self:
+            marketplace_name = ""
+            # raise UserError('.....' + str(rec.marketplace.name))
+            if rec.marketplace.id:
+                marketplace_name = rec.marketplace.name
+            rec.marketplace_name = marketplace_name
+    marketplace_name = fields.Char(
+        string="Marketplace",
+        compute=_compute_marketplace_name,
+        store=True,
+    )
+
     partner_id=fields.Many2one(
         "res.partner",
         related="orden_compra.partner_id",
         string="Proveedor",
     )
 
-    @api.depends('sale_id')
+    @api.depends('sale_id','orden_compra')
     def compute_factura_prov(self):
         for rec in self:
             purchase_orders = rec.sale_id._get_purchase_orders()
@@ -121,8 +137,25 @@ class ctrl_llantas(models.Model):
         "account.move",
         string="Factura proveedor",
         compute=compute_factura_prov,
+    )
+
+    
+
+    @api.depends('factura_prov','factura_prov.name')
+    def compute_factura_prov_name(self):
+        for rec in self:
+            factura_prov_name = ""
+            # raise UserError('.....' + str(rec.marketplace.name))
+            if rec.factura_prov.id:
+                factura_prov_name = rec.factura_prov.name
+            rec.factura_prov_name = factura_prov_name
+
+    factura_prov_name = fields.Char(
+        string="Factura proveedor",
+        compute=compute_factura_prov_name,
         store=True,
     )
+    
     
     total_facturado = fields.Float(
         string="Total Facturado",
@@ -504,6 +537,20 @@ class ctrl_llantas(models.Model):
         'ir.attachment',
         string="Factura de proveedor - Adjuntos",
         compute=compute_factura_prov_attachment_ids
+    )
+
+    def compute_factura_clie_attachment_ids(self):
+        for rec in self:
+            attachment_ids = rec.env['ir.attachment'].search([('res_model','=','account.move'),('res_id','in',rec.sale_id.invoice_ids.ids)])
+            if attachment_ids:
+                rec.factura_clie_attachment_ids = attachment_ids
+            else:
+                rec.factura_clie_attachment_ids = False
+                
+    factura_clie_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        string="Factura de cliente - Adjuntos",
+        compute=compute_factura_clie_attachment_ids
     )
 
 

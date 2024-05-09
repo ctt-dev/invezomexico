@@ -81,10 +81,10 @@ class product_template_inherit(models.Model):
     )
 
     
-    # es_llanta=fields.Boolean(
-    #     string="Es llanta?",
-    #     tracking=True,
-    # )
+    es_llanta=fields.Boolean(
+        string="Es llanta?",
+        tracking=True, 
+    )
 
     es_paquete=fields.Boolean(
         string="Es paquete?",

@@ -6,7 +6,7 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
                  <xpath expr="//page[@name='general_information']//group//group[@name='group_general']//field[@name='product_tooltip']" position="after">
-                     <!-- <field name="es_llanta"/> -->
+                     <field name="es_llanta"/>
                      <field name="es_paquete"/>
                      <field name="pkg_type" attrs="{'invisible': [('es_paquete', '=', False)], 'required': [('es_paquete', '=', False)]}"/>
                      <field name="sku_alternos" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
@@ -179,10 +179,10 @@
                          <field name="modelo_llanta" />
                          <field name="marca_llanta" />
                          <field name="medida_llanta" />
-                        <!-- <field name="es_llanta"/> -->
+                        <field name="es_llanta"/>
                     </div>
                 </xpath>
-                <!-- <xpath expr="//div[@name='product_lst_price']" position="after">
+                <xpath expr="//div[@name='product_lst_price']" position="after">
                     <div attrs="{'invisible': [('es_llanta', '=', False)]}">
                         <table>
                             <tr>
@@ -205,7 +205,7 @@
                             </tr>
                         </table>
                     </div>
-                </xpath> -->
+                </xpath>
             </field>
         </record>
         

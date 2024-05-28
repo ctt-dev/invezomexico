@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="account_jorunal_view_form_inherit" model="ir.ui.view">
+            <field name="name">diarios</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='country_code']" position="after">
+                    <!-- <field name="estado_recepcion"/> -->
+                    <field name="code" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -15,3 +15,9 @@ class res_company_inherit(models.Model):
         tracking=True,
         default=False
     )
+
+
+    url_autofacturacion=fields.Char(
+        string="URL Autofacturacion",
+        tracking=True,
+    )

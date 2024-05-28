@@ -38,6 +38,22 @@ class account_inherit(models.Model):
             if(invoice_id.edi_error_count == 1):
                 invoice_id.action_retry_edi_documents_error()
             # raise UserError(invoice_id)
+    
+    def send_mail_invoice_autofacturacion(self):
+            _logger.warning(self.env.user)
+            email_to = []
+            email_to.append(self.partner_id.email)
+            self.env.ref('account.email_template_edi_invoice').send_mail(
+            self.id,
+            # email_layout_xmlid="mail.mail_notification_light",
+            email_values={
+                'email_to': email_to,
+                'email_from': self.env.company.sender_user_id.login,
+                'reply_to': self.env.company.sender_user_id.login,
+                # 'author_id': self.partner_id.id,
+            },
+            force_send=True,
+        )
 
     # @api.model
     # def action_post(self):

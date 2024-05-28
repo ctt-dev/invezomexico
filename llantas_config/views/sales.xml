@@ -19,6 +19,7 @@
                      <field name="warehouse_id" />
                      <field name="commitment_date"/>
                      <field name="tipo_factura" />
+                     <field name="es_killer"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">

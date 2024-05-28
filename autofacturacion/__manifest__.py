@@ -22,7 +22,9 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-               'sale'],
+               'sale',
+               'l10n_latam_invoice_document',
+               'l10n_latam_base',],
 
     # always loaded
     'data': [

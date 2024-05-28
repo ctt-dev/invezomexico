@@ -188,6 +188,7 @@ class sale_advance_payment_inherit(models.TransientModel):
                 else:
                     for x in moves.edi_document_ids:
                         if(x.edi_format_name == 'CFDI (4.0)'):
+                            _logger.warning(x)
                             return '/autofacturador/xml_report/%s' % (x.id)
             except ValidationError as exc:
                 raise ValidationError(_(exc))
@@ -197,6 +198,7 @@ class sale_advance_payment_inherit(models.TransientModel):
             moves.action_invoice_print()
             for x in moves.edi_document_ids:
                 if(x.edi_format_name == 'CFDI (4.0)'):
+                    _logger.warning(x)
                     return '/autofacturador/xml_report/%s' % (x.id)
                     
     def create_invoices_portal(self, open_invoices, forma_pago, cfdi):

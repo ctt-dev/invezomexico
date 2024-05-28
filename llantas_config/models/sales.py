@@ -108,7 +108,9 @@ class sale_order_inherit(models.Model):
 
     def _compute_link(self):
         if(self.folio_venta):
-            self.link_facturacion = self.env['ir.config_parameter'].get_param('web.base.url')+'/autofacturador/'+self.folio_venta
+            if self.company_id.url_autofacturacion != False:
+                self.link_facturacion = self.company_id.url_autofacturacion+'/autofacturador/'+self.folio_venta
+            # self.link_facturacion = self.env['ir.config_parameter'].get_param('web.base.url')+'/autofacturador/'+self.folio_venta
         else:
             self.link_facturacion = ''
             
@@ -165,6 +167,11 @@ class sale_order_inherit(models.Model):
         related="marketplace.mostrar_envio",
     )
 
+    es_killer=fields.Boolean(
+        string="Es killer?",
+        default=False,
+        tracking=True,
+    )
     
 
     def action_confirm(self):
@@ -205,7 +212,7 @@ class sale_order_inherit(models.Model):
         for rec in self:
             if rec.state == 'sale':
                 for line in rec.order_line:
-                    if 	rec.amount_total < (line.product_uom_qty * line.costo_proveedor):
+                    if 	rec.amount_total < (line.product_uom_qty * line.costo_proveedor) and rec.es_killer == False:
                         raise UserError("La creación de la orden de compra no es posible en este momento debido a que el total de la orden de compra excede el total de la orden de venta asociada.")
                     if line.qty_available_today > 0:
                         raise UserError("Actualmente, no es posible generar una orden de compra debido a que hay productos disponibles en stock. Se recomienda revisar el inventario existente antes de generar una nueva orden de compra.")

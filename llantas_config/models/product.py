@@ -10,6 +10,11 @@ from odoo.tools.float_utils import float_round
 class product_template_inherit(models.Model):
     _inherit = 'product.template'
     _description='Producto'
+    
+    def _compute_show_qty_status_button(self):
+        for template in self:
+            template.show_on_hand_qty_status_button = template.type == 'product'
+            template.show_forecasted_qty_status_button = template.type == 'product'
 
     codigo_llanta = fields.Char(
     string='Codigo',

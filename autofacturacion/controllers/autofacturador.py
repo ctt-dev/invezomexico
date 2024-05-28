@@ -55,9 +55,12 @@ class autofacturador(CustomerPortal):
     def portal__xml_report(self, invoice_id, wizard=None, access_token=None, report_type=None, download=False, **kw):
         # model("account.edi.document"):wizard
         # create workbook object from xlsxwriter library
-        
-        xml = request.env['account.edi.document'].browse(invoice_id)
+        _logger.warning(invoice_id)
+        xml = request.env['account.edi.document'].browse(int(invoice_id))
+        _logger.warning(xml)
+        _logger.warning(self)
         xml.move_id.action_invoice_print()
+        xml.move_id.send_mail_invoice_autofacturacion()
         invoice_sudo = self._document_check_access('account.move', xml.move_id.id, access_token)
         pdf = self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
         file_name = 'Factura-'+xml.move_id.name
@@ -81,6 +84,7 @@ class autofacturador(CustomerPortal):
         #             ]
         #         )
         bytes_of_zipfile = in_memory.getvalue()
+        
         return request.make_response(bytes_of_zipfile,[('Content-Type', 'application/zip'),('Content-Disposition', 'attachment; filename=%s.zip;' % file_name)])
 
     @http.route(['/autofacturador/formulario/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
@@ -88,7 +92,7 @@ class autofacturador(CustomerPortal):
         values = {}
         try:
             pagos = request.env['l10n_mx_edi.payment.method'].search([])
-            factura = request.env['sale.order'].search([('folio_venta', '=', '144d444'), ('amount_total', '=', 3081)])
+            factura = request.env['sale.order'].search([('folio_venta', '=', order_id), ('amount_total', '=', cantidad)])
             #factura = request.env['sale.order'].search([('id', '!=', '0')], limit=1)
             _logger.warning(factura)
             _logger.warning(request.env.company.display_name)

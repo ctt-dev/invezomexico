@@ -6,6 +6,7 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
                  <xpath expr="//page[@name='general_information']//group//group[@name='group_general']//field[@name='product_tooltip']" position="after">
+                     
                      <field name="es_llanta"/>
                      <field name="es_paquete"/>
                      <field name="pkg_type" attrs="{'invisible': [('es_paquete', '=', False)], 'required': [('es_paquete', '=', False)]}"/>
@@ -21,6 +22,12 @@
                      <field name="config_marketplace_id" widget="many2one_tags" force_save="1" invisible="1"/>
                      <field name="config_marketplace_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                  </xpath>
+                <xpath expr="//page[@name='general_information']//group//group[@name='group_standard_price']//field[@name='company_id']" position="after">
+                    <field name="is_killer" />
+                     <field name="killer_date" attrs="{'invisible': [('is_killer', '=', False)]}"/>
+                    <field name="killer_price" widget="monetary" attrs="{'invisible': [('is_killer', '=', False)]}" />
+                    <field name="killer_id" invisible="1"/>
+                </xpath>
                 <!-- <xpath expr="//page[@name='inventory']//group//group//div[2]" position="after">
                      <label for="largo" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
                         <div class="o_row" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">

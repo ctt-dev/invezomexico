@@ -310,11 +310,11 @@
         <menuitem id="menu_ctt_llantas_root" name="Tablero de control" web_icon="llantas_config,static/description/ctt.png" groups=""/>
         <menuitem id="menu_ctt_llantas_ctrl_list" name="Operaciones" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
-        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="4" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="5" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
         <menuitem id="menu_ctt_llantas_marketplace_list" name="Proveedores" parent="menu_ctt_llantas_root" sequence="2" action="ctt_llantas_action_ctrl_llantas_tree"/>
         <menuitem id="menu_ctt_llantas_reportes_list" name="Reportes" parent="menu_ctt_llantas_root" sequence="3" action="ctt_llantas_action_ctrl_llantas_tree"/>
-        
+        <menuitem id="menu_ctt_llantas_killer_list" name="Killer" parent="menu_ctt_llantas_root" sequence="4" action="ctt_llantas_action_ctrl_llantas_tree"/>
         <!-- <menuitem id="menu_ctt_country_kiosk_no_user_mode" name="Modo Kiosko" parent="menu_ctt_country_root" sequence="2" action="ctt_country_action_kiosk_mode"/> -->
 
     </data>

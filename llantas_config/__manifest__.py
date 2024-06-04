@@ -71,6 +71,8 @@
         'reports/sale_order.xml',
         'reports/report_picking.xml',
         # 'views/style.css',
+        'views/tablero_killer.xml',
+        'views/wizard_cargar_killer.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

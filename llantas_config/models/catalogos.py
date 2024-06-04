@@ -1,6 +1,9 @@
 from odoo import models, fields, api, _
 import logging
+import tempfile
 import json
+import base64
+import pandas as pd
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from collections import defaultdict
@@ -8,6 +11,7 @@ _logger = logging.getLogger(__name__)
 import datetime
 import urllib.request 
 import json  
+from odoo import _
 
 class marca_llanta(models.Model):
     _name = 'llantas_config.marca_llanta'
@@ -823,4 +827,75 @@ class pronto_pago(models.Model):
         string="Contacto",
         store=True,
     )
+
+
+
+    
+    
+    
+class killer_list(models.Model):
+    _name = 'llantas_config.killer_list'
+    _description = 'Listado killers'
+    _order = 'id desc'
+
+    
+    product_id=fields.Many2one(
+        "product.template",
+        string="Producto",
+        store=True,
+    )
+    
+    sku=fields.Char(
+        string="sku",
+        related="product_id.default_code",
+    )
+    
+    killer_price=fields.Float(
+        string="Precio killer",
+    )
+    
+    final_date=fields.Datetime(
+        string="Fecha final",
+    )
+
+    marketplace_id=fields.Many2one(
+        "llantas_config.marketplaces",
+        string="Marketplace",
+        store=True,
+    )
+
+    status = fields.Selection([
+        ('active', 'Activo'),
+        ('expired', 'Vencido'),
+        ('cancelled', 'Cancelado'),
+    ], string="Estado", default='active')
+
+class killer_no_product_list(models.Model):
+    _name = 'llantas_config.killer_no_product'
+    _description = 'Listado productos no encontrados'
+    _order = 'id desc'
+
+    
+    product=fields.Char(
+        string="Producto",
+    )
+    
+    sku=fields.Char(
+        string="sku"
+    )
+    
+    killer_price=fields.Float(
+        string="Precio killer",
+    )
+    
+    final_date=fields.Datetime(
+        string="Fecha final",
+    )
+
+    marketplace_id=fields.Many2one(
+        "llantas_config.marketplaces",
+        string="Marketplace",
+        store=True,
+    )
+
 

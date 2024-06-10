@@ -7,33 +7,40 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="marketplace_id" optional="show"/>
-                    <field name="order_id" string="Folio venta Odoo"/>
+                    <field name="order_id" string="Folio venta Odoo" widget="many2one"/>
                     <field name="folio_venta" optional="show"/>
                     
                     <field name="link_venta" optional="hide"/>
                     <field name="codigo_prod"/>
-                    <field name="nombre_producto"/>
-                    <field name="product_uom_qty" />
-                    <field name="qty_delivered" string="Delivered" optional="show"/>
-                    <field name="qty_invoiced" string="Invoiced" optional="show"/>
-                    <field name="product_uom" string="UoM" optional="show"/>
+                    <field name="nombre_producto" optional="show"/>
+                    <field name="product_uom_qty" optional="show"/>
+                    <field name="product_uom" string="UoM" />
+                    <field name="importe_descuento" optional="hide"/>
+                    <field name="precio_antes_dec" widget="monetary" optional="hide"/>
+                    <field name="price_unit" widget="monetary" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                    <field name="killer_id_base_price" sum="base_price" widget="monetary" optional="show"/>
+                    <field name="killer_id_promotion_price" sum="promotion_price" widget="monetary" optional="show"/>
+                   
+                    <field name="killer_id_killer_price" sum="killer_price" widget="monetary" optional="show"/>
+                    <field name="price_subtotal" widget="monetary" optional="hide"/>
+                    <field name="price_total" widget="monetary"/>
+                    <field name="total_con_killer" sum="total_con_killer" widget="monetary"/>
+                    <field name="qty_delivered" string="Delivered" optional="hide"/>
+                    <field name="qty_invoiced" string="Invoiced" optional="hide"/>
                     <field name="fecha_venta" optional="show"/>
                     <field name="proveedor_id" optional="show"/>
                     <field name="costo_proveedor" optional="show"/>
-                    <field name="importe_descuento" optional="hide"/>
-                    <field name="precio_antes_dec" optional="hide"/>
-                    <field name="price_unit" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                    
                     <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" optional="hide"/>
                     <field name="discount" string="Disc.%"  optional="hide" widget="sol_discount"/>
-
-                    <field name="price_subtotal" widget="monetary"/>
-                    <field name="price_total" widget="monetary"/>
+                    <field name="is_killer" invisible="1" />
+                    
                     <field name="company_id" invisible="1"/>
-                    <field name="partner_id" optional="show"/>
+                    <field name="partner_id" optional="hide"/>
                     <field name="comprador" optional="show"/>
                     <field name="estado_venta" optional="show"/>
-                    <field name="comision" optional="show"/>
-                    <field name="envio" optional="show"/>
+                    <field name="comision" optional="hide"/>
+                    <field name="envio" optional="hide"/>
                     
                 </tree>
             </field>
@@ -54,7 +61,9 @@
                     <field name="comprador"/>
                     <field name="partner_id" optional="show"/>
                    <separator/>
+                   <filter name="is_killer" string="Tiene killer" domain="[('is_killer', '=', True)]"/>
                     <filter name="fecha_venta" date="fecha_venta"/>
+                   
                    <group expand="0" string="Group By">
                         <filter name="nombre_producto" domain="[]" context="{'group_by': 'nombre_producto'}"/>
                        <filter name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>

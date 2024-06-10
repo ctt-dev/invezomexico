@@ -123,14 +123,29 @@ class product_template_inherit(models.Model):
             total = sum(seller.existencia_actual for seller in rec.seller_ids)
             rec.qty_suppliers_total = total
 
+
+    killer_id=fields.Many2one(
+        "llantas_config.killer_list",
+        string="id killer",
+        store=True,
+    )
+    
     is_killer=fields.Boolean(
         string="Es killer?",
         tracking=True,
     )
 
     killer_date=fields.Datetime(
-        string="Fecha killer",
+        string="Fecha final killer",
+        # related="killer_id.final_date",
         tracking=True,
+    )
+
+    killer_initial_date= fields.Datetime(
+        string="Fecha inicial killer",
+        tracking=True,
+        # related="killer_id.initial_date",
+        store=True,
     )
 
     killer_price=fields.Float(
@@ -138,11 +153,7 @@ class product_template_inherit(models.Model):
         tracking=True,
     )
 
-    killer_id=fields.Many2one(
-        "llantas_config.killer_list",
-        string="id killer",
-        store=True,
-    )
+    
     
 class product_product_inherit(models.Model):
     _inherit = 'product.product'

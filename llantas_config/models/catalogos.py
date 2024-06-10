@@ -870,6 +870,18 @@ class killer_list(models.Model):
         ('cancelled', 'Cancelado'),
     ], string="Estado", default='active')
 
+    base_price= fields.Float(
+        string="Precio base",
+    )
+    
+    promotion_price=fields.Float(
+        string="Precio promoción",
+    )
+    
+    initial_date=fields.Datetime(
+        string="Fecha inicial",
+    )
+
 class killer_no_product_list(models.Model):
     _name = 'llantas_config.killer_no_product'
     _description = 'Listado productos no encontrados'
@@ -896,6 +908,18 @@ class killer_no_product_list(models.Model):
         "llantas_config.marketplaces",
         string="Marketplace",
         store=True,
+    )
+
+    base_price= fields.Float(
+        string="Precio base",
+    )
+    
+    promotion_price=fields.Float(
+        string="Precio promoción",
+    )
+    
+    initial_date=fields.Datetime(
+        string="Fecha inicial",
     )
 
 

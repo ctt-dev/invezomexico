@@ -24,9 +24,10 @@
                  </xpath>
                 <xpath expr="//page[@name='general_information']//group//group[@name='group_standard_price']//field[@name='company_id']" position="after">
                     <field name="is_killer" />
-                     <field name="killer_date" attrs="{'invisible': [('is_killer', '=', False)]}"/>
+                    <field name="killer_initial_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1"/>
+                     <field name="killer_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1"/>
                     <field name="killer_price" widget="monetary" attrs="{'invisible': [('is_killer', '=', False)]}" />
-                    <field name="killer_id" invisible="1"/>
+                    <field name="killer_id" invisible="1" readonly="1"/>
                 </xpath>
                 <!-- <xpath expr="//page[@name='inventory']//group//group//div[2]" position="after">
                      <label for="largo" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>

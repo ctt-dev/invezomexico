@@ -23,7 +23,10 @@
                 <tree edit="0" sample="1" >
                     <field name="product_id" widget="many2one"/>
                     <field name="sku" />
+                    <field name="base_price" widget="monetary"/>
+                    <field name="promotion_price" widget="monetary"/>
                     <field name="killer_price" widget="monetary"/>
+                    <field name="initial_date" />
                     <field name="final_date" />
                     <field name="marketplace_id" widget="many2one"/>
                     <field name="status" widget="badge"

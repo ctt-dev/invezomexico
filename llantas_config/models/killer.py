@@ -27,10 +27,10 @@ class WizardImportlistadokillers(models.TransientModel):
     def import_data_killer(self):
         count_updated_total = 0
         count_created_total = 0
-        
+    
         file_path = tempfile.gettempdir() + '/file.xlsx'
         data = self.file_data
-        
+    
         with open(file_path, 'wb') as f:
             f.write(base64.b64decode(data))
     
@@ -49,23 +49,29 @@ class WizardImportlistadokillers(models.TransientModel):
                         count_updated, count_created = 0, 0
                         fecha_actual = datetime.datetime.now()
     
-                        # Convertir fecha final a objeto datetime
-                        fecha_str = record.get('fecha final')
-                        if isinstance(fecha_str, pd.Timestamp):
-                            fecha_str = fecha_str.strftime('%d/%m/%Y')
-                        fecha_obj = datetime.datetime.strptime(fecha_str, '%d/%m/%Y')
+                        # Convertir fecha inicio y fecha final a objetos datetime
+                        fecha_inicio_str = record.get('Fecha Inicio')
+                        if isinstance(fecha_inicio_str, pd.Timestamp):
+                            fecha_inicio_str = fecha_inicio_str.strftime('%d/%m/%Y')
+                        fecha_inicio_obj = datetime.datetime.strptime(fecha_inicio_str, '%d/%m/%Y')
+                        
+                        fecha_final_str = record.get('Fecha Final')
+                        if isinstance(fecha_final_str, pd.Timestamp):
+                            fecha_final_str = fecha_final_str.strftime('%d/%m/%Y')
+                        fecha_final_obj = datetime.datetime.strptime(fecha_final_str, '%d/%m/%Y')
     
-                        # Determinar el estatus basado en la fecha
-                        if fecha_obj > fecha_actual:
+                        # Determinar el estatus basado en la fecha final
+                        if fecha_final_obj > fecha_actual:
                             estatus = 'active'
                         else:
                             estatus = 'expired'
     
-                        # Buscar registros existentes en killer_list
+                        # Buscar registros existentes en killer_list con fecha inicio y fecha final
                         existing_records_same_marketplace = self.env['llantas_config.killer_list'].search([
                             ('sku', '=', record.get('sku')),
                             ('marketplace_id', '=', self.marketplace_id.id),
-                            ('final_date', '=', fecha_obj.strftime('%Y-%m-%d')),
+                            ('start_date', '=', fecha_inicio_obj.strftime('%Y-%m-%d')),
+                            ('final_date', '=', fecha_final_obj.strftime('%Y-%m-%d')),
                         ])
     
                         if existing_records_same_marketplace:
@@ -81,7 +87,8 @@ class WizardImportlistadokillers(models.TransientModel):
                             existing_no_product_records = self.env['llantas_config.killer_no_product'].search([
                                 ('sku', '=', record.get('sku')),
                                 ('marketplace_id', '=', self.marketplace_id.id),
-                                ('final_date', '=', fecha_obj.strftime('%Y-%m-%d')),
+                                ('start_date', '=', fecha_inicio_obj.strftime('%Y-%m-%d')),
+                                ('final_date', '=', fecha_final_obj.strftime('%Y-%m-%d')),
                             ])
                             if existing_no_product_records:
                                 continue
@@ -98,13 +105,14 @@ class WizardImportlistadokillers(models.TransientModel):
                                                 'killer_price': record.get('precio killer'),
                                                 'marketplace_id': self.marketplace_id.id,
                                                 'sku': record.get('sku'),
-                                                'final_date': fecha_obj.strftime('%Y-%m-%d'),
+                                                'start_date': fecha_inicio_obj.strftime('%Y-%m-%d'),
+                                                'final_date': fecha_final_obj.strftime('%Y-%m-%d'),
                                                 'status': estatus,
                                             }
                                             killer_id = self.env['llantas_config.killer_list'].create(new_record)
                                             product.write({
                                                 'is_killer': True,
-                                                'killer_date': fecha_obj.strftime('%Y-%m-%d'),
+                                                'killer_date': fecha_final_obj.strftime('%Y-%m-%d'),
                                                 'killer_price': record.get('precio killer'),
                                                 'killer_id': killer_id.id,
                                             })
@@ -115,7 +123,8 @@ class WizardImportlistadokillers(models.TransientModel):
                                             'killer_price': record.get('precio killer'),
                                             'marketplace_id': self.marketplace_id.id,
                                             'sku': record.get('sku'),
-                                            'final_date': fecha_obj.strftime('%Y-%m-%d'),
+                                            'start_date': fecha_inicio_obj.strftime('%Y-%m-%d'),
+                                            'final_date': fecha_final_obj.strftime('%Y-%m-%d'),
                                         }
                                         self.env['llantas_config.killer_no_product'].create(new_record2)
                                 else:

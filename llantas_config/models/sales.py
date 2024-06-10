@@ -167,11 +167,17 @@ class sale_order_inherit(models.Model):
         related="marketplace.mostrar_envio",
     )
 
-    es_killer=fields.Boolean(
+    es_killer = fields.Boolean(
         string="Es killer?",
         default=False,
-        tracking=True,
+        compute='_compute_es_killer',
+        store=True,
     )
+
+    @api.depends('order_line.is_killer')
+    def _compute_es_killer(self):
+        for rec in self:
+            rec.es_killer = any(line.is_killer for line in rec.order_line)
     
 
     def action_confirm(self):
@@ -589,4 +595,77 @@ class sale_order_line_inherit(models.Model):
     def onchange_product_id_for_llantired(self):
         if self.product_id.id and self.order_id.id and self.order_id.partner_id.id and self.order_id.pricelist_id.id:
             self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
+
+
+    killer_id = fields.Many2one(
+        "llantas_config.killer_list",
+        compute='_compute_killer_id',
+        store=True,
+    )
+
+    @api.depends('product_id.product_tmpl_id','product_id')
+    def _compute_killer_id(self):
+        for line in self:
+            line.killer_id = line.product_id.product_tmpl_id.killer_id
+
+    @api.depends('product_id')
+    def _compute_killer(self):
+        fecha_actual = datetime.datetime.now()
+        for line in self:
+            if line.product_id.product_tmpl_id.is_killer == True and line.killer_id.status == 'active' and line.product_id.product_tmpl_id.killer_id.marketplace_id == line.order_id.marketplace:
+                # raise UserError('hpña')
+                # Puedes usar raise UserError("si") para depurar, pero asegúrate de quitarlo una vez que confirmes que el método se ejecuta.
+                line.is_killer = True
+                # line.killer_price = line.killer_id.killer_price
+                # line.base_price = line.killer_id.base_price
+                # line.promotion_price = line.killer_id.promotion_price
+                
+            else:
+                line.is_killer = False
+                # line.killer_price = 0.0
+                # line.promotion_price = 0.0 
+                # line.base_price = 0.0
+
+    is_killer = fields.Boolean(
+        string="Es killer?",
+        compute='_compute_killer',
+        store=True,
+        default=False,
+    )
+
+    killer_id_killer_price = fields.Float(
+        string="Precio killer",
+        related="killer_id.killer_price", 
+        store=True,
+    )
+    
+    killer_id_base_price=fields.Float(
+        string="Precio base killer",
+        related="killer_id.base_price",
+        store=True,
+    )
+    
+    killer_id_promotion_price=fields.Float(
+        string="Precio de promoción killer",
+        related="killer_id.promotion_price",
+        store=True,
+    )
+
+    total_con_killer=fields.Float(
+        string="Total con killer",
+        compute='_compute_total_con_killer',
+        store=True,
+    )
+    
+    @api.depends('price_total','total_con_killer')
+    def _compute_total_con_killer(self):
+        for rec in self:
+           rec.total_con_killer = rec.price_total + rec.killer_id_killer_price
+    
+    # link_venta=fields.Char(
+    #     string="Link de venta",
+    #     related="order_id.link_venta",
+    #     store=True
+    # )
+    
            

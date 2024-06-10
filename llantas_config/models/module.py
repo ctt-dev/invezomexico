@@ -562,5 +562,13 @@ class ctrl_llantas(models.Model):
         ('reversed', 'Revertido'),
         ('invoicing_legacy', 'Sistema anterior de facturación')
     ], string='Estado de Pago', related="factura_prov.payment_state", store=True)
+
+    @api.depends('orden_entrega')
+    def _ventadirecta_prov(self):
+        for rec in self:
+            if rec.orden_entrega and rec.orden_entrega.state in ['done']:
+                prov = self.env['purchase.order'].search([('partner_id.name', '=', 'VENTA DIRECTA')], limit=1)
+                if prov:
+                    rec.write({'orden_compra': prov.id})
     
 

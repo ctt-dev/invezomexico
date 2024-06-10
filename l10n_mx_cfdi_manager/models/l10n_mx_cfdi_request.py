@@ -177,7 +177,7 @@ class l10n_mx_cfdi_request(models.Model):
 
         fiel = self._read_fiel(keys_id)
         
-        v_descarga = VerificaSolicitudDescarga(fiel)
+        v_descarga = VerificaSolicitudDescarga(fiel, timeout=1000)
         
         session = self._create_new_seassion(fiel)
         try:

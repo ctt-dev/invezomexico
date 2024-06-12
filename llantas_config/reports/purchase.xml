@@ -47,14 +47,14 @@
                     <p t-field="o.auto_sale_order_id.name" class="m-0"/>
                     <p t-field="o.auto_sale_order_id.folio_venta" class="m-0"/>
                 </div>
-                <div t-if="o.auto_sale_order_id.marketplace.name" class="col-3 bm-2">
+                <!-- <div t-if="o.auto_sale_order_id.marketplace.name" class="col-3 bm-2">
                     <strong>Marketplace:</strong>
                     <p t-field="o.auto_sale_order_id.marketplace.name" class="m-0"/>
                 </div>
                 <div t-if="o.auto_sale_order_id.partner_id.name" class="col-3 bm-2">
                     <strong>Cliente:</strong>
                     <p t-field="o.auto_sale_order_id.partner_id.name" class="m-1"/>
-                </div>
+                </div> -->
                 <div class="col-3 bm-2" t-if="o.auto_sale_order_id.fecha_venta">
                     <strong>Fecha venta:</strong>
                     <p t-field="o.auto_sale_order_id.fecha_venta" class="m-0"/>

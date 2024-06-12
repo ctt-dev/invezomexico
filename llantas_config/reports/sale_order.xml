@@ -72,7 +72,7 @@
                             <th name="th_discount" t-if="display_discount" class="text-end">
                                 <span>Desc.%</span>
                             </th>
-                            <th name="th_taxes" class="text-end">Impuestos</th>
+                            <!-- <th name="th_taxes" class="text-end">Impuestos</th> -->
                             <th name="th_subtotal" class="text-end">
                                 <span groups="account.group_show_line_subtotals_tax_excluded">Importe</span>
                                 <span groups="account.group_show_line_subtotals_tax_included">Precio Total</span>
@@ -98,17 +98,23 @@
                                             <span t-field="line.product_uom"/>
                                         </td>
                                         <td name="td_priceunit" class="text-end">
-                                            <span t-field="line.price_unit"/>
+                                            <span t-esc="line.price_unit / 1.16" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                                            <t t-set="total_lineas" t-value="line.price_unit / 1.16" />
+                                            <!-- <span t-esc="line.price_subtotal"/> -->
                                         </td>
                                         <td t-if="display_discount" class="text-end">
                                             <span t-field="line.discount"/>
                                         </td>
-                                        <td name="td_taxes" class="text-end">
+                                        <!-- <td name="td_taxes" class="text-end">
                                             <span t-out="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
-                                        </td>
+                                        </td> -->
                                         <td t-if="not line.is_downpayment" name="td_subtotal" class="text-end o_price_total">
-                                            <span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                                            <span t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                                            <span t-esc="total_lineas * line.product_uom_qty" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                                            
+                                            
+
+                                            <!-- <span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/> -->
+                                            <!-- <span t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/> -->
                                         </td>
                                     </t>
                                     <t t-elif="line.display_type == 'line_section'">
@@ -129,7 +135,8 @@
                                     <tr class="is-subtotal text-end">
                                         <td name="td_section_subtotal" colspan="99">
                                             <strong class="mr16">Subtotal</strong>
-                                            <span t-out="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.pricelist_id.currency_id}"/>
+                                            <span t-esc="(line.price_unit / 1.16) * line.product_uom_qty" t-options="{'widget': 'monetary', 'display_currency': o.pricelist_id.currency_id}"/>
+
                                         </td>
                                     </tr>
                                 </t>

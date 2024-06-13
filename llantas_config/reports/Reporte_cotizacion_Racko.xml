@@ -3,7 +3,7 @@
     <data>
         <report
             id="report_purchasequotation_racko_CTT"
-            model="purchase.order"
+            model="sale.order"
             string="Cotización Racko"
             report_type="qweb-pdf"
             name="llantas_config.report_purchase_quotation_Racko_CTT"

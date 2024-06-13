@@ -19,7 +19,7 @@
                      <field name="warehouse_id" />
                      <field name="commitment_date"/>
                      <field name="tipo_factura" />
-                     <field name="es_killer" invisible="0"/>
+                     <field name="es_killer" invisible="1"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
@@ -44,9 +44,9 @@
                     <!-- <field name="killer_id_killer_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
                     <field name="killer_id_base_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
                     <field name="killer_id_promotion_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/> -->
-                    <field name="killer_id_killer_price" readonly="1" optional="show"/>
-                    <field name="killer_id_base_price" readonly="1" optional="show"/>
-                    <field name="killer_id_promotion_price" readonly="1" optional="show"/>
+                    <field name="killer_id_killer_price" readonly="1" optional="hide"/>
+                    <field name="killer_id_base_price" readonly="1" optional="hide"/>
+                    <field name="killer_id_promotion_price" readonly="1" optional="hide"/>
                     
                     
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->

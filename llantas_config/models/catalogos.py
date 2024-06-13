@@ -870,7 +870,7 @@ class killer_list(models.Model):
         ('cancelled', 'Cancelado'),
     ], string="Estado", default='active')
 
-    base_price= fields.Float(
+    base_price = fields.Float(
         string="Precio base",
     )
     
@@ -910,7 +910,7 @@ class killer_no_product_list(models.Model):
         store=True,
     )
 
-    base_price= fields.Float(
+    base_price = fields.Float(
         string="Precio base",
     )
     

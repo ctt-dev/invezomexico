@@ -106,13 +106,21 @@ class sale_order_inherit(models.Model):
         compute="_compute_link"
     )
 
+    @api.depends('folio_venta', 'company_id.url_autofacturacion')
     def _compute_link(self):
-        if(self.folio_venta):
-            if self.company_id.url_autofacturacion != False:
-                self.link_facturacion = self.company_id.url_autofacturacion+'/autofacturador/'+self.folio_venta
-            # self.link_facturacion = self.env['ir.config_parameter'].get_param('web.base.url')+'/autofacturador/'+self.folio_venta
-        else:
-            self.link_facturacion = ''
+        for order in self:
+            try:
+                if order.folio_venta:
+                    if order.company_id.url_autofacturacion:
+                        order.link_facturacion = f"{order.company_id.url_autofacturacion}/autofacturador/{order.folio_venta}"
+                    else:
+                        order.link_facturacion = ""
+                else:
+                    order.link_facturacion = ""
+            except Exception as e:
+                order.link_facturacion = ""
+                _logger.error(f"Error computing link_facturacion for sale.order({order.id}): {e}")
+                raise UserError(f"An error occurred while computing the invoicing link: {e}")
             
     status_ventas=fields.Many2one(
         "llantas_config.status_ventas",

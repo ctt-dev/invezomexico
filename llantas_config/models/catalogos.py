@@ -873,6 +873,7 @@ class killer_list(models.Model):
         ('active', 'Activo'),
         ('expired', 'Vencido'),
         ('cancelled', 'Cancelado'),
+        ('pause','Pausado'),
     ], string="Estado", default='active')
 
     base_price = fields.Float(

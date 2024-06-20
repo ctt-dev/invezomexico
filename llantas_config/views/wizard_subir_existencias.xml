@@ -15,7 +15,7 @@
                 <form string="Importar Documento">
                     <group>
                         <field name="proveedor_id" widget="list"/>
-                        <!-- <field name="proveedor"/> -->
+
                         <field name="tipo_cambio" />
                     </group>
                     <group>
@@ -33,7 +33,7 @@
            </field>
         </record>
 
-        <menuitem id="menu_ctt_llantas_proveedores_list_cargar_proveedores" name="Cargar existencias" parent="menu_ctt_llantas_marketplace_list" sequence="1" action="action_view_import_existencias_proveedores"/>
+        <menuitem id="menu_ctt_llantas_cargar_proveedores" name="Cargar existencias" parent="menu_ctt_llantas_marketplace_list" sequence="1" action="action_view_import_existencias_proveedores"/>
         
     </data>
 </odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+            id="report_purchasequotation_racko_CTT"
+            model="sale.order"
+            string="Cotización Racko"
+            report_type="qweb-pdf"
+            name="llantas_config.report_purchase_quotation_Racko_CTT"
+            file="llantas_config.report_purchase_quotation_Racko"
+            attachment_use="True"
+            print_report_name="('Cotización de Racko')"
+        />
+
+    <template id="report_purchase_quotation_Racko_CTT">
+            <t t-call="web.external_layout">
+                <t t-call="web.html_container">
+                    <div class="article" t-att-data-oe-lang="o and o.env.context.get('lang')">
+                        <t t-if="not o" t-set="o" t-value="doc"/>
+                        <t t-if="not company">
+                            <t t-if="company_id">
+                                <t t-set="company" t-value="company_id"/>
+                            </t>
+                            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                                <t t-set="company" t-value="o.company_id.sudo()"/>
+                            </t>
+                            <t t-else="else">
+                                <t t-set="company" t-value="res_company"/>
+                            </t>
+                        </t>
+                        <t t-foreach="docs" t-as="doc">
+                            <div class="page">
+                                <br/>
+                                <center style="font-size:13px">
+                                    <span t-esc="company.name"/>
+                                </center><br/>
+                            </div>
+                            <div>
+                                <h5><center>Orden de compra</center></h5><br/>
+                                <!-- <span t-if="company.company_details" t-field="company.company_details" style="font-size:13px"/> -->
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+    </template>
+</odoo>

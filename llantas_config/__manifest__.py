@@ -73,6 +73,7 @@
         # 'views/style.css',
         'views/tablero_killer.xml',
         'views/wizard_cargar_killer.xml',
+        'reports/sale_order_racko.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -272,108 +272,6 @@ class proveedores_link(models.Model):
         }
 
 
-    # def procesar(self):
-    #     count_actualizados = 0
-    #     count_agregados = 0
-    #     count_sin_encontrar = 0
-    #     sku_proveedor_procesados = set()
-    #     moneda = self.env['res.currency'].search([('name', '=', 'MXN')])
-    #     moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
-    #     partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
-    #     proveedor = partner.id
-    #     fecha_actual = datetime.datetime.today()
-        
-    #     # Diccionario para almacenar las existencias agrupadas por SKU y proveedor
-    #     existencias_por_sku_proveedor = defaultdict(float)
-    #     for move in moves:
-    #         lines = self.env['product.template'].search([
-    #                 '|',
-    #                 ('default_code', '=', move.sku),
-    #                 ('sku_alternos.name', 'in', [move.sku])
-    #             ])
-    #         if lines:
-    #             for lin in lines:
-    #                 if lin.es_paquete:
-    #                     continue  # Omitir líneas que son paquetes
-    #                 if move.sku_interno == False:
-    #                     move.write({'sku_interno': lin.default_code})  
-                        
-        
-    #     for mov in moves:
-    #         existencias_por_sku_proveedor[(mov.sku, proveedor)] += mov.existencia
-            
-        
-    #     for (sku, proveedor), existencia_total in existencias_por_sku_proveedor.items():
-    #         lines = self.env['product.template'].search([
-    #             '|',
-    #             ('default_code', '=', sku),
-    #             ('sku_alternos.name', 'in', [sku])
-    #         ])
-    #         if lines:
-    #             for line in lines:
-    #                 if line.es_paquete:
-    #                     continue  # Omitir líneas que son paquetes
-                      
-    #                 sku_proveedor = (line.id, proveedor)
-    #                 if sku_proveedor not in sku_proveedor_procesados:
-    #                     # Obtener todos los movimientos asociados al SKU y proveedor
-    #                     sku_moves = self.env['llantas_config.ctt_prov'].search([
-    #                         ('sku', '=', sku),
-    #                         ('nombre_proveedor', '=', self.name)
-    #                     ])
-    #                     if sku_moves:
-    #                         # Tomar el precio correspondiente de cada línea de movimiento
-    #                         precios = [move.costo_sin_iva for move in sku_moves]
-    #                         precio_promedio = sum(precios) / len(precios)
-    #                     else:
-    #                         # Si no hay movimientos para este SKU y proveedor, usar un precio predeterminado
-    #                         precio_promedio = 0.0  # O cualquier otro valor predeterminado que desees
-    
-    #                     supplier_info = self.env['product.supplierinfo'].search([
-    #                         ('product_tmpl_id', '=', line.id),
-    #                         ('partner_id', '=', proveedor)
-    #                     ])
-    #                     if supplier_info:
-    #                         # Actualizar los datos del proveedor
-    #                         supplier_info.write({
-    #                             'currency_id': moneda.id,
-    #                             'price': precio_promedio,
-    #                             'ultima_actualizacion': fecha_actual,
-    #                             'tipo_cambio': sku_moves[-1].tipo_cambio,  # Tomar el tipo de cambio del último movimiento
-    #                             'precio_neto': precio_promedio,
-    #                             'tipo_moneda_proveedor': 'MXN',
-    #                             'product_code': sku,
-    #                             'existencia_actual': existencia_total,  # Suma de las existencias por SKU y proveedor
-    #                         })
-    #                         count_actualizados += 1
-    #                     else:
-    #                         # Crear nuevo registro de proveedor
-    #                         self.env['product.supplierinfo'].create({
-    #                             'partner_id': proveedor,
-    #                             'product_tmpl_id': line.id,
-    #                             'currency_id': moneda.id,
-    #                             'price': precio_promedio,
-    #                             'ultima_actualizacion': fecha_actual,
-    #                             'tipo_cambio': sku_moves[-1].tipo_cambio,  # Tomar el tipo de cambio del último movimiento
-    #                             'precio_neto': precio_promedio,
-    #                             'tipo_moneda_proveedor': 'MXN',
-    #                             'product_code': sku,
-    #                             'existencia_actual': existencia_total,  # Suma de las existencias por SKU y proveedor
-    #                         })
-    #                         count_agregados += 1
-    #                     sku_proveedor_procesados.add(sku_proveedor)
-    #         else:
-    #             count_sin_encontrar += 1
-    
-    #     return {
-    #         'type': 'ir.actions.client',
-    #         'tag': 'display_notification',
-    #         'params': {
-    #             'type': 'success',
-    #             'sticky': False,
-    #             'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",
-    #         }
-    #     }
 
     def procesar(self):
         count_actualizados = 0
@@ -399,7 +297,8 @@ class proveedores_link(models.Model):
                     if lin.es_paquete:
                         continue  # Omitir líneas que son paquetes
                     if move.sku_interno == False:
-                        move.write({'sku_interno': lin.default_code})  
+                        continue
+                        # move.write({'sku_interno': lin.default_code})  
                         
         
         for mov in moves:
@@ -482,6 +381,7 @@ class proveedores_link(models.Model):
                         sku_proveedor_procesados.add(sku_proveedor)
             else:
                 count_sin_encontrar += 1
+                mov.unlink()
     
         return {
             'type': 'ir.actions.client',

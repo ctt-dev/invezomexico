@@ -279,30 +279,33 @@ class proveedores_link(models.Model):
         count_sin_encontrar = 0
         sku_proveedor_procesados = set()
         moneda = self.env['res.currency'].search([('name', '=', 'MXN')])
+
         moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name)])
-        partner = self.proveedor_id
+        partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
         proveedor = partner.id if partner else False
-        fecha_actual = fields.Datetime.now()
-    
+        fecha_actual = datetime.datetime.today()
+        
         # Diccionario para almacenar las existencias agrupadas por SKU y proveedor
         existencias_por_sku_proveedor = defaultdict(float)
         for move in moves:
             lines = self.env['product.template'].search([
-                '|',
-                ('default_code', '=', move.sku),
-                ('sku_alternos.name', 'in', [move.sku])
-            ])
+                    '|',
+                    ('default_code', '=', move.sku),
+                    ('sku_alternos.name', 'in', [move.sku])
+                ])
             if lines:
-                for line in lines:
-                    if line.es_paquete:
+                for lin in lines:
+                    if lin.es_paquete:
                         continue  # Omitir líneas que son paquetes
                     if not move.sku_interno:
                         continue
-                    # move.write({'sku_interno': line.default_code})  
-    
-        for move in moves:
-            existencias_por_sku_proveedor[(move.sku, proveedor)] += move.existencia
-    
+                        # move.write({'sku_interno': lin.default_code})  
+                        
+        
+        for mov in moves:
+            existencias_por_sku_proveedor[(mov.sku, proveedor)] += mov.existencia
+            
+        
         for (sku, proveedor), existencia_total in existencias_por_sku_proveedor.items():
             lines = self.env['product.template'].search([
                 '|',
@@ -313,85 +316,83 @@ class proveedores_link(models.Model):
                 for line in lines:
                     if line.es_paquete:
                         continue  # Omitir líneas que son paquetes
-    
+                      
                     sku_proveedor = (line.id, proveedor)
-                    if sku_proveedor in sku_proveedor_procesados:
-                        continue
-    
-                    sku_moves = self.env['llantas_config.ctt_prov'].search([
-                        ('sku', '=', sku),
-                        ('nombre_proveedor', '=', self.name)
-                    ])
-                    if sku_moves:
-                        precios = [move.costo_sin_iva for move in sku_moves]
-                        precio_promedio = sum(precios) / len(precios)
-                    else:
-                        precio_promedio = 0.0  # Valor predeterminado o manejo según tu lógica
-    
-                    supplier_info = self.env['product.supplierinfo'].search([
-                        ('product_tmpl_id', '=', line.id),
-                        ('partner_id', '=', proveedor)
-                    ], limit=1)
-    
-                    if supplier_info:
-                        if supplier_info.price == precio_promedio:
-                            continue
+                    if sku_proveedor not in sku_proveedor_procesados:
+                        # Obtener todos los movimientos asociados al SKU y proveedor
+                        sku_moves = self.env['llantas_config.ctt_prov'].search([
+                            ('sku', '=', sku),
+                            ('nombre_proveedor', '=', self.name)
+                        ])
+                        
+                        tipo_cambio = 0  # Valor predeterminado en caso de que sku_moves esté vacío
+                        if sku_moves:
+                            costo_mas_bajo = min(sku_moves.mapped('costo_sin_iva'))
+                            tipo_cambio = sku_moves.filtered(lambda x: x.costo_sin_iva == costo_mas_bajo).tipo_cambio
+                        else:
+                            costo_mas_bajo = 0.0  # Manejar el caso donde sku_moves está vacío
+                        
+                        supplier_info = self.env['product.supplierinfo'].search([
+                            ('product_tmpl_id', '=', line.id),
+                            ('partner_id', '=', proveedor)
+                        ])
+                        if supplier_info:
+                            if supplier_info.price == costo_mas_bajo:
+                                continue
+                            else:
+                                query = """
+                                    UPDATE 
+                                        product_supplierinfo 
+                                    SET 
+                                        currency_id=%s,
+                                        price=%s,
+                                        ultima_actualizacion=%s,
+                                        tipo_cambio=%s,
+                                        precio_neto=%s,
+                                        tipo_moneda_proveedor='MXN',
+                                        product_code=%s,
+                                        existencia_actual=%s
+                                    WHERE 
+                                        id=%s
+                                """
+                                values = (
+                                    moneda.id,
+                                    costo_mas_bajo,
+                                    fecha_actual,
+                                    tipo_cambio,
+                                    costo_mas_bajo,
+                                    sku,
+                                    existencia_total,
+                                    supplier_info.id
+                                )
+                                self.env.cr.execute(query, values)
+                                count_actualizados += 1
                         else:
                             query = """
-                                UPDATE 
-                                    product_supplierinfo 
-                                SET 
-                                    currency_id=%s,
-                                    price=%s,
-                                    ultima_actualizacion=%s,
-                                    tipo_cambio=%s,
-                                    precio_neto=%s,
-                                    tipo_moneda_proveedor='MXN',
-                                    product_code=%s,
-                                    existencia_actual=%s
-                                WHERE 
-                                    id=%s
+                                INSERT INTO product_supplierinfo (partner_id, product_tmpl_id, currency_id, price, ultima_actualizacion,
+                                                                  tipo_cambio, precio_neto, tipo_moneda_proveedor, product_code, existencia_actual, delay, min_qty)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
                             values = (
+                                proveedor,
+                                line.id,
                                 moneda.id,
-                                precio_promedio,
+                                costo_mas_bajo,
                                 fecha_actual,
-                                sku_moves[-1].tipo_cambio,
-                                precio_promedio,
+                                tipo_cambio,
+                                costo_mas_bajo,
+                                'MXN',
                                 sku,
                                 existencia_total,
-                                supplier_info.id
+                                7,
+                                1
                             )
                             self.env.cr.execute(query, values)
-                            count_actualizados += 1
-                    else:
-                        query = """
-                            INSERT INTO product_supplierinfo (partner_id, product_tmpl_id, currency_id, price, ultima_actualizacion,
-                                                              tipo_cambio, precio_neto, tipo_moneda_proveedor, product_code, existencia_actual, delay, min_qty)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        """
-                        values = (
-                            proveedor,
-                            line.id,
-                            moneda.id,
-                            precio_promedio,
-                            fecha_actual,
-                            sku_moves[-1].tipo_cambio,
-                            precio_promedio,
-                            'MXN',
-                            sku,
-                            existencia_total,
-                            7,
-                            1
-                        )
-                        self.env.cr.execute(query, values)
-                        count_agregados += 1
-    
-                    sku_proveedor_procesados.add(sku_proveedor)
-    
+                            count_agregados += 1
+                        sku_proveedor_procesados.add(sku_proveedor)
             else:
                 count_sin_encontrar += 1
-                move.unlink()
+                mov.unlink()
     
         return {
             'type': 'ir.actions.client',

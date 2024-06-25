@@ -659,38 +659,41 @@ class WizardImportExistenciasProv(models.TransientModel):
         count_updated_total = 0
         count_created_total = 0
     
-        # ... (código existente)
-    
-        
-            
         file_path = tempfile.gettempdir() + '/file.xlsx'
         data = self.file_data
     
-        with open(file_path, 'wb') as f:
-            f.write(base64.b64decode(data))
+        # Verificar que 'data' sea una cadena ASCII o un objeto de tipo 'bytes'
+        if not isinstance(data, (str, bytes)):
+            raise UserError("El archivo de datos no es válido o no está presente. Asegúrese de que se ha cargado un archivo correcto.")
     
+        # Decodificar los datos del archivo
+        try:
+            with open(file_path, 'wb') as f:
+                f.write(base64.b64decode(data))
+        except Exception as e:
+            raise UserError(f"Error al decodificar el archivo de datos: {e}")
+    
+        # Leer el archivo Excel
         try:
             excel_data = pd.read_excel(file_path, engine='openpyxl')
         except ImportError:
             try:
                 excel_data = pd.read_excel(file_path, engine='xlrd')
             except Exception as e:
-                raise UserError(f"Error reading Excel file: {e}")
+                raise UserError(f"Error al leer el archivo Excel: {e}")
     
         switch_proveedor = {
             'Herrera tires': self.import_herrera_tires,
             'Futurama': self.import_futurama,
             'Import treads': self.import_import_treads,
-            'Loyga':self.import_loyga,
-            'Malpa':self.import_malpa,
-            'New tires':self.import_new_tires,
-            'RadialPros':self.import_radialpros,
+            'Loyga': self.import_loyga,
+            'Malpa': self.import_malpa,
+            'New tires': self.import_new_tires,
+            'RadialPros': self.import_radialpros,
             'Tbc': self.import_tbc,
-            'Tersa':self.import_tersa,
+            'Tersa': self.import_tersa,
             'Tres siglos': self.import_tres_siglos,
         }
-
-        
     
         import_func = switch_proveedor.get(self.proveedor_id.name)
     
@@ -721,7 +724,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                'message': f"Archivo importado correctamente. Registros actualizados: {count_updated_total}, Registros creados: {count_created_total}, proveedor: {proveedor}",    
                'reload': True,  # Solicita recargar la vista actual
             }        
-        }   
+        }
 
             
     

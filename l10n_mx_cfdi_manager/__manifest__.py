@@ -40,6 +40,7 @@
         'views/l10n_mx_cfdi_fiel.xml',
         'views/res_company.xml',
         'views/wizard_l10n_mx_cfdi_document.xml',
+        'views/wizard_manual_creation.xml',
         'reports/l10n_mx_cfdi_document.xml'
     ],
     # only loaded in demonstration mode

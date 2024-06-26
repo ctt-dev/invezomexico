@@ -221,27 +221,32 @@ class l10n_mx_cfdi_request(models.Model):
             file_name = file_path.split("/")[-1]
 
             file_data = self._read_cfdi(data)
+
+            company_id = self.env.user.company_id.id
+            if self.company_id.id:
+                company_id = self.company_id.id
             
             #Check if exists, if exists avoid creation...
             document_ids = self.env['l10n_mx.cfdi_document'].search([('uuid','=',file_data['uuid'])])
             if len(document_ids) == 0:
-                document = self.env['l10n_mx.cfdi_document'].create({
-                    'cfdi_request': self.id,
-                    'company_id': self.company_id.id,
-                    'attatch': data,
-                    'attatch_name': file_name,
-                    'uuid': file_data['uuid'],
-    #                     'cfdi_state': file_data['cfdi_state'],
-                    'rfc_emisor': file_data['rfc_emisor'],
-                    'emisor': file_data['emisor'],
-                    'rfc_receptor': file_data['rfc_receptor'],
-                    'total': file_data['total'],
-                    'date': datetime.datetime.strptime(file_data['date'][0],'%Y-%m-%d'),
-                    'folio': file_data['folio'],
-                    'type_comprobante': file_data['type'],
-                })
+                if file_data['rfc_receptor'] == self.env.company.vat:
+                    document = self.env['l10n_mx.cfdi_document'].create({
+                        'cfdi_request': self.id,
+                        'company_id': company_id,
+                        'attatch': data,
+                        'attatch_name': file_name,
+                        'uuid': file_data['uuid'],
+        #                     'cfdi_state': file_data['cfdi_state'],
+                        'rfc_emisor': file_data['rfc_emisor'],
+                        'emisor': file_data['emisor'],
+                        'rfc_receptor': file_data['rfc_receptor'],
+                        'total': file_data['total'],
+                        'date': datetime.datetime.strptime(file_data['date'][0],'%Y-%m-%d'),
+                        'folio': file_data['folio'],
+                        'type_comprobante': file_data['type'],
+                    })
 
-                document._extract_metada()
+                    document._extract_metada()
         except:
             pass
         

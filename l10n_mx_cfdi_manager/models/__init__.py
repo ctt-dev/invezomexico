@@ -8,3 +8,4 @@ from . import l10n_mx_cfdi_document
 from . import l10n_mx_cfdi_request
 from . import l10n_mx_cfdi_fiel
 from . import wizard_l10n_mx_cfdi_document
+from . import wizard_manual_creation

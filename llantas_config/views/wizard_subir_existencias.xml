@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data> 
         <record id="action_view_import_existencias_proveedores" model="ir.actions.act_window">
             <field name="name">Importar existencias proveedores</field>
             <field name="type">ir.actions.act_window</field>

@@ -27,6 +27,7 @@
                     <field name="tipo_cambio" optional="hide"/>
                     <field name="fecha_actualizacion" optional="hide"/>
                     <field name="create_date" optional="hide"/>
+                    <field name="procesado" invisible="0"/>
                     
                 </tree>
             </field>
@@ -54,6 +55,7 @@
                             <field name="costo_sin_iva" />
                             <field name="tipo_moneda" />
                             <field name="tipo_cambio" />
+                            <field name="procesado" invisible="1"/>
                         </group>
                         <group string="Informacion registro" >
                             <!-- <field name="fecha_registro" optional="hide"/> -->
@@ -187,20 +189,23 @@
             <field name="name">Importar existencia de proveedores</field>
             <field name="model">llantas_config.proveedores_links_wizard</field>
             <field name="arch" type="xml">
-                <form string="Importar Documento">
-                        <span>¿Deseas procesar el proveedor <field name="proveedores_links_id" readonly="1"/>?</span>
+                <form string="Importar Documento" class="oe_form_container">
 
+                        <div class="oe_form_group">
+                            <span>¿Deseas procesar el proveedor: </span>
+                            <field name="proveedores_links_id" readonly="1"/>
+                        <br/> 
+                            <span>Límite por procesar: </span>
+                            <field name="limite" required="1"/>
+                        </div>
 
                     <footer>
                         <button name="action_button_procesar" string="Procesar" type="object" class="btn-primary"/>
-                        
                         <button special="cancel" string="Cancelar" class="btn-secondary"/>
                     </footer>
                 </form>
-           </field>
+            </field>
         </record>
-
-
 
 
         <menuitem id="menu_ctt_llantas_proveedores_list" name="Listado proveedores" parent="menu_ctt_llantas_marketplace_list" sequence="2" action="ctt_llantas_action_proveedor_list_form"/>

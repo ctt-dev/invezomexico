@@ -10,7 +10,7 @@ from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
-class WizardImportExistenciasProv(models.TransientModel):
+class WizardImportExistenciasProv(models.TransientModel): 
     _name = 'llantas_config.ctt_prov_cargar_wizard'
 
     file_data = fields.Binary('Documento xlsx')
@@ -33,7 +33,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         existing_proveedor.write({
             'existencia': 0,
         })
-        
+    
     def llanti_bodega(self):
         count_updated = 0
         count_created = 0
@@ -799,6 +799,13 @@ class ctrl_llantas(models.Model):
     sku=fields.Char(
         string="Sku",
     )
+
+    procesado=fields.Boolean(
+        string="Procesado?",
+        default=False,
+    )
+
+    
 
     # @api.depends('sku')
     # def compute_product_id(self):

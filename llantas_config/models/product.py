@@ -159,7 +159,14 @@ class product_product_inherit(models.Model):
     _inherit = 'product.product'
     _description='Producto'
 
-    
+    def _search_qty_available(self, operator, value):
+        ids = []
+        quant_ids = self.env['stock.quant'].search([('location_id.usage','=','internal')])
+        for quant_id in quant_ids:
+            if quant_id.quantity > 0:
+                if quant_id.product_id.id not in ids:
+                    ids.append(quant_id.product_id.id)
+        return [('id', 'in', ids)]
     
     # @api.model
     # def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):

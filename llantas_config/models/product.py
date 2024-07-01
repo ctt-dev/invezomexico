@@ -153,7 +153,7 @@ class product_template_inherit(models.Model):
         tracking=True,
     )
 
-    
+     
     
 class product_product_inherit(models.Model):
     _inherit = 'product.product'

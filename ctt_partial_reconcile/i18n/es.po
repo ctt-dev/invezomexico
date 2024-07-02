@@ -1,0 +1,297 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ctt_partial_reconcile
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-30 19:34+0000\n"
+"PO-Revision-Date: 2024-04-30 19:34+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__account_id
+msgid "Account"
+msgstr "Cuenta contable"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__type
+msgid "Account type"
+msgstr "Tipo de cuenta"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__amount
+msgid "Amount"
+msgstr "Importe"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_balance
+msgid "Balance"
+msgstr "Balance"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "CLOSE"
+msgstr "CERRAR"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model,name:ctt_partial_reconcile.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_company_currency_id
+msgid "Company Currency"
+msgstr "Moneda de la compañía"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__create_uid
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__create_date
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_credit
+msgid "Credit"
+msgstr "Crédito"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_debit
+msgid "Debit"
+msgstr "Débito"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__display_name
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__id
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model,name:ctt_partial_reconcile.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "Journal entry (selected partner)"
+msgstr "Asiento contable (Contacto seleccionado)"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "Journal entry (without partner)"
+msgstr "Asiento contable (Sin contacto)"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_account_move_line__ctt_partial_reconcile_line_to_reconcile
+msgid "Journal entry to reconcile"
+msgstr "Asiento contable a reconciliar"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_res_company__ctt_partial_reconcile_journal_id
+msgid "Journal for partial reconcile entries"
+msgstr "Diario para asientos contables de reconciliación parcial"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id
+msgid "Journal item"
+msgstr "Apunte contable"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_id
+msgid "Journal item - ID"
+msgstr "Apunte contable - ID"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__line_ids
+msgid "Journal items to reconcile"
+msgstr "Apuntes contables a reconciliar"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__line_ids_opc_1
+msgid "Journal items to reconcile - Option 1"
+msgstr "Apuntes contables a reconciliar - Opción 1"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__line_ids_opc_2
+msgid "Journal items to reconcile - Option 2"
+msgstr "Apuntes contables a reconciliar - Opción 2"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard____last_update
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__write_uid
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__write_date
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: ctt_partial_reconcile
+#: model:ir.actions.act_window,name:ctt_partial_reconcile.launch_ctt_partial_reconcile_wizard
+#: model:ir.ui.menu,name:ctt_partial_reconcile.ctt_partial_reconcile_wizard_menu
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "Partial reconciliation"
+msgstr "Reconciliación parcial"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_res_company_form
+msgid "Partial reconciliations"
+msgstr "Reconciliaciones parciales"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__partner_id
+msgid "Partner"
+msgstr "Contacto"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields.selection,name:ctt_partial_reconcile.selection__ctt_partial_reconcile_wizard__type__liability_payable
+msgid "Payable"
+msgstr "Por pagar"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "RECONCILE"
+msgstr "RECONCILIAR"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields.selection,name:ctt_partial_reconcile.selection__ctt_partial_reconcile_wizard__type__asset_receivable
+msgid "Receivable"
+msgstr "Por cobrar"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_amount_residual
+msgid "Residual amount"
+msgstr "Importe residual"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_account_move_line__ctt_partial_reconcile_amount_residual_backup
+msgid "Residual amount for partial reconciliations"
+msgstr "Importe residual para conciliaciones parciales"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,help:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__line_id_amount_residual
+msgid ""
+"The residual amount on a journal item expressed in the company currency."
+msgstr "El importe residual de in apunte contable expresado en la moneda de la compañía"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id
+msgid "Wizard"
+msgstr "Asistente"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_account_id
+msgid "Wizard - Account"
+msgstr "Asistente - Cuenta contable"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_partner_id
+msgid "Wizard - Partner"
+msgstr "Asistente - Contacto"
+
+#. module: ctt_partial_reconcile
+#: model:ir.actions.act_window,name:ctt_partial_reconcile.ctt_partial_reconcile_wizard_action
+#: model:ir.model,name:ctt_partial_reconcile.model_ctt_partial_reconcile_wizard
+msgid "Wizard for partial reconciliation"
+msgstr "Asistente para conciliación parcial"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model,name:ctt_partial_reconcile.model_ctt_partial_reconcile_wizard_line
+msgid "Wizard for partial reconciliation lines"
+msgstr "Líneas de asistente para conciliación parcial"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_1
+msgid "Wizard option 1"
+msgstr "Asistente opción 1"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_1_account_id
+msgid "Wizard option 1 - Account"
+msgstr "Asistente opción 1 - Cuenta contable"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_1_partner_id
+msgid "Wizard option 1 - Partner"
+msgstr "Asistente opción 1 - Contacto"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_2
+msgid "Wizard option 2"
+msgstr "Asistente opción 2"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_2_account_id
+msgid "Wizard option 2 - Account"
+msgstr "Asistente opción 2 - Cuenta contable"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard_line__wizard_id_2_partner_id
+msgid "Wizard option 2 - Partner"
+msgstr "Asistente opción 2 - Contacto"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields,field_description:ctt_partial_reconcile.field_ctt_partial_reconcile_wizard__wizard_origin
+msgid "Wizard origin"
+msgstr "Origen de asistente"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields.selection,name:ctt_partial_reconcile.selection__ctt_partial_reconcile_wizard__wizard_origin__account_move_lines
+msgid "account_move_lines"
+msgstr "account_move_lines"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "amount"
+msgstr "Importe"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "line_id_amount_residual"
+msgstr "line_id_amount_residual"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "line_id_balance"
+msgstr "line_id_balance"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "line_id_credit"
+msgstr "line_id_credit"
+
+#. module: ctt_partial_reconcile
+#: model_terms:ir.ui.view,arch_db:ctt_partial_reconcile.ctt_partial_reconcile_wizard_form
+msgid "line_id_debit"
+msgstr "line_id_debit"
+
+#. module: ctt_partial_reconcile
+#: model:ir.model.fields.selection,name:ctt_partial_reconcile.selection__ctt_partial_reconcile_wizard__wizard_origin__menu_item
+msgid "menu_item"
+msgstr "menu_item"

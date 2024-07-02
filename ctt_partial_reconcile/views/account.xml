@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <act_window id="launch_ctt_partial_reconcile_wizard"
+            name="Partial reconciliation"
+            binding_model="account.move.line"
+            res_model="ctt_partial_reconcile.wizard"
+            view_mode="form"
+            target="new"
+            context="{'default_wizard_origin':'account_move_lines'}"/>
+    </data>
+</odoo>

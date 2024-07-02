@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ctt_partial_reconcile_wizard,ctt_partial_reconcile.wizard,model_ctt_partial_reconcile_wizard,,1,1,1,1
+access_ctt_partial_reconcile_wizard_line,ctt_partial_reconcile.wizard.line,model_ctt_partial_reconcile_wizard_line,,1,1,1,1

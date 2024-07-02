@@ -219,10 +219,10 @@ class l10n_mx_cfdi_request(models.Model):
             file = open(file_path,"rb")
             data = base64.b64encode(file.read())
             file_name = file_path.split("/")[-1]
-
+    
             file_data = self._read_cfdi(data)
-
-            company_id = self.env.user.company_id.id
+    
+            company_id = self.env.company.id
             if self.company_id.id:
                 company_id = self.company_id.id
             
@@ -245,7 +245,7 @@ class l10n_mx_cfdi_request(models.Model):
                         'folio': file_data['folio'],
                         'type_comprobante': file_data['type'],
                     })
-
+        
                     document._extract_metada()
         except:
             pass

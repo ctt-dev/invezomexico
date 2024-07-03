@@ -548,7 +548,7 @@ class WizardImportExistenciasProv(models.TransientModel):
         if self.tipo_cambio != 0.00:
             tipo_cambio = self.tipo_cambio
         # Agrega un registro de log para rastrear la ejecución del código
-        _logger.info(f"Importing record: {record}")
+        # _logger.info(f"Importing record: {record}")
 
 
         fecha_actual = fields.Datetime.now()
@@ -589,7 +589,7 @@ class WizardImportExistenciasProv(models.TransientModel):
                 self.env.cr.rollback()
 
         # Agrega un registro de log con información sobre la importación
-        _logger.info(f"Import summary: {count_updated} records updated, {count_created} records created")
+        # _logger.info(f"Import summary: {count_updated} records updated, {count_created} records created")
 
         # Retorna un diccionario con información sobre la importación
         return {'count_updated': count_updated, 'count_created': count_created, 'message': "Archivo importado correctamente", 'proveedor': self.proveedor_id.name}

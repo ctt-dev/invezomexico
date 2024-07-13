@@ -10,6 +10,8 @@ class sale_order_inherit(models.Model):
     _inherit = 'sale.order'
     _description = 'Orden de venta'
 
+
+    
     marketplace = fields.Many2one(
         "llantas_config.marketplaces",
         string="Marketplace",
@@ -670,10 +672,106 @@ class sale_order_line_inherit(models.Model):
         for rec in self:
            rec.total_con_killer = rec.price_total + rec.killer_id_killer_price
     
-    # link_venta=fields.Char(
-    #     string="Link de venta",
-    #     related="order_id.link_venta",
-    #     store=True
-    # )
+    link_venta=fields.Char(
+        string="Link de venta",
+        related="order_id.link_venta",
+        store=True
+    )
+
+    @api.depends('purchase_line_ids', 'purchase_line_ids.price_unit')
+    def compute_costo_orden_compra(self):
+        for rec in self:
+            costo_orden_compra = 0
+            for purchase_line_id in rec.purchase_line_ids:
+                costo_orden_compra = purchase_line_id.price_unit
+            rec.costo_orden_compra = costo_orden_compra
+    costo_orden_compra=fields.Float(
+        compute=compute_costo_orden_compra,
+        string="Orden de compra",
+        store=True,
+    )
+
+    @api.depends('purchase_line_ids', 'purchase_line_ids.invoice_lines', 'purchase_line_ids.invoice_lines.quantity', 'purchase_line_ids.invoice_lines.price_unit')
+    def compute_costo_orden_facturada(self):
+        for rec in self:
+            costo_orden_facturada = 0
+            for purchase_line in rec.purchase_line_ids:
+                for invoice_line in purchase_line.invoice_lines:
+                    costo_orden_facturada = (invoice_line.price_unit * invoice_line.quantity)
+            rec.costo_orden_facturada = costo_orden_facturada
+
+    costo_orden_facturada = fields.Float(
+        string="Costo Orden Facturada",
+        compute="compute_costo_orden_facturada",
+        # store=True,  # Si deseas almacenar el valor en la base de datos
+    )
+
+    
+
+
+    @api.depends('envio', 'comision', 'order_id', 'order_id.amount_untaxed', 'costo_orden_facturada')
+    def _compute_t1(self):
+        for rec in self:
+            if rec.order_id.amount_untaxed != 0:
+                rec.t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + rec.killer_id_killer_price - (rec.costo_proveedor * rec.product_uom_qty)
+                rec.t1_porcentaje = "{:.2f}%".format((rec.t1 / rec.order_id.amount_untaxed) * 100)
+            else:
+                rec.t1_porcentaje = "0.00%"  # Opcional: Manejar el caso donde amount_untaxed es cero
+    
+            if rec.order_id.amount_untaxed != 0:
+                rec.t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + rec.killer_id_killer_price - (rec.costo_orden_compra * rec.product_uom_qty)
+                rec.t2_porcentaje = "{:.2f}%".format((rec.t2 / rec.order_id.amount_untaxed) * 100)
+            else:
+                rec.t2_porcentaje = "0.00%"
+    
+            if rec.order_id.amount_untaxed != 0:
+                rec.t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + rec.killer_id_killer_price - (rec.costo_orden_facturada)
+                rec.t3_porcentaje = "{:.2f}%".format((rec.t3 / rec.order_id.amount_untaxed) * 100)
+            else:
+                rec.t3_porcentaje = "0.00%"
+
+
+
+
+            
+    t1=fields.Float(
+        string="T1",
+        compute="_compute_t1",
+
+    )
+
+    t1_porcentaje=fields.Char(
+        string="T1 %",
+        compute="_compute_t1",
+
+    )
+
+    t2=fields.Float(
+        string="T2",
+        compute="_compute_t1",
+
+
+    )
+
+    t2_porcentaje=fields.Char(
+        string="T2 %",
+        compute="_compute_t1",
+
+    )
+
+    t3=fields.Float(
+        string="T3",
+        compute="_compute_t1",
+
+
+    )
+
+    t3_porcentaje=fields.Char(
+        string="T3 %",
+        compute="_compute_t1",
+
+    )
+
+
     
            

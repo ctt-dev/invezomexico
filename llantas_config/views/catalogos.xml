@@ -167,6 +167,7 @@
                     <field name="company_id" invisible="1"/>
                     <field name="imagen"/>
                     <field name="color" widget="color_picker" required="0"/>
+                    <field name="yuju_tag" />
                 </tree>
             </field>
         </record>

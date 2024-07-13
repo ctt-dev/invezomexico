@@ -136,6 +136,10 @@ class marketplaces(models.Model):
         store=True,
     )
 
+    yuju_tag=fields.Char(
+        string="Yuju Marketplace"
+    )
+
     @api.model
     def create(self, values):
         values['company_id'] = self.env.company.id

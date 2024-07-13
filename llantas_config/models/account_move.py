@@ -163,3 +163,9 @@ class account_move_inherit(models.Model):
         string="Pronto pago - Total con descuento",
         compute=compute_total_facturado,
     )
+
+    marketplace_sale_order=fields.Char(
+        string="No. venta",
+        related="invoice_line_ids.sale_line_ids.folio_venta"
+    )
+    

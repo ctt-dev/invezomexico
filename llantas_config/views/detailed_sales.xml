@@ -30,7 +30,12 @@
                     <field name="fecha_venta" optional="show"/>
                     <field name="proveedor_id" optional="show"/>
                     <field name="costo_proveedor" optional="show"/>
-                    
+                    <field name="t1" sum="t1" optional="hide" />
+                    <field name="t1_porcentaje" sum="t1_porcentaje" optional="hide" />
+                    <field name="t2" sum="t2" optional="hide" />
+                    <field name="t2_porcentaje" sum="t2_porcentaje" optional="hide" />
+                    <field name="t3" sum="t3" optional="hide" />
+                    <field name="t3_porcentaje" sum="t3_porcentaje" optional="hide" />
                     <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" optional="hide"/>
                     <field name="discount" string="Disc.%"  optional="hide" widget="sol_discount"/>
                     <field name="is_killer" invisible="1" />
@@ -39,10 +44,12 @@
                     <field name="partner_id" optional="hide"/>
                     <field name="comprador" optional="show"/>
                     <field name="estado_venta" optional="show"/>
+                    <field name="untaxed_amount_to_invoice" optional="hide"/>
                     <field name="comision" optional="hide"/>
                     <field name="envio" optional="hide"/>
                     
                 </tree>
+                
             </field>
         </record>
 
@@ -84,7 +91,7 @@
         <record model="ir.actions.act_window" id="ov_detalle">
             <field name="name">Ordenes de venta a detalle</field>
             <field name="res_model">sale.order.line</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,pivot</field>
             <field name="view_id" ref="llantas_config.view_ov_detalle_tree"/>
             <field name="target">main</field>
             <field name="context">{'create':False,'edit':False,'delete':True}</field>

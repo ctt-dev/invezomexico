@@ -4,7 +4,7 @@ import tempfile
 import json
 import base64
 import pandas as pd
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError 
 from odoo.exceptions import ValidationError
 from collections import defaultdict
 _logger = logging.getLogger(__name__)
@@ -138,6 +138,11 @@ class marketplaces(models.Model):
 
     yuju_tag=fields.Char(
         string="Yuju Marketplace"
+    )
+
+    venta_directa = fields.Boolean(
+        string="¿Venta directa?",
+        tracking=True,
     )
 
     @api.model
@@ -452,6 +457,159 @@ class proveedores_link(models.Model):
     #             'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",
     #         }
     #     }
+    # def procesar(self, limite):
+    #     count_actualizados = 0
+    #     count_agregados = 0
+    #     count_sin_encontrar = 0
+    #     sku_proveedor_procesados = set()
+    #     moneda = self.env['res.currency'].search([('name', '=', 'MXN')])
+    #     moves = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name), ('procesado', '=', False)], limit=limite)
+    #     partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
+    #     proveedor = partner.id if partner else False
+    #     fecha_actual = datetime.datetime.now()
+        
+    #     existencias_por_sku_proveedor = defaultdict(float)
+    #     for move in moves:
+    #         lines = self.env['product.template'].search([
+    #             '|',
+    #             ('default_code', '=', move.sku),
+    #             ('sku_alternos.name', 'in', [move.sku])
+    #         ])
+    #         if lines:
+    #             for lin in lines:
+    #                 if lin.es_paquete or not move.sku_interno:
+    #                     continue
+        
+    #     for mov in moves:
+    #         existencias_por_sku_proveedor[(mov.sku, proveedor)] += mov.existencia
+        
+    #     for (sku, proveedor), existencia_total in existencias_por_sku_proveedor.items():
+    #         lines = self.env['product.template'].search([
+    #             '|',
+    #             ('default_code', '=', sku),
+    #             ('sku_alternos.name', 'in', [sku])
+    #         ])
+    #         if lines:
+    #             for line in lines:
+    #                 if line.es_paquete or line.detailed_type != 'product':
+    #                     continue
+        
+    #                 sku_proveedor = (line.id, proveedor)
+    #                 if sku_proveedor not in sku_proveedor_procesados:
+    #                     sku_moves = self.env['llantas_config.ctt_prov'].search([
+    #                         ('sku', '=', sku),
+    #                         ('nombre_proveedor', '=', self.name)
+    #                     ])
+        
+    #                     tipo_cambio = 0
+    #                     if sku_moves:
+    #                         costo_mas_bajo = min(sku_moves.mapped('costo_sin_iva'))
+    #                         filtered_moves = sku_moves.filtered(lambda x: x.costo_sin_iva == costo_mas_bajo)
+    #                         tipo_cambio = filtered_moves[0].tipo_cambio if filtered_moves else 0
+    #                     else:
+    #                         costo_mas_bajo = 0.0
+        
+    #                     supplier_info = self.env['product.supplierinfo'].search([
+    #                         ('product_tmpl_id', '=', line.id),
+    #                         ('partner_id', '=', proveedor)
+    #                     ], limit=1)
+        
+    #                     if supplier_info:
+    #                         if (supplier_info.price == costo_mas_bajo and 
+    #                             supplier_info.partner_id.id == proveedor and 
+    #                             supplier_info.product_tmpl_id.id == line.id):
+    #                             # Si los datos son iguales, omitir
+    #                             continue
+    #                         else:
+    #                             if supplier_info.price != costo_mas_bajo:
+    #                                 query = """
+    #                                     UPDATE product_supplierinfo 
+    #                                     SET 
+    #                                         currency_id=%s,
+    #                                         price=%s,
+    #                                         ultima_actualizacion=%s,
+    #                                         tipo_cambio=%s,
+    #                                         precio_neto=%s,
+    #                                         tipo_moneda_proveedor='MXN',
+    #                                         product_code=%s,
+    #                                         existencia_actual=%s
+    #                                     WHERE id=%s
+    #                                 """
+    #                                 values = (
+    #                                     moneda.id,
+    #                                     costo_mas_bajo,
+    #                                     fecha_actual,
+    #                                     tipo_cambio,
+    #                                     costo_mas_bajo,
+    #                                     sku,
+    #                                     existencia_total,
+    #                                     supplier_info.id
+    #                                 )
+    #                                 self.env.cr.execute(query, values)
+    #                                 count_actualizados += 1
+    #                             else:
+    #                                 query = """
+    #                                     UPDATE product_supplierinfo 
+    #                                     SET 
+    #                                         existencia_actual=%s,
+    #                                         ultima_actualizacion=%s
+    #                                     WHERE id=%s
+    #                                 """
+    #                                 values = (
+    #                                     existencia_total,
+    #                                     fecha_actual,
+    #                                     supplier_info.id
+    #                                 )
+    #                                 self.env.cr.execute(query, values)
+    #                                 count_actualizados += 1
+    #                     else:
+    #                         if existencia_total == 0:
+    #                             continue
+    #                         query = """
+    #                             INSERT INTO product_supplierinfo (partner_id, product_tmpl_id, currency_id, price, ultima_actualizacion,
+    #                                                               tipo_cambio, precio_neto, tipo_moneda_proveedor, product_code, existencia_actual, delay, min_qty)
+    #                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    #                         """
+    #                         values = (
+    #                             proveedor,
+    #                             line.id,
+    #                             moneda.id,
+    #                             costo_mas_bajo,
+    #                             fecha_actual,
+    #                             tipo_cambio,
+    #                             costo_mas_bajo,
+    #                             'MXN',
+    #                             sku,
+    #                             existencia_total,
+    #                             7,
+    #                             1
+    #                         )
+    #                         self.env.cr.execute(query, values)
+    #                         count_agregados += 1
+    #                     sku_proveedor_procesados.add(sku_proveedor)
+    #         else:
+    #             count_sin_encontrar += 1
+    #             mov.unlink()
+        
+    #     movimientos_restantes = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name), ('procesado', '=', False)])
+    #     if not movimientos_restantes:
+    #         sale_warn_msg="odos los productos han sido procesados. No hay productos pendientes por procesar."
+    #         return {
+    #             'warning': {
+    #                 'title': _("Advertencia"),
+    #                 'message': sale_warn_msg,
+    #             }
+    #         }
+        
+    #     return {
+    #         'type': 'ir.actions.client',
+    #         'tag': 'display_notification',
+    #         'params': {
+    #             'type': 'success',
+    #             'sticky': False,
+    #             'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",
+    #         }
+    #     }
     def procesar(self, limite):
         count_actualizados = 0
         count_agregados = 0
@@ -462,7 +620,7 @@ class proveedores_link(models.Model):
         partner = self.env['res.partner'].search([('name', '=', self.proveedor_id.name)], limit=1)
         proveedor = partner.id if partner else False
         fecha_actual = datetime.datetime.now()
-        
+
         existencias_por_sku_proveedor = defaultdict(float)
         for move in moves:
             lines = self.env['product.template'].search([
@@ -474,10 +632,10 @@ class proveedores_link(models.Model):
                 for lin in lines:
                     if lin.es_paquete or not move.sku_interno:
                         continue
-        
+
         for mov in moves:
             existencias_por_sku_proveedor[(mov.sku, proveedor)] += mov.existencia
-        
+
         for (sku, proveedor), existencia_total in existencias_por_sku_proveedor.items():
             lines = self.env['product.template'].search([
                 '|',
@@ -488,14 +646,14 @@ class proveedores_link(models.Model):
                 for line in lines:
                     if line.es_paquete or line.detailed_type != 'product':
                         continue
-        
+
                     sku_proveedor = (line.id, proveedor)
                     if sku_proveedor not in sku_proveedor_procesados:
                         sku_moves = self.env['llantas_config.ctt_prov'].search([
                             ('sku', '=', sku),
                             ('nombre_proveedor', '=', self.name)
                         ])
-        
+
                         tipo_cambio = 0
                         if sku_moves:
                             costo_mas_bajo = min(sku_moves.mapped('costo_sin_iva'))
@@ -503,12 +661,12 @@ class proveedores_link(models.Model):
                             tipo_cambio = filtered_moves[0].tipo_cambio if filtered_moves else 0
                         else:
                             costo_mas_bajo = 0.0
-        
+
                         supplier_info = self.env['product.supplierinfo'].search([
                             ('product_tmpl_id', '=', line.id),
                             ('partner_id', '=', proveedor)
                         ], limit=1)
-        
+
                         if supplier_info:
                             if (supplier_info.price == costo_mas_bajo and 
                                 supplier_info.partner_id.id == proveedor and 
@@ -557,6 +715,7 @@ class proveedores_link(models.Model):
                                     )
                                     self.env.cr.execute(query, values)
                                     count_actualizados += 1
+                               
                         else:
                             if existencia_total == 0:
                                 continue
@@ -582,20 +741,29 @@ class proveedores_link(models.Model):
                             self.env.cr.execute(query, values)
                             count_agregados += 1
                         sku_proveedor_procesados.add(sku_proveedor)
+                        
+                        # Actualizar ctt_prov con el default_code y costo
+                        for mov in sku_moves:
+                            mov.write({
+                                'procesado': True, 
+                                'fecha_actualizacion': fecha_actual,
+                                'sku_interno': line.default_code,
+                                'costo_sin_iva': costo_mas_bajo
+                            })
             else:
                 count_sin_encontrar += 1
                 mov.unlink()
-        
+
         movimientos_restantes = self.env['llantas_config.ctt_prov'].search([('nombre_proveedor', '=', self.name), ('procesado', '=', False)])
         if not movimientos_restantes:
-            sale_warn_msg="odos los productos han sido procesados. No hay productos pendientes por procesar."
+            sale_warn_msg="Todos los productos han sido procesados. No hay productos pendientes por procesar."
             return {
                 'warning': {
                     'title': _("Advertencia"),
                     'message': sale_warn_msg,
                 }
             }
-        
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',

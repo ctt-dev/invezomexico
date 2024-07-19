@@ -3,7 +3,7 @@
         <menuitem id="llantas_config.menu_ctt_llantas_catalogos_list"
           name="Catálogos"
           parent="stock.menu_stock_config_settings"
-          sequence="1001" />
+          sequence="1001" /> 
         
         <menuitem id="llantas_config_catalogos_sale" 
                               name="Catálogos" 
@@ -168,6 +168,7 @@
                     <field name="imagen"/>
                     <field name="color" widget="color_picker" required="0"/>
                     <field name="yuju_tag" />
+                    <field name="venta_directa" />
                 </tree>
             </field>
         </record>
@@ -192,6 +193,7 @@
                                 <field name="mostrar_envio"/>
                                 <field name="category_id" readonly="0"/>
                                 <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
+                                <field name="venta_directa" />
                                 <field name="company_id" invisible="1"/>
                                 
                                 <field name="color" widget="color_picker" required="0"/>

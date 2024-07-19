@@ -3,7 +3,7 @@ import logging
 import json
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
-_logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__) 
 import datetime
 
 class sale_order_inherit(models.Model):
@@ -704,32 +704,37 @@ class sale_order_line_inherit(models.Model):
         string="Costo Orden Facturada",
         compute="compute_costo_orden_facturada",
         # store=True,  # Si deseas almacenar el valor en la base de datos
-    )
+    )    
 
-    
+    order_id=fields.Many2one(
+        "sale.order",
+        string="Orden de venta",
+        store=True,
+    )
 
 
     @api.depends('envio', 'comision', 'order_id', 'order_id.amount_untaxed', 'costo_orden_facturada')
     def _compute_t1(self):
         for rec in self:
             if rec.order_id.amount_untaxed != 0:
-                rec.t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + rec.killer_id_killer_price - (rec.costo_proveedor * rec.product_uom_qty)
+                if rec.order_id.marketplace.venta_directa == True:
+                    rec.t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.product_id.standard_price * rec.product_uom_qty)
+                    rec.t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.product_id.standard_price * rec.product_uom_qty)
+                    rec.t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.product_id.standard_price * rec.product_uom_qty)
+                else:                
+                    rec.t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.costo_proveedor * rec.product_uom_qty)
+                    rec.t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.costo_orden_compra * rec.product_uom_qty)
+                    rec.t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.costo_orden_facturada)
+                
+                rec.t2_porcentaje = "{:.2f}%".format((rec.t2 / rec.order_id.amount_untaxed) * 100)   
                 rec.t1_porcentaje = "{:.2f}%".format((rec.t1 / rec.order_id.amount_untaxed) * 100)
-            else:
-                rec.t1_porcentaje = "0.00%"  # Opcional: Manejar el caso donde amount_untaxed es cero
-    
-            if rec.order_id.amount_untaxed != 0:
-                rec.t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + rec.killer_id_killer_price - (rec.costo_orden_compra * rec.product_uom_qty)
-                rec.t2_porcentaje = "{:.2f}%".format((rec.t2 / rec.order_id.amount_untaxed) * 100)
-            else:
-                rec.t2_porcentaje = "0.00%"
-    
-            if rec.order_id.amount_untaxed != 0:
-                rec.t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + rec.killer_id_killer_price - (rec.costo_orden_facturada)
                 rec.t3_porcentaje = "{:.2f}%".format((rec.t3 / rec.order_id.amount_untaxed) * 100)
             else:
+                rec.t1_porcentaje = "0.00%"
+                rec.t2_porcentaje = "0.00%"
                 rec.t3_porcentaje = "0.00%"
-
+    
+          
 
 
 
@@ -737,18 +742,20 @@ class sale_order_line_inherit(models.Model):
     t1=fields.Float(
         string="T1",
         compute="_compute_t1",
-
+        store=True,
     )
 
     t1_porcentaje=fields.Char(
         string="T1 %",
         compute="_compute_t1",
+        
 
     )
 
     t2=fields.Float(
         string="T2",
         compute="_compute_t1",
+        store=True,
 
 
     )
@@ -762,6 +769,7 @@ class sale_order_line_inherit(models.Model):
     t3=fields.Float(
         string="T3",
         compute="_compute_t1",
+        store=True,
 
 
     )

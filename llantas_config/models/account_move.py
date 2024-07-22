@@ -4,6 +4,7 @@ import json
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
+from num2words import num2words
 _logger = logging.getLogger(__name__)
 import datetime
 
@@ -168,4 +169,33 @@ class account_move_inherit(models.Model):
         string="No. venta",
         related="invoice_line_ids.sale_line_ids.folio_venta"
     )
-    
+
+class ResCurrency(models.Model):
+    _inherit = 'res.currency'
+
+    def amount_to_text(self, amount):
+        """
+        Converts the amount to text, handling the currency and the decimal part.
+        """
+        self.ensure_one()
+        # Convert the integer part to words
+        integer_part = int(amount)
+        decimal_part = int(round((amount - integer_part) * 100))
+        
+        # Get the currency name and its abbreviation
+        if self.name == 'MXN':
+            currency_text = 'PESOS'
+            currency_abbr = 'M.N.'
+        elif self.name == 'USD':
+            currency_text = 'DÓLARES'
+            currency_abbr = 'USD'
+        else:
+            currency_text = self.currency_unit_label.upper() if self.currency_unit_label else self.name.upper()
+            currency_abbr = self.name.upper()
+        
+        # Convert the integer part to words
+        amount_words = num2words(integer_part, lang=self.env.context.get('lang', 'es')).upper()
+        
+        # Combine the integer part in words, the decimal part as numbers, and the currency
+        return '%s %s %02d/100 %s' % (amount_words, currency_text, decimal_part, currency_abbr)
+

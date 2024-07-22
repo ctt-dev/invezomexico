@@ -227,11 +227,17 @@
                                                     </t>
                                                 </t>
                                             </table>
-                                            <span style="font-size: 10pt; white-space: nowrap;" t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total).upper()"/><p style="font-size: 8pt; white-space: nowrap; display: inline;"> 00/100 M.N.</p>
+                                            
+
+                                            
 
                                         </div>
-                                        
+                                        <div style="font-size: 9pt; white-space: nowrap; width: 100%; text-align: left;">
+                <span t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total)"/>
+            </div>
                                     </div>
+                                    
+
                                 </div>
                                 
                             </div>

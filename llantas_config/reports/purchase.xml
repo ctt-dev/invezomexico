@@ -135,7 +135,7 @@
                     <h3>Importe con letra</h3>
                 </div>
                 <td class="table">
-                    <span t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total).upper()"/><p>00/100 M.N.</p>
+                    <span style="font-size: 10pt; white-space: nowrap;" t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total)"/>
                 </td>
 <!--                <strong>NOTA IMPORTANTE : Este número de Orden de-->
 <!--Compra debe anular toda factura, conocimiento de-->

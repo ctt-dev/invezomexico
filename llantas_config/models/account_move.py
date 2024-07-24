@@ -74,7 +74,22 @@ class account_move_line_inherit(models.Model):
 
 class account_move_inherit(models.Model):
     _inherit = 'account.move'
-    _description='Account move line'
+    _description='Asiento contable'
+
+    def compute_exchange_rate(self):
+        for rec in self:
+            exchange_rate = 1
+            if rec.currency_id.id != rec.company_id.currency_id.id:
+                for line_id in rec.line_ids:
+                    if line_id.account_id.account_type in ['asset_receivable','liability_payable']:
+                        if line_id.amount_currency != 0:
+                            exchange_rate = abs(line_id.balance) / abs(line_id.amount_currency)
+            rec.exchange_rate = exchange_rate
+    exchange_rate = fields.Float(
+        string="Tipo de cambio",
+        compute=compute_exchange_rate,
+        digits=(0,6)
+    )
 
     @api.onchange('invoice_date')
     def onchange_invoice_date_update_pronto_pago(self):

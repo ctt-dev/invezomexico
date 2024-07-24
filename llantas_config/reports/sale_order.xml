@@ -55,6 +55,11 @@
                         <strong>Vendedor:</strong>
                         <p class="m-0" t-field="doc.user_id"/>
                     </div>
+                    <div t-if="doc.currency_id.name == 'USD'" class="col-auto col-3 mw-100 mb-2">
+                        <strong>Tipo de cambio:</strong>
+                        <p class="m-0" t-esc="(1 / doc.currency_rate)" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+
+                    </div>
                 </div>
                 
                 <!-- ¿Hay algún descuento en al menos una línea? -->
@@ -154,7 +159,10 @@
                                 </table>
                             </div>
                         </div>
-                    </div>
+                    </div><br/>
+                    <p class="clearfix" align="right" style="float: right; width: 100%;">
+                        <span t-esc="doc.currency_id.with_context(lang=doc.partner_id.lang or 'es_ES').amount_to_text(doc.amount_total)"/>
+                    </p>
         
                     <div t-if="doc.signature" class="mt-4 ml64 mr4" name="signature">
                         <div class="offset-8">

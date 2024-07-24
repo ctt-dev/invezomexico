@@ -76,7 +76,13 @@
                                     <p t-esc="cfdi_vals['bank_account']"/>
                                 </div>
                                 
+                                
                             </div>
+                            <div t-if="o.currency_id.name == 'USD'" class="col-auto col-3 mw-100 mb-2">
+                                    <strong>Tipo de cambio:</strong>
+                                    <p class="m-0" t-field="o.exchange_rate" />
+
+                                </div>
 
                             <t t-set="display_discount" t-value="any(l.discount for l in o.invoice_line_ids)"/>
 
@@ -166,12 +172,11 @@
 
                             </table>
                             
-                            <div class="clearfix" style="float: right; width:45%">
+                            <div class="clearfix" style="float: right; width: 45%;">
                                 <div id="total" class="row">
-                                    <div >
+                                    <div>
                                         <div style="text-align: left;"> <!-- Aquí alineamos el contenido de la tabla a la izquierda -->
                                             <table class="table table-hover">
-                                                
                                                 <!-- Totales de impuestos -->
                                                 <t t-set="tax_totals" t-value="o.tax_totals"/>
                                                 <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
@@ -181,18 +186,15 @@
                                                             <span t-att-class="oe_subtotal_footer_separator" t-esc="subtotal['formatted_amount']"/>
                                                         </td>
                                                     </tr>
-                                                    
                                                     <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
                                                     <t t-call="account.tax_groups_totals"/>
                                                 </t>
-                                                
                                                 <t t-if="'formatted_rounding_amount' in tax_totals and tax_totals['rounding_amount'] != 0">
                                                     <td>Rounding</td>
                                                     <td class="text-end">
                                                         <span t-esc="tax_totals['formatted_rounding_amount']"/>
                                                     </td>
                                                 </t>
-                                                
                                                 <!-- Total con todos los impuestos -->
                                                 <tr class="border-black o_total">
                                                     <td><strong>Total</strong></td>
@@ -201,7 +203,6 @@
                                                         <span t-esc="tax_totals['formatted_amount_total']" t-else=""/>
                                                     </td>
                                                 </tr>
-                            
                                                 <!-- Pagos -->
                                                 <t t-if="print_with_payments">
                                                     <t t-if="o.payment_state != 'invoicing_legacy'">
@@ -227,20 +228,21 @@
                                                     </t>
                                                 </t>
                                             </table>
+                                            <!-- Texto en letras -->
                                             
-
-                                            
-
                                         </div>
-                                        <div style="font-size: 9pt; white-space: nowrap; width: 100%; text-align: left;">
-                <span t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total)"/>
-            </div>
+                                       
                                     </div>
                                     
-
                                 </div>
-                                
+                                <div >
+                                 <p class="clearfix" style="float: right; width: 100%;">
+                                                <span t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total)"/>
+                                            </p>
                             </div>
+                            </div>
+                            
+
                             
 
 

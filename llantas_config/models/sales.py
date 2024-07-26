@@ -196,9 +196,9 @@ class sale_order_inherit(models.Model):
             if self.marketplace.category_id.id:
                 if self.marketplace.category_id not in self.partner_id.category_id:
                     self.partner_id.category_id += self.marketplace.category_id
-        for line in self.line:
+        for line in self.order_line:
             if line.costo_proveedor != 0.00:
-                line.write({'costo_proveedor_2': line.costo_proveedor, 'fecha_costo': line.proveedor_id.ultima_actualizacion,})
+                line.write({'costo_proveedor_2': line.costo_proveedor})
         return res
 
     # def _prepare_invoice(self):

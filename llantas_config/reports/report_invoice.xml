@@ -132,7 +132,9 @@
                                                     <span t-field="line.product_uom_id" groups="uom.group_uom"/>
                                                 </td>
                                                 <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
-                                                    <span class="text-nowrap" t-field="line.price_unit"/>
+                                                    <span t-esc="round((line.price_unit / 1.16) * 100, 2) / 100" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+
+
                                                 </td>
                                                 <td t-if="display_discount" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
                                                     <span class="text-nowrap" t-field="line.discount"/>

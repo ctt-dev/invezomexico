@@ -196,6 +196,9 @@ class sale_order_inherit(models.Model):
             if self.marketplace.category_id.id:
                 if self.marketplace.category_id not in self.partner_id.category_id:
                     self.partner_id.category_id += self.marketplace.category_id
+        for line in self.line:
+            if line.costo_proveedor != 0.00:
+                line.write({'costo_proveedor_2': line.costo_proveedor, 'fecha_costo': line.proveedor_id.ultima_actualizacion,})
         return res
 
     # def _prepare_invoice(self):
@@ -489,6 +492,22 @@ class sale_order_inherit(models.Model):
         ('01','Publico en general'),
         ('02','Cliente')], string="Tipo de facturación", store=True, tracking=True)
 
+    def compute_orden_compra(self):
+        for rec in self:
+            purchase_orders = rec._get_purchase_orders()
+            if purchase_orders:
+                rec.purchase_order_id = purchase_orders[0].id  # Asignar el primer pedido de compra
+            else:
+                rec.purchase_order_id = False
+
+    purchase_order_id = fields.Many2one(
+        'purchase.order',
+        compute='compute_orden_compra',
+        string='Orden de compra',
+        store=True,
+    )
+
+     
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'
     _description='Lineas de la orden de venta'
@@ -507,6 +526,14 @@ class sale_order_line_inherit(models.Model):
         tracking=True,
     )
 
+   
+                
+
+    costo_proveedor_2=fields.Float(
+        string="Costo proveedor guardado",
+    )
+
+    
     codigo_proveedor=fields.Char(
         related="proveedor_id.product_code",
         string="Codigo proveedor",

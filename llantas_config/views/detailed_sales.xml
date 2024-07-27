@@ -31,6 +31,7 @@
                     <field name="proveedor_id" optional="show"/>
                     <field name="costo_proveedor" readonly="1" optional="show"/>
                     <field name="costo_proveedor_2" readonly="1" optional="hide"  />
+                    <field name="costo_proveedor_total" readonly="1" optional="hide"  />
                     <field name="t1" sum="t1" optional="hide" />
                     <field name="t1_porcentaje" sum="t1_porcentaje" optional="hide" />
                     <field name="t2" sum="t2" optional="hide" />

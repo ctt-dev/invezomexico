@@ -50,11 +50,18 @@
                     <field name="killer_id_promotion_price" readonly="1" optional="hide"/>
                     
                     
+                    
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->
                 </xpath>
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
                     <field name="importe_descuento" optional="show"  />
                     <field name="precio_antes_dec" optional="show" readonly="1" />
+                    <field name="t1" optional="hide"/>
+                    <field name="t1_porcentaje" optional="hide"/>
+                    <field name="t2" optional="hide"/>
+                    <field name="t2_porcentaje" optional="hide"/>
+                    <field name="t3" optional="hide"/>
+                    <field name="t3_porcentaje" optional="hide"/>
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <button name="create_purchase" type="object" string="Crear compra" class="btn-secondary" />

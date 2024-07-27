@@ -526,6 +526,17 @@ class sale_order_line_inherit(models.Model):
         tracking=True,
     )
 
+    def compute_costo_proveedor_total(self):
+        for rec in self:
+            if rec.costo_proveedor:
+                rec.costo_proveedor_total = rec.costo_proveedor * rec.product_uom_qty
+            
+    costo_proveedor_total=fields.Float(
+        compute="compute_costo_proveedor_total",
+        string="Costo total",
+        store=True,
+    )
+
    
                 
 
@@ -743,29 +754,46 @@ class sale_order_line_inherit(models.Model):
     @api.depends('envio', 'comision', 'order_id', 'order_id.amount_untaxed', 'costo_orden_facturada')
     def _compute_t1(self):
         for rec in self:
-            if rec.order_id.amount_untaxed != 0:
-                if rec.order_id.marketplace.venta_directa == True:
-                    rec.t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.product_id.standard_price * rec.product_uom_qty)
-                    rec.t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.product_id.standard_price * rec.product_uom_qty)
-                    rec.t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.product_id.standard_price * rec.product_uom_qty)
-                else:                
-                    rec.t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.costo_proveedor * rec.product_uom_qty)
-                    rec.t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.costo_orden_compra * rec.product_uom_qty)
-                    rec.t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (rec.killer_id_killer_price / 1.16) - (rec.costo_orden_facturada)
-                
-                rec.t2_porcentaje = "{:.2f}%".format((rec.t2 / rec.order_id.amount_untaxed) * 100)   
-                rec.t1_porcentaje = "{:.2f}%".format((rec.t1 / rec.order_id.amount_untaxed) * 100)
-                rec.t3_porcentaje = "{:.2f}%".format((rec.t3 / rec.order_id.amount_untaxed) * 100)
-            else:
-                rec.t1_porcentaje = "0.00%"
-                rec.t2_porcentaje = "0.00%"
-                rec.t3_porcentaje = "0.00%"
-    
-          
-
-
-
+            t1 = t2 = t3 = killer_price = 0
+            t2_porcentaje = t1_porcentaje = t3_porcentaje = ""
             
+            if rec.order_id.amount_untaxed != 0:
+                killer_price = rec.killer_id_killer_price
+                if rec.order_id.marketplace.venta_directa == True:
+                    if rec.product_id.standard_price != 0.00:
+                        rec.product_id.standard_price
+                    t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (killer_price / 1.16) - (rec.product_id.standard_price)
+                    t2 = t1
+                    t3 = t1
+                else:
+                    if rec.order_id.state != 'draft':
+                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + ((killer_price / 1.16)) - (rec.costo_proveedor_2 * rec.product_uom_qty)
+                        t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (killer_price / 1.16) - (rec.costo_orden_compra)
+                        t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (killer_price / 1.16) - (rec.costo_orden_facturada)
+                    else:
+                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + ((killer_price / 1.16)) - (rec.costo_proveedor * rec.product_uom_qty)
+                    
+                
+                t2_porcentaje = "{:.2f}%".format((t2 / rec.order_id.amount_untaxed) * 100)   
+                t1_porcentaje = "{:.2f}%".format((t1 / rec.order_id.amount_untaxed) * 100)
+                t3_porcentaje = "{:.2f}%".format((t3 / rec.order_id.amount_untaxed) * 100)
+            else:
+                t1_porcentaje = "0.00%"
+                t2_porcentaje = "0.00%"
+                t3_porcentaje = "0.00%"
+        rec.write({
+            "t1": t1,
+            "t2": t2,
+            "t3": t3,
+            "t1_porcentaje": t1_porcentaje,
+            "t2_porcentaje": t1_porcentaje,
+            "t3_porcentaje": t1_porcentaje,
+        })
+        # rec.t1 = t1
+        # rec.t2 = t2
+        # rec.t3 = t3
+
+    
     t1=fields.Float(
         string="T1",
         compute="_compute_t1",
@@ -775,6 +803,7 @@ class sale_order_line_inherit(models.Model):
     t1_porcentaje=fields.Char(
         string="T1 %",
         compute="_compute_t1",
+        store=True,
         
 
     )
@@ -790,6 +819,7 @@ class sale_order_line_inherit(models.Model):
     t2_porcentaje=fields.Char(
         string="T2 %",
         compute="_compute_t1",
+        store=True,
 
     )
 
@@ -804,6 +834,7 @@ class sale_order_line_inherit(models.Model):
     t3_porcentaje=fields.Char(
         string="T3 %",
         compute="_compute_t1",
+        store=True,
 
     )
 

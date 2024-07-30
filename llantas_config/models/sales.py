@@ -199,6 +199,7 @@ class sale_order_inherit(models.Model):
         for line in self.order_line:
             if line.costo_proveedor != 0.00:
                 line.write({'costo_proveedor_2': line.costo_proveedor})
+                line.compute_costo_proveedor_total()
         return res
 
     # def _prepare_invoice(self):
@@ -529,7 +530,8 @@ class sale_order_line_inherit(models.Model):
     def compute_costo_proveedor_total(self):
         for rec in self:
             if rec.costo_proveedor:
-                rec.costo_proveedor_total = rec.costo_proveedor * rec.product_uom_qty
+                costo_proveedor_total = rec.costo_proveedor * rec.product_uom_qty
+            rec.write({'costo_proveedor_total': costo_proveedor_total})
             
     costo_proveedor_total=fields.Float(
         compute="compute_costo_proveedor_total",

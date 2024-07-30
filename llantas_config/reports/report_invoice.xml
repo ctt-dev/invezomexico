@@ -243,18 +243,12 @@
                                                 <span t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total)"/>
                                             </p>
                             </div>
+                                
+                        
                             </div>
-                            
-
-                            
-
-
-
-
-
-                            
                             <br/><br/>
-                        <t t-if="o.company_id.name == 'LLANTIRED' or o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS'">
+                            <div>
+                            <t t-if="o.company_id.name == 'LLANTIRED' or o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS'">
                             <table class="table table-hover">
                                 <thead style="font-size:8pt">
                                     <th colspan="2">DATOS PARA TRANSFERENCIA BANCARIA
@@ -283,6 +277,17 @@
                                 </tr>
                             </table>
                         </t>
+                            </div>
+                            
+
+                            
+
+
+
+
+
+                            
+                            
 
                             <!-- <p t-if="o.move_type in ('out_invoice', 'in_refund') and o.payment_reference" name="payment_communication">
                                 Por favor, utilice la siguiente comunicación para su pago: <b><span t-field="o.payment_reference"/></b>

@@ -1231,7 +1231,18 @@ class killer_list(models.Model):
     _description = 'Listado killers'
     _order = 'id desc'
 
-    
+    def name_get(self):
+        res = super(killer_list, self).name_get()
+        data = []
+        for e in self:
+            display_value = ''
+            display_value += str(e.marketplace_id.name)
+            display_value += ' - '
+            display_value += str(e.status) or ""
+            display_value += ''
+            data.append((e.id, display_value))
+        return data
+        
     product_id=fields.Many2one(
         "product.template",
         string="Producto",
@@ -1274,6 +1285,12 @@ class killer_list(models.Model):
     
     initial_date=fields.Datetime(
         string="Fecha inicial",
+    )
+
+    company_id = fields.Many2one(
+        'res.company',
+        string='Compañía',
+        default=lambda self: self.env.company,
     )
 
 class killer_no_product_list(models.Model):

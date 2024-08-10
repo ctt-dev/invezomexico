@@ -527,11 +527,19 @@ class sale_order_line_inherit(models.Model):
         tracking=True,
     )
 
+    @api.depends('purchase_line_ids')
     def compute_costo_proveedor_total(self):
         for rec in self:
-            if rec.costo_proveedor:
-                costo_proveedor_total = rec.costo_proveedor * rec.product_uom_qty
-            rec.write({'costo_proveedor_total': costo_proveedor_total})
+            costo_proveedor_total = 0  # Inicializa la variable
+            for line in rec.purchase_line_ids:
+                costo_proveedor_total += line.price_unit  # Asegúrate de actualizar la variable adecuadamente
+            rec.costo_proveedor_total = costo_proveedor_total
+        
+    # def compute_costo_proveedor_total(self):
+    #     for rec in self:
+    #         if rec.costo_proveedor:
+    #             costo_proveedor_total = rec.costo_proveedor * rec.product_uom_qty
+    #         rec.write({'costo_proveedor_total': costo_proveedor_total})
             
     costo_proveedor_total=fields.Float(
         compute="compute_costo_proveedor_total",
@@ -760,40 +768,30 @@ class sale_order_line_inherit(models.Model):
             t2_porcentaje = t1_porcentaje = t3_porcentaje = ""
             
             if rec.order_id.amount_untaxed != 0:
-                killer_price = rec.killer_id_killer_price
-                if rec.order_id.marketplace.venta_directa == True:
-                    if rec.product_id.standard_price != 0.00:
-                        rec.product_id.standard_price
-                    t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (killer_price / 1.16) - (rec.product_id.standard_price)
-                    t2 = t1
-                    t3 = t1
+                killer_price = rec.killer_id_killer_price if rec.killer_id_killer_price else 0
+                if rec.order_id.marketplace.venta_directa:
+                    t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.product_id.standard_price)
+                    t2 = t3 = t1
                 else:
                     if rec.order_id.state != 'draft':
-                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + ((killer_price / 1.16)) - (rec.costo_proveedor_2 * rec.product_uom_qty)
-                        t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (killer_price / 1.16) - (rec.costo_orden_compra)
-                        t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + (killer_price / 1.16) - (rec.costo_orden_facturada)
+                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - (rec.costo_proveedor_2 * rec.product_uom_qty))
+                        t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.costo_orden_compra)
+                        t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.costo_orden_facturada)
                     else:
-                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16)) + ((killer_price / 1.16)) - (rec.costo_proveedor * rec.product_uom_qty)
+                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - (rec.costo_proveedor * rec.product_uom_qty))
                     
-                
-                t2_porcentaje = "{:.2f}%".format((t2 / rec.order_id.amount_untaxed) * 100)   
                 t1_porcentaje = "{:.2f}%".format((t1 / rec.order_id.amount_untaxed) * 100)
+                t2_porcentaje = "{:.2f}%".format((t2 / rec.order_id.amount_untaxed) * 100)
                 t3_porcentaje = "{:.2f}%".format((t3 / rec.order_id.amount_untaxed) * 100)
             else:
-                t1_porcentaje = "0.00%"
-                t2_porcentaje = "0.00%"
-                t3_porcentaje = "0.00%"
-        rec.write({
-            "t1": t1,
-            "t2": t2,
-            "t3": t3,
-            "t1_porcentaje": t1_porcentaje,
-            "t2_porcentaje": t1_porcentaje,
-            "t3_porcentaje": t1_porcentaje,
-        })
-        # rec.t1 = t1
-        # rec.t2 = t2
-        # rec.t3 = t3
+                t1_porcentaje = t2_porcentaje = t3_porcentaje = "0.00%"
+    
+            rec.t1 = t1
+            rec.t2 = t2
+            rec.t3 = t3
+            rec.t1_porcentaje = t1_porcentaje
+            rec.t2_porcentaje = t2_porcentaje
+            rec.t3_porcentaje = t3_porcentaje
 
     
     t1=fields.Float(

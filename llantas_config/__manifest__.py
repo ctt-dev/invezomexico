@@ -74,6 +74,7 @@
         'views/tablero_killer.xml',
         'views/wizard_cargar_killer.xml',
         'reports/sale_order_racko.xml',
+        'views/list_prices_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

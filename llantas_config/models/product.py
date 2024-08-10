@@ -128,7 +128,21 @@ class product_template_inherit(models.Model):
         "llantas_config.killer_list",
         string="id killer",
         store=True,
+        
     )
+
+    # killer_ids = fields.One2many(
+    #     "llantas_config.killer_list",
+    #     "marketplace_id",
+    #     string="Listado de Killers",
+
+    # )
+
+
+    @api.model
+    def create(self, values):
+        values['company_id'] = self.env.company.id
+        return super(ProductTemplate, self).create(values)
     
     is_killer=fields.Boolean(
         string="Es killer?",

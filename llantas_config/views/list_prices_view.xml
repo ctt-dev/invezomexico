@@ -29,7 +29,6 @@
             </field>
         </record>
 
-
         <!-- Action definition -->
         <record id="ctt_llantas_action_listado_precios_tree" model="ir.actions.act_window">
             <field name="name">Lista de precios</field>
@@ -64,6 +63,7 @@
                 </search>
             </field>
         </record>
+
         
     <record id="view_stock_quant_wizard_form" model="ir.ui.view">
             <field name="name">stock.quant.wizard.form</field>

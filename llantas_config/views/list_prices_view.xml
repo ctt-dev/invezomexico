@@ -1,46 +1,45 @@
 <odoo>
     <data>
-       
-        
+
         <!-- Tree view definition -->
         <record id="view_listado_precios_tree" model="ir.ui.view">
             <field name="name">lista_precios_tree</field>
             <field name="model">stock.quant</field>
+            <field name="active">1</field>
             <field name="arch" type="xml">
-                <tree create="0" delete="0">
-                    <field name="sku" />
-                    <field name="product_id" />
-                    <field name="aplicacion"/>
-                    <field name="medida"/>
-                    <field name="marca"/>
-                    <field name="almacen_name" />
-                    <field name="available_quantity"/>
-                    <field name="precio_publico" />
-                    <field name="precio_may5pzs" />
-                    <field name="precio_may100pzs" />
+                <tree>
+
+                        <field name="sku" />
+                        <field name="product_id" />
+                        <field name="aplicacion"/>
+                        <field name="medida"/>
+                        <field name="marca"/>
+                        <field name="almacen_name" />
+                        <field name="available_quantity"/>
+                        <field name="precio_publico" />
+                        <field name="precio_may5pzs" />
+                        <field name="precio_may100pzs" />
                 </tree>
             </field>
         </record>
 
-        <!-- Action definition -->
-        <record id="ctt_llantas_action_listado_precios_tree" model="ir.actions.act_window">
+
+        <record model="ir.actions.act_window" id="list_precios">
             <field name="name">Lista de precios</field>
             <field name="res_model">stock.quant</field>
-            <field name="view_mode">tree,search</field>
+            <field name="view_mode">tree</field>
             <field name="view_id" ref="view_listado_precios_tree"/>
-            <field name="search_view_id" ref="view_listado_precios_search"/>
-            <field name="context">{'create': False, 'search_default_internal_loc': 1}</field>
             <field name="target">main</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_empty_folder">
-                    No hay registros
-                </p><p>
-                    Aquí aparecerán los registros de existencia de proveedores.
-                </p>
-            </field>
+            <field name="context">{'create':False,'edit':False,'delete':True,'search_default_internal_loc': 1}</field>
         </record>
 
-        <record id="view_listado_precios_search" model="ir.ui.view">
+        <menuitem id="listado_de_precios_menu" 
+          name="Lista de preciose" 
+          action="list_precios"
+          parent="stock.menu_warehouse_report" 
+          sequence="1001" />
+
+        <record id="view_llantas_config_listado_precios_search" model="ir.ui.view">
             <field name="name">listado.precios.search</field>
             <field name="model">stock.quant</field>
             <field name="arch" type="xml">
@@ -58,12 +57,7 @@
         </record>
 
 
-         <!-- Menu item -->
-        <menuitem id="listado_de_precios_menu" 
-                  name="Lista de precios" 
-                  action="ctt_llantas_action_listado_precios_tree"
-                  parent="stock.menu_warehouse_report" 
-                  sequence="1001" />
+        
         
         <record id="view_stock_quant_wizard_form" model="ir.ui.view">
             <field name="name">stock.quant.wizard.form</field>

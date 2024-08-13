@@ -34,7 +34,7 @@
         </record>
 
         <menuitem id="listado_de_precios_menu" 
-          name="Lista de preciose" 
+          name="Lista de precios" 
           action="list_precios"
           parent="stock.menu_warehouse_report" 
           sequence="1001" />

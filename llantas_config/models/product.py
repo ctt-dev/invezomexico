@@ -142,7 +142,7 @@ class product_template_inherit(models.Model):
     @api.model
     def create(self, values):
         values['company_id'] = self.env.company.id
-        return super(ProductTemplate, self).create(values)
+        return super(product_template_inherit, self).create(values)
     
     is_killer=fields.Boolean(
         string="Es killer?",

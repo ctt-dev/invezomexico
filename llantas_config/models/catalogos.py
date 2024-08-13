@@ -10,7 +10,7 @@ from collections import defaultdict
 _logger = logging.getLogger(__name__)
 import datetime
 import urllib.request 
-import json  
+import json
 from odoo import _
 
 class marca_llanta(models.Model): 
@@ -235,6 +235,58 @@ class proveedores_link(models.Model):
             'target': 'new',
         }
 
+    
+
+    def procesar_concentrado(self):
+        # URL desde la que deseas obtener los datos
+        url = self.url
+        try:
+            # Abre la URL y lee los datos
+            response = urllib.request.urlopen(url)
+            data = json.loads(response.read().decode())
+
+            # Procesar cada elemento del JSON
+            results = []
+            for item in data:
+                if isinstance(item, dict):
+                    sku_proveedor = item.get('SKU PROVEEDOR', 'N/A')
+                    producto = item.get('PRODUCTO', 'N/A')
+                    existencia_proveedor = item.get('EXISTENCIA PROVEEDOR', 0)
+                    costo_proveedor = item.get('COSTO PROVEEDOR', 0.0)
+                    proveedor = item.get('PROVEEDOR', 'N/A')
+
+                    # Agrega los datos a la lista de resultados
+                    results.append({
+                        'sku_proveedor': sku_proveedor,
+                        'producto': producto,
+                        'existencia_proveedor': existencia_proveedor,
+                        'costo_proveedor': costo_proveedor,
+                        'proveedor': proveedor,
+                    })
+
+
+                
+
+                    # Aquí podrías realizar acciones adicionales, como guardar en la base de datos
+                    # Por ejemplo, crear o actualizar registros en un modelo de Odoo
+                    # self.env['otro.modelo'].create({
+                    #     'sku_proveedor': sku_proveedor,
+                    #     'producto': producto,
+                    #     'existencia_proveedor': existencia_proveedor,
+                    #     'costo_proveedor': costo_proveedor,
+                    #     'proveedor': proveedor,
+                    # })
+
+                else:
+                    raise UserError("Formato de datos no esperado.")
+
+            # Registra la información procesada en el log
+            _logger.info("Datos procesados: %s", results)
+
+        except Exception as e:
+            raise UserError(f"Error al procesar el concentrado: {e}")
+        
+        
     def process_link(self):
         url = urllib.request.urlopen(self.url) 
         data = json.loads(url.read().decode()) 

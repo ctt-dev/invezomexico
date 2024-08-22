@@ -1,14 +1,17 @@
-# -*- coding: utf-8 -*-
-from odoo import models, fields, api, tools, _
+from odoo import models, fields, api, _
 import logging
-import datetime
-import pandas as pd
 import tempfile
+import json
 import base64
-from odoo.exceptions import Warning
-from odoo.exceptions import UserError
+import pandas as pd
+from odoo.exceptions import UserError 
 from odoo.exceptions import ValidationError
+from collections import defaultdict
 _logger = logging.getLogger(__name__)
+import datetime
+import urllib.request 
+import json
+from odoo import _
 
 class WizardImportExistenciasProv(models.TransientModel): 
     _name = 'llantas_config.ctt_prov_cargar_wizard'
@@ -805,6 +808,60 @@ class ctrl_llantas(models.Model):
         default=False,
     )
 
+    def actualizar_sku_y_proveedor(self):
+        # Acumuladores para las consultas SQL y sus parámetros
+        update_query_producto = []
+        update_query_producto_params = []
+        update_query_partner = []
+        update_query_partner_params = []
+        
+        # Buscar registros en 'llantas_config.ctt_prov'
+        existencias = self.env['llantas_config.ctt_prov'].search(['|', ('sku_interno','=', False), ('sku_interno','=', ""), ('partner_id','=', False)], limit = 1000)
+        if existencias:
+            for rec in existencias:
+                # Obtener el SKU del registro actual
+                sku = rec.sku
+                if rec.sku_interno == False or rec.sku_interno == "":
+                # Buscar el producto en 'llantas_config.sku_marketplace'
+                    producto = self.env['llantas_config.sku_marketplace'].search([
+                        ('name', '=', sku),
+                        ('product_id.es_paquete', '=', False)
+                    ], limit=1)
+                    
+                    if producto:
+                        # Preparar la consulta de actualización para SKU
+                        update_query_producto.append("""
+                            UPDATE llantas_config_ctt_prov
+                            SET sku_interno = %s
+                            WHERE id = %s
+                        """)
+                        update_query_producto_params.append((producto.product_id.default_code, rec.id))
+                if rec.partner_id == False:
+                    # Buscar el proveedor en 'res.partner'
+                    partner = self.env['res.partner'].search([
+                        ('name', 'ilike', rec.nombre_proveedor)
+                    ], limit=1)
+                    
+                    if partner:
+                        # Preparar la consulta de actualización para Partner
+                        update_query_partner.append("""
+                            UPDATE llantas_config_ctt_prov
+                            SET partner_id = %s
+                            WHERE id = %s
+                        """)
+                        update_query_partner_params.append((partner.id, rec.id))
+        
+        # Ejecutar todas las consultas de actualización acumuladas
+        for query, params in zip(update_query_producto, update_query_producto_params):
+            self.env.cr.execute(query, params)
+        
+        for query, params in zip(update_query_partner, update_query_partner_params):
+            self.env.cr.execute(query, params)
+        
+        return {
+            'message': "Actualización completada correctamente."
+        }
+
     
 
     # @api.depends('sku')
@@ -861,6 +918,118 @@ class ctrl_llantas(models.Model):
     sku_interno=fields.Char(
         string="Sku interno"
     )
+
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Cliente id",
+    )
+    
+    def _cron_procesar_supplierinfo(self):
+        batch_size = 10
+        self.procesar_supplierinfo(batch_size)
+
+    def procesar_supplierinfo(self, batch_size=None):
+        count_actualizados = 0
+        count_agregados = 0
+        count_sin_encontrar = 0
+        sku_proveedor_procesados = set()
+        moneda = self.env['res.currency'].search([('name', '=', 'MXN')], limit=1)
+        fecha_actual = datetime.datetime.now()
+    
+        domain = [('procesado', '=', False), ('sku_interno', '!=', False)]
+        moves = self.env['llantas_config.ctt_prov'].search(domain, limit=batch_size) if batch_size else self.env['llantas_config.ctt_prov'].search(domain)
+    
+        updates_by_proveedor = defaultdict(list)
+        inserts_by_proveedor = defaultdict(list)
+        update_movs_data = []
+        delete_ids = []
+    
+        for move in moves:
+            try:
+                proveedor_id = move.parent_id.id
+                if not proveedor_id:
+                    count_sin_encontrar += 1
+                    delete_ids.append(move.id)
+                    continue
+    
+                sku_proveedor = (move.sku, proveedor_id)
+                if sku_proveedor not in sku_proveedor_procesados:
+                    lines = self.env['product.template'].search([('default_code', '=', move.sku_interno)])
+                    if lines:
+                        for line in lines:
+                            if line.es_paquete or line.detailed_type != 'product':
+                                continue
+    
+                            supplier_info = self.env['product.supplierinfo'].search([('product_tmpl_id', '=', line.id), ('partner_id', '=', proveedor_id)], limit=1)
+    
+                            if supplier_info:
+                                if supplier_info.price == move.costo_sin_iva:
+                                    updates_by_proveedor[proveedor_id].append((
+                                        """
+                                        UPDATE product_supplierinfo SET ultima_actualizacion=%s WHERE id=%s
+                                        """, (fecha_actual, supplier_info.id)
+                                    ))
+                                    count_actualizados += 1
+                                else:
+                                    updates_by_proveedor[proveedor_id].append((
+                                        """
+                                        UPDATE product_supplierinfo SET currency_id=%s, price=%s, ultima_actualizacion=%s,
+                                            tipo_cambio=%s, precio_neto=%s, tipo_moneda_proveedor='MXN',
+                                            product_code=%s, existencia_actual=%s
+                                        WHERE id=%s
+                                        """, (moneda.id, move.costo_sin_iva, fecha_actual, 1,
+                                              move.costo_sin_iva, move.sku, move.existencia, supplier_info.id)
+                                    ))
+                                    count_actualizados += 1
+                            else:
+                                if move.existencia == 0:
+                                    continue
+                                inserts_by_proveedor[proveedor_id].append((
+                                    """
+                                    INSERT INTO product_supplierinfo (partner_id, product_tmpl_id, currency_id, price,
+                                                                      ultima_actualizacion, tipo_cambio, precio_neto,
+                                                                      tipo_moneda_proveedor, product_code,
+                                                                      existencia_actual, delay, min_qty)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    """, (proveedor_id, line.id, moneda.id, move.costo_sin_iva, fecha_actual,
+                                          1, move.costo_sin_iva, 'MXN', move.sku, move.existencia, 7, 1)
+                                ))
+                                count_agregados += 1
+    
+                            sku_proveedor_procesados.add(sku_proveedor)
+                            update_movs_data.append((move.id, fecha_actual, line.default_code, move.costo_sin_iva))
+                    else:
+                        count_sin_encontrar += 1
+                        delete_ids.append(move.id)
+            except Exception as e:
+                _logger.error(f"Error processing move ID {move.id}: {str(e)}")
+    
+        # Ejecutar todas las actualizaciones por proveedor
+        for proveedor, updates in updates_by_proveedor.items():
+            self.env.cr.executemany(";\n".join([q for q, _ in updates]), [v for _, v in updates])
+    
+        # Ejecutar todas las inserciones por proveedor
+        for proveedor, inserts in inserts_by_proveedor.items():
+            self.env.cr.executemany(";\n".join([q for q, _ in inserts]), [v for _, v in inserts])
+    
+        # Actualizar movimientos
+        if update_movs_data:
+            update_query = """
+                UPDATE llantas_config_ctt_prov SET procesado = TRUE, fecha_actualizacion = %s,
+                    sku_interno = %s, costo_sin_iva = %s WHERE id = %s
+            """
+            update_movs_data = [(fecha_actual, sku_interno, costo_sin_iva, move_id) for move_id, fecha_actual, sku_interno, costo_sin_iva in update_movs_data]
+            self.env.cr.executemany(update_query, update_movs_data)
+    
+        # Eliminar registros no encontrados
+        if delete_ids:
+            self.env.cr.execute("DELETE FROM llantas_config_ctt_prov WHERE id IN %s", (tuple(delete_ids),))
+    
+        return {
+            'count_actualizados': count_actualizados,
+            'count_agregados': count_agregados,
+            'count_sin_encontrar': count_sin_encontrar
+        }
     
 class ProductSupplierinfoInherited(models.Model):
     _inherit = 'product.supplierinfo'
@@ -934,7 +1103,10 @@ class ctrl_llantas(models.Model):
         string="Moneda",
     )
 
-
+    
+                  
+    
+        
 class ctrl_tiredirect(models.Model): 
     _name = "llantas_config.ctt_tiredirect_cargar"
     _description = "Cargar Existencia"

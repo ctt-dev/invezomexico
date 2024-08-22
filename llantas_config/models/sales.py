@@ -793,7 +793,6 @@ class sale_order_line_inherit(models.Model):
             rec.t2_porcentaje = t2_porcentaje
             rec.t3_porcentaje = t3_porcentaje
 
-    
     t1=fields.Float(
         string="T1",
         compute="_compute_t1",

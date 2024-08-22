@@ -152,50 +152,52 @@ class StockQuantWizard(models.TransientModel):
         # Ajustar el ancho de la columna B (Producto) a 85
         worksheet.set_column('A:A', 15)
         worksheet.set_column('C:K', 15)
-    
+        
         # Encabezados con campos de precios al final
         headers = ['SKU', 'Producto', 'Aplicación', 'Medida', 'Marca'] + [almacen.name for almacen in self.almacen_name_ids] + ['Precio Público', 'Precio +5 Pzas', 'Precio +100 Pzas']
         worksheet.write_row(7, 0, headers)  # Cambié la fila a la 7 (FILA 8), para evitar que las notas solapen los encabezados
         
-        # Obtener datos y ordenarlos por el campo 'medida'
+        # Obtener datos agrupados y ordenados por 'medida'
         grouped_data = self._get_grouped_stock_quants()
-        # Modificado para manejar diferentes tipos de datos en 'medida'
-        sorted_data = sorted(grouped_data.items(), key=lambda x: str(x[1]['medida']) if x[1]['medida'] is not None else '')
-    
+        
         row = 8  # Cambié el inicio de los datos a la fila 9
-        for (sku, almacen_id), data in sorted_data:
+        for sku, data_dict in grouped_data.items():
             row_data = [
-                sku,
-                data['product_id'],
-                data['aplicacion'],
-                data['medida'],
-                data['marca'],
+                sku[0],  # SKU
+                data_dict['product_id'],
+                data_dict['aplicacion'],
+                data_dict['medida'],
+                data_dict['marca'],
             ]
             for almacen in self.almacen_name_ids:
-                cantidad = data['available_quantity'] if almacen.id == almacen_id else 0
-                row_data.append(cantidad)
-    
+                # Verificar si el almacén actual existe en los datos agrupados
+                if sku[1] == almacen.id:
+                    cantidad_total = data_dict['available_quantity']
+                else:
+                    cantidad_total = 0
+                row_data.append(cantidad_total)
+            
             # Agregar los precios al final
             precios = [
-                f'{data["precio_publico"]:.2f}',
-                f'{data["precio_may5pzs"]:.2f}',
-                f'{data["precio_may100pzs"]:.2f}',
+                f'{data_dict["precio_publico"]:.2f}',
+                f'{data_dict["precio_may5pzs"]:.2f}',
+                f'{data_dict["precio_may100pzs"]:.2f}',
             ]
             
             if self.ocultar_en_cero:
-                # Filtrar precios que son 0
                 precios = [precio if float(precio) != 0 else '' for precio in precios]
             
             row_data += precios
+            
             worksheet.write_row(row, 0, row_data)
             row += 1
-    
+        
         # Ajustar el ancho de las columnas
         worksheet.set_column('B:B', 70)  # Ancho de columna para 'Producto'
-    
+        
         workbook.close()
         output.seek(0)
-    
+        
         attachment = self.env['ir.attachment'].create({
             'name': 'Lista_de_Precios.xlsx',
             'type': 'binary',
@@ -204,12 +206,13 @@ class StockQuantWizard(models.TransientModel):
             'res_id': self.id,
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         })
-    
+        
         return {
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{attachment.id}?download=true',
             'target': 'self',
         }
+
 
 
     def export_to_pdf(self):
@@ -276,9 +279,29 @@ class StockQuantWizard(models.TransientModel):
         
         # Obtener los datos agrupados y ordenarlos por el campo 'medida'
         grouped_data = self._get_grouped_stock_quants()
-        sorted_data = sorted(grouped_data.items(), key=lambda x: str(x[1]['medida']) if x[1]['medida'] is not None else '')
+        sorted_data = sorted(grouped_data.items(), key=lambda x: (x[0][0], str(x[1]['medida']) if x[1]['medida'] is not None else ''))
         
+        # Inicializar estructura para acumulación de cantidades por SKU
+        consolidated_data = {}
+    
         for (sku, almacen_id), data in sorted_data:
+            if sku not in consolidated_data:
+                consolidated_data[sku] = {
+                    'product_id': data['product_id'],
+                    'aplicacion': data['aplicacion'],
+                    'medida': data['medida'],
+                    'marca': data['marca'],
+                    'almacenes': {almacen.id: 0 for almacen in self.almacen_name_ids},
+                    'precios': {
+                        'precio_publico': data['precio_publico'],
+                        'precio_may5pzs': data['precio_may5pzs'],
+                        'precio_may100pzs': data['precio_may100pzs'],
+                    }
+                }
+            consolidated_data[sku]['almacenes'][almacen_id] += data['available_quantity']
+        
+        # Escribir los datos consolidados
+        for sku, data in consolidated_data.items():
             row_data = [
                 sku,
                 data['product_id'],
@@ -287,38 +310,29 @@ class StockQuantWizard(models.TransientModel):
                 data['marca'],
             ]
             for almacen in self.almacen_name_ids:
-                cantidad = data['available_quantity'] if almacen.id == almacen_id else 0
+                cantidad = data['almacenes'].get(almacen.id, 0)  # Obtener la cantidad o 0 si no existe
                 row_data.append(str(cantidad))
             
-            # Agregar los precios al final
             precios = [
-                f'{data["precio_publico"]:.2f}',
-                f'{data["precio_may5pzs"]:.2f}',
-                f'{data["precio_may100pzs"]:.2f}',
+                f'{data["precios"]["precio_publico"]:.2f}',
+                f'{data["precios"]["precio_may5pzs"]:.2f}',
+                f'{data["precios"]["precio_may100pzs"]:.2f}',
             ]
             
             if self.ocultar_en_cero:
-                # Filtrar precios que son 0
                 precios = [precio if float(precio) != 0 else '' for precio in precios]
             
             row_data += precios
             
-            # Escribir los datos de la fila
             for i, item in enumerate(row_data):
                 c.drawString(x_positions[i], y, str(item))
             
-            y -= 15  # Reducir la altura entre filas para aprovechar mejor el espacio vertical
+            y -= 15
             
-            # Verificar si es necesario una nueva página
             if y < 50:
-                c.showPage()  # Inicia una nueva página
-                y = height - 50  # Reinicia la posición vertical
-                x = 40  # Reinicia la posición horizontal
-            
-                # Volver a configurar la fuente y tamaño de letra para la nueva página
+                c.showPage()
+                y = height - 50
                 c.setFont("Helvetica", font_size)
-            
-                # Reescribir encabezados en la nueva página
                 for i, header in enumerate(headers):
                     c.drawString(x_positions[i], y, str(header))
                 y -= 20
@@ -340,6 +354,7 @@ class StockQuantWizard(models.TransientModel):
             'url': f'/web/content/{attachment.id}?download=true',
             'target': 'self',
         }
+
 
             
 class sale_order_inherit(models.Model):

@@ -1,36 +1,123 @@
 <odoo>
     <data>
+
         <record id="view_llantas_tree" model="ir.ui.view">
             <field name="name">Resumen</field>
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
-                <tree edit="0" sample="1">
-                    <field name="sale_id" optional="hide"/>
-                    <field name="comprador_id" domain="[('category_ids','like','COMP')]"/>
-                    <field name="partner_name" />
-                    <field name="marketplace" />
-                    <field name="link_venta" optional="hide"/>
+                <tree sample="1" multi_edit="1">
+                    <field name="comprador_id" />
                     <field name="no_venta" />
+                    <field name="link_venta" optional="hide" widget="url"/>
+                    
+                    <field name="sale_id" string="SO" optional="show" widget="many2one"/>
+                    <!-- <field name="num_cliente" optional="hide"/> -->
+                    <!-- <field name="marketplace_name"/> -->
+                    <field name="marketplace" widget="many2one"/>
+                    <field name="partner_id" widget="many2one" />
+                    <field name="partner_name" widget="many2one"/>
+                    <field name="orden_compra" optional="show" widget="many2one" decoration-danger="orden_compra == False"/>
+                    <field name="link_guia" widget="url"/>
+                    <field name="no_recoleccion" optional="show"/>
+                    <field name="tdp" />
+                    <field name="orden_entrega" widget="many2many_tags" optional="hide"/>
+                    <field name="factura_prov" readonly="1" optional="hide" widget="many2one"/>
+                    <field name="total_facturado" optional="hide" readonly="1" />
+                    <field name="payment_status" widget="badge" decoration-danger="payment_status == 'not_paid'" decoration-warning="payment_status in ('partial', 'in_payment')" decoration-success="payment_status in ('paid', 'reversed')" attrs="{'invisible': [('payment_status', 'in', ('invoicing_legacy'))]}" optional="show"/>
+                    <field name="pronto_pago_fecha_vencimiento" optional="show" decoration-info="pronto_pago_fecha_vencimiento == True" readonly="1"/>
+                    <field name="pronto_pago_dias_para_vencimiento" optional="hide" decoration-warning="pronto_pago_dias_para_vencimiento &lt;= 0" readonly="1"/>
+
+                    <field name="pronto_pago_descuento" optional="hide" widget="monetary" readonly="1"/>
+                    <field name="pronto_pago_total_con_descuento" optional="show" decoration-primary="pronto_pago_total_con_descuento == True" widget="monetary" readonly="1"/>
+                    <field name="factura_cliente" optional="hide" widget="many2many_tags" attrs="{'invisible': [('factura_prov', '=', False),('factura_prov', '!=', True)]}" readonly="1"/>
+                    <field name="tipo_factura" optional="show"/>
+                    <button string="Ver facturas clientes" type="object" class="oe_highlight" name="action_show_related_invoices"/>
+                    <!-- <field name="factura_cliente_id" widget="many2one"/> -->
+                    <field name="status_id" readonly="0" decoration-danger="status_id == '01'" decoration-info="status_id == '03'" decoration-muted="status_id == '04'" decoration-success="status_id == '05'" decoration-primary="status_id == '06'"  widget="badge" decoration-warning="status_id == '02'" />
+                    <!-- <field name="status_id" readonly="0" forcesave="1"/> -->
                     <field name="fecha" />
+                    
+                    <field name="dias" readonly="1"/>
                     <!-- <field name="productos_orden"/> -->
                     <field name="comision" optional="hide"/>
                     <field name="envio" optional="hide"/>
-                    <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]"/>
-                    <field name="orden_compra" optional="hide"/>
-                    <field name="tdp" />
-                    <field name="detailed_info" widget="html" optional="hide"/>
-                    <!-- <field name="guias" /> -->
-                    <field name="no_recoleccion" optional="hide"/>
-                    <field name="factura_prov" optional="hide"/>
-                    <field name="num_cliente" optional="hide"/>
-                    <field name="factura_cliente" optional="hide"/>
-                    <field name="status_id" />
+                
                     <field name="comentarios" optional="hide"/>
-                    <field name="dias" readonly="1"/>
+                    
                     <field name="company_id" invisible="1"/>
+                    
                 </tree>
+                
             </field>
-        </record>    
+        </record>
+        <record id="view_llantas_kanban" model="ir.ui.view">
+            <field name="name">Kanban Resumen</field>
+            <field name="model">llantas_config.ctt_llantas</field>
+            <field name="arch" type="xml">
+                <kanban sample="1">
+                    <!-- Campos de la vista kanban -->
+                    <field name="id"/>
+                    <field name="sale_id"/>
+                    <field name="marketplace"/>
+                    <field name="link_venta"/>
+                    <!-- Otros campos de la vista kanban -->
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill" style="width: 120px; align:center; ">
+                                <center>
+                                    <field name="image" widget="image"/><br/><br/>
+                                    <field name="company_image" widget="image"/>
+                                </center>
+                            </div>
+                            <div class="oe_kanban_global_click">
+                                <!-- Imagen izquierda -->
+                                <!-- <div class="oe_kanban_global_click o_kanban_record_has_image_fill" style="width: 110px;align:center">
+                                    <center><field name="image" widget="image"/></center>
+                                </div> -->
+                                <!-- Texto en el centro -->
+                                <div class="oe_kanban_details d-flex flex-column justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="o_kanban_record_title" style="font-size:12px">Venta: <field name="no_venta" /></strong>
+                                        <br/><br/>
+                                        <ul>
+                                            <li>Folio: <b><u><field name="sale_id" widget="many2one"/></u></b></li>
+                                            <li>Orden de compra: <b><field name="orden_compra" widget="many2one"/></b></li>
+                                            <li>Proveedor: <field name="partner_id" widget="many2one"/></li>
+                                            <li>Comprador: <b><field name="comprador_id"/></b></li>                                            
+                                            <li>Estatus: <b><field name="status_id"/></b></li>
+                                            <li/>
+                                            <li>Factura cliente: <b><field name="factura_cliente"/></b></li>
+
+
+                                            <li>Factura proveedor: <b ><field name="factura_prov_name" /></b></li>
+                                        </ul>
+                                        <!-- Otros campos de interés -->
+                                    </div>
+
+                                    <div class="o_kanban_record_bottom">
+                                        <button string="Link venta" type="object" class="oe_stat_button" name="action_open_sale_url" attrs="{'invisible': [('link_venta', '=', False),('link_venta', '!=', True)]}"/>
+                                        <div class="oe_kanban_bottom_left"/>
+                                        <div class="oe_kanban_bottom_right"/>
+                                    </div>
+                                    
+                                </div>
+                                <!-- Imagen derecha -->
+                                
+                            </div>
+
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <record id="action_open_invoice" model="ir.actions.act_window">
+            <field name="name">Open Invoice</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account.view_move_form"/>
+            <field name="view_mode">form,tree</field>
+        </record>
 
         
         <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
@@ -50,45 +137,106 @@
                                 <field name="sale_id" readonly="1"/>
                                 <field name="partner_name" readonly="1"/>
                                 <field name="company_id" invisible="1" readonly="1"/>
+                                <field name="tipo_factura" readonly="1"/>
                                 
                             </group>
                             <group string="Información proveedor" >
                                 <field name="marketplace" readonly="1"/>
                                 <!-- <field name="marketplace_id"/> -->
-                                <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/>
+                                <!-- <field name="proveedor_id" domain="[('category_id','like','PROVEEDOR')]" readonly="1"/> -->
                                 <field name="orden_compra" readonly="1"/>
-                                <field name="tdp" readonly="1"/>
+                                
+
+                                <field name="partner_id" readonly="1" />
+                                <field name="tdp" readonly="1" />
+                                <field name="factura_prov_name" readonly="1" />
+                                <field name="total_facturado" readonly="1" />
+                                <field name="payment_status" widget="badge" decoration-danger="payment_status == 'not_paid'" decoration-warning="payment_status in ('partial', 'in_payment')" decoration-success="payment_status in ('paid', 'reversed')" attrs="{'invisible': [('payment_status', 'in', ('invoicing_legacy'))]}" optional="show"/>
+                                <field name="pronto_pago_fecha_vencimiento" readonly="1"/>
+                                <field name="pronto_pago_dias_para_vencimiento"  readonly="1"/>
+                                <field name="pronto_pago_descuento" widget="monetary" readonly="1"/>
+                                <field name="pronto_pago_total_con_descuento" widget="monetary" readonly="1"/>
+                                
+                                <button string="Registrar factura" type="object" class="btn-success" name="open_orden_compra" attrs="{'invisible': ['|', ('factura_prov_name', '!=', False), ('orden_compra', '=', False)]}" />
+
+                                
+                                
                                 
                             </group> 
                             <group string="Informacion venta" >
                                 <field name="no_venta" readonly="1"/>
                                 <field name="link_venta" readonly="1" widget="url"/>
-                                <field name="num_cliente" readonly="1"/>
+                                
+                                <!-- <field name="num_cliente" readonly="1"/> -->
                                 <field name="comision" readonly="1"/>
                                 <field name="envio" readonly="1"/>
                                 
                                 <field name="no_recoleccion" readonly="1"/>
-                                <field name="factura_prov" readonly="1"/>
-                                
-                                <field name="factura_cliente" readonly="1"/>
-                                
-                                
-                            </group>
-                            <group string="Informacion pedido" >
-                                <!-- <field name="orden_entrega" readonly="1" widget="many2many_tags"/> -->
-                                <!-- <field name="carrier" />
-                                <field name="guias" readonly="1"/> -->
-                                <field name="detailed_info" readonly="1" widget="html"/>
                                 <field name="status_id" readonly="0"/>
-                                <field name="fecha" readonly="1"/>
-                                <field name="dias" readonly="1"/>
+                                
+                                
+                                
                                 
                             </group>
+                            
+                            
                         </group>
+                        <field name="factura_cliente_count" invisible="1"/>
+                        <button string="Facturar" type="object" name="open_sale_order" attrs="{'invisible': [('factura_cliente_count','!=',0)]}"/>
+                        <group string="Factura cliente" attrs="{'invisible': [('factura_cliente_count','=',0)]}" >
+                            <field name="factura_cliente" readonly="1" />
+                        </group>
+
+
                         <group>
                             <field name="comentarios"/>
                         </group>
+                    <notebook colspan="4">
+                        <page string="Información de traslados">
+                            
+                            <group string="Entradas">
+                                <field name="orden_recepcion" />
+                            </group>
+                            <group string="Salidas">
+                                <field name="orden_entrega"/>
+                            </group>
+                        </page>
+
+                        <page string="Adjuntos">
+                            <group string="Adjuntos" >
+                                    <field name="sale_id_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    <field name="orden_compra_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    <field name="factura_prov_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    <field name="factura_clie_attachment_ids" readonly="1">
+                                        <tree>
+                                            <field name="name"/>
+                                            <field name="datas" filename="name"/>
+                                        </tree>
+                                    </field>
+                                    
+                                </group>
+                        </page>
+                        
+                    </notebook>
                     </sheet>
+
+                        
+
                     <div class="oe_chatter">
                         <!-- <field name="message_follower_ids" widget="mail_followers"/>
                         <field name="activity_ids" widget="mail_activity"/> -->
@@ -101,7 +249,7 @@
         <record id="ctt_llantas_action_ctrl_llantas_tree" model="ir.actions.act_window">
             <field name="name">Resumen</field>
             <field name="res_model">llantas_config.ctt_llantas</field>
-            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="view_mode">tree,kanban,form,graph,pivot</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
@@ -119,13 +267,16 @@
             <field name="model">llantas_config.ctt_llantas</field>
             <field name="arch" type="xml">
                <search string="Buscar">
-                   <field name="sale_id" string="Venta" filter_domain="['|',('sale_id', 'ilike', self),('no_venta', 'ilike', self)]"/>
+                   <field name="sale_id" string="Venta" filter_domain="['|','|',('sale_id', 'ilike', self),('no_venta', 'ilike', self),('orden_entrega','ilike',self)]"/>
                     <field name="partner_name" string="Cliente" filter_domain="[('partner_name', 'ilike', self)]"/>
                     <!-- <field name="marketplace" string="Marketplace" filter_domain="[('marketplace', 'ilike', self)]"/> -->
                     <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>
                     <field name="status_id" string="Status" filter_domain="[('status_id', 'ilike', self)]"/>
                     <field name="proveedor_id" string="Proveedor" />
+                    <field name="marketplace_name"/>
                     <field name="tdp" filter_domain="[('tdp', 'ilike', self)]"/>
+                   <field name="orden_compra" filter_domain="[('orden_compra', 'ilike', self)]"/>
+                   <field name="factura_prov_name" filter_domain="[('factura_prov_name', 'ilike', self)]"/>
 
                    <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>
                    <filter name="fecha" string="Fecha" date="fecha"/>
@@ -133,8 +284,14 @@
                     <separator/>
                    <group expand="0" string="Group By">
                     <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
-                    <!-- <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/> -->
-                    <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
+                    <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
+                    <filter string="Comprador" name="comprador_name" domain="[]" context="{'group_by': 'comprador_name'}"/>
+                    <filter string="Tipo de facturación" name="tipo_factura" domain="[]" context="{'group_by': 'tipo_factura'}"/>
+                    <filter string="Estado de pago proveedor" name="payment_status" domain="[]" context="{'group_by': 'payment_status'}"/>
+                       
+                       
+
+
                     <filter string="Status" name="status_id" domain="[]" context="{'group_by': 'status_id'}"/>
                     <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
                     <filter string="Order Date" name="fecha" domain="[]" context="{'group_by': 'fecha'}"/>
@@ -153,11 +310,11 @@
         <menuitem id="menu_ctt_llantas_root" name="Tablero de control" web_icon="llantas_config,static/description/ctt.png" groups=""/>
         <menuitem id="menu_ctt_llantas_ctrl_list" name="Operaciones" parent="menu_ctt_llantas_root" sequence="1" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
-        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="4" action="ctt_llantas_action_ctrl_llantas_tree"/>
+        <menuitem id="menu_ctt_llantas_catalogos_list" name="Catálogos" parent="menu_ctt_llantas_root" sequence="5" action="ctt_llantas_action_ctrl_llantas_tree"/>
         
         <menuitem id="menu_ctt_llantas_marketplace_list" name="Proveedores" parent="menu_ctt_llantas_root" sequence="2" action="ctt_llantas_action_ctrl_llantas_tree"/>
         <menuitem id="menu_ctt_llantas_reportes_list" name="Reportes" parent="menu_ctt_llantas_root" sequence="3" action="ctt_llantas_action_ctrl_llantas_tree"/>
-        
+        <menuitem id="menu_ctt_llantas_killer_list" name="Killer" parent="menu_ctt_llantas_root" sequence="4" action="ctt_llantas_action_ctrl_llantas_tree"/>
         <!-- <menuitem id="menu_ctt_country_kiosk_no_user_mode" name="Modo Kiosko" parent="menu_ctt_country_root" sequence="2" action="ctt_country_action_kiosk_mode"/> -->
 
     </data>

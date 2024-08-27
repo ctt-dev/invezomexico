@@ -11,6 +11,11 @@
                  <xpath expr="//group[@name='carrier_data']//field[@name='carrier_id']" position="replace">
                     <field name="carrier_id" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}" options="{'no_create': True, 'no_open': True}" invisible="1"/>
                 </xpath>
+                <xpath expr="//group[@name='carrier_data']//field[@name='carrier']" position="after">
+                     <field name="link_guia"  string="Link guia" widget="url"/>
+                    <!-- <field name="rastreador" string="Guia" widget="url"/> -->
+                </xpath>
+                
             </field>
         </record>
         
@@ -21,8 +26,10 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet//group//group[2]//field[@name='origin']" position="after">
                     <field name="no_venta" readonly="1"/>
+                    <field name="marketplace" readonly="1"/>
                     <field name="fecha_entrega" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}"/>
                     <field name="no_recoleccion" attrs="{'invisible': [('picking_type_code', '!=', 'incoming')], 'readonly': [('state', 'in', ('done', 'cancel'))]}" />
+                    
 
                 </xpath>
                

@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="adrone_config.list">
+      <field name="name">adrone_config list</field>
+      <field name="model">adrone_config.adrone_config</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="adrone_config.action_window">
+      <field name="name">adrone_config window</field>
+      <field name="res_model">adrone_config.adrone_config</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="adrone_config.action_server">
+      <field name="name">adrone_config server</field>
+      <field name="model_id" ref="model_adrone_config_adrone_config"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="adrone_config" id="adrone_config.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="adrone_config.menu_1" parent="adrone_config.menu_root"/>
+    <menuitem name="Menu 2" id="adrone_config.menu_2" parent="adrone_config.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="adrone_config.menu_1_list" parent="adrone_config.menu_1"
+              action="adrone_config.action_window"/>
+    <menuitem name="Server to list" id="adrone_config" parent="adrone_config.menu_2"
+              action="adrone_config.action_server"/>
+-->
+  </data>
+</odoo>

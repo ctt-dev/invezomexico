@@ -1,0 +1,66 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="l10n_mx_cfdi_request_tree">
+            <field name="name">Solicitudes</field>
+            <field name="model">l10n_mx.cfdi_request</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id_solicitud" string="Nombre"/>
+                    <field name="start_date" string="Fecha inicial"/>
+                    <field name="end_date" string="Fecha final"/>
+                    <field name="state" string="Estado de la solicitud"/>
+                    <field name="done" string="Descargado"/>
+                    <field name="docs_create" invisible="1"/> 
+                    <field name="total_documents"/>
+                    <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" attrs="{'invisible':['|',('done','=',False),('docs_create','!=',False)]}"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="l10n_mx_cfdi_request_form">
+            <field name="name">Solicitud</field>
+            <field name="model">l10n_mx.cfdi_request</field>
+            <field name="arch" type="xml">
+                <form edit="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id" string="Compañia" domain="[('fiel_ids','!=',False)]" options="{'no_create': True}" required="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="rfc_consultant" invisible="1" force_save="1"/>
+                            <field name="rfc_receptor" invisible="1" force_save="1"/>
+                            <group>
+                                <field name="start_date" string="Fecha inicial" required="1"/>
+                                <field name="end_date" string="Fecha final" required="1"/>
+                            </group>
+                            <group>
+                                <field name="state" string="Estado de la solicitud" readonly="1" force_save="1"/>
+                                <field name="done" string="Descargado" readonly="1" force_save="1" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Documentos" attrs="{'invisible':[('done','=',False)]}">
+                                <field name="cfdi_documents"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="act_l10n_mx_cfdi_request" model="ir.actions.act_window">
+            <field name="name">Solicitudes</field>
+            <field name="res_model">l10n_mx.cfdi_request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay solicitudes aún...
+                </p>
+            </field>
+        </record>
+        
+        <menuitem name="Solicitudes de descarga" id="l10n_mx_cfdi_manager.cfdi_request" parent="account.menu_finance_payables" sequence="1002" action="l10n_mx_cfdi_manager.act_l10n_mx_cfdi_request" groups="l10n_mx_cfdi_manager_admin"/>
+    </data>
+</odoo>

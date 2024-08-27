@@ -6,16 +6,32 @@
             <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
                  <xpath expr="//page[@name='general_information']//group//group[@name='group_general']//field[@name='product_tooltip']" position="after">
+                     
+                     <field name="es_llanta"/>
+                     <field name="es_paquete"/>
+                     <field name="pkg_type" attrs="{'invisible': [('es_paquete', '=', False)], 'required': [('es_paquete', '=', False)]}"/>
                      <field name="sku_alternos" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
                      <field name="marca_llanta" />
                      <field name="modelo_llanta" />
                      <field name="medida_llanta" />
                      <field name="indice_carga" />
                      <field name="indice_velocidad" />
+                     <field name="ancho" class="oe_inline"/>
+                     <field name="alto" class="oe_inline"/>
+                     <field name="rin" />
                      <field name="config_marketplace_id" widget="many2one_tags" force_save="1" invisible="1"/>
                      <field name="config_marketplace_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                  </xpath>
-                <xpath expr="//page[@name='inventory']//group//group//div[2]" position="after">
+                <xpath expr="//page[@name='general_information']//group//group[@name='group_standard_price']//field[@name='company_id']" position="after">
+                    <field name="is_killer" />
+                    <field name="killer_initial_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1"/>
+                     <field name="killer_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1"/>
+                    <field name="killer_price" widget="monetary" attrs="{'invisible': [('is_killer', '=', False)]}" />
+                    <field name="killer_id" invisible="0" readonly="1"/>
+                    <!-- <field name="killer_ids" widget="many2many_tags"/> -->
+
+                </xpath>
+                <!-- <xpath expr="//page[@name='inventory']//group//group//div[2]" position="after">
                      <label for="largo" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}"/>
                         <div class="o_row" attrs="{'invisible':[('product_variant_count', '&gt;', 1), ('is_product_variant', '=', False)]}">
                             <field name="largo" class="oe_inline"/>
@@ -29,23 +45,15 @@
                             <field name="alto" class="oe_inline"/>
                     </div>
 
-                </xpath>
+                </xpath> -->
                 <xpath expr="//page[@name='inventory']" position="after">
                     <page string="Marketplaces" >
-                            <!-- <group> -->
                                 <field name="config_marketplace_ids" mode="kanban" >
                                 <kanban>
                                     
                                     <field name="id" />
                                     <field name="name"/>
                                     <field name="listado_marketplace" />
-                                    
-                                    <!-- <field name="codigo_llanta" />
-                                    <field name="marca_llanta" />
-                                    <field name="modelo_llanta" />                                    
-                                    <field name="medida_llanta" />
-                                    <field name="indice_carga" />
-                                    <field name="indice_velocidad" />  -->
                                     <templates>
                                         <t t-name="kanban-box">
                                             <div class="oe_kanban_global_click">
@@ -54,39 +62,11 @@
                                                 <field name="tipo_producto"/>
                                                 
                                             </div>
-                                            <!-- <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
-                                            <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
-                                                <div class="o_kanban_image">
-                                                    <img alt="Contact image" t-att-src="kanban_image('res.partner', 'avatar_128', record.id.raw_value)"/>
-                                                </div>-->
-                                            <!-- <div>
-                                                <field name="name"/>
-                                                
-                                                <field name="tipo_producto"/>
-                                            </div> -->
-                                            <!--
-                                                <div class="oe_kanban_details">
-                                                    <field name="name"/>
-                                                    <div t-if="record.function.raw_value"><field name="function"/></div>
-                                                    <div t-if="record.email.raw_value"><field name="email" widget="email"/></div>
-                                                    <div t-if="record.type.raw_value != 'contact'">
-                                                        <div>
-                                                            <field name="zip"/><t t-if="record.city"> </t>
-                                                            <field name="city"/>
-                                                        </div>
-                                                        <field t-if="record.state_id.raw_value" name="state_id"/><t t-if="record.country_id"> </t>
-                                                        <field name="country_id"/>
-                                                    </div>
-                                                    <div t-if="record.phone.raw_value">Phone: <t t-esc="record.phone.value"/></div>
-                                                    <div t-if="record.mobile.raw_value">Mobile: <t t-esc="record.mobile.value"/></div>
-                                                </div>
-                                            </div> -->
                                               </div>  
                                         </t>
                                     </templates>
                                 </kanban>
                                     <form string="Contact / Address">
-                                        <!-- llantas_config.product_marketplace -->
                                         <sheet>
                                              <field name="image_1920" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;avatar_128&quot;}"/>
                                             <group>
@@ -169,15 +149,73 @@
                                             </group>
                                             
                                         </group>
-                                        <!-- <group>
-                                            <field name="comment" placeholder="Internal notes..." nolabel="1" colspan="2"/>
-                                        </group> -->
                                     </sheet>
                                 </form>
                             </field>
                     </page>
                 </xpath>
+                <xpath expr="//page[@name='general_information']" position="after">
+                    <page string="Compatibilidad" >
+                        <div>
+                            <field name="compatibilidad_ids" string="Compatibilidad"  options="{'no_create_edit': True}">
+                                <tree>
+                                    <field name="brand_id" widget="many2one"/> 
+                                    <field name="model_id" widget="many2one"/>
+                                    <field name="year" widget="year"/>
+                                    <field name="version" />
+                                    <field name="medida" />
+                                </tree>
+                            </field>
+                        </div>
+                        
+                    </page>
+                </xpath>
                 
+            </field>
+        </record>
+
+ 
+        <record id="view_product_template_kanban_inherit" model="ir.ui.view">
+            <field name="name">Product_template_kanban_inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activity_state']" position="after">
+                    <div>
+                        
+                        <field name="alto"/>
+                         <field name="ancho" />
+                         <field name="rin" />
+                         <field name="modelo_llanta" />
+                         <field name="marca_llanta" />
+                         <field name="medida_llanta" />
+                        <field name="es_llanta"/>
+                    </div>
+                </xpath>
+                <xpath expr="//div[@name='product_lst_price']" position="after">
+                    <div attrs="{'invisible': [('es_llanta', '=', False)]}">
+                        <table>
+                            <tr>
+                                <td><b>Alto:</b></td>
+                                <td><field name="alto"/></td>
+                                <td><b>Ancho:</b></td>
+                                <td><field name="ancho"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Rin:</b></td>
+                                <td><field name="rin"/></td>
+                                <td><b>Marca:</b></td>
+                                <td><field name="marca_llanta"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Medida:</b></td>
+                                <td><field name="medida_llanta"/></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+                </xpath>
             </field>
         </record>
         
@@ -188,6 +226,13 @@
             <field name="arch" type="xml">
                  <xpath expr="//search//field[@name='name']" position="replace">
                     <field name="name" string="Product" filter_domain="['|', '|', '|', '|', ('default_code', 'ilike', self), ('product_variant_ids.default_code', 'ilike', self),('name', 'ilike', self), ('barcode', 'ilike', self), ('sku_alternos', 'ilike', self)]"/>
+                     <field name="sku_alternos" string="Sku alterno" filter_domain="[('sku_alternos', 'ilike', self)]"/>
+                     <field name="alto" class="oe_inline"/>
+                     <field name="ancho" class="oe_inline"/>
+                     <field name="rin" />
+                     <field name="modelo_llanta" />
+                     <field name="marca_llanta" />
+                     <field name="medida_llanta" />
                 </xpath>
             </field>
         </record>
@@ -205,6 +250,57 @@
                     <field name="ultima_actualizacion" optional="show"/>
                     
                 </xpath>
+            </field>
+        </record>
+
+        <record id="view_product_template_tree_inherit" model="ir.ui.view">
+            <field name="name">product.template.tree.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='qty_available']" position="replace">
+                    <field name="show_on_hand_qty_status_button" invisible="1"/>
+                    <field name="qty_available" />
+                    <field name="qty_suppliers_total" widget="product_suppliers" attrs="{'invisible':[('show_on_hand_qty_status_button', '=', False)]}" optional="show" decoration-danger="qty_available &lt; 0"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_product_product_existencias" model="ir.ui.view">
+            <field name="name">productos_supplierinfo</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_product_stock_tree"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//tree//field[@name='free_qty']" position="replace">
+                    <field name="free_qty" string="Libre de usar" sum="free_qty"/>
+                    
+                </xpath>
+                <xpath expr="//tree//field[@name='virtual_available']" position="replace">
+                    <field name="virtual_available" string="Previsión" optional="hide" sum="virtual_available"/>
+                </xpath>
+                <xpath expr="//tree//button[@name='action_view_orderpoints']" position="replace">
+                    <button name="action_view_orderpoints" string="Reabastecimiento" type="object" class="btn-link" icon="fa-refresh" context="{'search_default_product_id': id, 'is_stock_report': True}"/>
+                </xpath>
+                <xpath expr="//tree//field[@name='uom_id']" position="replace">
+                    <field name="uom_id" string="Udm" groups="uom.group_uom" options="{'no_create': True}"/>
+                </xpath>
+                <xpath expr="//tree//button[@name='553']" position="replace">
+                    <button name="553" string="Ubicaciones" type="action" class="btn-link" groups="stock.group_stock_multi_locations" icon="fa-cubes" context="{'search_default_product_id': id, 'default_product_id': id}" attrs="{'invisible': [('qty_available', '=', 0)]}"/>
+                </xpath>
+                <xpath expr="//tree//button[@name='action_product_forecast_report']" position="replace">
+                    <button name="action_product_forecast_report" string="Previsión" type="object" class="btn-link" icon="fa-area-chart" context="{'default_product_id': id}" attrs="{'invisible': [('incoming_qty', '=', 0), ('outgoing_qty', '=', 0)]}"/>
+                </xpath>
+                <xpath expr="//tree//button[@name='560']" position="replace">
+                    <button name="560" string="Historial" type="action" class="btn-link" icon="fa-history" context="{'search_default_product_id': id, 'default_product_id': id}"/>
+                </xpath> 
+                
+                
+
+                
+                
+
+                
+                
             </field>
         </record>
         

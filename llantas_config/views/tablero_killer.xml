@@ -1,0 +1,125 @@
+<odoo>
+    <data>
+
+        <record id="ctt_llantas_action_list_killer_tree" model="ir.actions.act_window">
+            <field name="name">Vista detallada</field>
+            <field name="res_model">llantas_config.killer_list</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'search_default_active_filter': 1}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+        </record>
+        
+        <record id="view_llantas_list_killer_tree" model="ir.ui.view">
+            <field name="name">Vista detallada</field>
+            <field name="model">llantas_config.killer_list</field>
+            <field name="arch" type="xml">
+                <tree edit="1" sample="1" >
+                    <field name="product_id" widget="many2one"/>
+                    <field name="sku" />
+                    <field name="base_price" widget="monetary"/>
+                    <field name="promotion_price" widget="monetary"/>
+                    <field name="killer_price" widget="monetary"/>
+                    <field name="initial_date" />
+                    <field name="final_date" />
+                    <field name="marketplace_id" widget="many2one"/>
+                    <field name="status" widget="badge"
+                decoration-danger="status == 'cancelled'"
+                decoration-muted="status == 'expired'"
+                decoration-success="status == 'active'"
+                decoration-warning="status == 'pause'"/>
+                </tree>
+            </field>
+        </record>    
+
+        <record id="llantas_config_killer_list_search" model="ir.ui.view">
+            <field name="name">Buscar</field>
+            <field name="model">llantas_config.killer_list</field>
+            <field name="arch" type="xml">
+               <search string="Buscar">
+                   <field name="product_id" string="Venta" filter_domain="['|', ('product_id', 'ilike', self),('sku', 'ilike', self)]"/>
+
+                   <filter name="active_filter" string="Estado Activo" domain="[('status', '=', 'active')]"/>
+                   <filter string="Estado Vencido" name="status" domain="[('status', '=', 'expired')]"/>
+                   <filter string="Estado Cancelado" name="status" domain="[('status', '=', 'cancelled')]"/>
+                   <filter string="Estado Pausado" name="status" domain="[('status', '=', 'pause')]"/>
+                   <filter name="final_date" string="Fecha vencimiento" date="final_date"/>
+                   
+                    <separator/>
+                   <group expand="0" string="Group By">
+                        <filter string="Estado" name="status" domain="[]" context="{'group_by': 'status'}"/>
+                       <filter string="Marketplace" name="marketplace_id" domain="[]" context="{'group_by': 'marketplace_id'}"/>
+                        <filter string="Fecha vencimiento" name="final_date" domain="[]" context="{'group_by': 'final_date'}"/>
+
+                    </group>
+                       
+                </search>
+            </field>
+        </record>
+
+        <record id="ctt_llantas_action_list_product_killer_tree" model="ir.actions.act_window">
+            <field name="name">Vista detallada</field>
+            <field name="res_model">llantas_config.killer_no_product</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'search_default_active_filter': 0}</field>
+            <field name="target">main</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No hay registros
+                </p><p>
+                    Aqui aparecerán los registros de existencia de proveedores.
+                </p>
+            </field>
+        </record>
+        
+        <record id="view_llantas_list_product_killer_tree" model="ir.ui.view">
+            <field name="name">Vista detallada</field>
+            <field name="model">llantas_config.killer_no_product</field>
+            <field name="arch" type="xml">
+                <tree edit="1" sample="1" >
+                    <field name="product"/>
+                    <field name="sku" />
+                    <field name="killer_price" widget="monetary"/>
+                    <field name="final_date" />
+                    <field name="marketplace_id"/>
+                </tree>
+            </field>
+        </record>    
+
+        <record id="llantas_config_killer_noproduct_list_search" model="ir.ui.view">
+            <field name="name">Buscar</field>
+            <field name="model">llantas_config.killer_no_product</field>
+            <field name="arch" type="xml">
+               <search string="Buscar">
+                   <field name="product" string="Venta" filter_domain="['|', ('product', 'ilike', self),('sku', 'ilike', self)]"/>
+                   <filter name="final_date" string="Fecha vencimiento" date="final_date"/>
+                   
+                    <separator/>
+                   <group expand="0" string="Group By">
+                       <filter string="Marketplace" name="marketplace_id" domain="[]" context="{'group_by': 'marketplace_id'}"/>
+                        <filter string="Fecha vencimiento" name="final_date" domain="[]" context="{'group_by': 'final_date'}"/>
+
+                    </group>
+                       
+                </search>
+            </field>
+        </record>
+        
+<!-- 
+       <menuitem id="llantas_tablero_detallado_menu_list" 
+                          name="Tablero detallado" 
+                          action="view_llantas_tablero_detallado_tree"
+                          parent="menu_ctt_llantas_tablero_detallado" 
+                          sequence="102" /> -->
+
+        <menuitem id="menu_ctt_llantas_listado_killers" name="Listado killers" parent="menu_ctt_llantas_killer_list" sequence="2" action="ctt_llantas_action_list_killer_tree"/>
+        <menuitem id="menu_ctt_llantas_listado_productos_killers" name="Listado productos no encontrados" parent="menu_ctt_llantas_killer_list" sequence="5" action="ctt_llantas_action_list_product_killer_tree"/>
+        
+    </data>
+</odoo>

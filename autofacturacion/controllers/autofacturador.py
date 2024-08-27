@@ -6,11 +6,18 @@ import logging
 import base64
 from odoo.osv import expression
 import io
+from io import BytesIO
 import threading
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError, ValidationError
 from collections import OrderedDict
 from odoo.http import request, content_disposition
+from odoo.tools import ustr, osutil
+from odoo.tools.misc import xlsxwriter
+import webbrowser
+import zipfile
+import json
+from urllib.request import urlretrieve
 _logger = logging.getLogger(__name__)
 
 
@@ -27,21 +34,16 @@ class autofacturador(CustomerPortal):
         return values
 
 
-    @http.route(['/autofacturador/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_search(self, order_id, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("RUTAAA")
-        _logger.warning(order_id)
         values = {}
         values.update({
             'order_id': order_id,
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
 
-    @http.route(['/autofacturador/error/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/error/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_search_error(self, order_id,error, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("RUTAAA")
-        _logger.warning(order_id)
-        _logger.warning(error)
         values = {}
         values.update({
             'order_id': order_id,
@@ -49,38 +51,52 @@ class autofacturador(CustomerPortal):
         })
         return request.render("autofacturacion.portal_auto_invoices", values)
 
-    @http.route(['/autofacturador/xml_report/<model("account.edi.document"):wizard>'], type='http', auth="public", website=True, sitemap=False)
-    def portal__xml_report(self, wizard=None, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("descar")
+    @http.route(['/autofacturador/xml_report/<string:invoice_id>'], type='http', auth="public", website=True, sitemap=False)
+    def portal__xml_report(self, invoice_id, wizard=None, access_token=None, report_type=None, download=False, **kw):
+        # model("account.edi.document"):wizard
         # create workbook object from xlsxwriter library
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        _logger.warning(wizard.edi_content)
-        workbook.close()
-        output.seek(0)
-        response.stream.write()
-        output.close()
-        response = request.make_response(
-                    base64.encodestring(wizard.edi_content),
-                    headers=[
-                        ('Content-Type', 'application/vnd.ms-excel'),
-                        ('Content-Disposition', content_disposition('MX-Invoice-4.0' + '.xml'))
-                    ]
-                )
-        return response
+        _logger.warning(invoice_id)
+        xml = request.env['account.edi.document'].browse(int(invoice_id))
+        _logger.warning(xml)
+        _logger.warning(self)
+        xml.move_id.action_invoice_print()
+        xml.move_id.send_mail_invoice_autofacturacion()
+        invoice_sudo = self._document_check_access('account.move', xml.move_id.id, access_token)
+        pdf = self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
+        file_name = 'Factura-'+xml.move_id.name
+        in_memory = BytesIO()
+        zip_archive = zipfile.ZipFile(in_memory, "w", compression=zipfile.ZIP_DEFLATED)
+        for x in invoice_sudo.attachment_ids:
+            _logger.warning(x.display_name)
+            if('.pdf' in x.display_name):
+                zip_archive.writestr(x.display_name, base64.b64decode(x.datas))
+            if('.xml' in x.display_name):
+                zip_archive.writestr(x.display_name, base64.b64decode(x.datas))
+                
+        zip_archive.close()
+        
+        #Anterior creacion
+        # response = request.make_response(
+        #             base64.b64decode(xml.attachment_id.datas),
+        #             headers=[
+        #                 ('Content-Type', 'application/x-zip-compressed'),
+        #                 ('Content-Disposition', content_disposition('MX-Invoice-4.0' + '.xml'))
+        #             ]
+        #         )
+        bytes_of_zipfile = in_memory.getvalue()
+        
+        return request.make_response(bytes_of_zipfile,[('Content-Type', 'application/zip'),('Content-Disposition', 'attachment; filename=%s.zip;' % file_name)])
 
-    @http.route(['/autofacturador/formulario/<int:order_id>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/autofacturador/formulario/<string:order_id>'], type='http', auth="public", website=True, sitemap=False)
     def portal_my_factura_form(self, order_id, cantidad, access_token=None, report_type=None, download=False, **kw):
         values = {}
-        _logger.warning("FORM")
         try:
-            _logger.warning(request.env.user)
-            _logger.warning(request.env.company)
             pagos = request.env['l10n_mx_edi.payment.method'].search([])
-            _logger.warning(pagos)
             factura = request.env['sale.order'].search([('folio_venta', '=', order_id), ('amount_total', '=', cantidad)])
-            _logger.warning(order_id)
-            _logger.warning(cantidad)
+            #factura = request.env['sale.order'].search([('id', '!=', '0')], limit=1)
+            _logger.warning(factura)
+            _logger.warning(request.env.company.display_name)
+            _logger.warning(request.env.user.display_name)
             if(factura):
                 if(not factura['state'] == 'sale'):
                     raise ValidationError(_("La orden no ha sido confirmada"))
@@ -100,27 +116,46 @@ class autofacturador(CustomerPortal):
             return request.redirect('/autofacturador/'+str(order_id))
 
     @http.route(['/autofacturador/facturar'], type='http', auth="public", website=True)
-    def portal_my_factura_creacion(self, order_id, razon_social, rfc, email, zip, forma_pago, cfdi, regimen, access_token=None, report_type=None, download=False, **kw):
+    def portal_my_factura_creacion(self, order_id, razon_social, rfc, email, zip, forma_pago, cfdi, regimen, chckUser, access_token=None, report_type=None, download=False, **kw):
         values = {}
         order_ids = []
         try:
-            factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
-            cliente = request.env['res.partner'].sudo().search([('vat', '=', rfc)])
+            cliente = None
+            if(rfc != 'XAXX010101000'):
+                cliente = request.env['res.partner'].sudo().search([('vat', '=', rfc)])
             if cliente :
                 cliente.sudo().update({
                     'name' : razon_social,
                     'vat' : rfc,
                     'zip' : zip,
+                    'email' : email,
                     'l10n_mx_edi_fiscal_regime' : regimen
                 })
             else :
-                _logger.warning("NUEVO CLIENTE")
                 cliente = request.env['res.partner'].sudo().create({
                     'name' : razon_social,
                     'vat' : rfc,
                     'zip' : zip,
+                    'country_id' : 156,
+                    'email' : email,
                     'l10n_mx_edi_fiscal_regime' : regimen
                 })
+            if(chckUser == 'True'):
+                user = request.env['res.users'].search([('partner_id', '=', 33679)])
+                acceso = False
+                for rec in user:
+                    if('Portal' in rec.groups_id[2].name):
+                        acceso = True
+                if(acceso):
+                    _logger.warning('update')
+                else:
+                    portal_wizard = request.env['portal.wizard'].with_context(active_ids=[cliente.id]).create({})
+                    portal_user = portal_wizard.user_ids
+                    portal_user.email = email
+                    portal_user.action_grant_access()
+            factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
+            if(factura.invoice_ids.edi_state == 'sent'):
+                return request.redirect('/autofacturador/timbrado/'+str(order_id)) 
             factura.update({
                     'partner_id' : cliente
                 })
@@ -129,39 +164,37 @@ class autofacturador(CustomerPortal):
             })
             forma_pago = request.env['l10n_mx_edi.payment.method'].sudo().search([('id', '=', forma_pago)])
             invoice = facturador.create_invoices_portal(True, forma_pago, cfdi)
-            _logger.warning("factura check")
-            _logger.warning(invoice.state)
+            invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
+            for x in invoice_sudo.attachment_ids:
+                _logger.warning("attatchment")
+                _logger.warning(x.display_name)
             if(invoice.state == 'posted'):
                 return request.redirect('/autofacturador/timbrado/'+str(order_id))
             invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
             return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
 
         except (AccessError) as a:
-            _logger.warning(a)
-            raise AccessError(_(a))
+            raise a
         except (MissingError) as e:
-            raise AccessError(_(e))
+            raise e
 
-    @http.route(['/autofacturador/timbrar/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/timbrar/<string:order_id>'], type='http', auth="public", website=True)
     def portal_my_factura_timbrar(self, order_id, access_token=None, report_type=None, download=False, **kw):
-        _logger.warning("TIMRBADO2")
         factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
         facturador = request.env['sale.advance.payment.inv'].sudo().create({
                 'sale_order_ids' : factura,
             })
         
         mensaje = facturador.timbrado_factura()
-        _logger.warning(mensaje)
-        if(mensaje.find('Code : 301') == 1):
+        if('Código' in mensaje):
             values = {
-                    'error' : error,
-                    
+                    'error' : mensaje,
                 }
             return request.render("autofacturacion.portal_auto_invoices_error", values)
-        invoice_sudo = self._document_check_access('account.move', factura.invoice_ids.id, access_token)
-        return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
+        else:
+            return request.redirect(mensaje)
         
-    @http.route(['/autofacturador/timbrado/<int:order_id>'], type='http', auth="public", website=True)
+    @http.route(['/autofacturador/timbrado/<string:order_id>'], type='http', auth="public", website=True)
     def portal_my_factura_timbrado(self, order_id, access_token=None, report_type=None, download=False, **kw):
         values = {
                     'order_id' : order_id,

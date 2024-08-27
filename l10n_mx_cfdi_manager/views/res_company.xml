@@ -1,0 +1,45 @@
+<odoo>
+    <data>
+        <record id="cfdi_manager_fiel_partner_form" model="ir.ui.view">
+            <field name="name">cfdi.manager.fiel.res.partner</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">    
+                <xpath expr="//notebook" position="inside">
+                    <page string="Sincronización SAT">
+                        <group>
+                            <group>
+                                <field name="sat_account_incoming_journal_id" options="{'no_create': True}"/>
+                                <field name="sat_account_egress_journal_id" options="{'no_create': True}"/>
+                                <field name="dif_allowed"/>
+                                <field name="generation_type"/>
+                                <field name="days_for_status_check"/>
+                            </group>
+                            <group>
+                                <field name="product_unspsc_code_for_gasoline" options="{'no_create': True}" widget="many2many_tags"/>
+                                <field name="sender_user_id" options="{'no_create': True}"/>
+                                <field name="receiver_user_ids" options="{'no_create': True}" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        <group>
+                            <div class="app_settings_block" data-string="l10n_mx_cfdi_manager" string="l10n_mx_cfdi_manager" data-key="l10n_mx_cfdi_manager">
+                                <div class="row o_settings_container">
+                                    <field name="fiel_ids" context="{'default_company_id': id}">
+                                        <tree>
+                                            <field name="serial_number" string="Contraseña" password="True"/>
+                                            <field name="fiel"/>
+                                            <field name="clave"/>
+                                            <field name="company_id"/>
+                                            <field name="emition_date"/>
+                                            <field name="expiration_date"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                            </div>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

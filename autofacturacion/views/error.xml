@@ -5,12 +5,17 @@
                   <t t-call="portal.portal_breadcrumbs"/>
               </t>
           <t t-set="breadcrumbs_searchbar" t-value="True"/>
+          <br/>
           <h3 t-esc="error"/>
            <input  name="order_id" id="order_id" t-att-value = "order_id" placeholder="" style="display:none;" class="form-control"/>
           <a onclick="this.href='/autofacturador/timbrar/'+document.getElementById('order_id').value"
                             >
-              <button type="button" class="btn btn-primary">Descargar</button>
-                            </a>
+              <t t-if="error">
+              </t>
+              <t t-else="">
+                  <button  type="button" class="btn btn-primary">Descargar</button>
+              </t>
+              </a>
       </t>
   </template>
   </odoo>

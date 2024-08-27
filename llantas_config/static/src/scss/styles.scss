@@ -1,0 +1,43 @@
+
+/* .highlight-empty .o_field_widget .o_form_field_empty {
+    background-color: #ffcccc; 
+} */
+.left-align {
+    text-align: left;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.tooltip-icon {
+    opacity: 1;
+    z-index: 1070;
+}
+
+.suppliers-title {
+    padding: 3.6px;
+    margin: 0px;
+}
+
+.tooltip {
+    background-color: white;
+    border-radius: 6px;
+    display: none;
+    z-index: 1090;
+    padding: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tooltip-icon:hover + .tooltip {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+}
+
+.o_list_renderer {
+    overflow: visible;
+}

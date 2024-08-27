@@ -1,0 +1,74 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="ctt_partial_reconcile_wizard_form">
+            <field name="name">Wizard para Conciliaciones Parciales</field>
+            <field name="model">ctt_partial_reconcile.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Conciliaciones parciales">
+                    <group>
+                        <field name="partner_id" options="{'no_open':True,'no_create':True,'no_create_edit':True}"/>
+                        <field name="type" required="1"/>
+                        <field name="account_id" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('user_type_id.type','=',type)]"/>
+                    </group>
+                    <field name="line_ids_opc_1" attrs="{'readonly':[('account_id','=',False)],'invisible':[('partner_id','=',False)]}">
+                        <tree editable="bottom">
+                            <field name="wizard_id_1" invisible="1"/>
+                            <field name="wizard_id_1_account_id" invisible="1"/>
+                            <field name="wizard_id_1_partner_id" invisible="1"/>
+                            <field name="line_id_id" invisible="1"/>
+                            <field name="line_id" string="Apunte Contable (Contacto seleccionado)" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('parent_state','=','posted'),('account_id','=',wizard_id_1_account_id),('amount_residual','!=',0),('partner_id','in',[wizard_id_1_partner_id,False])]"/>
+                            <field name="line_id_debit" readonly="1" sum="line_id_debit" optional="hide"/>
+                            <field name="line_id_credit" readonly="1" sum="line_id_credit" optional="hide"/>
+                            <field name="line_id_balance" readonly="1" sum="line_id_balance" optional="hide"/>
+                            <field name="line_id_amount_residual" readonly="1" sum="line_id_amount_residual" optional="show"/>
+                            <field name="amount" required="1" sum="amount"/>
+                        </tree> 
+                    </field>
+                    
+                    <field name="line_ids_opc_2" attrs="{'readonly':[('account_id','=',False)],'invisible':[('partner_id','!=',False)]}">
+                        <tree editable="bottom">
+                            <field name="wizard_id_2" invisible="1"/>
+                            <field name="wizard_id_2_account_id" invisible="1"/>
+                            <field name="wizard_id_2_partner_id" invisible="1"/>
+                            <field name="line_id_id" invisible="1"/>
+                            <field name="line_id" string="Apunte Contable (Sin contacto)" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('parent_state','=','posted'),('account_id','=',wizard_id_2_account_id),('amount_residual','!=',0)]"/>
+                            <field name="line_id_debit" readonly="1" sum="line_id_debit" optional="hide"/>
+                            <field name="line_id_credit" readonly="1" sum="line_id_credit" optional="hide"/>
+                            <field name="line_id_balance" readonly="1" sum="line_id_balance" optional="hide"/>
+                            <field name="line_id_amount_residual" readonly="1" sum="line_id_amount_residual" optional="show"/>
+                            <field name="amount" required="1" sum="amount"/>
+                        </tree> 
+                    </field>
+                    <footer>
+                        <button name="reconcile"
+                            string="RECONCILIAR" type="object"
+                            class="btn-primary oe_highlight"/>
+                        <button string="CERRAR"
+                            class="btn-default"
+                            special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record id="ctt_partial_reconcile_wizard_action" model="ir.actions.act_window">
+            <field name="name">Asistente para Conciliaciones Parciales</field>
+            <field name="res_model">ctt_partial_reconcile.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+<!--         <act_window id="ctt_partial_reconcile_wizard_action"
+                    name="Asistente para Conciliaciones Parciales"
+                    res_model="ctt_partial_reconcile.wizard"
+                    view_mode="form"
+                    target="new"
+                    /> -->
+        
+        <menuitem id="ctt_partial_reconcile_wizard_menu"  
+            name="Conciliaciones Parciales"  
+            action="ctt_partial_reconcile_wizard_action" 
+            parent="account.menu_finance_entries_actions"
+            sequence="-1" />
+    </data>
+</odoo>

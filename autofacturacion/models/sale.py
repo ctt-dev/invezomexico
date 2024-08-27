@@ -9,6 +9,8 @@ _logger = logging.getLogger(__name__)
 import datetime
 import time
 import threading
+from datetime import timedelta
+import math
 
 class sale_inherit(models.Model):
     _inherit = 'sale.order'
@@ -19,10 +21,6 @@ class sale_inherit(models.Model):
         if self.marketplace.id:
             if self.marketplace.diarios_id.id:
                 invoice_vals.update({'journal_id' : self.marketplace.diarios_id.id})
-        _logger.warning("CFDI")
-        _logger.warning(cfdi)
-        _logger.warning("formapago")
-        _logger.warning(forma_pago)
         invoice_vals.update({
             'l10n_mx_edi_payment_method_id' : forma_pago.id,
             'l10n_mx_edi_usage' : cfdi
@@ -167,8 +165,6 @@ class sale_inherit(models.Model):
                 subtype_id=self.env['ir.model.data']._xmlid_to_res_id('mail.mt_note')) 
         moves.action_post()
         e = threading.Event()
-        _logger.warning(moves.state)
-        _logger.warning("SALE")
         return moves
 
 class sale_advance_payment_inherit(models.TransientModel):
@@ -180,60 +176,76 @@ class sale_advance_payment_inherit(models.TransientModel):
         moves = self.sale_order_ids.invoice_ids
         if(not moves.edi_state == 'sent'):
             try:
-                moves.action_process_edi_web_services()
-                e.wait(5)
+                # moves.action_process_edi_web_services()
+                move_list = []
+                for move in moves:
+                    move_list.append(move.id)
+                self.create_ir_cron_for_timbrar_factura(move_list)
+                e.wait(10)
+                moves.action_invoice_print()
                 if(moves.edi_error_count == 1):
-                    _logger.warning("erroe")
-                    moves.action_retry_edi_documents_error()
                     return moves.edi_error_message
                 else:
                     for x in moves.edi_document_ids:
-                        _logger.warning(x)
-                        _logger.warning(x.edi_format_name)
                         if(x.edi_format_name == 'CFDI (4.0)'):
-                            _logger.warning("descargar")
-                            return {
-                                'type': 'ir.actions.act_url',
-                                'url': '/autofacturador/xml_report/%s' % (x.id),
-                                'target': 'new',
-                            }
-                _logger.warning('timbrar')
+                            _logger.warning(x)
+                            return '/autofacturador/xml_report/%s' % (x.id)
             except ValidationError as exc:
                 raise ValidationError(_(exc))
             except UserError as excUser:
                 raise UserError(_(excUser))
         else:
+            moves.action_invoice_print()
             for x in moves.edi_document_ids:
-                _logger.warning(x)
-                _logger.warning(x.edi_format_name)
                 if(x.edi_format_name == 'CFDI (4.0)'):
-                    _logger.warning("descargar")
-                    return {
-                        'type': 'ir.actions.act_url',
-                        'url': '/autofacturador/xml_report/%s' % (x.id),
-                        'target': self,
-                        'context': self._context, 
-                    }
+                    _logger.warning(x)
+                    return '/autofacturador/xml_report/%s' % (x.id)
                     
     def create_invoices_portal(self, open_invoices, forma_pago, cfdi):
-        _logger.warning("PORTAL")
-        _logger.warning(open_invoices)
-        _logger.warning(self.sale_order_ids.partner_id)
         if(not self.sale_order_ids.invoice_ids):
             moves = self._create_invoices_portal(self.sale_order_ids, cfdi, forma_pago)
         else:
-            _logger.warning("YA EXISTE FACTURA")
             moves = self.sale_order_ids.invoice_ids
+            moves.update({
+                'partner_id' : self.sale_order_ids.partner_id,
+                'l10n_mx_edi_payment_method_id' : forma_pago.id,
+                'l10n_mx_edi_usage' : cfdi
+            })
             if(not (moves.state == 'posted')):
                 moves.action_post()
+                moves.action_invoice_print()
+        
+        moves.action_invoice_print()
         return moves
         if open_invoices:
             return moves
 
-        return {'type': 'ir.actions.act_window_close'}
+        return '/autofacturador/xml_report/%s' % (x.id)
 
     #=== BUSINESS METHODS ===#
 
     def _create_invoices_portal(self, sale_orders, cfdi, forma_pago):
         self.ensure_one()
         return sale_orders._create_invoices_portal(cfdi, forma_pago)
+
+
+    def create_ir_cron_for_timbrar_factura(self, move_list):
+        for invoice_id in move_list:
+            cron = self.env['ir.cron'].create({
+                'name': "Timbrar factura con ID " + str(invoice_id),
+                'model_id': self.env['ir.model.data']._xmlid_to_res_id('account.model_account_move'),
+                'user_id': self.env['ir.model.data']._xmlid_to_res_id('base.user_root'),
+                'interval_number': 1,
+                'interval_type': 'hours',
+                'active': False,
+                'nextcall': datetime.datetime.now() + timedelta(minutes=math.ceil(invoice_id/5)),#Agregar siguiente minuto
+                'numbercall': 1,
+                'priority': 1,
+                'doall': True,
+                'website_published': False,
+                'code': """
+model.action_process_edi_web_services_for_autofacturacion(%i)
+            """ % (invoice_id)
+            })
+            cron.method_direct_trigger()
+            cron.unlink()

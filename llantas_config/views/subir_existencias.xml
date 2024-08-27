@@ -5,11 +5,11 @@
             <field name="model">llantas_config.ctt_prov_cargar</field>
             <field name="arch" type="xml">
                 <tree edit="0" sample="1">
-                    <field name="cargar_nombre_proveedor" />
-                    <field name="cargar_codigo_producto"/>
-                    <field name="cargar_producto" />
-                    <field name="cargar_almacen" />       
-                    <field name="existencia" />
+                    <field name="nombre_proveedor" />
+                    <field name="referencia_producto"/>
+                    <field name="nombre_producto" />
+                    <field name="almacen_existencia" />       
+                    <field name="existencias" />
                     <field name="costo_sin_iva" />
                     <field name="moneda" optional="hide"/>
                     <field name="tipo_cambio" optional="hide"/>
@@ -36,47 +36,38 @@
             </field>
         </record>
 
-        <!-- <record id="ctt_llantas_action_ctrl_proveedores_form_cargar" model="ir.ui.view">
-            <field name="name">cargar_existencias</field>
-            <field name="model">llantas_config.ctt_prov</field>
+        <record id="ctt_llantas_action_proveedor_list_search" model="ir.ui.view">
+            <field name="name">Buscar</field>
+            <field name="model">llantas_config.ctt_prov_cargar</field>
             <field name="arch" type="xml">
-            <form string="Resumen">
-                <sheet string="Registration">
-                    <div class="oe_button_box" />
-                    <group>
-                        <group string="Producto" >
-                            <field name="cargar_nombre_proveedor" />
-                            <field name="cargarcodigo_producto" optional="hide"/>
-                            <field name="proveedor_id" />
-                            <field name="producto" />
+               <search string="Buscar">
+                   <field name="nombre_proveedor" string="Venta" filter_domain="['|',('nombre_proveedor', 'ilike', self),('referencia_producto', 'ilike', self)]"/>
 
-                            
-                        </group>
-                        <group string="Información proveedor" >
-                            <field name="cargar_almacen" />       
-                            <field name="existencia" />
-                            <field name="costo_sin_iva" />
-                            <field name="moneda" />
-                            <field name="tipo_cambio" />
-                        </group>
-                        <group string="Informacion registro" >
+                    <field string="SKU" name="referencia_producto" filter_domain="[('referencia_producto', 'ilike', self)]"/>
+                   <field name="nombre_producto" filter_domain="[('nombre_producto', 'ilike', self)]"/>
+                   
 
-                            <field name="fecha_proveedor" optional="hide"/>
-                            
-                        </group>
+                   <filter string="TireDirect" name="nombre_proveedor" domain="[('nombre_proveedor', '=', 'TireDirect')]"/>
+                  
+               
+                    <separator/>
+                   <group expand="0" string="Group By">
+                    <filter string="Proveedor" name="cargar_nombre_proveedor" domain="[]" context="{'group_by': 'nombre_proveedor'}"/>
+                       <filter string="Almacén" name="almacen_existencia" domain="[]" context="{'group_by': 'almacen_existencia'}"/>
+                       <filter string="fecha de proveedor" name="fecha_proveedor" domain="[]" context="{'group_by': 'fecha_proveedor'}"/>
+                       
+                    
+                       
+                       
                     </group>
-                </sheet>
-                 <div class="oe_chatter">
-
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-            </form>
+                       
+                </search>
             </field>
-        </record> -->
+        </record>
 
 
         <record id="ctt_llantas_action_proveedor_list_form_cargar" model="ir.actions.act_window">
-            <field name="name">Cargar existencias</field>
+            <field name="name">Consultar existencias</field>
             <field name="res_model">llantas_config.ctt_prov_cargar</field>
             <field name="view_mode">tree</field>
             <field name="context">{'create': True}</field>
@@ -91,7 +82,7 @@
         </record>
 
         <record id="ctt_llantas_action_tiredirect_list_form_cargar" model="ir.actions.act_window">
-            <field name="name">Cargar existencias</field>
+            <field name="name">Consultar existencias</field>
             <field name="res_model">llantas_config.ctt_tiredirect_cargar</field>
             <field name="view_mode">tree</field>
             <field name="context">{'create': True}</field>
@@ -105,56 +96,9 @@
             </field>
         </record>
 
-    <!-- <record id="ctt_llantas_action_ctrl_llantas_form" model="ir.ui.view">
-            <field name="name">form</field>
-            <field name="model">llantas_config.ctt_llantas</field>
-            <field name="arch" type="xml">
-            <form string="Resumen">
-
-                <sheet string="Registration">
-                    <div class="oe_button_box" />
-                    <group>
-                        <group string="Información basica" >
-                           <field name="comprador" />
-                            <field name="venta" />
-                            <field name="cliente" />
-                            
-                        </group>
-                        <group string="Información proveedor" >
-                            <field name="marketplace" />
-                           <field name="proveedor" />
-                            <field name="registro" />
-                            <field name="orden_compra" />
-                            
-                        </group>
-                        <group string="Informacion venta" >
-                            <field name="guia" />
-                            <field name="no_recoleccion" />
-                            <field name="status_enviado" />
-                            <field name="factura_prov" />
-                            <field name="num_cliente" />
-                            <field name="factura_cliente" />
-                            <field name="comentarios" optional="hide"/>
-                            
-                        </group>
-                        <group string="Informacion pedido" >
-                            <field name="status" />
-                            <field name="fecha" />
-                            <field name="dias" />
-                            
-                        </group>
-                    </group>
-                </sheet>
-                <div class="oe_chatter">
-
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
-            </form>
-                </field>
-        </record> -->
 
 
-        <menuitem id="menu_ctt_llantas_proveedores_list_cargar" name="Cargar existencias" parent="menu_ctt_llantas_ctrl_list" sequence="2" action="ctt_llantas_action_proveedor_list_form_cargar"/>
-        <menuitem id="menu_ctt_llantas_tiredirect_list_cargar" name="Cargar existencias tiredirect" parent="menu_ctt_llantas_ctrl_list" sequence="3" action="ctt_llantas_action_tiredirect_list_form_cargar"/>
+        <!-- <menuitem id="menu_ctt_llantas_proveedores_list_cargar" name="Consultar existencias" parent="menu_ctt_llantas_ctrl_list" sequence="3" action="ctt_llantas_action_proveedor_list_form_cargar"/> -->
+        <menuitem id="menu_ctt_llantas_tiredirect_list_cargar" name="Cargar existencias tiredirect" parent="menu_ctt_llantas_marketplace_list" sequence="4" action="ctt_llantas_action_tiredirect_list_form_cargar"/>
     </data>
 </odoo>

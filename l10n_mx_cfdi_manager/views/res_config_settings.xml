@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+       <record id="action_action_cfdi_manager_conf_config_settings" model="ir.actions.act_window">
+            <field name="name">action cfdi manager</field>
+            <field name="type">ir.acitons.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module':'l10n_mx_cfdi_manager'}</field>
+        </record>
+        <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+              <field name="name">res.config.settings.form.inherit</field>
+              <field name="model">res.config.settings</field>
+              <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+              <field name="arch" type="xml">
+                <!-- Add your code here -->
+                    <xpath expr="//div[hasclass('settings')]" position="inside">
+                        <div class="app_settings_block" data-string="l10n_mx_cfdi_manager" string="l10n_mx_cfdi_manager" data-key="l10n_mx_cfdi_manager">
+                            <h2>CFDI Manager</h2>
+                            <div class="row mt16 o_settings_container">
+                                <div class="o_setting_left_pane">
+                                    <field name="fiel_ids">
+                                        <tree>
+                                            <field name="serial_number"/>
+                                            <field name="fiel"/>
+                                            <field name="clave"/>
+                                            <field name="company_id"/>
+                                            <field name="emition_date"/>
+                                            <field name="expiration_date"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </xpath>
+              </field>
+        </record>
+        
+        <record id="act_l10n_mx_cfdi_adjust" model="ir.actions.act_window">
+            <field name="name">Ajustes</field>
+            <field name="view_mode">form</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="target">inline</field>
+            <field name="context">{'module':'l10n_mx_cfdi_manager'}</field>
+            <field name="view_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay configuraciones aún...
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

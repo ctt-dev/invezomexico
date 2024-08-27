@@ -1,0 +1,65 @@
+<odoo>
+    <data>
+        <record id="base_view_partner_form" model="ir.ui.view">
+            <field name="name">base_view_partner_form</field>
+            <field name="model">res.partner</field>
+            <field name="priority">1001</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">   
+                <xpath expr="//group[@name='purchase']" position="inside">
+                    <field name="efos_status" readonly="1"/>
+                </xpath> 
+                <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                    <attribute name="autofocus">False</attribute>
+                </xpath> 
+                <xpath expr="//page[@name='contact_addresses']" position="before">
+                    <page string="EFOS" attrs="{'invisible':[('efos_status','=',False)]}" autofocus="autofocus">
+                        <field name="efos_ids" readonly="1"/>
+                        <span>Advertencia.</span>
+                        <br/>
+                        <span>El contacto seleccionado está registrado como Empresa que Factura Operaciones Simuladas (EFOS) ante el SAT.</span>
+                        <br/>
+                        <span>Se recomienda bloquear, archivar o eliminar para evitar la generación de operaciones con dicho contacto, continue bajo su propio riesgo.</span>
+                    </page>
+                </xpath> 
+                <xpath expr="//div[@name='button_box']" position="after">
+                    <widget name="web_ribbon" title="Presunto" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Presunto')]}"/>
+                    <widget name="web_ribbon" title="Desvirtuado" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Desvirtuado')]}"/>
+                    <widget name="web_ribbon" title="Definitivo" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Definitivo')]}"/>
+                    <widget name="web_ribbon" title="Sentencia Favorable" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Sentencia Favorable')]}"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="base_view_partner_tree" model="ir.ui.view">
+            <field name="name">base_view_partner_tree</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">    
+                <xpath expr="//field[@name='active']" position="after">
+                    <field name="efos_status" readonly="1" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <record id="base_res_partner_kanban_view" model="ir.ui.view">
+            <field name="name">base_res_partner_kanban_view</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="arch" type="xml">    
+                <xpath expr="//div[1]" position="inside">
+                    <div class="row" attrs="{'invisible': [('efos_status', '=', False)]}">
+                        <div class="col-12">
+                            <span class="float-right">
+                                <!--<field name="efos_status" widget="label_selection" options="{'classes': {'Presunto': 'danger', 'Desvirtuado': 'danger', 'Definitivo': 'danger', 'Sentencia Favorable': 'danger'}}"/>-->
+                                <div style="background-color: #DD3544; color: white; font-size: 10px; padding: 2px; border-radius: 3px; border: solid #017F85 2px;">
+                                    <b><field name="efos_status"/></b>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

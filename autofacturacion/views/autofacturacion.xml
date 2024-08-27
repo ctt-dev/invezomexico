@@ -14,7 +14,8 @@
             <h4 class="page-header" style="text-align: center; color : red;">Monto o número de pedido incorrecto, favor de intentar de nuevo</h4>
             </t>
             <div class="form-group  col-xs-12">
-              <label class="control-label" for="name">El folio de su compra&#160;se localiza en su cuenta de Mercado Libre sección MIS COMPRAS - VER COMPRA (busque su folio de compra como se muestra en la imagen).<br/><br/><em><u>EJEMPLO DE FOLIO DE COMPRA<br/></u></em><br/><img class="img-fluid o_we_custom_image" src="/web/image/214307-9c612ed5/Captura%20de%20pantalla%202023-09-14%20a%20la%28s%29%209.07.31.png" alt="" loading="lazy" style="" data-original-title="" title="" aria-describedby="tooltip619598" data-original-id="214306" data-original-src="/web/image/214306-82a9a965/Captura%20de%20pantalla%202023-09-14%20a%20la%28s%29%209.07.31.png" data-mimetype="image/png" data-resize-width="690"/><br/><br/><span style="color: rgb(37, 36, 36);font-size: 16px;font-style: normal;font-weight: 450;background-color: rgb(255, 255, 255)">Folio de Compra&#160;(Por favor omitir el uso del #)</span></label>
+              <label class="control-label" for="name">El número de referencia de su compra se puede encontrar en su cuenta de compras en línea, en la sección correspondiente a sus pedidos. Busque su número de referencia de compra siguiendo las instrucciones proporcionadas. <br/><br/><em><u>EJEMPLO DE NÚMERO DE REFERENCIA DE COMPRA<br/></u></em><br/><img class="img-fluid o_we_custom_image" src="/web/image/214307-9c612ed5/Captura%20de%20pantalla%202023-09-14%20a%20la%28s%29%209.07.31.png" alt="" loading="lazy" style="" data-original-title="" title="" aria-describedby="tooltip619598" data-original-id="214306" data-original-src="/web/image/214306-82a9a965/Captura%20de%20pantalla%202023-09-14%20a%20la%28s%29%209.07.31.png" data-mimetype="image/png" data-resize-width="690"/><br/><br/><span style="color: rgb(37, 36, 36);font-size: 16px;font-style: normal;font-weight: 450;background-color: rgb(255, 255, 255)">Número de Referencia de Compra (Por favor omita el uso del símbolo #)</span></label>
+
               <input type="text" required="" name="order" id="order" t-att-value = "order_id" placeholder="ej. 1236893898" class="form-control"/>
             </div>
             <div class="form-group col-xs-12">
@@ -28,19 +29,18 @@
                             </a>
             </div>
         </form>
-        <div class="col-md-12 oe_structure">
-          <section class="s_text_block o_colored_level pt0 pb0" data-snippet="s_text_block" data-name="Text" style="background-image: none;">
+        <div class="form-group  col-xs-12">
             <div class="s_allow_columns o_container_small">
-              <p style="text-align: justify;">
+              <label class="control-label" for="name" style="text-align: justify;">
                 <em>Cuenta con 7 días naturales desde el momento de recibir su producto&#160;para realizar su factura. <strong><u>Es importante copiar y pegar sus datos tal cual vengan en su cédula fiscal.</u></strong> Si por  alguna razón&#160;<strong><u>le sale un error al momento de timbrar&#160;su factura realice una captura de pantalla&#160;del problema y envíelo a facturacion@score.com.mx</u></strong></em>
-              </p>
+              </label>
             </div>
-          </section>
         </div>
       </div>
     </div>
       </t>
 </template>
 </odoo>
+
 
           

@@ -1,0 +1,96 @@
+<odoo>
+    <data>
+
+        <!-- Tree view definition -->
+        <record id="view_listado_precios_tree" model="ir.ui.view">
+            <field name="name">lista_precios_tree</field>
+            <field name="model">stock.quant</field>
+            <field name="active">1</field>
+            <field name="arch" type="xml">
+                <tree>
+
+                        <field name="sku" />
+                        <field name="product_id" />
+                        <field name="aplicacion"/>
+                        <field name="medida"/>
+                        <field name="marca"/>
+                        <field name="almacen_name" />
+                        <field name="available_quantity"/>
+                        <field name="precio_publico" />
+                        <field name="precio_may5pzs" />
+                        <field name="precio_may100pzs" />
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="list_precios">
+            <field name="name">Lista de precios</field>
+            <field name="res_model">stock.quant</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_listado_precios_tree"/>
+            <field name="target">main</field>
+            <field name="context">{'create':False,'edit':False,'delete':True,'search_default_internal_loc': 1}</field>
+        </record>
+
+        <menuitem id="listado_de_precios_menu" 
+          name="Lista de precios" 
+          action="list_precios"
+          parent="stock.menu_warehouse_report" 
+          sequence="1001" />
+
+        <record id="view_llantas_config_listado_precios_search" model="ir.ui.view">
+            <field name="name">listado.precios.search</field>
+            <field name="model">stock.quant</field>
+            <field name="arch" type="xml">
+                <search>
+                    <filter name="internal_loc" string="Internal Locations" domain="[('location_id.usage', '=', 'internal')]" />
+                    <separator/>
+                    <filter name="on_hand" string="On Hand" domain="[('on_hand', '=', True)]"/>
+                    <group expand="0" string="Group by...">
+                        <filter string="Producto" name="product_id" context="{'group_by': 'product_id'}"/>
+                        <filter string="Almacen" name="almacen_name" domain="[]" context="{'group_by': 'almacen_name'}"/>
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+
+        
+        
+        <record id="view_stock_quant_wizard_form" model="ir.ui.view">
+            <field name="name">stock.quant.wizard.form</field>
+            <field name="model">stock.quant.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Exportar Lista de Precios">
+                    <group>
+                        <field name="almacen_name_ids" widget="many2many_tags" required="1"/>
+                        <field name="ocultar_en_cero" />
+                    </group>
+                    <footer>
+                        <button string="Exportar a Excel" type="object" name="export_to_excel" class="btn-primary"/>
+                        <button string="Exportar a PDF" type="object" name="export_to_pdf" class="btn-primary"/>
+                        
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Añadir un nuevo menú para el wizard -->
+        <record id="action_stock_quant_wizard" model="ir.actions.act_window">
+            <field name="name">Exportar Lista de Precios</field>
+            <field name="res_model">stock.quant.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_stock_quant_wizard" 
+                  name="Exportar Lista de Precios" 
+                  parent="stock.menu_warehouse_report" 
+                  action="action_stock_quant_wizard"
+                  sequence="1001"/>
+
+    </data>
+</odoo>

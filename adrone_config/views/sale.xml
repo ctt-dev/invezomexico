@@ -1,0 +1,109 @@
+<odoo>
+    <data>
+        <record id="view_project_task_form" model="ir.ui.view">
+            <field name="name">sale_order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//page[@name='order_lines']" position="after"  >
+                     <page string="Información Adrone" attrs="{'invisible': [('is_adrone', '=', False)]}">
+                         <group string="Fecha de aplicación">
+                             <label for="fecha_inicio" string="Planeación" />
+                                <div class="w-100">
+                                    <div class="o_row">
+                                        <field name="fecha_inicio" widget="daterange" options="{'related_end_date': 'fecha_fin'}"/>
+                                        <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
+                                        <i class="fa fa-long-arrow-right mx-2 oe_read_only" aria-label="Arrow icon" title="Arrow" attrs="{'invisible': [('fecha_inicio', '=', False), ('fecha_fin', '=', False)]}"/>
+                                        <field name="fecha_fin" widget="daterange" options="{'related_start_date': 'fecha_inicio'}"/>
+                                    </div>
+                                </div>
+                         </group>
+                         <group string="Información sobre la aplicación">
+                             
+                            <group>
+                                <field name="is_adrone" invisible="1"/>
+                                <field name="parcela" />
+                                <field name="asignado" />
+                                <field name="auxiliar" />
+                                <field name="supervisor" />
+                                <field name="purchase_order"/>
+                                <!-- <field name="fecha_aplicar" />
+                                <field name="hora_inicio" widget="datime"/>
+                                <field name="hora_terminacion" widget="datetime"/> -->
+                                
+                                <!-- <field name="task_sequence" widget="sequence" options="{'sequence': 'ctt_adrone_sequence'}"/>
+                                <field name="task_sequence" widget="sequence" /> -->
+                            </group>
+                            <group>
+                                
+                                <field name="cultivo_id" />
+                                <field name="hectareas" />
+                                <field name="tipo_prod" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" force_save="1"/>
+                                <!-- <field name="volumen" string="Volumen" />
+                                <span class="o_form_label"> L/Ha </span>
+     -->
+                                <label for="volumen"/>
+                                <div class="d-flex">
+                                    <field name="volumen" />
+                                    <span class="o_form_label"> L/Ha</span>
+                                </div>
+                                    
+                                <label for="altura"/>
+                                <div class="d-flex">
+                                    <field name="altura" />
+                                    <span class="o_form_label"> M</span>
+                                </div>
+                                
+
+
+                                <label for="velocidad"/>
+                                <div class="d-flex">
+                                    <field name="velocidad" />
+                                    <span class="o_form_label"> M/s</span>
+                                </div>
+
+                                <label for="espacio_surcos"/>
+                                <div class="d-flex">
+                                    <field name="espacio_surcos" />
+                                    <span class="o_form_label"> M</span>
+                                </div>
+
+                            </group>
+                         </group>
+                         <group string="Descripción">
+                             <field name="description"/>
+                         </group>
+                     </page>
+                 </xpath>
+                <!-- <xpath expr="//group//group[1]//field[@name='user_ids']" position="after">
+                    <field name="planned_date_end" widget="daterange" options="{'related_start_date': 'planned_date_begin'}" attrs="{'required': [('planned_date_begin', '!=', False)]}"/>
+                 </xpath> -->
+            </field>
+        </record>
+
+        
+                 
+
+
+        <!-- <record id="view_project_task_tree" model="ir.ui.view">
+            <field name="name">project_task_tree</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="industry_fsm.project_task_view_list_fsm"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//tree//field[@name='planned_date_begin']" position="before">
+                    <field name="parcela" optional="show"/>
+                    <field name="asignado" optional="show"/>
+                    <field name="auxiliar" optional="show"/>
+
+                    <field name="cultivo_id" optional="show"/>
+                    <field name="hectareas" optional="show"/>
+                    <field name="tipo_prod" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" force_save="1" optional="show"/>
+                    <field name="volumen" optional="show"/>
+                    <field name="altura" optional="show"/>
+                    <field name="velocidad" optional="show"/>
+                    <field name="espacio_surcos" optional="show"/>
+                 </xpath>
+            </field>
+        </record> -->
+    </data>
+</odoo>

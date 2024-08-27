@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="wz_account_move_related_doc" model="ir.ui.view">
+        <field name="name">Wizard Relacionar documento Account Move</field>
+        <field name="model">l10n_mx.cfdi_document_wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="move_id" invisible="1"/>
+                    <field name="move_id_type" invisible="1"/>
+                    <field name="tipo_comprobante" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="date" required="1"/>
+                            <field name="partner_id_vat" readonly="1" force_save="1"/>
+                        </group>
+                        <group attrs="{'invisible':[('cfdi_document','=',False)]}">
+                            <field name="emisor"/>
+                            <field name="folio"/>
+                            <field name="cfdi_state"/>
+                            <field name="total"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <!-- <page string="Documento"> -->
+                        <page string="Document">
+                            <label for="cfdi_document" string="Documento CFDI"/>
+                            <field name="cfdi_document" domain="[('date','=',date),('date','!=',False),('link_state','=','unlink'),('rfc_emisor','=',partner_id_vat),('type_comprobante','=',tipo_comprobante)]" options="{'no_create': True}" required="1"/>
+                            <field name="metadata"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button class="btn-primary" string="Guardar"  name="event_wizard" type="object"/>
+                    <button class="btn-primary" string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

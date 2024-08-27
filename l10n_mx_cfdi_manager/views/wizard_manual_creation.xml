@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="l10n_mx_wizard_manual_creation_form">
+            <field name="name">l10n_mx_wizard_manual_creation_form</field>
+            <field name="model">l10n_mx.wizard_manual_creation</field>
+            <field name="active">1</field>
+            <field name="arch" type="xml">
+                <form string="Crear CFDI de proveedores desde .ZIP">
+                    <group>
+                        <field name="zip" filename="filename" options="{'accepted_file_extensions': '.zip'}"/>
+                        <field name="filename" invisible="1"/>
+                    </group>
+                    <footer>
+                        <button name="process_zip"
+                            string="PROCESAR" type="object"
+                            class="btn-primary oe_highlight"/>
+                        <button string="CERRAR"
+                            class="btn-default"
+                            special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="l10n_mx_wizard_manual_creation_action" model="ir.actions.act_window">
+            <field name="name">Asistente para Crear CFDI de proveedores desde .ZIP</field>
+            <field name="res_model">l10n_mx.wizard_manual_creation</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="l10n_mx_wizard_manual_creation_menu"  
+            name="Crear CFDI de proveedores desde .ZIP"  
+            action="l10n_mx_wizard_manual_creation_action" 
+            parent="account.menu_finance_payables"
+            sequence="2001" />
+    </data>
+</odoo>

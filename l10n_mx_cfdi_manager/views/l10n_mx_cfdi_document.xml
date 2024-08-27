@@ -1,0 +1,129 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="l10n_mx_cfdi_document_form">
+            <field name="name">Documento</field>
+            <field name="model">l10n_mx.cfdi_document</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="emisor" readonly="1"/>
+                                <field name="rfc_emisor" readonly="1"/>
+                                <field name="date" readonly="1"/>
+                                <field name="type_comprobante" readonly="1"/>
+                                <field name="total" readonly="1"/>
+                                <field name="link_state" readonly="1" string="¿Esta vinculado?"/>
+                                <field name="move_id" readonly="1" attrs="{'invisible':[('link_state','=','unlink')]}"/>
+                            </group>
+                            <group>
+                                <field name="uuid" readonly="1"/>
+                                <field name="cfdi_state" readonly="1"/>
+                                <field name="get_cfdi_state" readonly="1" groups="base.group_no_one"/>
+                                <field name="attatch_name" invisible="1"/>
+                                <field name="pdf_preview_name" invisible="1" force_save="1"/>
+                                <field name="attatch" string="XML" filename="attatch_name" widget="binary" readonly="1"/>
+                                <field name="pdf_preview" string="PDF" filename="pdf_preview_name" widget="binary" readonly="1" attrs="{'invisible':[('pdf_preview','=',False)]}"/>
+                                <button name="generate_pdf_preview" type="object" string="Generar PDF" attrs="{'invisible':[('pdf_preview','!=',False)]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="PDF" attrs="{'invisible':[('pdf_preview','=',False)]}">
+                                <field name="pdf_preview" widget="pdf_viewer" readonly="1" force_save="1"/>
+                            </page>
+                            <page string="Datos">
+                                <field name="metadata_pretty"/>
+                            </page>
+                            <page string="Facturas">
+                                <field name="moves_ids" options="{'create': False}" domain="[('move_type','in',['in_invoice','in_refund','in_receipt'])]"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_l10n_mx_cfdi_document_filter" model="ir.ui.view">
+            <field name="name">l10n_mx.cfdi_document.search</field>
+            <field name="model">l10n_mx.cfdi_document</field>
+            <field name="arch" type="xml">
+                <search string="Search Journal Items">
+                    <field name="uuid"/>
+                    <field name="folio"/>
+                    <field name="emisor"/>
+                    <field name="rfc_emisor"/>
+                    <field name="total"/>
+                    <field name="metadata_pretty"/>
+                    <filter name="date" string="Fecha" date="date"/>
+                    <filter name="type_comprobante_i" string="CFDI de Ingresos" domain="[('type_comprobante', '=', 'I')]"/>
+                    <filter name="type_comprobante_e" string="CFDI de Egresos" domain="[('type_comprobante', '=', 'E')]"/>
+                    <filter name="link_state_link" string="Vinculado" domain="[('link_state', '=', 'link')]"/>
+                    <filter name="link_state_unlink" string="No Vinculado" domain="[('link_state', '=', 'unlink')]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Tipo" name="group_by_type" domain="[]" context="{'group_by': 'type_comprobante'}"/>
+                        <filter string="Fecha" name="group_by_date" domain="[]" context="{'group_by': 'date'}"/>
+                        <filter string="Emisor" name="group_by_emisor" domain="[]" context="{'group_by': 'emisor'}"/>
+                        <filter string="RFC" name="group_by_rfc_emisor" domain="[]" context="{'group_by': 'rfc_emisor'}"/>
+                        <filter string="Estado CFDI" name="group_by_state" domain="[]" context="{'group_by': 'cfdi_state'}"/>
+                        <filter string="Vinculación" name="group_by_link" domain="[]" context="{'group_by': 'link_state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>        
+        
+        <record model="ir.ui.view" id="l10n_mx_cfdi_document_tree">
+            <field name="name">Documentos</field>
+            <field name="model">l10n_mx.cfdi_document</field>
+            <field name="arch" type="xml">
+                <tree create="false" editable="top">
+                    <field name="date" string="Fecha" readonly="1"/>
+                    <field name="rfc_emisor" string="RFC Emisor" readonly="1"/>
+                    <field name="emisor" string="Emisor" readonly="1" optional="hide"/>
+                    <field name="type_comprobante" readonly="1" optional="hide"/>
+                    <field name="uuid" string="UUID" readonly="1"/>
+                    <field name="folio" string="Folio" readonly="1" optional="hide"/>
+                    <field name="total" string="Total" readonly="1" optional="hide"/>
+                    <field name="cfdi_state" string="Estado" readonly="1" optional="show"/>
+                    <field name="get_cfdi_state" readonly="1" groups="base.group_no_one" optional="hide"/>
+                    <field name="move_id" readonly="1" optional="hide"/>
+                    <field name="attatch_name" invisible="1"/>
+                    <field name="attatch" readonly="1" filename="attatch_name" widget="binary"/>
+                    <field name="cfdi_request" readonly="1" optional="hide"/>
+                    <field name="link_state" readonly="1" optional="hide"/>
+                    <field name="moves_ids" string="Factura" readonly="1" widget="many2many_tags" optional="hide"/>
+                    <field name="journal_id" options="{'no_open': True, 'no_create': True}" domain="[('type','=','purchase')]"/>
+                    <!-- <button name="show_document" type="object" icon="fa-arrow-right"/> -->
+                    <button name="create_bill_showing_new_record" type="object" icon="fa-file-o" string="Crear Factura" attrs="{'invisible':[('link_state','=','link')]}"/>
+<!--                     <button name="create_bill" type="object" icon="fa-file-o" string="Crear Factura" attrs="{'invisible':[('link_state','=','link')]}"/> -->
+                    <button name="show_bill" type="object" icon="fa-eye" string="Ver Factura" attrs="{'invisible':[('link_state','=','unlink')]}"/>
+                    <button name="verify_state" type="object" icon="fa-refresh" string="Verificar Estado"/>
+                    <button name="show_preview" type="object" icon="fa-eye" string="Ver"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="act_l10n_mx_cfdi_document" model="ir.actions.act_window">
+            <field name="name">Documentos</field>
+            <field name="res_model">l10n_mx.cfdi_document</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                    'search_default_link_state_unlink': 1,
+                    'search_default_group_by_type': 1,
+                    'search_default_group_by_date': 1,
+                    'search_default_group_by_emisor': 1,
+                    'create':0, 
+                    'delete': 0
+                }
+            </field>
+            <field name="search_view_id" ref="view_l10n_mx_cfdi_document_filter"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay documentos aún...
+                </p>
+            </field>
+        </record>
+        
+        <menuitem name="CFDIs" id="l10n_mx_cfdi_manager.cfdi_document" parent="account.menu_finance_payables" sequence="1001" action="l10n_mx_cfdi_manager.act_l10n_mx_cfdi_document"/>
+    </data>
+</odoo>

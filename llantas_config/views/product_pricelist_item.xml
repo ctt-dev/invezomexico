@@ -1,0 +1,27 @@
+<odoo>
+    <data>
+        <record id="product_pricelist_item_form_inherit" model="ir.ui.view">
+            <field name="name">product.pricelist.item.inherit</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//group[@name='pricelist_rule_base']//group[1]" position="inside">
+                     <field name="price_shipping" widget="monetary" attrs="{'invisible':[('compute_price', '!=', 'customize'),('compute_price', '!=', 'marketplace')]}"/>
+                     <label for="utility_perc" attrs="{'invisible':[('compute_price', '!=', 'customize'),('compute_price', '!=', 'marketplace')]}"/>
+                     <div class="o_row" attrs="{'invisible':[('compute_price', '!=', 'customize'),('compute_price', '!=', 'marketplace')]}">
+                        <field name="utility_perc"/>
+                        <span>%</span>
+                     </div>
+                     <label for="commission_mkp" attrs="{'invisible':[('compute_price', '!=', 'customize'),('compute_price', '!=', 'marketplace')]}"/>
+                     <div class="o_row" attrs="{'invisible':[('compute_price', '!=', 'customize'),('compute_price', '!=', 'marketplace')]}">
+                        <field name="commission_mkp"/>
+                        <span>%</span>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='base']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('compute_price', 'not in', ['formula','customize','marketplace'])]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

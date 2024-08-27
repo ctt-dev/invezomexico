@@ -1,0 +1,71 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="l10n_mx_efos_tree">
+            <field name="name">l10n_mx_efos_tree</field>
+            <field name="model">l10n_mx.efos</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0" editable="top">
+                    <!-- <field name="create_date" string="Actualización" readonly="1"/> -->
+                    <field name="create_date" string="Last update" readonly="1"/>
+                    <!-- <field name="partner_id" string="Contacto" optional="hide" readonly="1"/> -->
+                    <field name="partner_id" string="Partner" optional="hide" readonly="1"/>
+                    <field name="rfc" readonly="1"/>
+                    <field name="contribuyente" optional="show" readonly="1"/>
+                    <field name="status" readonly="1"/>
+                    <field name="presunto_sat_char" optional="hide" readonly="1"/>
+                    <field name="presunto_sat_date" optional="show" readonly="1"/>
+                    <field name="presunto_dof_char" optional="hide" readonly="1"/>
+                    <field name="presunto_dof_date" optional="hide" readonly="1"/>
+                    <field name="desvirtuado_sat_char" optional="hide" readonly="1"/>
+                    <field name="desvirtuado_sat_date" optional="show" readonly="1"/>
+                    <field name="desvirtuado_dof_char" optional="hide" readonly="1"/>
+                    <field name="desvirtuado_dof_date" optional="hide" readonly="1"/>
+                    <field name="definitivo_sat_char" optional="hide" readonly="1"/>
+                    <field name="definitivo_sat_date" optional="show" readonly="1"/>
+                    <field name="definitivo_dof_char" optional="hide" readonly="1"/>
+                    <field name="definitivo_dof_date" optional="hide" readonly="1"/>
+                    <field name="favorable_sat_char" optional="hide" readonly="1"/>
+                    <field name="favorable_sat_date" optional="show" readonly="1"/>
+                    <field name="favorable_dof_char" optional="hide" readonly="1"/>
+                    <field name="favorable_dof_date" optional="hide" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="l10n_mx_efos_search" model="ir.ui.view">
+            <field name="name">l10n_mx_efos_tree</field>
+            <field name="model">l10n_mx.efos</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <!-- <field name="partner_id" string="Contribuyente"/> -->
+                    <field name="partner_id" string="Partner"/>
+                    <field name="partner_id_vat" string="RFC"/>
+                    <!-- <filter name="filter_by_partner_id_selected" string="EFOS registrados en Contactos" domain="[('partner_id', '!=', False)]"/> -->
+                    <filter name="filter_by_partner_id_selected" string="EFOS on Contacts" domain="[('partner_id', '!=', False)]"/>
+                    <filter name="filter_by_status_Presunto" string="Presuntos" domain="[('status', '=', 'Presunto')]"/>
+                    <filter name="filter_by_status_Desvirtuado" string="Desvirtuado" domain="[('status', '=', 'Desvirtuado')]"/>
+                    <filter name="filter_by_status_Definitivo" string="Definitivo" domain="[('status', '=', 'Definitivo')]"/>
+                    <filter name="filter_by_status_Sentencia_Favorable" string="Sentencia Favorable" domain="[('status', '=', 'Sentencia Favorable')]"/>
+                    <group expand="1" string="Group By">
+                        <!-- <filter string="Situación del contribuyente" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/> -->
+                        <filter string="Partner state" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        
+        <record id="act_l10n_mx_efos" model="ir.actions.act_window">
+            <field name="name">EFOS</field>
+            <field name="view_mode">tree</field>
+            <field name="res_model">l10n_mx.efos</field>
+        </record>
+        
+        <record model="ir.ui.menu" id="contacts.res_partner_menu_config">
+            <field name="sequence">4</field>
+        </record>
+            
+        <menuitem name="EFOS" id="l10n_mx_efos_manager_efos" parent="account.menu_finance_payables" sequence="1101" action="l10n_mx_efos_manager.act_l10n_mx_efos"/>
+        <menuitem name="EFOS" id="l10n_mx_efos_manager_efos_for_contacts" parent="contacts.menu_contacts" sequence="3" action="l10n_mx_efos_manager.act_l10n_mx_efos"/>
+    </data>
+</odoo>

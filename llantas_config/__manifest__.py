@@ -34,14 +34,17 @@
         'website',
         'account_accountant',
         'purchase',
+        # 'purchase_stock',
         'website_sale',
         'mrp',
         'delivery',
+        'fleet',
     ],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'data/res_partner.xml',
         'views/templates.xml',
         'views/views.xml',
         'views/catalogos.xml',
@@ -55,9 +58,31 @@
         'views/tablero_detallado.xml',
         'views/res.xml',
         'views/pagos_marketplace.xml',
+        'views/detailed_sales.xml',
+        'views/wizard_subir_existencias.xml',
+        'reports/purchase.xml',
+        'reports/Reporte_cotizacion_Racko.xml',
+        # 'reports/new_invoice.xml',
+        'views/account_move.xml',
+        'reports/report_invoice.xml',
+        'views/res_company.xml',
+        'views/product_pricelist_item.xml',
+        'views/purchase.xml',
+        'reports/sale_order.xml',
+        'reports/report_picking.xml',
+        # 'views/style.css',
+        'views/tablero_killer.xml',
+        'views/wizard_cargar_killer.xml',
+        'reports/sale_order_racko.xml',
+        'views/list_prices_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+    "assets": {
+        "web.assets_backend": [
+            'llantas_config/static/src/**/*',
+        ],
+    },    
 }

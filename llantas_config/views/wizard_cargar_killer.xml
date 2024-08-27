@@ -1,0 +1,35 @@
+<odoo>
+    <data>
+        <record id="action_view_import_listado_killer" model="ir.actions.act_window">
+            <field name="name">Importar listado de killers</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">llantas_config.wizard_killer_list</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_import_existencias_proveedores_killer_form" model="ir.ui.view">
+            <field name="name">Importar listado killer</field>
+            <field name="model">llantas_config.wizard_killer_list</field>
+            <field name="arch" type="xml">
+                <form string="Importar Documento">
+                    <group>
+                        <field name="marketplace_id" />
+                    </group>
+                    <group>
+                        <field name="file_name" invisible="1"/>
+                        <field name="file_data" filename="file_name" widget="binary"/>
+                    </group>
+                    <footer>
+                        <button name="import_data_killer" string="Importar" type="object" class="btn-primary"/>
+                        
+                        <button special="cancel" string="Cancelar" class="btn-secondary"/>
+                    </footer>
+                </form>
+           </field>
+        </record>
+
+        <menuitem id="menu_ctt_llantas_cargar_killers" name="Cargar listado" parent="menu_ctt_llantas_killer_list" sequence="1" action="action_view_import_listado_killer"/>
+        
+    </data>
+</odoo>

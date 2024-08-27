@@ -5,6 +5,7 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                
                  <xpath expr="//group[@name='order_details']//field[@name='payment_term_id']" position="after">
                     
                      <field name="comprador_id" domain="['|',('category_ids','ilike','COMP'),('category_ids','ilike','Comp')]" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"/> 
@@ -15,6 +16,10 @@
 
 
                      <field name="envio" attrs="{'invisible': [('mostrar_envio', '!=', True)]}" />
+                     <field name="warehouse_id" />
+                     <field name="commitment_date"/>
+                     <field name="tipo_factura" />
+                     <field name="es_killer" invisible="1"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
@@ -23,11 +28,9 @@
                             <field name="marketplace" string="Canal de venta" options="{'no_create_edit': True}"/>
                             <field name="link_venta" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
                             <field name="folio_venta" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}" />
-                             
+                            <field name="link_facturacion" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
                              <field name="fecha_venta" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
                             <!-- <field name="invoice_id" invisible="1"/> -->
-                            
-                            
                         </group>
                              
                     </div>
@@ -35,13 +38,47 @@
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="before">
                     <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
                     <field name="costo_proveedor" readonly="1" optional="show"  />
+                    <field name="costo_proveedor_2" readonly="1" optional="hide"  />
+                    <field name="codigo_proveedor" invisible="1" />
+                    <field name="is_killer" readonly="1"/>
+                    <field name="killer_id" widget="many2one" invisible="1"/>
+                    <!-- <field name="killer_id_killer_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
+                    <field name="killer_id_base_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
+                    <field name="killer_id_promotion_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/> -->
+                    <field name="killer_id_killer_price" readonly="1" optional="hide"/>
+                    <field name="killer_id_base_price" readonly="1" optional="hide"/>
+                    <field name="killer_id_promotion_price" readonly="1" optional="hide"/>
+                    
+                    
                     
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->
                 </xpath>
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
                     <field name="importe_descuento" optional="show"  />
                     <field name="precio_antes_dec" optional="show" readonly="1" />
+                    <field name="t1" optional="hide"/>
+                    <field name="t1_porcentaje" optional="hide"/>
+                    <field name="t2" optional="hide"/>
+                    <field name="t2_porcentaje" optional="hide"/>
+                    <field name="t3" optional="hide"/>
+                    <field name="t3_porcentaje" optional="hide"/>
                 </xpath>
+                <xpath expr="//header" position="inside">
+                    <button name="create_purchase" type="object" string="Crear compra" class="btn-secondary" />
+                </xpath>
+                <xpath expr="//page[@name='other_information']" position="after">
+                    <page string="Envio">
+                        <group>
+                            <!-- <field name="detailed_info" readonly="0" widget="html" attrs="{'invisible': [('state', 'in', ['draft', 'send'])]}"/> -->
+                            <field name="traspaso_name" readonly="1"/>
+                            <field name="llantas_config_carrier_id"/>
+                            <field name="guia" readonly="0"/>
+                            <field name="link_guia" readonly="0" widget="url"/>
+                            <field name="estado_traspaso" readonly="1"/>
+                        </group>
+                    </page>
+                </xpath>
+                
 
                 
             </field>
@@ -53,13 +90,17 @@
             <field name="inherit_id" ref="sale.view_quotation_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//tree//field[@name='name']" position="before">
-                    <field name="marketplace" />
+                    <field name="marketplace_name" />
                     
                     <field name="folio_venta" optional="show"/>
                     <field name="fecha_venta" optional="hide" />
+                    <field name="comprador_id" widget="many2one" optional="show"/>
                     <field name="status_ventas" widget="many2one_tags" />
                         <!-- domain="[('product_tmpl_id','=','order_line.product_template_id')]"/> -->
                 </xpath>
+                <field name="user_id" position="replace">
+                    <field name="user_id" widget="many2one_avatar_user" optional="show" string="Usuario"/>
+                </field>
             </field>
         </record>
 
@@ -69,12 +110,23 @@
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//search//group//filter[@name='salesperson']" position="after">
-                    <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/>
+                    <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
+                </xpath>
+                <xpath expr="//search//filter[@name='my_sale_orders_filter']" position="after">
+                    <filter name="es_killer" string="Es venta killer" domain="[('es_killer', '=', True)]"/>
+                    <filter string="Fecha de venta" name="fecha_venta" date="fecha_venta"/>
+                    
+                </xpath>
+                <xpath expr="//search//group//filter[@name='order_month']" position="after">
+                    <filter string="Fecha de venta" name="fecha_venta" domain="[]" context="{'group_by': 'fecha_venta'}"/>
+                    <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
                     
                 </xpath>
             </field>
         </record>
        
+       
         
+
     </data>
 </odoo>

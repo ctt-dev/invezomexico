@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            id="report_control_de_aplicacion"
+            model="sale.order"
+            string="Control de aplicaciones"
+            report_type="qweb-pdf"
+            name="adrone_config.report_control_de_aplicaciones"
+            file="adrone_config.report_control_de_aplicaciones"
+            attachment_use="True"
+            print_report_name = "('Control de aplicacions')"/>
+        
+        <template id="report_control_de_aplicaciones">
+            
+            <t t-name="adrone_config.report_control_de_aplicaciones">
+                <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout"> 
+                    <h1><center>Orden de aplicación</center></h1><br/><br/><br/>
+                    <div id="informations" class="row mt-3 mb-32">
+                        <div t-if="doc.partner_id" class="col-4 bm-3">
+                            <center>
+                                <strong>Cliente:</strong>
+                                <span t-field="doc.partner_id.name" class="m-0" />
+                            </center>
+                        </div>
+                        <div t-if="doc.partner_id" class="col-4 bm-2">
+                            <center>
+                                <strong>Orden de compra:</strong>
+                                <span t-field="doc.purchase_order" class="m-0" />
+                            </center>
+                        </div>
+                        <div t-if="doc.create_date" class="col-4 bm-2">
+                            <center>
+                                <strong>Fecha de orden:</strong>
+                                <p t-esc="doc.fecha_inicio.strftime('%d-%m-%Y')" class="m-0"/>
+
+                            </center>
+                        </div>
+                    </div>
+                    <br/><br/><br/>
+                    <div>
+                        
+                        <table class="table" style="font-size:15px">
+                            <tr>
+                                <td style="width: 20%"><strong>Cultivo: </strong></td>
+                                <td style="width: 20%"><span t-field="doc.cultivo_id.name"/></td>
+                                <td style="width: 20%"><strong>Parcela: </strong></td>
+                                <td style="width: 20%"><span t-field="doc.name"/></td>
+                                
+                                
+                            </tr>
+                            <tr>
+                                <td><strong>Lugar de aplicacion: </strong></td>
+                                <td><span t-field="doc.parcela.name"/></td>
+                                <td><strong>Hora inicio: </strong></td>
+                                <td><span t-esc="doc.fecha_inicio.strftime('%H:%M')" /></td>
+
+                                
+                            </tr>
+                            <tr>
+                                <td><strong>Area de aplicacion total: </strong></td>
+                                <td><span t-field="doc.hectareas"/></td>
+                                <td><strong>Hora termino: </strong></td>
+                                <td><span t-esc="doc.fecha_fin.strftime('%H:%M')"/></td>
+
+                                
+                            </tr>
+                            <!-- <tr>
+                                <td colspan="2"><strong>Area de aplicacion total: </strong></td>
+
+                                <td colspan="2"></td>
+                                
+                            </tr> -->
+                            <tr>
+                                <td colspan="4" align="center"><strong>Productos</strong></td>
+                               
+                            </tr>
+                           <tr><td colspan="4"><span t-field="doc.description"/><br/><br/></td></tr>
+                            <tr>
+                                <td colspan="1"><strong>Tipo</strong></td>
+                                <td colspan="3"><span t-field="doc.tipo_prod" widget="many2many_tags"/></td>
+                                
+                            </tr>
+                            <tr>
+                                <td><strong>Volumen de aplicación total</strong></td>
+                                <td><span t-field="doc.volumen" /> <label align="right">L/Ha</label></td>
+                                <td><strong>Altura sobre cultivo</strong></td>
+                                <td><span t-field="doc.altura"/> <label align="right">M</label></td>
+
+                                
+                            </tr>
+                            <tr>
+                                <td><strong>Velocidad de vuelo</strong></td>
+                                <td><span t-field="doc.velocidad" /> <label align="right">M/s</label></td>
+                                <td><strong>Espacio entre pasadas</strong></td>
+                                <td><span t-field="doc.espacio_surcos" /> <label align="right">M</label></td>
+
+                                
+                            </tr>
+                            <tr><td colspan="4"><br/><br/><br/><br/></td></tr>
+
+                            <tr >
+                                <td colspan="2" align="center">___________________</td>
+                                <td colspan="2" align="center">___________________</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center"><span t-field="doc.asignado"/></td>
+                                <td colspan="2" align="center"><span t-field="doc.supervisor"/></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </t>
+                </t>
+                </t>
+            </t>
+           
+        
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <!-- VISTA TREE -->
+        <record model="ir.ui.view" id="l10n_mx_cfdi_session_tree">
+            <field name="name">cfdi session tree</field>
+            <field name="model">l10n_mx.cfdi_session</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" string="Token" optional="show"/>
+                    <field name="company_id" string="ID de compañía" optional="show"/>
+                </tree>
+            </field>
+        </record>
+        <!-- VISTA FORM -->
+        <record model="ir.ui.view" id="l10n_mx_cfdi_session_form">
+            <field name="name">cfdi session form</field>
+            <field name="model">l10n_mx.cfdi_session</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="name" string="Token"/>
+                        <field name="company_id" string="ID de compañía"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

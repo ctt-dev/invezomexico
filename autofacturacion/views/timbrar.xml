@@ -12,6 +12,12 @@
                        window.location.href = window.location.href.replace("timbrado", "timbrar")
                       }, 5000);
                     });
+              $(document).ready(function(){
+                      setTimeout(function() {
+                      alert("Archivo descargado y enviado por correo")
+                       window.location.href = window.location.href.replace("timbrado/", "")
+                      }, 60000);
+                    });
           </script>
           <h3 class="page-header" style="text-align: center;">Espere un minuto</h3>
       </t>

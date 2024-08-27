@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            id="report_factura_nueva"
+            model="account.move"
+            string="Factura Actualizado"
+            report_type="qweb-pdf"
+            name="llantas_config.report_factura_nuevas"
+            file="llantas_config.report_factura_nuevas"
+            attachment_use="True"
+            print_report_name = "('Factura-')"/>
+        
+        <template id="report_factura_nuevas">
+            <t t-name="studio_main_report">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+            <div class="page">
+                            <style>
+                                .watermark {
+                            		position: absolute;
+            		                opacity: 0.20;
+                            		font-size: 100px;
+                            		width: 50%;
+                            		text-align: center;
+                            		z-index: 99;
+                            		top: 50px;
+                            		right: 250px;
+                            	}
+                            	.custom-heading {
+                                    background-color: #0088ff;
+                        		    color: white;
+                        		}
+                        		hr {
+                            	    border-color: #0088ff;
+                        		    border-width: 2px;
+                        		}
+                        		h6,
+                        		td,
+                        		strong {
+                        		    font-size: small;
+                        		    vertical-align: top;
+                        		}
+                        		p {
+                        		    font-size: x-small;
+                        		}
+                        		th {
+                            	    background-color: #0088ff;
+                        		    color: white;
+                        		    text-align: center;
+                        		    border: 2px solid black;
+                        		    font-size: small;
+                        		}
+                        	    table {
+                        		    border-collapse: collapse;
+                        		    width: 100%;
+                        		}
+                        		thead {
+                                    display: table-header-group;
+                                    vertical-align: middle;
+                                    border: 2px solid black;
+                                }
+                        	</style>
+                            <!--New global variables-->
+                            <t t-if="doc.l10n_mx_edi_cfdi_uuid">
+                                <t t-set="cfdi_vals" t-value="doc._l10n_mx_edi_decode_cfdi()"/>
+                                <t t-set="is_cfdi_signed" t-value="bool(doc._get_l10n_mx_edi_signed_edi_document())"/>
+                                <t t-set="lot_values" t-value="doc._get_invoiced_lot_values()"/>
+                            </t>
+                            <!-- HEADER -->
+                            <div class="header">
+                                <div class="row">
+                                    <!-- LEFT SIDE -->
+                                    <div class="col-8">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <img t-if="doc.company_id.logo" t-att-src="image_data_uri(doc.company_id.logo)" style="max-height: 65px;" alt="DASSA"/>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4>
+                                                <span t-field="doc.company_id" style="font-weight: bold"/>
+                                            </h4>
+                                            <p class="mb-2" style="font-size: medium">
+                                                <span t-field="doc.company_id.street"/>
+                                                <span t-field="doc.company_id.street2"/>, 
+                                                <span t-field="doc.company_id.city"/>, 
+                                                <span t-field="doc.company_id.state_id.name"/>, 
+                                                <span t-field="doc.company_id.country_id"/> 
+                                                C.P.: 
+                                                <span t-field="doc.company_id.zip"/>
+                                                <br/>
+                                                RFC: 
+                                                <span t-field="doc.company_id.vat"/> 
+                                                Teléfono: 
+                                                <span t-field="doc.company_id.phone"/>
+                                            </p>
+                                        </div>
+                                        <hr class="m-0" style="border-color: #0088ff; border-width: 2px;"/>
+                                        <div style="font-size: small">
+                                        <t t-if="doc.line_ids">
+                                            <p class="pl-0 m-0">
+                                                <p class="pl-0 m-0" style="color: #0088ff">
+                                                    Lugar de Expedición: 
+                                                </p>
+                                                <p class="pl-0 m-0" t-field="doc.line_ids.sale_line_ids.order_id.warehouse_id.partner_id.street"/>
+                                                <span class="pl-0 m-0" t-field="doc.line_ids.sale_line_ids.order_id.warehouse_id.partner_id.city"/>, 
+                                                <span class="pl-0 m-0" t-field="doc.line_ids.sale_line_ids.order_id.warehouse_id.partner_id.state_id.name"/>, 
+                                                <span class="pl-0 m-0" t-field="doc.line_ids.sale_line_ids.order_id.warehouse_id.partner_id.country_id"/>
+                                                <p>
+                                                    C.P.: 
+                                                    <span class="pl-0 m-0" t-field="doc.line_ids.sale_line_ids.order_id.warehouse_id.partner_id.zip"/>
+                                                    Teléfono: 
+                                                    <span class="pl-0 m-0" t-field="doc.line_ids.sale_line_ids.order_id.warehouse_id.partner_id.phone"/>
+                                                </p>
+                                            </p>
+                                        </t>
+                                        </div>
+                                        <hr class="m-0" style="border-color: #0088ff; border-width: 2px;"/>
+                                        <div style="font-size: small">
+                                            <p class="pl-0 m-0">
+                                                <p class="pl-0 m-0" style="color: #0088ff">
+                                                    Receptor: 
+                                                </p>
+                                                <span class="pl-0 m-0" t-field="doc.partner_id"/>
+                                                    RFC: 
+                                                <span class="pl-0 m-0" t-field="doc.partner_id.vat"/>
+                                                <p class="pl-0 m-0" t-field="doc.partner_id.street"/>
+                                                <span class="pl-0 m-0" t-field="doc.partner_id.city"/>, 
+                                                <span class="pl-0 m-0" t-field="doc.partner_id.state_id.name"/>, 
+                                                <span class="pl-0 m-0" t-field="doc.partner_id.country_id"/>
+                                                <p class="pl-0 m-0"> 
+                                                    C.P.: 
+                                                    <span class="pl-0 m-0" t-field="doc.partner_id.zip"/>
+                                                </p>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <t t-if="is_cfdi_signed">
+                                            <!-- Folio Fiscal -->
+                                            <div>
+                                                <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                Folio Fiscal
+                                            </h6>
+                                                <h6 class="text-center" style="font-size: small">
+                                                    <span t-field="doc.l10n_mx_edi_cfdi_uuid"/>
+                                                </h6>
+                                            </div>
+                                            <!-- Certificado SAT -->
+                                            <div>
+                                                <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                Certificado SAT
+                                            </h6>
+                                                <h6 class="text-center" style="font-size: small">
+                                                    <span t-esc="cfdi_vals['certificate_sat_number']"/>
+                                                </h6>
+                                            </div>
+                                            <!-- Certificado Emisor -->
+                                            <div>
+                                                <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                Certificado Emisor
+                                            </h6>
+                                                <h6 class="text-center" style="font-size: small">
+                                                    <span t-esc="cfdi_vals['certificate_number']"/>
+                                                </h6>
+                                            </div>
+                                            <!-- Fecha de certificacion -->
+                                            <div>
+                                                <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                Fecha y hora de certificación
+                                    		</h6>
+                                                <h6 class="text-center" style="font-size: small">
+                                                    <span t-esc="cfdi_vals['stamp_date']"/>
+                                                </h6>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <!-- Serie - Folio -->
+                                                    <div>
+                                                        <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                            Serie - Folio
+                                            		    </h6>
+                                                        <h6 class="text-center" style="font-size: small">
+                                                            <span t-field="doc.name"/>
+                                                        </h6>
+                                                    </div>
+                                                    <!-- Fecha de emision -->
+                                                    <div>
+                                                        <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                            Fecha de emisión
+                                                        </h6>
+                                                        <h6 class="text-center" style="font-size: small">
+                                                            <span t-esc="cfdi_vals['emission_date_str']"/>
+                                                        </h6>
+                                                    </div>
+                                                    <!-- Condicion -->
+                                                    <div>
+                                                        <h6 class="text-center" style="font-size: small; border: 2px black solid; background-color: #0088ff; color: white">
+                                                            Condición
+                                                        </h6>
+                                                        <h6 class="text-center" style="font-size: small">
+                                                            <span t-field="doc.invoice_payment_term_id"/>
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                              
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- MARCA DE AGUA -->
+                            <div class="watermark">
+                                <!-- <img t-if="doc.company_id.logo" t-att-src="image_data_uri(doc.company_id.logo)" style="max-height: 1200px" alt="Grupo Cadena" /> -->
+                            </div>
+                            <!-- DETALLE ITEMS -->
+                            <!-- El documento cuenta con descuento? -->
+                            <t t-set="GotDisccount" t-value="any([d.discount for d in doc.invoice_line_ids])"/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <table class="table table-sm o_main_table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th width="8%">Cant.</th>
+                                        <th width="11%">Unidad</th>
+                                        <th width="9%">Código</th>
+                                        <th width="30%">Concepto</th>
+                                        <th width="10%">No. Pedimento</th>
+                                        <!-- <t t-if="GotDisccount">
+                                            <th width="8%">Precio Unitario</th>
+                                            <th width="8%">Impuesto</th>
+                                            <th width="8%">Descuento(%)</th>
+                                            <th width="11%">Importe</th>
+                                        </t> -->
+                                        <!-- <t t-else=""> -->
+                                            <th width="10%">Precio Unitario</th>
+                                            <th width="10%">Impuesto</th>
+                                            <th width="12%">Importe</th>
+                                        <!-- </t> -->
+                                    </tr>
+                                </thead>
+                                <tbody class="invoice_tbody">
+                                    <!-- ITEMS -->
+                                    <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                        <t t-set="line_index" t-value="line_index+1"/>
+                                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                            <!-- <t t-if="line.display_type" name="account_invoice_line_accountable"> -->
+                                                <td class="p-2" t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                                    <span t-field="line.quantity" t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"/>
+                                                </td>
+                                                <td class="p-2" t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                                    <t t-if="is_cfdi_signed">
+                                                        <span t-field="line.product_uom_id.unspsc_code_id.code"/>
+                                                        -
+                                                        <span t-field="line.product_uom_id"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span t-field="line.product_uom_id"/>
+                                                    </t>
+                                                </td>
+                                                <td class="p-2" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                                    <t t-if="is_cfdi_signed">
+                                                        <span t-field="line.product_id.default_code"/>
+                                                    </t>
+                                                </td>
+                                                <td class="m-0" style="text-align: justify">
+                                                    <span t-if="line.name" t-field="line.name"/>
+                                                    <t t-foreach="lot_values" t-as="snln_line">
+                                                        <br/>
+                                                        SERIE: 
+                                                        <t t-esc="snln_line['lot_name']"/>
+                                                    </t>
+                                                </td>
+                                                <td><span t-field="line.no_pedimento"/></td>
+                                                <td class="p-2" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                                    <span t-field="line.price_unit" t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"/>
+                                                </td>
+                                                <!--<td class="p-2" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">-->
+                                                <!--    <span t-field="line.product_id.taxes_id"/>-->
+                                                <!--</td>-->
+                                                <td class="p-2" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_ids))" id="line_tax_ids"/>
+                                                </td>
+                                                <t t-if="GotDisccount">
+                                                    <td class="p-2" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                                        <span t-field="line.discount"/>
+                                                    </td>
+                                                </t>
+                                                <td class="text-right o_price_total">
+                                                    <span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                                    <span t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                                                </td>
+                                            <!-- </t> -->
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                
+                                <!-- FOOTER ITEMS -->
+                                <div class="not-first-page">
+                                    <t t-set="colspan" t-value="5"/>
+                                    <t t-if="GotDisccount" t-set="colspan" t-value="colspan+1"/>
+                                    <tr>
+                                         <td t-att-colspan="colspan">
+                                            SON: 
+                                            <t t-esc="doc._l10n_mx_edi_cfdi_amount_to_text()"/>
+                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="7" t-att-colspan="colspan" style="border: 2px black solid">
+                                            <!-- EXTRA INFO -->
+                                            <t t-if="is_cfdi_signed">
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <p class="mb-0">
+                                                            Método Pago: 
+                                                            <t t-set="MetodoDePago" t-value="cfdi_vals['payment_method']"/>
+                                                            <span t-esc="MetodoDePago"/>
+                                                            -
+                                                            <t t-if="MetodoDePago == 'PPD'">
+                                                                Pago en parcialidades o diferido
+                                                            </t>
+                                                            <t t-if="MetodoDePago == 'PUE'">
+                                                                Pago en una sola exhibición
+                                                            </t>
+                                                            <t t-if="MetodoDePago == 'PIP'">
+                                                                Pago inicial y parcialidades
+                                                            </t>
+                                                        </p>
+                                                        <p class="mb-0">
+                                                            Forma de Pago: 
+                                                            <span t-field="doc.l10n_mx_edi_payment_method_id"/>
+                                                        </p>
+                                                        <p class="mb-0">
+                                                            Moneda: 
+                                                            <span t-field="doc.currency_id"/>
+                                                            -
+                                                            <t t-if="'MXN' in doc.currency_id.name">
+                                                                Pesos Mexicanos
+                                                            </t>
+                                                            <t t-if="'USD' in doc.currency_id.name">
+                                                                United States Dollar
+                                                            </t>
+                                                        </p>
+                                                        <p class="mb-0">
+                                                            Comprobante: 
+                                                            <t t-if="doc.move_type == 'out_invoice'">
+                                                                I - Ingreso
+                                                            </t>
+                                                            <t t-if="doc.move_type == 'in_refund'">
+                                                                I - Ingreso
+                                                            </t>
+                                                            <t t-if="doc.move_type == 'out_refund'">
+                                                                E - Egreso
+                                                            </t>
+                                                            <t t-if="doc.move_type == 'in_invoice'">
+                                                                E - Egreso
+                                                            </t>
+                                                            <t t-if="doc.move_type == 'T'">
+                                                                Traslado
+                                                            </t>
+                                                            <t t-if="doc.move_type == 'out_receipt'">
+                                                                P - Pago
+                                                            </t>
+                                                            <t t-if="doc.move_type == 'in_receipt'">
+                                                                P - Pago
+                                                            </t>
+                                                        </p>
+                                                        <p class="mb-0">
+                                                            Tipo Documento: 
+                                                            <span t-field="doc.move_type"/>
+                                                        </p>
+                                                        <p class="mb-0" t-if="doc.ref">
+                                                            Referencia del Cliente: 
+                                                            <span t-field="doc.ref"/>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <t t-if="doc.l10n_mx_edi_origin">
+                                                            <p class="mb-0">
+                                                                Tipo Relación: 
+                                                                <span t-field="doc.l10n_mx_edi_origin"/>
+                                                            </p>
+                                                        </t>
+                                                        <p class="mb-0">
+                                                            Uso CFDI: 
+                                                            <t t-esc="doc.l10n_mx_edi_usage"/>
+                                                            -
+                                                            <span t-field="doc.l10n_mx_edi_usage"/>
+                                                        </p>
+                                                        <p class="mb-0">
+                                                            Vendedor: 
+                                                            <span t-field="doc.user_id"/>
+                                                        </p>
+                                                        <t t-if="doc.invoice_origin and 'S' in doc.invoice_origin">
+                                                            <p class="mb-0">
+                                                                Documento Origen: 
+                                                                <span t-field="doc.invoice_origin"/>
+                                                            </p>
+                                                        </t>        
+                                                    </div>
+                                                    
+                                                </div>
+                                            </t>
+                                        </td>
+                                        <td class="custom-heading text-right font-weight-bold" style="border-top: 2px black solid;">
+                                            SubTotal
+                                        </td>
+                                        <td class="text-right" style="border-top: 2px black solid; border-right: 2px black solid;">
+                                            <span t-field="doc.amount_untaxed"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <tr>
+                                            <t t-if="doc.amount_tax">
+                                                <td class="custom-heading text-right font-weight-bold">
+                                                    Impuesto
+                                                </td>
+                                                <td class="text-right o_price_total" style="border-right: 2px black solid">
+                                                    <span t-field="doc.amount_tax"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </tr>
+                                    <tr>
+                                        <td class="custom-heading text-right font-weight-bold" style="border-bottom: 2px black solid">
+                                            TOTAL
+                                        </td>
+                                        <td class="text-right" style="border-right: 2px black solid; border-bottom: 2px black solid">
+                                            <span t-field="doc.amount_total"/>
+                                        </td>
+                                    </tr>
+                                </div>
+                            </table>
+                            <div>
+                                  <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white;">
+                                    Información bancaria
+                                  </h6>
+                                  <span><center><b>HSBC CTP MXP:</b>    4067891358    <b>CLABE MXP:</b>    021743040678913582</center></span>
+
+
+                                </div>
+                            <!-- Firma cliente Nota de credito -->
+                            <t t-if="'_refund' in doc.move_type">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <p class="text-center" style="font-size: small; border-top: 2px black solid">
+                                            <span t-field="doc.partner_id"/>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                    </div>
+                                    <div class="col-4">
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <p class="text-center" style="font-size: small; border-top: 2px black solid">
+                                            <span t-field="doc.company_id"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </t>
+                            <!-- FACTURA CANCELADA -->
+                            <t t-if="doc.state == 'cancel'">
+                                <!-- due to HTML preview for device responsive -->
+                                <button t-attf-class="btn-danger #{'btn' if report_type != 'html' else ''}">
+                                    <strong>Este documento se encuentra CANCELADO</strong>
+                                </button>
+                            </t>
+                            <t t-else="">
+                                <!-- VALIDACION TIMBRADO -->
+                                <t t-if="doc.l10n_mx_edi_cfdi_request in ('on_invoice', 'on_refund') and not is_cfdi_signed and doc.edi_state != 'cancelled'">
+                                    <!-- due to HTML preview for device responsive -->
+                                    <button t-attf-class="btn-danger #{'btn' if report_type != 'html' else ''}">
+                                        <strong>Este documento requiere de una firma electronica, este documento no ha sido firmado.</strong>
+                                    </button>
+                                </t>
+                            </t>
+                            <!-- EXTRA INFO -->
+                            <t t-if="is_cfdi_signed">
+                                <!-- SAT -->
+                                <div class="row">
+                                  
+                                  <table style="width: 100%;">
+                                    <tr>
+                                        <td style="vertical-align: top; min-height: 150px;">
+                                            <t t-if="cfdi_vals.get('sello')">
+                                                <img alt="Barcode" t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=150&amp;height=150' % quote_plus('https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?' + keep_query(re=doc.l10n_mx_edi_cfdi_supplier_rfc, rr=doc.l10n_mx_edi_cfdi_customer_rfc, tt='%.*f' % (doc.currency_id.decimal_places, doc.l10n_mx_edi_cfdi_amount), id=doc.l10n_mx_edi_cfdi_uuid) + '&amp;fe=%s' % quote_plus(cfdi_vals['sello'][-8:], 'utf-8', 'strict', '=/').replace('%2B', '+'))"/>
+                                            </t>
+                                        </td>
+                                        <td style="vertical-align: top; height: 80px!important">
+                                            <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white; font-size: x-small;">
+                                                CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT
+                                            </h6>
+                                            <p style="border: 1.5px black solid; line-height: 1.5; word-break: break-all; font-size: x-small;">
+                                                <span t-esc="cfdi_vals['cadena']"/>
+                                            </p>
+                                            <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white; font-size: x-small;">
+                                                SELLO DIGITAL DEL EMISOR
+                                            </h6>
+                                            <p style="border: 1.5px black solid; line-height: 1.5; word-break: break-all; font-size: x-small;">
+                                                <span t-esc="cfdi_vals['sello']"/>
+                                            </p>
+                                            <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white; font-size: x-small;">
+                                                SELLO DIGITAL DEL SAT
+                                            </h6>
+                                            <p style="border: 1.5px black solid; line-height: 1.5; word-break: break-all; font-size: x-small;">
+                                                <span t-esc="cfdi_vals['sello_sat']"/>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+                                  <!--  <div class="col-3" style="width: 20%; min-height: 100%">-->
+                                  <!--    <t t-if="cfdi_vals.get('sello')">-->
+                                  <!--        <img alt="Barcode" t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=150&amp;height=150' % quote_plus('https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?' + keep_query(re=doc.l10n_mx_edi_cfdi_supplier_rfc, rr=doc.l10n_mx_edi_cfdi_customer_rfc, tt='%.*f' % (doc.currency_id.decimal_places, doc.l10n_mx_edi_cfdi_amount), id=doc.l10n_mx_edi_cfdi_uuid) + '&amp;fe=%s' % quote_plus(cfdi_vals['sello'][-8:], 'utf-8', 'strict', '=/').replace('%2B', '+'))"/>-->
+                                  <!--    </t>-->
+                                  <!--</div>-->
+                                  <!--<div class="col" style="width: 80%; min-height: 50%">-->
+                                  <!--    <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white; font-size: x-small">-->
+                                  <!--        CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT-->
+                                  <!--    </h6>-->
+                                  <!--    <p style="border: 1.5px black solid; line-height: 1.5; word-break: break-all; font-size: x-small">-->
+                                  <!--        <span t-esc="cfdi_vals['cadena']"/>-->
+                                  <!--    </p>-->
+                                  <!--    <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white; font-size: x-small">-->
+                                  <!--        SELLO DIGITAL DEL EMISOR-->
+                                  <!--    </h6>-->
+                                  <!--    <p style="border: 1.5px black solid; line-height: 1.5; word-break: break-all; font-size: x-small">-->
+                                  <!--        <span t-esc="cfdi_vals['sello']"/>-->
+                                  <!--    </p>-->
+                                  <!--    <h6 class="text-center" style="border: 1.5px black solid; background-color: #0088ff; color: white; font-size: x-small">-->
+                                  <!--        SELLO DIGITAL DEL SAT-->
+                                  <!--    </h6>-->
+                                  <!--    <p style="border: 1.5px black solid; line-height: 1.5; word-break: break-all; font-size: x-small">-->
+                                  <!--        <span t-esc="cfdi_vals['sello_sat']"/>-->
+                                  <!--    </p>-->
+                                  <!--</div>-->
+                              </div>
+
+
+                            </t>
+                            <!-- PAGARE -->
+                            <!-- Si no es de pago CONTADO y el equipo de ventas no es de maquinaria y el tipo de movimento es un "Ingreso" imprime el pagare -->
+                            <t t-if="is_cfdi_signed and doc.invoice_payment_term_id.name and 'Contado' not in doc.invoice_payment_term_id.name and doc.team_id.name and 'Maquinaria' not in doc.team_id.name and 'out_invoice' in doc.move_type">
+                                <!-- Si es una pagina -->
+                                <t t-if="line_index &lt; 10">
+                                    <div class="row" style="position: absolute; top: 760px; font-size: x-small; text-align: justify; border-top: dashed gray; border-bottom: dashed gray; padding: 1%">
+                                        <div class="col-9">
+                                            <p>
+                                                Por medio de este pagaré me(nos) obligo(amos) a pagar 
+                                                incondicionalmente a la orden de: 
+                                                <span t-field="doc.company_id"/>, la cantidad de: 
+                                                <span t-field="doc.amount_total"/> (SON: 
+                                                <span t-esc="doc._l10n_mx_edi_cfdi_amount_to_text()"/>) el día  
+                                                <span t-field="doc.invoice_date_due"/>, en esta ciudad de 
+                                                <span t-field="doc.company_id.city"/>, 
+                                                <span t-field="doc.company_id.state_id"/>
+                                            </p>
+                                            <p>
+                                                La cantidad que ampara este pagaré causará interés al tipo de 4% mensual y 
+                                                en caso de mora causará al tipo de 6% mensual.
+                                                Este pagaré es mercantil, no domiciliario y se rige por lo estipulado en la 
+                                                última parte del art. 17 de la ley general de títulos y operaciones de crédito. 
+                                                <span t-field="doc.company_id.city"/>, a 
+                                                <span t-field="doc.date"/>.
+                                            </p>
+                                        </div>
+                                        <div class="col-3" style="text-align: center">
+                                            <p>
+                                                <strong>Recibí(imos)</strong>
+                                            </p>
+                                            <br/>
+                                            <p>
+                                                <span style="border-top: 1px solid black;" t-field="doc.partner_id"/>
+                                                <br/>
+                                                FACTURA: SERIE - FOLIO: 
+                                                <span t-field="doc.name"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </t>
+                                <!-- Si son dos paginas -->
+                                <t t-else="">
+                                    <div class="row" style="position: absolute; top: 1680px; font-size: x-small; text-align: justify; border-top: dashed gray; border-bottom: dashed gray; padding: 1%">
+                                        <div class="col-9">
+                                            <p>
+                                                Por medio de este pagaré me(nos) obligo(amos) a pagar 
+                                                incondicionalmente a la orden de: 
+                                                <span t-field="doc.company_id"/>, la cantidad de: 
+                                                <span t-field="doc.amount_total"/> (SON: 
+                                                <span t-esc="doc._l10n_mx_edi_cfdi_amount_to_text()"/>) el día  
+                                                <span t-field="doc.invoice_date_due"/>, en esta ciudad de 
+                                                <span t-field="doc.company_id.city"/>, 
+                                                <span t-field="doc.company_id.state_id"/>
+                                            </p>
+                                            <p>
+                                                La cantidad que ampara este pagaré causará interés al tipo de 4% mensual y 
+                                                en caso de mora causará al tipo de 6% mensual.
+                                                Este pagaré es mercantil, no domiciliario y se rige por lo estipulado en la 
+                                                última parte del art. 17 de la ley general de títulos y operaciones de crédito. 
+                                                <span t-field="doc.company_id.city"/>, a 
+                                                <span t-field="doc.date"/>.
+                                            </p>
+                                        </div>
+                                        <div class="col-3" style="text-align: center">
+                                            <p>
+                                                <strong>Recibí(imos)</strong>
+                                            </p>
+                                            <br/>
+                                            <p>
+                                                <span style="border-top: 1px solid black;" t-field="doc.partner_id"/>
+                                                <br/>
+                                                FACTURA: SERIE - FOLIO: 
+                                                <span t-field="doc.name"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                            <!-- FOOTER -->
+                            <div class="footer o_standard_footer">
+                                <t t-if="is_cfdi_signed">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <strong>Este documento es una presentación impresa de un CFDI</strong>
+                                        </div>
+                                        <div class="col-5">
+                                            <strong>
+                                                <t t-if="doc.l10n_mx_edi_cfdi_uuid">
+                                                    <span>Regimen: </span>
+                                                    <span t-field="doc.company_id.l10n_mx_edi_fiscal_regime"/>
+                                                </t>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </t>
+                                <div t-if="report_type == 'pdf'" class="text-muted text-right">
+                                    Pagina: 
+                                    <span class="page"/>
+                                    /
+                                    <span class="topage"/>
+                                </div>
+                            </div>
+                        </div> 
+                    </t>
+                </t>
+            </t>
+
+
+
+            
+        </template>
+    </data>
+</odoo>

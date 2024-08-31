@@ -195,6 +195,7 @@
                                 <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
                                 <field name="venta_directa" />
                                 <field name="company_id" invisible="1"/>
+                                <field name="yuju_tag"/>
                                 
                                 <field name="color" widget="color_picker" required="0"/>
                             </group>

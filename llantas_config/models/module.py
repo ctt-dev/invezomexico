@@ -137,6 +137,7 @@ class ctrl_llantas(models.Model):
         "account.move",
         string="Factura proveedor",
         compute=compute_factura_prov,
+        store=True,
     )
 
     

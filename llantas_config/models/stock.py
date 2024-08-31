@@ -57,16 +57,19 @@ class sale_order_inherit(models.Model):
     precio_publico = fields.Float(
         string="Precio Público",
         compute="_compute_precio_publico",
+        store=True,
     )
 
     precio_may5pzs = fields.Float(
-        string="Precio mayoreo +5 Pzas",
+        string="Precio Mayoreo +5 Pzas",
         compute="_compute_precio_publico",
+        store=True,
     )
 
     precio_may100pzs = fields.Float(
-        string="Precio mayoreo +100 Pzas",
+        string="Precio Mayoreo +100 Pzas",
         compute="_compute_precio_publico",
+        store=True,
     )
 
     almacen_name = fields.Char(
@@ -159,29 +162,44 @@ class StockQuantWizard(models.TransientModel):
         
         # Obtener datos agrupados y ordenados por 'medida'
         grouped_data = self._get_grouped_stock_quants()
-        
-        row = 8  # Cambié el inicio de los datos a la fila 9
+    
+        # Inicializar estructura para acumulación de cantidades por SKU
+        consolidated_data = {}
+    
         for sku, data_dict in grouped_data.items():
+            if sku[0] not in consolidated_data:
+                consolidated_data[sku[0]] = {
+                    'product_id': data_dict['product_id'],
+                    'aplicacion': data_dict['aplicacion'],
+                    'medida': data_dict['medida'],
+                    'marca': data_dict['marca'],
+                    'almacenes': {almacen.id: 0 for almacen in self.almacen_name_ids},
+                    'precios': {
+                        'precio_publico': data_dict['precio_publico'],
+                        'precio_may5pzs': data_dict['precio_may5pzs'],
+                        'precio_may100pzs': data_dict['precio_may100pzs'],
+                    }
+                }
+            consolidated_data[sku[0]]['almacenes'][sku[1]] += data_dict['available_quantity']
+    
+        row = 8  # Cambié el inicio de los datos a la fila 9
+        for sku, data in consolidated_data.items():
             row_data = [
-                sku[0],  # SKU
-                data_dict['product_id'],
-                data_dict['aplicacion'],
-                data_dict['medida'],
-                data_dict['marca'],
+                sku,  # SKU
+                data['product_id'],
+                data['aplicacion'],
+                data['medida'],
+                data['marca'],
             ]
             for almacen in self.almacen_name_ids:
-                # Verificar si el almacén actual existe en los datos agrupados
-                if sku[1] == almacen.id:
-                    cantidad_total = data_dict['available_quantity']
-                else:
-                    cantidad_total = 0
-                row_data.append(cantidad_total)
+                cantidad = data['almacenes'].get(almacen.id, 0)  # Obtener la cantidad o 0 si no existe
+                row_data.append(cantidad)
             
             # Agregar los precios al final
             precios = [
-                f'{data_dict["precio_publico"]:.2f}',
-                f'{data_dict["precio_may5pzs"]:.2f}',
-                f'{data_dict["precio_may100pzs"]:.2f}',
+                f'{data["precios"]["precio_publico"]:.2f}',
+                f'{data["precios"]["precio_may5pzs"]:.2f}',
+                f'{data["precios"]["precio_may100pzs"]:.2f}',
             ]
             
             if self.ocultar_en_cero:
@@ -191,7 +209,7 @@ class StockQuantWizard(models.TransientModel):
             
             worksheet.write_row(row, 0, row_data)
             row += 1
-        
+    
         # Ajustar el ancho de las columnas
         worksheet.set_column('B:B', 70)  # Ancho de columna para 'Producto'
         
@@ -214,145 +232,90 @@ class StockQuantWizard(models.TransientModel):
         }
 
 
-
     def export_to_pdf(self):
         output = io.BytesIO()
-        # Reducir márgenes del PDF a 0.5 pulgadas
-        c = canvas.Canvas(output, pagesize=landscape(letter))
-        width, height = landscape(letter)
+        doc = SimpleDocTemplate(output, pagesize=landscape(letter))
         
-        # Ajustar márgenes a 0.5 pulgadas
-        c.translate(0.5 * inch, 0.5 * inch)
-        width -= inch
-        height -= inch
-    
-        # Obtener la empresa activa
+        # Configuración del estilo para la tabla
+        styles = getSampleStyleSheet()
+        style_table = styles['Table']
+        style_table.fontName = 'Helvetica'
+        style_table.fontSize = 10
+        style_table.alignment = 1
+        style_table.textColor = colors.black
+        
+        # Obtener la empresa actual
         company = self._get_current_company()
-        logo = company.logo  # Obtener el logo binario de la empresa activa
+        logo = company.logo  # Obtener el logo binario de la empresa actual
         
-        # Configurar el tamaño de la fuente más pequeña
-        font_size = 6
-        c.setFont("Helvetica", font_size)
-        
-        # Ajustar la posición del logo en el nuevo formato horizontal
         if logo:
             logo_image = io.BytesIO(base64.b64decode(logo))
-            c.drawImage(ImageReader(logo_image), width - 150, height - 80, width=100, height=50)
         
-        # Añadir las notas importantes
-        c.setFont("Helvetica-Bold", 8)
-        c.drawString(10, height - 40, "::: NOTA IMPORTANTE :::")
-        c.drawString(10, height - 55, "UNICAMENTE SE MUESTRA LA DISPONIBILIDAD PARA LA VENTA")
-        c.drawString(10, height - 70, "LOS PRECIOS INCLUYEN I.V.A")
-        c.drawString(10, height - 85, "LOS PRECIOS SE ENCUENTRAN SUJETOS A CAMBIOS SIN PREVIO AVISO")
-        c.setFont("Helvetica-Bold", 8)
-        c.setFillColorRGB(1, 0, 0)  # Color rojo
-        c.drawString(10, height - 100, "UNA VEZ SALIDA LA MERCANCIA NO SE ACEPTAN DEVOLUCIONES")
-        c.setFillColorRGB(0, 0, 0)  # Regresar al color negro
-        
-        # Añadir la fecha
-        today_str = datetime.today().strftime('%d/%m/%Y')
-        c.setFont("Helvetica", 8)
-        c.drawString(10, height - 115, f"Fecha: {today_str}")
-        
-        # Encabezados con campos de precios al final
-        headers = ['SKU', 'Producto', 'Aplicación', 'Medida', 'Marca'] + [almacen.name for almacen in self.almacen_name_ids] + ['Precio Público', 'Precio +5 Pzas', 'Precio +100 Pzas']
-        
-        # Establecer posiciones iniciales
-        x_positions = [5]  # Posición inicial de la primera columna
-        y = height - 130
-        
-        # Determinar anchos de columnas basados en el contenido
-        col_widths = [max(len(header) * font_size / 2, 70) for header in headers]
-        # Ajustar la columna "Producto" a 40-45 px de ancho
-        col_widths[0] = 30 * font_size / 2
-        col_widths[1] = 75 * font_size / 2
-        
-        for i in range(1, len(headers)):
-            x_positions.append(x_positions[i-1] + col_widths[i-1] + 10)  # +10 para el espacio entre columnas
-        
-        # Escribir los encabezados
-        for i, header in enumerate(headers):
-            c.drawString(x_positions[i], y, str(header))
-        
-        y -= 20  # Espacio entre encabezados y datos
-        
-        # Obtener los datos agrupados y ordenarlos por el campo 'medida'
+        # Obtener datos agrupados
         grouped_data = self._get_grouped_stock_quants()
-        sorted_data = sorted(grouped_data.items(), key=lambda x: (x[0][0], str(x[1]['medida']) if x[1]['medida'] is not None else ''))
         
-        # Inicializar estructura para acumulación de cantidades por SKU
-        consolidated_data = {}
-    
-        for (sku, almacen_id), data in sorted_data:
-            if sku not in consolidated_data:
-                consolidated_data[sku] = {
-                    'product_id': data['product_id'],
-                    'aplicacion': data['aplicacion'],
-                    'medida': data['medida'],
-                    'marca': data['marca'],
-                    'almacenes': {almacen.id: 0 for almacen in self.almacen_name_ids},
-                    'precios': {
-                        'precio_publico': data['precio_publico'],
-                        'precio_may5pzs': data['precio_may5pzs'],
-                        'precio_may100pzs': data['precio_may100pzs'],
-                    }
-                }
-            consolidated_data[sku]['almacenes'][almacen_id] += data['available_quantity']
+        data = []
+        data.append(['SKU', 'Producto', 'Aplicación', 'Medida', 'Marca'] + [almacen.name for almacen in self.almacen_name_ids] + ['Precio Público', 'Precio +5 Pzas', 'Precio +100 Pzas'])
         
-        # Escribir los datos consolidados
-        for sku, data in consolidated_data.items():
+        for sku, data_dict in grouped_data.items():
             row_data = [
-                sku,
-                data['product_id'],
-                data['aplicacion'],
-                data['medida'],
-                data['marca'],
+                sku,  # SKU
+                data_dict['product_id'],
+                data_dict['aplicacion'],
+                data_dict['medida'],
+                data_dict['marca'],
             ]
             for almacen in self.almacen_name_ids:
-                cantidad = data['almacenes'].get(almacen.id, 0)  # Obtener la cantidad o 0 si no existe
-                row_data.append(str(cantidad))
+                cantidad = grouped_data.get((sku, almacen.id), 0)  # Obtener la cantidad o 0 si no existe
+                row_data.append(cantidad)
             
             precios = [
-                f'{data["precios"]["precio_publico"]:.2f}',
-                f'{data["precios"]["precio_may5pzs"]:.2f}',
-                f'{data["precios"]["precio_may100pzs"]:.2f}',
+                f'{data_dict["precio_publico"]:.2f}',
+                f'{data_dict["precio_may5pzs"]:.2f}',
+                f'{data_dict["precio_may100pzs"]:.2f}',
             ]
             
             if self.ocultar_en_cero:
                 precios = [precio if float(precio) != 0 else '' for precio in precios]
             
             row_data += precios
-            
-            for i, item in enumerate(row_data):
-                c.drawString(x_positions[i], y, str(item))
-            
-            y -= 15
-            
-            if y < 50:
-                c.showPage()
-                y = height - 50
-                c.setFont("Helvetica", font_size)
-                for i, header in enumerate(headers):
-                    c.drawString(x_positions[i], y, str(header))
-                y -= 20
+            data.append(row_data)
         
-        c.save()
+        table = Table(data, colWidths=[1.2*inch]*5 + [0.8*inch]*len(self.almacen_name_ids) + [1.2*inch]*3)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        
+        elements = []
+        if logo:
+            logo_image.seek(0)
+            img = Image(logo_image)
+            img.drawHeight = 1.5 * inch
+            img.drawWidth = 1.5 * inch
+            elements.append(img)
+        
+        elements.append(table)
+        
+        doc.build(elements)
         output.seek(0)
         
         attachment = self.env['ir.attachment'].create({
             'name': 'Lista_de_Precios.pdf',
             'type': 'binary',
-            'datas': base64.b64encode(output.getvalue()),
-            'res_model': 'stock.quant.wizard',
-            'res_id': self.id,
-            'mimetype': 'application/pdf'
+            'datas': base64.b64encode(output.read()),
+            'mimetype': 'application/pdf',
         })
         
         return {
             'type': 'ir.actions.act_url',
-            'url': f'/web/content/{attachment.id}?download=true',
-            'target': 'self',
+            'url': '/web/content/{}?download=true'.format(attachment.id),
+            'target': 'new',
         }
 
 

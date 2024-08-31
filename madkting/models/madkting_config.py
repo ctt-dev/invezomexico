@@ -16,7 +16,7 @@ class MadktingConfig(models.Model):
 
     company_id = fields.Many2one('res.company', 'Company')
     stock_quant_available_quantity_enabled = fields.Boolean('Mostrar cantidad disponible', default=False)
-    # stock_source = fields.Many2one('stock.location', string="Ubicacion de Stock", domain=[('usage', '=', 'internal')])
+    # stock_source = fields.Many2one('stoƒck.location', string="Ubicacion de Stock", domain=[('usage', '=', 'internal')])
     stock_source_multi = fields.Char('Multi Stock Src')
     stock_source_channels = fields.Char('Channels Stock Src')
     webhook_stock_enabled = fields.Boolean('Stock webhooks enabled', default=False)

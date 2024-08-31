@@ -136,8 +136,16 @@ class marketplaces(models.Model):
         store=True,
     )
 
-    yuju_tag=fields.Char(
-        string="Yuju Marketplace"
+    yuju_tag=fields.Selection(
+        [
+            ('13','Mercado Libre Mexico'),
+            ('2201','Claro Shop'),
+            ('2401','Liverpool'),
+            ('3401','Coppel'),
+            ('1901','Shopify'),
+            ('3101','Elektra'),
+            ('2102','Walmart')
+        ],
     )
 
     venta_directa = fields.Boolean(

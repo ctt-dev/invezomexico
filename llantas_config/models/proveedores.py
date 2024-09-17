@@ -807,6 +807,11 @@ class ctrl_llantas(models.Model):
         string="Procesado?",
         default=False,
     )
+    
+    subalmacenes=fields.Boolean(
+        string="Tiene subalmacenes?",
+        default=False,
+    )
 
     def actualizar_sku_y_proveedor(self):
         # Acumuladores para las consultas SQL y sus parámetros

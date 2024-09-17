@@ -66,31 +66,49 @@ class sale_order_inherit(models.Model):
 
     @api.model
     def create(self, values):
+        # Verificar unicidad de folio_venta
         if 'folio_venta' in values:
-            venta_ids=self.env['sale.order'].search([('folio_venta','=',values['folio_venta']),('folio_venta','!=',False)])
-            if len(venta_ids) > 0:
+            venta_ids = self.env['sale.order'].search([
+                ('folio_venta', '=', values['folio_venta']),
+                ('folio_venta', '!=', False)
+            ])
+            if venta_ids:
                 raise UserError('El número de venta debe ser único.')
-        guia = values.get('guia', self.guia)
-        if guia:
-            ventas = self.env['sale.order'].search([
-                    ('guia', '=', guia),
-                    ('guia', 'not in', [False, ""]),
-                    ('guia', '!=', False),])
-            if len(ventas) > 0:
-                raise UserError('El número de guía debe ser único.')
-        return super(sale_order_inherit, self).create(values) 
 
-    
+        # Verificar unicidad de guía solo si no está vacía
+        guia = values.get('guia', self.guia)
+        if guia not in [False, "", None]:
+            ventas = self.env['sale.order'].search([
+                ('guia', '=', guia),
+                ('guia', '!=', False)
+            ])
+            if ventas:
+                raise UserError('El número de guía debe ser único.')
+
+        return super(sale_order_inherit, self).create(values)
+
     def write(self, values):
         for rec in self:
+            # Verificar unicidad de folio_venta
             if 'folio_venta' in values:
-                venta_ids=rec.env['sale.order'].search([('folio_venta','=',values['folio_venta']),('id','!=',rec.id),('folio_venta','!=',False)])
-                if len(venta_ids) > 0:
+                venta_ids = rec.env['sale.order'].search([
+                    ('folio_venta', '=', values['folio_venta']),
+                    ('id', '!=', rec.id),
+                    ('folio_venta', '!=', False)
+                ])
+                if venta_ids:
                     raise UserError('El número de venta debe ser único.')
-            if 'guia' in values:
-                ventas = rec.env['sale.order'].search([('guia','=',values['guia']),('id','!=',rec.id),('guia','!=',False)])
-                if len(ventas) > 0:
+
+            # Verificar unicidad de guía solo si no está vacía
+            if 'guia' in values and values['guia'] not in [False, "", None]:
+                ventas = rec.env['sale.order'].search([
+                    ('guia', '=', values['guia']),
+                    ('id', '!=', rec.id),
+                    ('guia', '!=', False)
+                ])
+                if ventas:
                     raise UserError('El número de guía debe ser único.')
+
         return super(sale_order_inherit, self).write(values)
     
     
@@ -188,6 +206,26 @@ class sale_order_inherit(models.Model):
     def _compute_es_killer(self):
         for rec in self:
             rec.es_killer = any(line.is_killer for line in rec.order_line)
+
+    @api.onchange('marketplace', 'comision', 'iva', 'envio', 'guia', 'folio_venta', 'marketplace_name', 'partner_id', 'comprador_id', 'fecha_venta')
+    def _onchange_sale(self):
+        for rec in self:
+            tab = self.env['llantas_config.ctt_llantas'].search([('sale_id','=',rec.id)])
+            if tab:
+                tab.write({
+                    'partner_name': rec.partner_id.id,
+                    'marketplace': rec.marketplace,
+                    'fecha': rec.fecha_venta,
+                    'comprador_id':rec.comprador_id.id,
+                    'comprador_name':rec.comprador_id.name,
+                    'comision':rec.comision,
+                    'envio':rec.envio,
+                    'marketplace_name':rec.marketplace.name,
+                    'tipo_factura': rec.tipo_factura,
+                    'no_recoleccion': rec.guia,
+                    'numero_guia' : rec.yuju_carrier_tracking_ref
+                })
+        
     
 
     def action_confirm(self):
@@ -200,6 +238,8 @@ class sale_order_inherit(models.Model):
             if line.costo_proveedor != 0.00:
                 line.write({'costo_proveedor_2': line.costo_proveedor})
                 line.compute_costo_proveedor_total()
+        if self.yuju_carrier_tracking_ref:
+            self.write({'guia': self.yuju_carrier_tracking_ref})
         return res
 
     # def _prepare_invoice(self):
@@ -228,31 +268,40 @@ class sale_order_inherit(models.Model):
         
     # user = self.env.user
     
-    def create_purchase(self):
+    def create_purchase_for_sale_order(self):
         for rec in self:
             if rec.state == 'sale':
                 for line in rec.order_line:
-                    if 	rec.amount_total < (line.product_uom_qty * line.costo_proveedor) and rec.es_killer == False:
+                    # Verifica las condiciones iniciales antes de crear la orden de compra
+                    if rec.amount_total < (line.product_uom_qty * line.costo_proveedor) and rec.es_killer == False:
                         raise UserError("La creación de la orden de compra no es posible en este momento debido a que el total de la orden de compra excede el total de la orden de venta asociada.")
+                    
                     if line.qty_available_today > 0:
                         raise UserError("Actualmente, no es posible generar una orden de compra debido a que hay productos disponibles en stock. Se recomienda revisar el inventario existente antes de generar una nueva orden de compra.")
+                    
+                    # Procede con la creación o actualización de la orden de compra
                     else:
                         if line.proveedor_id:
+                            # Busca la moneda
                             moneda = self.env['res.currency'].search([('name', '=', rec.currency_id.name)])
-                            if moneda:
-                                id_de_la_moneda = moneda.id
-                            else:
+                            if not moneda:
                                 raise UserError("Moneda no encontrada")
-    
-                            if len(line.purchase_line_ids) == 0:
+                            id_de_la_moneda = moneda.id
+                            
+                            # Si no existen líneas de orden de compra previas, crea una nueva orden de compra
+                            if not line.purchase_line_ids:
+                                # Crea la nueva orden de compra
                                 nueva_cotizacion_compra = self.env['purchase.order'].create({
                                     'partner_id': line.proveedor_id.partner_id.id,
                                     'currency_id': id_de_la_moneda,
                                     'company_id': self.env.company.id,
-                                    'picking_type_id':self.warehouse_id.in_type_id.id,
-                                    'auto_sale_order_id':self.id,
+                                    'picking_type_id': self.warehouse_id.in_type_id.id,
+                                    'auto_sale_order_id': self.id,
                                 })
-                                if line.product_id.product_tmpl_id.es_paquete == False:
+                                
+                                # Si el producto no es un paquete
+                                if not line.product_id.product_tmpl_id.es_paquete:
+                                    # Crea la línea de orden de compra
                                     purchase_line = self.env['purchase.order.line'].create({
                                         'order_id': nueva_cotizacion_compra.id,
                                         'product_id': line.product_id.id,
@@ -260,24 +309,36 @@ class sale_order_inherit(models.Model):
                                         'product_qty': line.product_qty,
                                         'product_uom': line.product_uom.id,
                                         'price_unit': line.costo_proveedor,
-                                        'sale_order_id':rec.id,
+                                        'sale_order_id': rec.id,
                                         'codigo_proveedor': line.codigo_proveedor,
-                                        
                                     })
-                                    line.write({'purchase_line_ids': purchase_line})
-                                    self.env['mail.message'].create({
-                                        'model': 'sale.order',
-                                        'res_id': self.id,
-                                        'message_type': 'notification',
-                                        'subtype_id': 2,
-                                        'email_from': self.user_id.login,
-                                        'author_id': self.user_id.parent_id.id,
-                                        'body': "Orden de compra generada "
-                                    })
+                                    
+                                    # Actualiza la relación entre la línea de venta y la nueva línea de compra
+                                    line.write({'purchase_line_ids': [(4, purchase_line.id)]})
+                                    
+                                    # Llama a la función compute_orden_compra
+                                    llantas = self.env['llantas_config.ctt_llantas'].search([('sale_id', '=', rec.id)], limit=1)
+                                    if llantas:
+                                        llantas.compute_orden_compra()
+    
+                                    # Crea la notificación
+                                    if rec.user_id and rec.user_id.parent_id:
+                                        self.env['mail.message'].create({
+                                            'model': 'sale.order',
+                                            'res_id': self.id,
+                                            'message_type': 'notification',
+                                            'subtype_id': 2,
+                                            'email_from': self.user_id.login,
+                                            'author_id': self.user_id.parent_id.id,
+                                            'body': "Orden de compra generada"
+                                        })
+                                
+                                # Si el producto es un paquete, maneja la lista de materiales
                                 else:
                                     lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
                                     if lmateriales:
                                         for lmat in lmateriales:
+                                            # Crea líneas de compra para los materiales
                                             purchase_line = self.env['purchase.order.line'].create({
                                                 'order_id': nueva_cotizacion_compra.id,
                                                 'product_id': lmat.product_id.id,
@@ -285,19 +346,32 @@ class sale_order_inherit(models.Model):
                                                 'product_qty': lmat.product_qty,
                                                 'product_uom': line.product_uom.id,
                                                 'price_unit': line.costo_proveedor,
-                                                'sale_order_id':rec.id,
+                                                'sale_order_id': rec.id,
                                                 'codigo_proveedor': line.codigo_proveedor,
                                             })
-                                            line.write({'purchase_line_ids': purchase_line})
-                                            self.env['mail.message'].create({
-                                                'model': 'sale.order',
-                                                'res_id': self.id,
-                                                'message_type': 'notification',
-                                                'subtype_id': 2,
-                                                'email_from': self.user_id.login,
-                                                'author_id': self.user_id.parent_id.id,
-                                                'body': "Orden de compra generada "
-                                            })
+                                            # Actualiza la relación
+                                            line.write({'purchase_line_ids': [(4, purchase_line.id)]})
+                                            
+                                            # Llama a la función compute_orden_compra
+                                            llantas = self.env['llantas_config.ctt_llantas'].search([('sale_id', '=', rec.id)], limit=1)
+                                            if llantas:
+                                                llantas.compute_orden_compra()
+    
+                                            # Crea la notificación
+                                            if rec.user_id and rec.user_id.parent_id:
+                                                self.env['mail.message'].create({
+                                                    'model': 'sale.order',
+                                                    'res_id': self.id,
+                                                    'message_type': 'notification',
+                                                    'subtype_id': 2,
+                                                    'email_from': self.user_id.login,
+                                                    'author_id': self.user_id.parent_id.id,
+                                                    'body': "Orden de compra generada"
+                                                })
+                                    else:
+                                        raise UserError('Este paquete no tiene lista de materiales, favor de agregarla.')
+                            
+                            # Si ya existen líneas de compra, actualiza la orden de compra existente
                             else:
                                 purchase_id = False
                                 for purchase_line in line.purchase_line_ids:
@@ -306,8 +380,9 @@ class sale_order_inherit(models.Model):
                                     'partner_id': line.proveedor_id.partner_id.id,
                                     'currency_id': id_de_la_moneda,
                                     'company_id': self.env.company.id,
-                                    'picking_type_id':self.warehouse_id.in_type_id.id,
+                                    'picking_type_id': self.warehouse_id.in_type_id.id,
                                 })
+    
                                 for purchase_line in purchase_id.order_line:
                                     if purchase_line.sale_line_id.id == line.id:
                                         lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
@@ -318,10 +393,9 @@ class sale_order_inherit(models.Model):
                                                     'name': lmat.product_id.product_tmpl_id.name,
                                                     'product_qty': lmat.product_qty,
                                                     'product_uom': line.product_uom.id,
-                                                    'price_unit': line.costo_proveedor,                                               
+                                                    'price_unit': line.costo_proveedor,
                                                 })
                                         else:
-                                            # raise ValidationError(123)
                                             purchase_line.write({
                                                 'product_id': line.product_id.id,
                                                 'name': line.product_id.name,
@@ -330,41 +404,25 @@ class sale_order_inherit(models.Model):
                                                 'price_unit': line.costo_proveedor,
                                                 'codigo_proveedor': line.codigo_proveedor,
                                             })
-                                self.env['mail.message'].create({
-                                    'model': 'sale.order',
-                                    'res_id': self.id,
-                                    'message_type': 'notification',
-                                    'subtype_id': 2,
-                                    'email_from': self.user_id.login,
-                                    'author_id': self.user_id.id,
-                                    'body': "Orden de compra actualizada "
-                                })
-                                        
-                            
-                            purchase_order_ids = self._get_purchase_orders().ids
-                            action = {
-                                'res_model': 'purchase.order',
-                                'type': 'ir.actions.act_window',
-                            }
-                            if len(purchase_order_ids) == 1:
-                                action.update({
-                                    'view_mode': 'form',
-                                    'res_id': purchase_order_ids[0],
-                                })
-                            else:
-                                action.update({
-                                    'name': _("Purchase Order generated from %s", self.name),
-                                    'domain': [('id', 'in', purchase_order_ids)],
-                                    'view_mode': 'tree,form',
-                                })
-                            return action
-                            
-                            
-                        else:
-                            raise UserError("Se debe seleccionar un proveedor para cada línea de orden de venta")
-            
-            else:
-                raise UserError("La orden de venta necesita estar confirmada")
+    
+                                # Llama a la función compute_orden_compra tras actualizar la orden de compra
+                                llantas = self.env['llantas_config.ctt_llantas'].search([('sale_id', '=', rec.id)], limit=1)
+                                if llantas:
+                                    llantas.compute_orden_compra()
+    
+                                # Crea la notificación de actualización
+                                if rec.user_id:
+                                    self.env['mail.message'].create({
+                                        'model': 'sale.order',
+                                        'res_id': self.id,
+                                        'message_type': 'notification',
+                                        'subtype_id': 2,
+                                        'email_from': self.user_id.login,
+                                        'author_id': self.user_id.id,
+                                        'body': "Orden de compra actualizada"
+                                    })
+
+    
 
 
     detailed_info = fields.Html(

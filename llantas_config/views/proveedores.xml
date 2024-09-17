@@ -28,6 +28,7 @@
                     <field name="tipo_cambio" optional="hide"/>
                     <field name="fecha_actualizacion" optional="hide"/>
                     <field name="create_date" optional="hide"/>
+                    <field name="subalmacenes" optional="hide" />
                     <field name="procesado" invisible="0"/>
                     
                 </tree>

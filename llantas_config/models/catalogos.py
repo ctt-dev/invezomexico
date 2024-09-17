@@ -322,6 +322,101 @@ class proveedores_link(models.Model):
             'proveedor': self.proveedor_id.name
         }
 
+    def probar_json(self):
+        url1 = "https://script.googleusercontent.com/macros/echo?user_content_key=-nPb1guziFdeML89XAF8sgJtQmuMVWAq0dYIzSc_wZs3QRZeZpoVTKxxZCIhlaOohqfBl6vOUGor4G14ndO5EM3JPYZbyKsjm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnFXKTdTCSsWPTXVM0gnF7bJnigLD7sxsdMOYrTVQl1vVMVRwkiVMGx9SsVmTKE85jS9VA075VAQmtNUHgqsKZo-8mzDTCqnGIg&lib=M4m5NS-apNCUtcNwkLEarFEAXVMBT1kpy"
+
+        url2 ="https://script.googleusercontent.com/macros/echo?user_content_key=N1_BAqUH6r5aCxfcAdoy1Osj2k22NDrcN4AXfMEa7hxmU2k9DyRpkwHSLxY0G58R-o5hkTEui5fvlNVPihU1vv-tqTbjp8pxm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnJs6yOTCCz2AYTectuQhThkO3fnnGxjdOTTXTjGldiZczBRDjSifi-5uXJ1SHiVnFQ0WnERPH6M5wFj3GPAqa3FUrveNIGQWYtz9Jw9Md8uu&lib=MFcnFjvRWaVIWX7Ujvv2ZzNOZyGFvGpb3"
+        
+        # Función para probar una URL
+        def probar_url(url):
+            try:
+                response = urllib.request.urlopen(url, timeout=30)
+                if response.getcode() != 200:
+                    raise UserError(f"Error al obtener datos: la URL devolvió el código de estado {response.getcode()}")
+                content = response.read().decode()
+                if not content:
+                    raise UserError(f"La respuesta de la URL está vacía.")
+                return content
+            except Exception as e:
+                raise UserError(f"Error al obtener datos del JSON: {e}")
+        
+        # Probar ambas URLs
+        content1 = probar_url(url1)
+        content2 = probar_url(url2)
+        
+        # Mostrar los primeros 500 caracteres de cada respuesta para comparar
+        raise UserError(f"Respuesta URL 1: {content1[:500]}\n\nRespuesta URL 2: {content2[:500]}")
+    
+    def procesar_concentrado2(self):
+        try:
+            # Intentar abrir la URL y obtener los datos
+            response = urllib.request.urlopen(self.url, timeout=30)  # Timeout de 30 segundos
+            data = json.loads(response.read().decode())
+            
+            # Depurar el JSON recibido
+            if not data:
+                raise UserError("El JSON está vacío o no tiene el formato esperado.")
+            
+            # Verificar el contenido del JSON
+            # Puedes revisar los primeros registros si es muy largo
+            _logger.info(f"Datos recibidos del JSON: {data[:5]}")  # Muestra los primeros 5 registros
+    
+        except Exception as e:
+            raise UserError(f"Error al obtener datos del JSON: {e}")
+    
+        # Inicialización de variables
+        tipo_cambio = 1  # Suponiendo un tipo de cambio fijo
+        fecha_actual = datetime.datetime.now()
+    
+        # Procesar cada registro del JSON
+        for record in data:
+            if isinstance(record, dict):
+                sku_proveedor = record.get('Codigo', 'N/A')
+                existencia = record.get('Cantidad', 0)
+                costo = record.get('Precio', 0.0) * tipo_cambio
+                producto = record.get('Descripcion', 'N/A')
+                proveedor = record.get('Proveedor', 'N/A')
+                almacen = record.get('Almacen', 'N/A')
+    
+                # Buscar registro existente en Odoo
+                existing_record = self.env['llantas_config.ctt_prov'].search([
+                    ('nombre_proveedor', '=', proveedor),
+                    ('sku', '=', sku_proveedor),
+                    ('nombre_almacen', '=', almacen),
+                ], limit=1)
+    
+                if existing_record:
+                    if existing_record.costo_sin_iva != costo or existing_record.existencia != existencia:
+                        existing_record.write({
+                            'existencia': existencia,
+                            'costo_sin_iva': costo,
+                            'fecha_actualizacion': fecha_actual,
+                            'procesado': False
+                        })
+                    else:
+                        existing_record.write({
+                            'fecha_actualizacion': fecha_actual,
+                            'procesado': False
+                        })
+                else:
+                    self.env['llantas_config.ctt_prov'].create({
+                        'nombre_proveedor': proveedor,
+                        'sku': sku_proveedor,
+                        'producto': producto,
+                        'nombre_almacen': almacen,
+                        'existencia': existencia,
+                        'costo_sin_iva': costo,
+                        'tipo_moneda': 'MXN',
+                        'tipo_cambio': tipo_cambio,
+                        'fecha_actualizacion': fecha_actual,
+                        'procesado': False,
+                        'subalmacenes': True
+                    })
+    
+        return {
+            'message': "Datos procesados correctamente",
+            'proveedor': self.proveedor_id.name
+        }
 
     def _cron_procesar_supplierinfo(self):
         batch_size = 1000
@@ -710,54 +805,7 @@ class proveedores_link(models.Model):
                 'message': f"Se actualizaron {count_actualizados} registros y se agregaron {count_agregados} nuevos registros correctamente. No se encontraron {count_sin_encontrar}.",
             }
         }
-    def procesar_concentrado2(self):
-        # URL desde la que deseas obtener los datos
-        url = self.url
-        try:
-            # Abre la URL y lee los datos
-            response = urllib.request.urlopen(url)
-            data = json.loads(response.read().decode())
-
-            # Procesar cada elemento del JSON
-            results = []
-            for item in data:
-                if isinstance(item, dict):
-                    sku_proveedor = item.get('SKU PROVEEDOR', 'N/A')
-                    producto = item.get('PRODUCTO', 'N/A')
-                    existencia_proveedor = item.get('EXISTENCIA PROVEEDOR', 0)
-                    costo_proveedor = item.get('COSTO PROVEEDOR', 0.0)
-                    proveedor = item.get('PROVEEDOR', 'N/A')
-
-                    # Agrega los datos a la lista de resultados
-                    results.append({
-                        'sku_proveedor': sku_proveedor,
-                        'producto': producto,
-                        'existencia_proveedor': existencia_proveedor,
-                        'costo_proveedor': costo_proveedor,
-                        'proveedor': proveedor,
-                    })
-
-
-                
-
-                    # Aquí podrías realizar acciones adicionales, como guardar en la base de datos
-                    # Por ejemplo, crear o actualizar registros en un modelo de Odoo
-                    # self.env['otro.modelo'].create({
-                    #     'sku_proveedor': sku_proveedor,
-                    #     'producto': producto,
-                    #     'existencia_proveedor': existencia_proveedor,
-                    #     'costo_proveedor': costo_proveedor,
-                    #     'proveedor': proveedor,
-                    # })
-
-                else:
-                    raise UserError("Formato de datos no esperado.")
-
-            # Registra la información procesada en el log
-            _logger.info("Datos procesados: %s", results)
-
-        except Exception as e:
-            raise UserError(f"Error al procesar el concentrado: {e}")
+    
         
         
     def process_link(self):

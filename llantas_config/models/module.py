@@ -48,6 +48,9 @@ class ctrl_llantas(models.Model):
         store=True,
     )
 
+    
+    numero_guia = fields.Char(string="Numero de Guia Envio", related="sale_id.guia")
+    
     name=fields.Char(
         related="sale_id.name",
         string="Nombre",

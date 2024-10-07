@@ -1201,10 +1201,10 @@ class proveedores_link(models.Model):
                 ('default_code', '=', move.sku),
                 ('sku_alternos.name', 'in', [move.sku])
             ])
-            if lines:
-                for lin in lines:
-                    if lin.es_paquete or not move.sku_interno:
-                        continue
+            # if lines:
+            #     for lin in lines:
+            #         if lin.es_paquete or not move.sku_interno:
+            #             continue
 
         for mov in moves:
             existencias_por_sku_proveedor[(mov.sku, proveedor)] += mov.existencia
@@ -1217,7 +1217,9 @@ class proveedores_link(models.Model):
             ])
             if lines:
                 for line in lines:
-                    if line.es_paquete or line.detailed_type != 'product':
+                    # if line.es_paquete or line.detailed_type != 'product':
+                    #     continue
+                    if line.detailed_type != 'product':
                         continue
 
                     sku_proveedor = (line.id, proveedor)

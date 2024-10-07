@@ -16,7 +16,7 @@
     'email': "gerardo.lopez@yuju.io",
     'website': "https://yuju.io/",
     'category': 'Sales',
-    'version': '1.8.9',
+    'version': '2.1.3',
     'license': 'Other proprietary',
 
     # any module necessary for this one to work correctly
@@ -30,8 +30,12 @@
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
-        'views/views.xml',
-        # 'views/templates.xml',
+        'views/config.xml',
+        'views/mappings.xml',
+        'views/webhooks.xml',
+        'views/sale_order.xml',
+        'views/product.xml',
+        'views/menu_items.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -221,4 +225,54 @@
 # Update country_id in customer creation, fix get_mapping_fields method in sales 
 
 # Version 1.8.9
-# Agrega log en venta, quita rollback en execpcion de lineas 
+# Agrega log en venta, quita rollback en excepcion de lineas 
+
+# Version 1.9.0
+# Valida orden antes de confirmar. 
+
+# Version 1.9.1
+# Agrega condicion para validar en la confirmacion de la orden solo si es una venta yuju, que tenga
+# id_channel y id_order. 
+
+# Version 2.0.0
+# Actualiza proceso para envio de webhooks y guarda registro de envio
+
+# Version 2.0.1
+# Agrega metodo para obtener stock product_id
+
+# Version 2.0.2
+# Agrega metodo para cancelar pago asociado si se cancela la factura
+
+# Version 2.0.3
+# Actualiza permisos generales para webhook record
+
+# Version 2.0.4
+# Agrega campo yuju carrier
+
+# Version 2.0.5
+# Agrega validacion de base de datos en la configuracion para webhooks de stock
+
+# Version 2.0.6
+# Fix invoice folio with spaces
+
+# Version 2.0.7
+# Agrega funcion para reenvio de facturas, agrega campo status shipping y invoice
+
+# Version 2.0.8
+# Fix para actualizar status de factura yuju, agrega filtro invoice_status
+
+# Version 2.0.9
+# Agrega campo yuju_invoice_doctype y lo valida para obtener mapeo de campos en la factura
+
+# Version 2.1.0
+# Agrega validacion configuracion para enviar mensaje despues de facturar/entregar
+
+# Version 2.1.1
+# Agrega validacion configuracion para validar webhooks de facturacion/entregar
+
+# Version 2.1.2
+# Agrega validacion configuracion para enviar mensaje despues de facturar/entregar
+
+# Version 2.1.3
+# Agrega validacion tipo de registro antes de enviar webhook, 
+# fix bool object in record error getting company for config

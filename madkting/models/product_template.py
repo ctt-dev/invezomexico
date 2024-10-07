@@ -71,7 +71,6 @@ class ProductTemplate(models.Model):
         logger.debug("### MDK CREATE PRODUCT DATA ###")
         logger.debug(product_data)
         config = self.env['madkting.config'].get_config()
-        mapping = self.env['yuju.mapping.product']
         products = self.env['product.product']
 
         if config and config.simple_description_enabled:
@@ -138,67 +137,19 @@ class ProductTemplate(models.Model):
         # create a product simple
         if not has_variations:
             logger.debug("#CREATE PRODUCT SIMPLE")
-            if id_shop:
-                id_product_madkting = product_data.get('id_product_madkting')
-                sku_product = product_data.get('default_code')
-                product_mapping_data = {     
-                    'product_id' : False, 
-                    'id_product_yuju' : id_product_madkting,
-                    'id_shop_yuju' : id_shop,
-                    'default_code' : sku_product,
-                    'state' : 'active'
-                }
-                product_ids = self.env['product.product'].search([('default_code', '=', sku_product)], limit=1)
-                if product_ids:
-                    product_mapping_data.update({'product_id' : product_ids.id})
-                    try:
-                        mapping.create_or_update_product_mapping(product_mapping_data)
-                    except Exception as ex:
-                        logger.exception(ex)
-                        return results.error_result(code='product_create_error',
-                                                    description='Product Mapping couldn\'t be created because '
-                                                                'of the following exception: {}'.format(ex))
-
-                else:
-                    try:
-                        new_product_simple = self.env['product.product'].create(product_data)
-                    except Exception as ex:
-                        logger.exception(ex)
-                        return results.error_result(code='product_create_error',
-                                                    description='Product couldn\'t be created because '
-                                                                'of the following exception: {}'.format(ex))
-                    else:
-                        try:
-                            product_mapping_data.update({'product_id' : new_product_simple.id})
-                            mapping.create_or_update_product_mapping(product_mapping_data)
-                        except Exception as ex:
-                            logger.exception(ex)
-                            """Si no se logra crear el mapeo, se elimina el producto que se acaba de crear"""
-                            new_product_simple.unlink()
-                            return results.error_result(code='product_create_error',
-                                                        description='Product mapping couldn\'t be created because '
-                                                                    'of the following exception: {}'.format(ex))
-                        else:                        
-                            # if stock:
-                            #    pass # TODO: implement initial stock functionality
-                            
-                            if supplier_data:
-                                new_product_simple._create_supplier_product(supplier_data)
-
-                            return results.success_result(data=new_product_simple.get_data_with_variations())         
+            
+            try:
+                new_product_simple = self.env['product.product'].create(product_data)
+            except Exception as ex:
+                logger.exception(ex)
+                return results.error_result(code='product_create_error',
+                                            description='Product couldn\'t be created because '
+                                                        'of the following exception: {}'.format(ex))
             else:
-                try:
-                    new_product_simple = self.env['product.product'].create(product_data)
-                except Exception as ex:
-                    logger.exception(ex)
-                    return results.error_result(code='product_create_error',
-                                                description='Product couldn\'t be created because '
-                                                            'of the following exception: {}'.format(ex))
-                else:
-                    if supplier_data:
-                        new_product_simple._create_supplier_product(supplier_data)
+                if supplier_data:
+                    new_product_simple._create_supplier_product(supplier_data)
 
-                    return results.success_result(data=new_product_simple.get_data_with_variations())
+                return results.success_result(data=new_product_simple.get_data_with_variations())
 
         # create product with variations
         # validate variations
@@ -315,29 +266,6 @@ class ProductTemplate(models.Model):
                 variation_data.pop('attributes', None)
                 variation_data.pop('product_id', None)
                 variation_data.pop('id', None)
-
-                if id_shop:
-                    is_multi_shop = False
-                    if variation_data.get('is_multi_shop'):
-                        variation_data.pop('is_multi_shop')
-                        is_multi_shop = True
-                        
-                    id_product_madkting = variation_data.get('id_product_madkting')
-                    sku_variant = variation_data.get('default_code')
-                    variant_mapping_data = {     
-                        'product_id' : product_variant.id,
-                        'id_product_yuju' : id_product_madkting,
-                        'id_shop_yuju' : id_shop,
-                        'default_code' : sku_variant,
-                        'state' : 'active'
-                    }                                               
-                    try:
-                        mapping.create_or_update_product_mapping(variant_mapping_data)
-                    except Exception as ex:
-                        logger.exception(ex)
-                        return results.error_result(code='product_create_error',
-                                                description='Product mapping couldn\'t be created because '
-                                                            'of the following exception: {}'.format(ex))
                 
                 logger.debug("## VARIATION DATA ##")
                 logger.debug(variation_data)
@@ -361,38 +289,8 @@ class ProductTemplate(models.Model):
                 'product_not_found',
                 'The product that you are trying to change doesn\'t exists or has been deleted'
             )
-        try:
-            if id_shop:
-                yuju_mapping = self.env['yuju.mapping'].sudo()
-                product_mapping = self.env['yuju.mapping.product'].sudo()
-                mapping = yuju_mapping.search([('id_shop_yuju', '=', id_shop)])
-                if not mapping.ids:
-                    return results.error_result(
-                        'product_not_found',
-                        'Mapping record not found for id_shop {} in activate/deactivate'.format(id_shop)
-                    )
-                mapping_state = 'active' if active else 'disabled'
-                update_template = True
-                for variation in product.product_variant_ids:
-                    if update_template:
-                        mapping_product = product_mapping.get_product_mapping_by_product(variation.id, only_active=True)
-                        if mapping_product and len(mapping_product.ids) > 1:
-                            update_template = False
-
-                if update_template:
-                    for variation in product.product_variant_ids:
-                        mapping_product = self.env['yuju.mapping.product'].sudo().search([('product_id', '=', variation.id), ('id_shop_yuju', '=', id_shop)], limit=1)
-                        if mapping_product.ids:
-                            mapping_product.write({'state' : mapping_state})                            
-                    product.active = active                
-                else:
-                    for variation in product.product_variant_ids:
-                        mapping_product = self.env['yuju.mapping.product'].sudo().search([('product_id', '=', variation.id), ('id_shop_yuju', '=', id_shop)], limit=1)
-                        if mapping_product.ids:
-                            mapping_product.write({'state' : mapping_state})
-
-            else:
-                product.active = active
+        try:            
+            product.active = active
         except Exception as ex:
             logger.exception(ex)
             return results.error_result('activate_product_error', str(ex))
@@ -443,28 +341,6 @@ class ProductTemplate(models.Model):
                 return results.success_result()
 
         delete_template = True
-        if id_shop:
-            yuju_mapping = self.env['yuju.mapping'].sudo()
-            product_mapping = self.env['yuju.mapping.product'].sudo()
-            mapping = yuju_mapping.search([('id_shop_yuju', '=', id_shop)])
-            if not mapping.ids:
-                logger.debug("Mapeo de productos no encontrados, se desindexa.")
-                return results.success_result()
-
-            if product:
-                for variation in product.product_variant_ids:
-                    if delete_template:
-                        mapping_product = product_mapping.get_product_mapping_by_product(variation.id)
-                        if mapping_product and len(mapping_product.ids) > 1:
-                            delete_template = False
-                            logger.debug("Hay mas de un mapeo para el producto, no se elimina")
-                            break
-
-                logger.debug("Se eliminan los mapeos")
-                for variation in product.product_variant_ids:
-                    mapping_product = product_mapping.get_product_mapping(variation.id, id_shop)
-                    if mapping_product:
-                        mapping_product.unlink()
 
         if not producto_encontrado:
             logger.debug("Finaliza eliminacion")
@@ -473,6 +349,11 @@ class ProductTemplate(models.Model):
         if delete_template:
             try:
                 logger.debug("Se elimina el producto")
+                for variant in product.product_variant_ids:
+                    variant.id_product_madkting = None
+                    variant.barcode = None
+                product.active = False
+                product.barcode = None
                 product.write({"active": False})
                 # product.unlink()
             except (exceptions.ValidationError, psycopg2.IntegrityError) as ve:

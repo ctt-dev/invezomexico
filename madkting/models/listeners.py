@@ -1,7 +1,6 @@
 from odoo.addons.component.core import Component
 from ..log.logger import logger
 from ..log.logger import logs
-from ..notifier import notifier
 
 class MadktingStockMoveListener(Component):
     _name = 'madkting.stock.move.listener'
@@ -36,19 +35,28 @@ class MadktingStockMoveListener(Component):
         :param record:
         :return:
         """
-        # logger.info("## LISTENER ##")
-        config = self.env['madkting.config'].sudo().get_config()
+        if isinstance(record, bool):
+            logger.debug("Bool object for record")
+            return
 
-        if not config or not config.webhook_stock_enabled:
+        company_id = record.company_id.id if record and record.company_id else None
+        config = self.env['madkting.config'].get_config(company_id)
+
+        if not config:
+            logger.warning("No config set in webhook listener")
             return
 
         record_state = getattr(record, 'state', None)
 
         if record_state in ['assigned', 'done', 'cancel'] and record.product_id.id_product_madkting:
-            # logger.info("##LISTENER ENVIA MSJ##")
             try:
-                notifier.send_stock_webhook(self.env, record.product_id, record.company_id.id)
+                wh_records = self.env["yuju.webhook.record"]
+                wh_records.prepare_webhook(record.product_id, record.company_id.id)
             except Exception as ex:
-                logger.exception(ex)
+                post_message = f"Error on webhook listener {record.name}: {ex}"
+                logger.exception(post_message)
+                if config.webhook_detail_enabled:
+                    record.product_id.message_post(body=post_message)
+
         
 # https://apps.yuju.io/api/sales/in/2301?id_shop=1085876

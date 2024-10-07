@@ -11,8 +11,6 @@ from odoo import exceptions
 from ..responses import results
 from ..log.logger import logger
 
-from ..notifier import notifier, notifier_price
-
 from collections import defaultdict
 import logging
 import math
@@ -74,50 +72,35 @@ class ProductProduct(models.Model):
         :type product_id: int
         :return:
         :rtype: dict
-        """        
-        for product in self:
-            if not product.id_product_madkting:
-                product.message_post(body="Error al lanzar webhook: El producto no esta mapeado con Yuju")
-                return
-            if not product.company_id:
-                company_id = self.env.user.company_id.id
-            else:
-                company_id = product.company_id.id
-            try:
-                notifier.send_stock_webhook(self.env, product, company_id)
-            except Exception as ex:
-                logger.debug("###Exception Ocurred on Sending Webhook")
-                logger.debug(ex)        
-                
-        return results.success_result()
-
-    @api.model
-    def send_webhook_all(self, company_id):
         """
-        :param product_id:
-        :type product_id: int
-        :return:
-        :rtype: dict
-        """        
-        product_ids = self.search([('id_product_madkting', '!=', False)])
-
-        if not product_ids:
-            return results.error_result('product_not_found',
-                                        'product_id not found')
-
-        for product in product_ids:
+        logger.debug(f"Env: {self.env.company}")
+        logger.debug(f"Cr: {self.env.cr}")
+        logger.debug(f"Dbname: {self.env.cr.dbname}")
+        for product in self:
+            # if not product.id_product_madkting:
+            #     product.message_post(body="Error al lanzar webhook: El producto no esta mapeado con Yuju")
+            #     return
+            if product.company_id:
+                company_id = product.company_id.id
+            else:
+                company_id = self.env.company.id
             try:
-                notifier.send_stock_webhook(self.env, product, company_id)
+                wh_records = self.env["yuju.webhook.record"]
+                wh_records.prepare_webhook(product, company_id)
             except Exception as ex:
                 logger.debug("###Exception Ocurred on Sending Webhook")
-                logger.debug(ex)        
-            
+                logger.debug(ex)
+                post_message = f"Error sending webhook {product.name}: {ex}"
+                product.message_post(body=post_message)
         return results.success_result()
     
     @api.model
     def get_stock_data(self, location_id):
         config = self.env['madkting.config'].get_config()
-        product_ids = self.search([('id_product_madkting', '!=', False)])
+        if config.webhook_product_mapped:
+            product_ids = self.search([('id_product_madkting', '!=', False)])
+        else:
+            product_ids = self.search([('detailed_type', '=', 'product')])
         product_data = []
         if config.stock_source_multi:
             for product in product_ids:
@@ -137,6 +120,37 @@ class ProductProduct(models.Model):
         logger.debug(product_data)
         # response = {"data" : [product_data]}
         return results.success_result(product_data)
+    
+    @api.model
+    def get_stock_product(self, product_ids):
+        stock_data = []
+        config = self.env['madkting.config'].get_config()
+        if config.stock_source_multi:
+            for product_id in product_ids:
+                product = self.browse(product_id)
+                product_data = {
+                    "product_id" : product_id,
+                    "sku" : product.default_code,
+                    "quantities" : {}
+                }
+
+                location_ids = config.stock_source_multi.split(',')
+                
+                if config.stock_source_channels:
+                    location_ids += config.stock_source_channels.split(',')
+                    location_ids = list(set(location_ids))
+
+                logger.debug(location_ids)
+
+                for location in location_ids:
+                    location_id = int(location)
+                    qty_in_branch = product.with_context({"location" : location_id}).free_qty
+                    product_data["quantities"].update({str(location_id): qty_in_branch})        
+                
+                stock_data.append(product_data)
+        logger.debug("## STOCK DATA ##")
+        logger.debug(stock_data)
+        return results.success_result(stock_data)
 
     @api.model
     def send_webhook_by_id_product_madkting(self, id_product_madkting, company_id):
@@ -154,7 +168,8 @@ class ProductProduct(models.Model):
 
         for product in product_ids:
             try:
-                notifier.send_stock_webhook(self.env, product, company_id)
+                yuju_records = self.env["yuju.webhook.record"]
+                yuju_records.prepare_webhook(product, company_id)
             except Exception as ex:
                 logger.debug("###Exception Ocurred on Sending Webhook")
                 logger.debug(ex)        
@@ -248,38 +263,6 @@ class ProductProduct(models.Model):
             product_data.pop('is_multi_shop')
             is_multi_shop = True
 
-        if id_shop:
-            mapping = self.env['yuju.mapping.product']
-            id_product_madkting = product_data.get('id_product_madkting')
-            default_code = product_data.get('default_code')
-            mapping_data = {     
-                'product_id' : int(product_id),
-                'id_product_yuju' : id_product_madkting,
-                'id_shop_yuju' : id_shop,
-                'default_code' : default_code,
-                'state' : 'active'
-            }
-
-            if not is_mapping and product.product_tmpl_id.attribute_line_ids and not product_data.get('attributes'):
-                logger.debug("Product Template related not update mapping in multi shop")
-            else:
-                try:
-                    mapping.create_or_update_product_mapping(mapping_data)
-                except Exception as ex:
-                    logger.exception(ex)
-                    return results.error_result(code='save_product_update_exception',
-                                                description='Product mapping couldn\'t be created because '
-                                                            'of the following exception: {}'.format(ex))
-
-        # if 'l10n_mx_edi_code_sat_id' in fields_validation['data']:
-        #     sat_code = fields_validation['data']['l10n_mx_edi_code_sat_id']
-        #     sat_code_ids = self.env['l10n_mx_edi.product.sat.code'].search([('code', '=', sat_code)], limit=1)
-        #     if sat_code_ids:
-        #         fields_validation['data']['l10n_mx_edi_code_sat_id'] = sat_code_ids[0].id
-        #     else:
-        #         fields_validation.pop('l10n_mx_edi_code_sat_id')
-        #         fields_validation['data'].pop('l10n_mx_edi_code_sat_id')
-
         fields_validation['data'] = self.update_mapping_fields(fields_validation['data'])
 
         if 'image' in fields_validation['data']:
@@ -350,22 +333,7 @@ class ProductProduct(models.Model):
         if 'id_product_madkting' in fields_validation['data']:
 
             if product.id_product_madkting:
-                
-                if str(fields_validation['data'].get('id_product_madkting')) != str(product.id_product_madkting):
-                    if config.validate_id_exists and not is_related:
-                        logger.warning(f"Trying to update a different id product, ignore product_id: {product_id}, default_code: {updatable_sku}, id_yuju: {id_yuju}")
-                        return results.success_result()
-                
                 fields_validation['data'].pop('id_product_madkting')
-            # else:
-            #     if config.validate_id_exists:
-            #         id_product_madkting = fields_validation['data'].get('id_product_madkting')
-            #         product_ids = self.sudo().search([('id_product_madkting', '=', id_product_madkting), ('id', '!=', product_id)], limit=1)
-            #         if product_ids.ids:
-            #             return results.error_result(code='duplicated_id_product',
-            #                                         description='El id producto ya esta previamente mapeado')
-
-            
 
         # Si se realiza un mapeo a un catalogo que ya esta mapeado actualmente, el formulario tendra el campo company_id
         # con un valor establecido, lo cual para efectos del modulo multi shop, el catalogo de productos sera compartido
@@ -450,8 +418,6 @@ class ProductProduct(models.Model):
                 'Cannot find the parent product for this variation'
             )
 
-        mapping = self.env['yuju.mapping.product']
-
         domain = [("default_code", "=", default_code), ("product_tmpl_id", "=", parent.product_tmpl_id.id)]
         logger.debug(domain)
         variation_exist = self.search(domain, limit=1)
@@ -463,22 +429,6 @@ class ProductProduct(models.Model):
             logger.debug(id_product_madkting)
             if not variation_exist.id_product_madkting:
                 variation_exist.write({"id_product_madkting": id_product_madkting})
-
-            if id_shop:
-                mapping_data = {
-                    'product_id' : variation_exist.id,
-                    'id_product_yuju' : id_product_madkting,
-                    'id_shop_yuju' : id_shop,
-                    'default_code' : default_code,
-                    'state' : 'active'
-                }
-                try:
-                    mapping.create_or_update_product_mapping(mapping_data)
-                except Exception as ex:
-                    logger.exception(ex)
-                    return results.error_result(code='save_product_update_exception',
-                                                description='Product mapping couldn\'t be created because '
-                                                            'of the following exception: {}'.format(ex))
 
             variation_data = variation_exist.get_data()
             logger.debug(variation_data)
@@ -551,29 +501,10 @@ class ProductProduct(models.Model):
                 logger.debug("## Variant Data Attributes #1 ")
                 logger.debug(variation.get_data().get('attributes'))
 
-                if variant_attributes == variation.get_data().get('attributes'):                    
-                    if id_shop:
-                        id_product_madkting = v_data.get('id_product_madkting')
-                        default_code = v_data.get('default_code')
-                        mapping_data = {
-                            'product_id' : variation.id,
-                            'id_product_yuju' : id_product_madkting,
-                            'id_shop_yuju' : id_shop,
-                            'default_code' : default_code,
-                            'state' : 'active'
-                        }
-                        try:
-                            mapping.create_or_update_product_mapping(mapping_data)
-                        except Exception as ex:
-                            logger.exception(ex)
-                            return results.error_result(code='save_product_update_exception',
-                                                        description='Product mapping couldn\'t be created because '
-                                                                    'of the following exception: {}'.format(ex))
-                            
+                if variant_attributes == variation.get_data().get('attributes'):
                     variation.write(fields_validation['data'])
                     return results.success_result(variation.get_data())
 
-        new_variation_values_ids = list()
         new_attribute_lines = []
         for attribute, value in variant_attributes.items():
             # logger.in0fo(attributes_structure)
@@ -635,26 +566,7 @@ class ProductProduct(models.Model):
         for variation in parent.product_variant_ids:
             logger.debug("## Variant Data Attributes #2 ")
             logger.debug(variation.get_data().get('attributes'))
-            if variant_attributes == variation.get_data().get('attributes'):
-                # logger.debug(fields_validation['data'])
-                if id_shop:
-                    id_product_madkting = v_data.get('id_product_madkting')
-                    default_code = v_data.get('default_code')
-                    mapping_data = {
-                        'product_id' : variation.id,
-                        'id_product_yuju' : id_product_madkting,
-                        'id_shop_yuju' : id_shop,
-                        'default_code' : default_code,
-                        'state' : 'active'
-                    }
-                    try:
-                        mapping.create_or_update_product_mapping(mapping_data)
-                    except Exception as ex:
-                        logger.exception(ex)
-                        return results.error_result(code='save_product_update_exception',
-                                                    description='Product mapping couldn\'t be created because '
-                                                                'of the following exception: {}'.format(ex))
-                       
+            if variant_attributes == variation.get_data().get('attributes'):                      
                 variation.write(fields_validation['data'])
                 new_variation_data = variation.get_data()
                 break
@@ -828,10 +740,6 @@ class ProductProduct(models.Model):
 
         if product_type == 'product':
             updatable_fields = self.__update_product_fields
-            
-            if config.product_custom_fields:
-                for field in config.product_custom_fields.split(','):
-                    updatable_fields.update({field : str})
 
         else:
             updatable_fields = self.__update_variation_fields
@@ -931,12 +839,12 @@ class ProductProduct(models.Model):
         res = super(ProductProduct, self).write(values)
         _logger.info(values)
         if "list_price" in values:
+            company_id = self.env.user.company_id.id
+            config = self.env['madkting.config'].get_config(company_id)
+            product = self._origin
             new_price = values.get('list_price')
-            config = self.env['madkting.config'].get_config()
-            if config.webhook_price_enabled:
+            if config and config.webhook_price_enabled and product.id_product_madkting:
                 _logger.info("Envia webhook")
-                company_id = self.env.user.company_id.id
-                price_update = self._get_price(new_price)
-                product = self._origin
-                notifier_price.send_price_webhook(self.env, product, company_id, price_update)
+                new_price = self._get_price(new_price)
+                self.env["yuju.webhook.record"].prepare_webhook_price(product, company_id, new_price)
         return res

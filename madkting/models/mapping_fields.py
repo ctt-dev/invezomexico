@@ -43,8 +43,9 @@ class YujuMappingField(models.Model):
             return record_data
 
         company_id = self.env.user.company_id.id
-        mapping_fields = self.search([('model', '=', mapping_model.id), '|', ('company_id', '=', company_id), ('company_id', '=', False)])
-
+        domain = [('model', '=', mapping_model.id), '|', ('company_id', '=', company_id), ('company_id', '=', False)]
+        mapping_fields = self.search(domain)
+        logger.debug(domain)
         logger.debug("Mappings encontrados")
         logger.debug(mapping_fields)
         

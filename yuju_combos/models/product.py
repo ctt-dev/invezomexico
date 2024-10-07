@@ -248,8 +248,7 @@ class ProductTemplate(models.Model):
                         if "type" in product_data:
                             product_data.pop("type")
                         if "detailed_type" in product_data:
-                            product_data.pop("detailed_type") 
-                    
+                            product_data.pop("detailed_type")
         else:
             variation_list = []            
             for var in product_data.pop('variations'):
@@ -258,7 +257,7 @@ class ProductTemplate(models.Model):
                     var.pop('is_combo')
                     var.pop('combo_components')
                 variation_list.append(var)
-            product_data.update({'variations' : variation_list})            
+            product_data.update({'variations' : variation_list})
     
         res = super(ProductTemplate, self).mdk_create(product_data, id_shop)
 

@@ -42,14 +42,29 @@ class SaleOrder(models.Model):
     channel_order_shipping_cost = fields.Float('Shipping Cost')
     yuju_url_label = fields.Text('Label URL')
 
-
-    order_progress = fields.Char('Order Progress')
+    yuju_carrier = fields.Char('Transportista Yuju')
+    order_progress = fields.Char('Status Yuju')
     payment_status = fields.Char('Payment Status')
     payment_id = fields.Integer('Pago Id')
     yuju_order_data = fields.Text('Datos de la orden')
 
     yuju_payment_method = fields.Char('Payment Method')
     yuju_shipping_type = fields.Char('Shipping Type')
+    yuju_error = fields.Char('Error Yuju')
+    
+    yuju_invoice_status = fields.Selection([
+        ("draft", "Pendiente"), 
+        ("sent", "Enviado"),
+        ("done", "Completado"),
+    ], string="Status Invoice Yuju", default="draft")
+
+    yuju_shipping_status = fields.Selection([
+        ("draft", "Pendiente"), 
+        ("sent", "Enviado"),
+        ("done", "Completado"),
+    ], string="Status Shipping Yuju", default="draft")
+
+    yuju_invoice_doctype = fields.Char("Invoice Doctype ")
 
     def update_mapping_fields(self, order_data, model='sale.order', channel_id=None, ff_type=None):
         mappings = self.env['yuju.mapping.field']
@@ -62,29 +77,50 @@ class SaleOrder(models.Model):
     #     logger.debug(defaults)
     #     return defaults
 
-    def _get_order_exists(self, order_data):
-        config = self.env['madkting.config'].get_config()
-        if order_data.get('channel_order_id') and order_data.get('channel_id'):
-            _channel_id = order_data.get('channel_id')
-            _channel_order_id = order_data.get('channel_order_id')
-            _ff_type = order_data.get('fulfillment')
-            
-            domain = [
-                ('channel_order_id', '=', _channel_order_id), 
-                ('channel_id', '=', _channel_id), 
-                ("fulfillment", "=", _ff_type)
-            ]
-            if order_data.get('yuju_pack_id') and config.validate_pack_id_enabled:
-                yuju_pack_id = order_data.get("yuju_pack_id")
-                domain.append(('yuju_pack_id', '=', yuju_pack_id))
 
-            logger.debug("#Search order domain")
-            logger.debug(domain)
+    def _search_order_exists(self, channel_id, order_id, ff_type, pack_id=None):
+                
+        domain = [
+            ('channel_order_id', '=', order_id), 
+            ('channel_id', '=', channel_id), 
+            ("fulfillment", "=", ff_type),
+            ('state', 'not in', ['cancel'])
+        ]
 
-            order_exists = self.search(domain, limit=1)
-            if order_exists:
-                return order_exists
+        if pack_id:
+            domain.append(('yuju_pack_id', '=', pack_id))
+
+        logger.debug("#Search order domain")
+        logger.debug(domain)
+        
+        order_exists = self.search(domain)
+
+        if order_exists.ids:
+            return order_exists
         return
+    
+    def _return_order_data_response(self, order_data):
+        data=order_data.yuju_get_data()
+        # logger.debug("### RESPONSE ORDER DATA ####")
+        # logger.debug(data)
+        return results.success_result(data)
+
+    def action_confirm(self):
+        config = self.env['madkting.config'].get_config()
+        if config and config.validate_order_duplicated_confirm and self.channel_id and self.channel_order_id:
+            err_msg = "Override action_confirm yuju {}".format(self.name)
+            order_exists = self._search_order_exists(self.channel_id, self.channel_order_id, self.fulfillment, self.yuju_pack_id)
+            if order_exists and len(order_exists.ids) == 1:
+                return super(SaleOrder, self).action_confirm()
+            else:
+                onames = [o.name for o in order_exists]
+                for o in order_exists:
+                    err_msg = "{}, duplicated orders, verify. {}".format(err_msg, onames)
+                    o.write({"yuju_error": err_msg})
+                    o.message_post(body=err_msg)
+        else:
+            return super(SaleOrder, self).action_confirm()
+
 
     @api.model
     def mdk_create(self, order_data, **kwargs):
@@ -157,7 +193,9 @@ class SaleOrder(models.Model):
         force_creation = kwargs.get('force_creation')
         company_id = order_data.get('company_id')
         channel_id = order_data.get('channel_id')
+        channel_order_id = order_data.get('channel_order_id')
         fulfillment = order_data.get('fulfillment')
+        yuju_pack_id = order_data.get('yuju_pack_id')
 
         if not picking_policy:
             picking_policy = 'direct'
@@ -232,18 +270,30 @@ class SaleOrder(models.Model):
         if config.order_detail_enabled:
             order_data.update({"yuju_order_data": json.dumps(order_data)})
 
-        order_exists = self._get_order_exists(order_data)
+        order_exists = self._search_order_exists(
+            channel_id, channel_order_id, fulfillment, yuju_pack_id)
         
-        if order_exists:
+        if order_exists and len(order_exists.ids) > 0:
             logger.debug("### ORDER EXISTS {} ###".format(order_data.get("channel_order_reference")))
-                
-            if order_exists.state in ['draft', 'sent']:
-                new_sale = order_exists
-            else:                
-                data=order_exists.yuju_get_data()
-                logger.debug("### RESPONSE MDK CREATE EXISTS ####")
-                logger.debug(data)
-                return results.success_result(data)
+
+            if len(order_exists.ids) > 1:
+                order_names = [o.name for o in order_exists] 
+                for order_found in order_exists:
+                    err_msg = "Duplicated orders, verify {}".format(order_names)
+                    logger.debug(err_msg)
+                    order_found.message_post(body=err_msg)
+                return self._return_order_data_response(order_exists[0])
+            else:
+                if order_exists.state in ['draft', 'sent']:
+                    if config.order_detail_enabled:
+                        err_msg = "Order exist, processing status: {}".format(order_exists.state)
+                        order_exists.message_post(body=err_msg)
+                    new_sale = order_exists
+                else:
+                    if config.order_detail_enabled:
+                        err_msg = "Order exist, completed. {}".format(order_exists.name)
+                        order_exists.message_post(body=err_msg)
+                    return self._return_order_data_response(order_exists)
         else:
             try:
                 new_sale = self.create(order_data)
@@ -366,7 +416,7 @@ class SaleOrder(models.Model):
                     continue
 
         try:
-            if not config.orders_unconfirmed:
+            if not config.orders_unconfirmed:                
                 self._confirma_orden(new_sale)
             else:
                 logger.debug('orders_unconfirmed, the order should be confirmed manually')
@@ -525,7 +575,7 @@ class SaleOrder(models.Model):
         updatable_attributes = ['note', 'partner_shipping_id', 'partner_invoice_id',
                                 'validity_date', 'order_progress', 'yuju_update_date_order',
                                 'yuju_payment_date_order', 'yuju_carrier_tracking_ref',
-                                'yuju_url_label'
+                                'yuju_url_label', 'yuju_carrier'
                                 ]
 
         updates = {attribute: value for attribute, value in order_data.items() if attribute in updatable_attributes}
@@ -883,7 +933,12 @@ class SaleOrder(models.Model):
                                                     'the following exception: {}'.format(ex))
         else:            
             invoice.ensure_one()
-            defaults = self.update_mapping_fields(order_data={}, model='account.move')        
+            order_data = {}
+            if order.yuju_invoice_doctype:
+                order_data.update({
+                    "yuju_invoice_doctype": order.yuju_invoice_doctype
+                })
+            defaults = self.update_mapping_fields(order_data=order_data, model='account.move')
             if defaults:
                 try:
                     logger.debug("## DEFAULT INVOICES ###")
@@ -910,7 +965,8 @@ class SaleOrder(models.Model):
             invoice_data['name'] = invoice.name
             invoice_data['state'] = invoice.state
 
-            order.add_order_message("invoice")
+            if config.auto_webhook_after_invoice_enabled:
+                order.add_order_message("invoice")
 
             return results.success_result(data=invoice_data)
 
@@ -943,6 +999,30 @@ class SaleOrder(models.Model):
             return False
 
         return True
+    
+    @api.model
+    def retry_invoices(self, order_id=None, fecha_ini=None, fecha_fin=None):
+        domain = []
+        if order_id:
+            order_id = int(order_id)
+            domain = [("id", "=", order_id)]
+        else:
+            domain = [("channel_order_id", "!=", False),
+                      ("yuju_invoice_status", "=", "draft"),
+                      ("invoice_status", "=", "invoiced")]
+            if fecha_ini and fecha_fin:
+                domain.append(("date_order", ">=", fecha_ini))
+                domain.append(("date_order", "<=", fecha_fin))
+            elif fecha_ini:
+                domain.append(("date_order", "=", fecha_ini))
+        if domain:
+            logger.info("### DOMAIN ###")
+            logger.info(domain)
+            order_ids = self.search(domain, order="id")
+            logger.info(order_ids)
+            for order in order_ids:
+                order.add_order_message("invoice")
+        return True
 
     def add_order_message(self, action="shipping"):
 
@@ -950,10 +1030,31 @@ class SaleOrder(models.Model):
 
         config = self.env['madkting.config'].get_config()
 
-        if not self.validate_action_message(action):
-            err_msg = f"The action {action} is not enabled in config"
-            logger.error(err_msg)
-            return
+        if action == "invoice":
+            if not config.invoice_webhook_enabled:
+                err_msg = "Webhook invoice is not enabled"
+                logger.error(err_msg)
+                self.message_post(body=err_msg)
+                return
+
+            if self.yuju_invoice_status != "draft":
+                err_msg = "Trying to retry completed invoice, update invoice status to process"
+                logger.error(err_msg)
+                self.message_post(body=err_msg)
+                return
+
+        if action == "shipping":
+            if not config.shipping_webhook_enabled:
+                err_msg = "Webhook shipping is not enabled"
+                logger.error(err_msg)
+                self.message_post(body=err_msg)
+                return
+
+            if self.yuju_shipping_status != "draft":
+                err_msg = "Trying to retry completed shipping, update shipping status to process"
+                logger.error(err_msg)
+                self.message_post(body=err_msg)
+                return
 
         order_id = self.id
         id_shop = self.yuju_shop_id
@@ -987,8 +1088,14 @@ class SaleOrder(models.Model):
             self.message_post(body=err_msg)
         else:
             self.message_post(body=f"Se ha enviado webhook de accion {action}")
-    
-        
+
+            order = self.browse(order_id)
+            if action == "invoice":
+                order.yuju_invoice_status = "sent"
+
+            if action == "shipping":
+                order.yuju_shipping_status = "sent"
+  
     def test_get_invoice_xml(self):
         logger.info("TESTING GET XML")
         for rec in self:
@@ -1023,7 +1130,8 @@ class SaleOrder(models.Model):
         # config = self.env['madkting.config'].get_config()
 
         order.write({
-            "yuju_url_label" : shipping_url
+            "yuju_url_label" : shipping_url,
+            "yuju_shipping_status": "done"
         })
 
         order.message_post(body=f"Agrega URL de envio {shipping_url}")
@@ -1079,6 +1187,13 @@ class SaleOrder(models.Model):
                 logger.info(attachment_id)
 
         return True
+    
+    @api.model
+    def complete_yuju_invoice_status(self, order_id):
+        order_id = int(order_id)
+        order = self.browse(order_id)
+        order.yuju_invoice_status = "done"
+        return
 
     @api.model
     def get_invoice_xml(self, order_id):
@@ -1242,6 +1357,9 @@ class SaleOrder(models.Model):
             if len(name_pieces) > 1:
                 idx_folio = len(name_pieces) - 1
                 folio = name_pieces[idx_folio]
+                folio = folio.strip()
+                if config.invoice_prefix_id_folio:
+                    folio = f"{invoice.id}{folio}"
                 invoice_data["folio"] = int(folio)
 
             serie_invoice = config.invoice_serie
@@ -1536,7 +1654,7 @@ class SaleOrder(models.Model):
                 logger.debug(post_message)
                 sale_order.message_post(body=post_message)
 
-                if sale_order.invoice_ids:                
+                if sale_order.invoice_ids and config.orders_cancel_related_documents:                
                     try:
                         sale_order.invoice_ids.button_draft()
                     except Exception as ex:
@@ -1550,7 +1668,17 @@ class SaleOrder(models.Model):
                         sale_order.message_post(body=post_message)
 
                         try:
-                            sale_order.invoice_ids.button_cancel()
+                            invoice = sale_order.invoice_ids[0]
+                            invoice.button_cancel()
+                            payment_ids = self.env["account.payment"].search([
+                                ("ref", "=", sale_order.name), 
+                                ("partner_id", "=", sale_order.partner_id.id),
+                                ("date", "=", invoice.invoice_date)
+                                ], limit=1)
+                            if payment_ids:
+                                logger.info("## CANCELA PAGO ##")
+                                logger.info(payment_ids)
+                                payment_ids.move_id.button_cancel()
                         except Exception as ex:
                             post_message = 'invoice couldn\'t be cancelled: {}'.format(ex)
                             logger.debug(post_message)

@@ -9,6 +9,7 @@ from . import uom_uom
 from . import product
 from . import listeners
 from . import madkting_config
+from . import webhook_records
 from . import mapping_products
 from . import mapping_fields
 from . import mapping_states

@@ -1,0 +1,7 @@
+1- Realizar un backup de su sistema
+2- Descomprimir el archivo "madkting.zip" y extraer la carpeta "madkting"
+3- Clonar el repositorio de la rama donde se va a subir el update por ej. "main"
+4- Acceder a la carpeta donde clonaron el repositorio
+5- Reemplazar la carpeta que se llama "madkting" con la que se extrajo
+6- Subir el cambio al repositorio
+7- En Odoo en el menu de aplicaciones actualizar el modulo "madkting" debe quedar con la version 16.0.2.0.0

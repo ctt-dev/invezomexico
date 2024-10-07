@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 import logging
 import json
+from odoo import exceptions
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__) 
@@ -19,7 +20,6 @@ class sale_order_inherit(models.Model):
         store=True,
         
     )
-
     
     @api.depends('marketplace','marketplace.name')
     def _compute_marketplace_name(self):
@@ -87,8 +87,33 @@ class sale_order_inherit(models.Model):
 
         return super(sale_order_inherit, self).create(values)
 
+    json_data = fields.Text(string="JSON Data")
+
     def write(self, values):
         for rec in self:
+            # Verificamos si 'yuju_carrier' está en los valores a actualizar
+            if 'yuju_carrier' in values:
+                # Obtenemos el nuevo valor de 'yuju_carrier'
+                yuju_carrier = values.get('yuju_carrier', '').strip()
+                
+                if yuju_carrier:
+                    # Buscamos el carrier en el modelo 'llantas_config.carrier'
+                    carrier_record = rec.env['llantas_config.carrier'].search([
+                        ('name', 'ilike', yuju_carrier),
+                    ], limit=1)
+    
+                    if carrier_record:
+                        # Si se encuentra el carrier, actualizamos 'llantas_config_carrier_id'
+                        values['llantas_config_carrier_id'] = carrier_record.id
+                        print(f"Carrier actualizado: {carrier_record.name}, ID: {carrier_record.id}")
+                    else:
+                        # Si no se encuentra el carrier, lanzamos un error
+                        raise exceptions.UserError(f"No se encontró el carrier con el nombre '{yuju_carrier}' para la empresa actual.")
+                else:
+                    # Si el campo 'yuju_carrier' está vacío, vaciamos también 'llantas_config_carrier_id'
+                    values['llantas_config_carrier_id'] = False
+                    print("Carrier no proporcionado, campo 'llantas_config_carrier_id' vaciado.")
+                    
             # Verificar unicidad de folio_venta
             if 'folio_venta' in values:
                 venta_ids = rec.env['sale.order'].search([
@@ -97,20 +122,23 @@ class sale_order_inherit(models.Model):
                     ('folio_venta', '!=', False)
                 ])
                 if venta_ids:
-                    raise UserError('El número de venta debe ser único.')
-
+                    raise exceptions.UserError('El número de venta debe ser único.')
+    
             # Verificar unicidad de guía solo si no está vacía
-            if 'guia' in values and values['guia'] not in [False, "", None]:
+            if 'guia' in values and values['guia']:
                 ventas = rec.env['sale.order'].search([
                     ('guia', '=', values['guia']),
                     ('id', '!=', rec.id),
                     ('guia', '!=', False)
                 ])
                 if ventas:
-                    raise UserError('El número de guía debe ser único.')
-
-        return super(sale_order_inherit, self).write(values)
+                    raise exceptions.UserError('El número de guía debe ser único.')
     
+        # Llamada al método write del super para guardar los cambios
+        result = super(sale_order_inherit, self).write(values)
+    
+        return result
+
     
     
     purchase_order = fields.Char(string="Purchase Order")
@@ -236,10 +264,11 @@ class sale_order_inherit(models.Model):
                     self.partner_id.category_id += self.marketplace.category_id
         for line in self.order_line:
             if line.costo_proveedor != 0.00:
-                line.write({'costo_proveedor_2': line.costo_proveedor})
+                if line.product_id.product_tmpl_id.es_paquete == True:
+                    line.write({'costo_proveedor_2': ((line.costo_proveedor * float(line.product_id.product_tmpl_id.pkg_type)) * line.product_uom_qty)})
+                else:
+                    line.write({'costo_proveedor_2': line.costo_proveedor})
                 line.compute_costo_proveedor_total()
-        if self.yuju_carrier_tracking_ref:
-            self.write({'guia': self.yuju_carrier_tracking_ref})
         return res
 
     # def _prepare_invoice(self):
@@ -893,6 +922,10 @@ class sale_order_line_inherit(models.Model):
         compute="_compute_t1",
         store=True,
 
+    )
+
+    fee_import= fields.Float(
+        string="Calculo fee",
     )
 
 

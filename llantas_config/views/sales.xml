@@ -20,6 +20,7 @@
                      <field name="commitment_date"/>
                      <field name="tipo_factura" />
                      <field name="es_killer" invisible="1"/>
+                     <field name="json_data" invisible="1"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
@@ -39,8 +40,9 @@
                     <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
                     <field name="costo_proveedor" readonly="1" optional="show"  />
                     <field name="costo_proveedor_2" readonly="1" optional="hide"  />
+                    <field name="fee_import" readonly="1" optional="hide"/>
                     <field name="codigo_proveedor" invisible="1" />
-                    <field name="is_killer" readonly="1"/>
+                    <field name="is_killer" readonly="1" optional="hide" />
                     <field name="killer_id" widget="many2one" invisible="1"/>
                     <!-- <field name="killer_id_killer_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
                     <field name="killer_id_base_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>

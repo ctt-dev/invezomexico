@@ -10,31 +10,30 @@ class website_inherit(models.Model):
     _inherit = 'website'
     _description='website_inherit'
     
-    @staticmethod
-    def _get_ancho_sort_mapping(self,opt):
+    def _get_ancho_sort_mapping(self):
         _logger.warning('serie')
         atributos = self.env['product.attribute'].search([('name','=','Tamaño Ancho')])
         array = []
         for rec in atributos.value_ids:
-            array.append((rec.name, rec.name))
+            array.append((atributos.id, str(atributos.id)+'-'+str(rec.id), rec.name))
         return array
     
     
-    @staticmethod
-    def _get_rin_sort_mapping(self,opt):
+    def _get_rin_sort_mapping(self):
+        self.ensure_one()
         _logger.warning('serie')
         atributos = self.env['product.attribute'].search([('name','=','Tamaño Rin')])
         array = []
         for rec in atributos.value_ids:
-            array.append((rec.name, rec.name))
+            array.append((atributos.id, str(atributos.id)+'-'+str(rec.id), rec.name))
         return array
-        
-    @staticmethod
-    def _get_alto_sort_mapping(self,opt):
+
+    
+    def _get_alto_sort_mapping(self):
         atributos = self.env['product.attribute'].search([('name','=','Tamaño Alto')])
         array = []
         for rec in atributos.value_ids:
-            array.append((rec.name, rec.name))
+            array.append((atributos.id, str(atributos.id)+'-'+str(rec.id), rec.name))
         return array
 
 

@@ -153,6 +153,10 @@ class marketplaces(models.Model):
         tracking=True,
     )
 
+    fee_marketplace = fields.Float(
+        string="Fee"
+    )
+
     @api.model
     def create(self, values):
         values['company_id'] = self.env.company.id

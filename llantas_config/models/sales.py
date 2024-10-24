@@ -5,12 +5,12 @@ from odoo import exceptions
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__) 
-import datetime
+from datetime import datetime, date
+import unicodedata
 
 class sale_order_inherit(models.Model):
     _inherit = 'sale.order'
     _description = 'Orden de venta'
-
 
     
     marketplace = fields.Many2one(
@@ -64,57 +64,124 @@ class sale_order_inherit(models.Model):
 
     )
 
+
+    json_data = fields.Text(string="JSON Data")
+
     @api.model
     def create(self, values):
-        # Verificar unicidad de folio_venta
+        if 'channel_order_reference' in values:
+            values['folio_venta'] = values['channel_order_reference']
+        elif 'channel_order_id' in values and not values.get('folio_venta'):
+            # Si el valor no viene en `values`, tomar el valor actual de `rec`
+            values['folio_venta'] = values['channel_order_id']
+
+        if 'yuju_seller_shipping_cost' in values:
+            values['envio'] = values['yuju_seller_shipping_cost']
+        if 'yuju_marketplace_fee' in values:
+            values['comision'] = values['yuju_marketplace_fee']
+                
+        # Verificación de unicidad de 'folio_venta'
         if 'folio_venta' in values:
-            venta_ids = self.env['sale.order'].search([
+            venta_ids = self.search([
                 ('folio_venta', '=', values['folio_venta']),
                 ('folio_venta', '!=', False)
             ])
             if venta_ids:
                 raise UserError('El número de venta debe ser único.')
-
-        # Verificar unicidad de guía solo si no está vacía
-        guia = values.get('guia', self.guia)
-        if guia not in [False, "", None]:
-            ventas = self.env['sale.order'].search([
+    
+        # Asignar 'guia' si se ha proporcionado 'yuju_carrier_tracking_ref'
+        if 'yuju_carrier_tracking_ref' in values:
+            values['guia'] = values['yuju_carrier_tracking_ref']
+        
+        # Verificación de unicidad de 'guia'
+        guia = values.get('guia')
+        if guia:
+            ventas = self.search([
                 ('guia', '=', guia),
                 ('guia', '!=', False)
             ])
             if ventas:
                 raise UserError('El número de guía debe ser único.')
-
+    
+        # Actualizar marketplace en create
+        channel = values.get('channel')
+        if channel:
+            # Quitar espacios y acentos
+            channel = self.remove_accents(channel.strip())
+    
+            # Buscar el marketplace usando solo el nombre
+            marketplace_record = self.env['llantas_config.marketplaces'].search([
+                ('company_id', '=', values.get('company_id')),
+                ('name', '=', channel)
+            ], limit=1)
+    
+            # Si no se encuentra, dejar el valor de 'marketplace' como False
+            values['marketplace'] = marketplace_record.id if marketplace_record else False
+    
+        # Llamada al método create del super para crear el registro
         return super(sale_order_inherit, self).create(values)
 
-    json_data = fields.Text(string="JSON Data")
 
+
+    def remove_accents(self, input_str):
+        # Normalizar la cadena eliminando los acentos
+        nfkd_form = unicodedata.normalize('NFKD', input_str)
+        return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
+        
     def write(self, values):
         for rec in self:
-            # Verificamos si 'yuju_carrier' está en los valores a actualizar
+            # Actualizar marketplace en write
+            if rec.channel:
+                # Quitar espacios y acentos
+                channel = self.remove_accents(rec.channel.strip())
+
+                # Obtener las claves de selección para 'yuju_tag'
+                yuju_tag_selection = dict(self.env['llantas_config.marketplaces'].fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'], limit=1)
+
+                # Revisar si el canal proporcionado coincide con alguna clave en el campo 'yuju_tag'
+                yuju_tag_key = None
+                for key, label in yuju_tag_selection.items():
+                    if self.remove_accents(label.lower()) == channel.lower():
+                        yuju_tag_key = key
+                        break
+
+                # Si no se encontró una clave para el tag 'channel', buscar solo por name
+                if not yuju_tag_key:
+                    marketplace_record = self.env['llantas_config.marketplaces'].search([
+                        ('name', '=', channel),
+                        ('company_id', '=', rec.company_id.id)
+                    ], limit=1)
+                else:
+                    # Buscar el marketplace usando coincidencia exacta de nombre o el tag 'yuju_tag'
+                    marketplace_record = self.env['llantas_config.marketplaces'].search([
+                        ('company_id', '=', rec.company_id.id),
+                        '|',
+                        ('yuju_tag', '=', yuju_tag_key),  # Priorizar coincidencia exacta en el tag
+                        ('name', '=', channel)  # Luego, comparación exacta con el nombre
+                    ], limit=1)
+
+                if not marketplace_record:
+                    raise UserError(f"No se encontró el marketplace con el nombre o tag '{channel}' para la empresa actual.")
+                else:
+                    values['marketplace'] = marketplace_record.id
+                    values['fee_import'] = marketplace_record.fee_marketplace
+
+            # Actualización del carrier
             if 'yuju_carrier' in values:
-                # Obtenemos el nuevo valor de 'yuju_carrier'
                 yuju_carrier = values.get('yuju_carrier', '').strip()
-                
                 if yuju_carrier:
-                    # Buscamos el carrier en el modelo 'llantas_config.carrier'
                     carrier_record = rec.env['llantas_config.carrier'].search([
                         ('name', 'ilike', yuju_carrier),
                     ], limit=1)
-    
+
                     if carrier_record:
-                        # Si se encuentra el carrier, actualizamos 'llantas_config_carrier_id'
                         values['llantas_config_carrier_id'] = carrier_record.id
-                        print(f"Carrier actualizado: {carrier_record.name}, ID: {carrier_record.id}")
                     else:
-                        # Si no se encuentra el carrier, lanzamos un error
-                        raise exceptions.UserError(f"No se encontró el carrier con el nombre '{yuju_carrier}' para la empresa actual.")
+                        raise UserError(f"No se encontró el carrier con el nombre '{yuju_carrier}' para la empresa actual.")
                 else:
-                    # Si el campo 'yuju_carrier' está vacío, vaciamos también 'llantas_config_carrier_id'
                     values['llantas_config_carrier_id'] = False
-                    print("Carrier no proporcionado, campo 'llantas_config_carrier_id' vaciado.")
-                    
-            # Verificar unicidad de folio_venta
+
+            # Verificación de unicidad de folio_venta
             if 'folio_venta' in values:
                 venta_ids = rec.env['sale.order'].search([
                     ('folio_venta', '=', values['folio_venta']),
@@ -122,22 +189,38 @@ class sale_order_inherit(models.Model):
                     ('folio_venta', '!=', False)
                 ])
                 if venta_ids:
-                    raise exceptions.UserError('El número de venta debe ser único.')
-    
-            # Verificar unicidad de guía solo si no está vacía
-            if 'guia' in values and values['guia']:
-                ventas = rec.env['sale.order'].search([
-                    ('guia', '=', values['guia']),
-                    ('id', '!=', rec.id),
+                    raise UserError('El número de venta debe ser único.')
+
+
+            if 'yuju_carrier_tracking_ref' in values:
+                values['guia'] = values['yuju_carrier_tracking_ref']
+            elif rec.yuju_carrier_tracking_ref and not values.get('guia'):
+                # Si el valor no viene en `values`, tomar el valor actual de `rec`
+                values['guia'] = rec.yuju_carrier_tracking_ref
+
+            if 'channel_order_reference' in values:
+                values['folio_venta'] = values['channel_order_reference']
+            elif rec.channel_order_reference and not values.get('folio_venta'):
+                # Si el valor no viene en `values`, tomar el valor actual de `rec`
+                values['folio_venta'] = rec.channel_order_id
+
+
+            # Verificar unicidad de 'guia'
+            guia = values.get('guia')
+            if guia:
+                ventas = self.env['sale.order'].search([
+                    ('guia', '=', guia),
+                    ('id', '!=', rec.id),  # Excluir el registro actual
                     ('guia', '!=', False)
                 ])
                 if ventas:
-                    raise exceptions.UserError('El número de guía debe ser único.')
-    
+                    raise UserError('El número de guía debe ser único.')
+
         # Llamada al método write del super para guardar los cambios
         result = super(sale_order_inherit, self).write(values)
-    
+
         return result
+
 
     
     
@@ -595,6 +678,74 @@ class sale_order_inherit(models.Model):
         store=True,
     )
 
+    fee_import = fields.Float(string='Fee Import', compute='compute_fee_import', store=True)
+
+    fee_sale = fields.Float(
+        string="Cargo por venta",
+        compute="_compute_amounts",
+        store=True,
+    )
+
+    
+    def normalize_string(self, s):
+        """Elimina acentos y convierte a minúsculas."""
+        return ''.join(
+            c for c in unicodedata.normalize('NFD', s)
+            if unicodedata.category(c) != 'Mn'
+        ).lower()
+
+
+    def compute_fee_import(self):
+        for rec in self:
+            fee = 0.0  # Valor por defecto si no se encuentra tarifa
+    
+            if rec.marketplace and rec.yuju_order_data and rec.yuju_marketplace_fee == 0.00:
+                # Buscamos el marketplace en la misma compañía
+                marketplace = self.env['llantas_config.marketplaces'].search([
+                    ('name', 'ilike', rec.marketplace.name),
+                    ('company_id', '=', rec.company_id.id)
+                ], limit=1)
+    
+                if marketplace:
+                    # Si encontramos el marketplace, obtenemos la tarifa del campo 'fee_marketplace'
+                    fee = marketplace.fee_marketplace or 0.0
+                else:
+                    raise UserError(
+                        f"No se encontró un marketplace que coincida con '{rec.marketplace.name}' para la compañía '{rec.company_id.name}'."
+                    )
+    
+            # Asignamos el valor de la tarifa al campo fee_import
+            rec.fee_import = fee
+    
+
+    
+    
+    @api.depends('order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total', 'fee_sale')
+    def _compute_amounts(self):
+        """Compute the total amounts of the SO."""
+        for order in self:
+            order = order.with_company(order.company_id)
+            order_lines = order.order_line.filtered(lambda x: not x.display_type)
+
+            if order.company_id.tax_calculation_rounding_method == 'round_globally':
+                tax_results = order.env['account.tax']._compute_taxes([
+                    line._convert_to_tax_base_line_dict()
+                    for line in order_lines
+                ])
+                totals = tax_results['totals']
+                amount_untaxed = totals.get(order.currency_id, {}).get('amount_untaxed', 0.0)
+                amount_tax = totals.get(order.currency_id, {}).get('amount_tax', 0.0)
+            else:
+                amount_untaxed = sum(order_lines.mapped('price_subtotal'))
+                amount_tax = sum(order_lines.mapped('price_tax'))
+
+            order.amount_untaxed = amount_untaxed
+            order.amount_tax = amount_tax
+            order.amount_total = order.amount_untaxed + order.amount_tax
+            if order.marketplace and order.yuju_order_data and order.yuju_marketplace_fee == 0.00:
+                order.fee_sale = (order.amount_untaxed + order.amount_tax) * order.fee_import
+            # raise UserError(str((order.amount_untaxed + order.amount_tax) * (1 + order.fee_import)))
+
      
 class sale_order_line_inherit(models.Model):
     _inherit = 'sale.order.line'
@@ -742,71 +893,78 @@ class sale_order_line_inherit(models.Model):
             self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
 
 
-    killer_id = fields.Many2one(
-        "llantas_config.killer_list",
-        compute='_compute_killer_id',
-        store=True,
-    )
-
-    @api.depends('product_id.product_tmpl_id','product_id')
-    def _compute_killer_id(self):
-        for line in self:
-            line.killer_id = line.product_id.product_tmpl_id.killer_id
-
-    @api.depends('product_id')
-    def _compute_killer(self):
-        fecha_actual = datetime.datetime.now()
-        for line in self:
-            if line.product_id.product_tmpl_id.is_killer == True and line.killer_id.status == 'active' and line.product_id.product_tmpl_id.killer_id.marketplace_id == line.order_id.marketplace:
-                # raise UserError('hpña')
-                # Puedes usar raise UserError("si") para depurar, pero asegúrate de quitarlo una vez que confirmes que el método se ejecuta.
-                line.is_killer = True
-                # line.killer_price = line.killer_id.killer_price
-                # line.base_price = line.killer_id.base_price
-                # line.promotion_price = line.killer_id.promotion_price
-                
-            else:
-                line.is_killer = False
-                # line.killer_price = 0.0
-                # line.promotion_price = 0.0 
-                # line.base_price = 0.0
-
     is_killer = fields.Boolean(
         string="Es killer?",
         compute='_compute_killer',
         store=True,
         default=False,
     )
-
+    
+    killer_id = fields.Many2one(
+        'llantas_config.killer_list',
+        string="Killer ID",
+        compute='_compute_killer',
+        store=True,
+    )
+    
     killer_id_killer_price = fields.Float(
         string="Precio killer",
-        related="killer_id.killer_price", 
         store=True,
     )
     
-    killer_id_base_price=fields.Float(
+    killer_id_base_price = fields.Float(
         string="Precio base killer",
-        related="killer_id.base_price",
         store=True,
     )
     
-    killer_id_promotion_price=fields.Float(
+    killer_id_promotion_price = fields.Float(
         string="Precio de promoción killer",
-        related="killer_id.promotion_price",
         store=True,
     )
-
-    total_con_killer=fields.Float(
+    
+    total_con_killer = fields.Float(
         string="Total con killer",
         compute='_compute_total_con_killer',
         store=True,
     )
     
-    @api.depends('price_total','total_con_killer')
+    @api.depends('product_id', 'order_id.marketplace')
+    def _compute_killer(self):
+        fecha_actual = datetime.now()  # Obtener la fecha actual
+        for line in self:
+            # Filtrar los registros 'killer' activos y válidos para la fecha actual
+            killers = line.product_id.product_tmpl_id.killer_ids.filtered(
+                lambda k: k.marketplace_id == line.order_id.marketplace and
+                          k.initial_date and 
+                          k.initial_date <= fecha_actual <= (k.final_date or fecha_actual) and
+                          k.status == 'active'
+            )
+            # Asignar el primer registro que cumpla con los criterios o None si no hay
+            killer = killers[:1] if killers else None
+            line.killer_id = killer.id if killer else None
+            line.is_killer = bool(killer)
+    
+            if killer:
+                # Guardar los valores directamente en los campos persistentes
+                line.killer_id_killer_price = killer.killer_price
+                line.killer_id_base_price = killer.base_price
+                line.killer_id_promotion_price = killer.promotion_price
+    
+                # Si cumple la condición de killer, actualizar price_unit con el precio de promoción
+                line.price_unit = line.killer_id_promotion_price
+            else:
+                # Limpiar los valores si no hay killer aplicable
+                line.killer_id_killer_price = 0.0
+                line.killer_id_base_price = 0.0
+                line.killer_id_promotion_price = 0.0
+    
+    @api.depends('price_total', 'killer_id_killer_price')
     def _compute_total_con_killer(self):
         for rec in self:
-           rec.total_con_killer = rec.price_total + rec.killer_id_killer_price
+            # Calcular el total considerando el precio killer si es aplicable
+            rec.total_con_killer = rec.price_total + (rec.killer_id_killer_price or 0)
     
+        
     link_venta=fields.Char(
         string="Link de venta",
         related="order_id.link_venta",
@@ -817,13 +975,14 @@ class sale_order_line_inherit(models.Model):
     def compute_costo_orden_compra(self):
         for rec in self:
             costo_orden_compra = 0
-            for purchase_line_id in rec.purchase_line_ids:
-                costo_orden_compra = purchase_line_id.price_unit
+            for purchase_line in rec.purchase_line_ids:
+                costo_orden_compra += purchase_line.price_unit * purchase_line.product_uom_qty  # Sumar el costo total de la orden de compra
             rec.costo_orden_compra = costo_orden_compra
-    costo_orden_compra=fields.Float(
+    
+    costo_orden_compra = fields.Float(
         compute=compute_costo_orden_compra,
-        string="Orden de compra",
-        store=True,
+        string="Costo Orden de Compra",
+        store=False,  # Cambiado a False si no necesitas almacenar el valor
     )
 
     @api.depends('purchase_line_ids', 'purchase_line_ids.invoice_lines', 'purchase_line_ids.invoice_lines.quantity', 'purchase_line_ids.invoice_lines.price_unit')
@@ -832,14 +991,14 @@ class sale_order_line_inherit(models.Model):
             costo_orden_facturada = 0
             for purchase_line in rec.purchase_line_ids:
                 for invoice_line in purchase_line.invoice_lines:
-                    costo_orden_facturada = (invoice_line.price_unit * invoice_line.quantity)
+                    costo_orden_facturada += (invoice_line.price_unit * invoice_line.quantity)  # Acumular el costo facturado
             rec.costo_orden_facturada = costo_orden_facturada
-
+    
     costo_orden_facturada = fields.Float(
         string="Costo Orden Facturada",
-        compute="compute_costo_orden_facturada",
-        # store=True,  # Si deseas almacenar el valor en la base de datos
-    )    
+        compute=compute_costo_orden_facturada,
+        store=False,  # Cambiado a False si no necesitas almacenar el valor
+    )
 
     order_id=fields.Many2one(
         "sale.order",
@@ -848,37 +1007,38 @@ class sale_order_line_inherit(models.Model):
     )
 
 
-    @api.depends('envio', 'comision', 'order_id', 'order_id.amount_untaxed', 'costo_orden_facturada')
+    @api.depends('envio', 'comision', 'order_id', 'order_id.amount_untaxed', 'costo_orden_facturada', 'costo_orden_compra', 'killer_id_killer_price')
     def _compute_t1(self):
         for rec in self:
-            t1 = t2 = t3 = killer_price = 0
-            t2_porcentaje = t1_porcentaje = t3_porcentaje = ""
-            
-            if rec.order_id.amount_untaxed != 0:
-                killer_price = rec.killer_id_killer_price if rec.killer_id_killer_price else 0
-                if rec.order_id.marketplace.venta_directa:
-                    t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.product_id.standard_price)
-                    t2 = t3 = t1
-                else:
-                    if rec.order_id.state != 'draft':
-                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - (rec.costo_proveedor_2 * rec.product_uom_qty))
-                        t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.costo_orden_compra)
-                        t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.costo_orden_facturada)
-                    else:
-                        t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - (rec.costo_proveedor * rec.product_uom_qty))
-                    
-                t1_porcentaje = "{:.2f}%".format((t1 / rec.order_id.amount_untaxed) * 100)
-                t2_porcentaje = "{:.2f}%".format((t2 / rec.order_id.amount_untaxed) * 100)
-                t3_porcentaje = "{:.2f}%".format((t3 / rec.order_id.amount_untaxed) * 100)
-            else:
-                t1_porcentaje = t2_porcentaje = t3_porcentaje = "0.00%"
+            # Inicializamos las variables
+            t1 = t2 = t3 = 0
+            t1_porcentaje = t2_porcentaje = t3_porcentaje = "0.00%"
     
+            if rec.order_id and rec.killer_id_killer_price and rec.order_id.amount_untaxed != 0:
+                killer_price = rec.killer_id_killer_price
+                
+                # Cálculo para T1
+                t1 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.product_id.standard_price)
+                t1_porcentaje = "{:.2f}%".format((t1 / rec.order_id.amount_untaxed) * 100)
+    
+                # Cálculo para T2 (solo si hay costo de orden de compra)
+                if rec.costo_orden_compra > 0:
+                    t2 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.costo_orden_compra)
+                    t2_porcentaje = "{:.2f}%".format((t2 / rec.order_id.amount_untaxed) * 100)
+    
+                # Cálculo para T3 (solo si hay costo facturado)
+                if rec.costo_orden_facturada > 0:
+                    t3 = (rec.order_id.amount_untaxed - (rec.comision / 1.16) - (rec.envio / 1.16) + (killer_price / 1.16) - rec.costo_orden_facturada)
+                    t3_porcentaje = "{:.2f}%".format((t3 / rec.order_id.amount_untaxed) * 100)
+    
+            # Asignar valores a los campos
             rec.t1 = t1
             rec.t2 = t2
             rec.t3 = t3
             rec.t1_porcentaje = t1_porcentaje
             rec.t2_porcentaje = t2_porcentaje
             rec.t3_porcentaje = t3_porcentaje
+
 
     t1=fields.Float(
         string="T1",
@@ -923,10 +1083,7 @@ class sale_order_line_inherit(models.Model):
         store=True,
 
     )
-
-    fee_import= fields.Float(
-        string="Calculo fee",
-    )
+    
 
 
     

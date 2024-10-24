@@ -23,11 +23,11 @@
                      <field name="config_marketplace_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                  </xpath>
                 <xpath expr="//page[@name='general_information']//group//group[@name='group_standard_price']//field[@name='company_id']" position="after">
-                    <field name="is_killer" />
-                    <field name="killer_initial_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1"/>
+                    <!-- <field name="is_killer" />
+                    <field name="killer_initial_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1" />
                      <field name="killer_date" attrs="{'invisible': [('is_killer', '=', False)]}" readonly="1"/>
                     <field name="killer_price" widget="monetary" attrs="{'invisible': [('is_killer', '=', False)]}" />
-                    <field name="killer_id" invisible="0" readonly="1"/>
+                    <field name="killer_id" invisible="0" readonly="1"/> -->
                     <!-- <field name="killer_ids" widget="many2many_tags"/> -->
 
                 </xpath>
@@ -155,6 +155,27 @@
                     </page>
                 </xpath>
                 <xpath expr="//page[@name='general_information']" position="after">
+                    <page string="Listado killers">
+                        <div>
+                            <field name="killer_ids" options="{'no_create_edit': True}">
+                                <tree>
+                                    <field name="product_id" widget="many2one"/>
+                                    <field name="sku" />
+                                    <field name="base_price" widget="monetary"/>
+                                    <field name="promotion_price" widget="monetary"/>
+                                    <field name="killer_price" widget="monetary"/>
+                                    <field name="initial_date" />
+                                    <field name="final_date" />
+                                    <field name="marketplace_id" widget="many2one"/>
+                                    <field name="status" widget="badge"
+                                decoration-danger="status == 'cancelled'"
+                                decoration-muted="status == 'expired'"
+                                decoration-success="status == 'active'"
+                                decoration-warning="status == 'pause'"/>
+                                </tree>
+                            </field>
+                        </div>
+                    </page>
                     <page string="Compatibilidad" >
                         <div>
                             <field name="compatibilidad_ids" string="Compatibilidad"  options="{'no_create_edit': True}">

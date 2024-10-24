@@ -166,9 +166,11 @@
                     <field name="diarios_id" domain="['|', ('name','ilike','Venta'), ('name','ilike','venta')]"/>
                     <field name="company_id" invisible="1"/>
                     <field name="imagen"/>
-                    <field name="color" widget="color_picker" required="0"/>
+                    <field name="fee_marketplace" />
+                    
                     <field name="yuju_tag" />
                     <field name="venta_directa" />
+                    <field name="color" widget="color_picker" required="0" optional="hide"/>
                 </tree>
             </field>
         </record>
@@ -196,7 +198,7 @@
                                 <field name="venta_directa" />
                                 <field name="company_id" invisible="1"/>
                                 <field name="yuju_tag"/>
-                                
+                                <field name="fee_marketplace" />
                                 <field name="color" widget="color_picker" required="0"/>
                             </group>
                             

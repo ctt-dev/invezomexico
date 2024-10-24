@@ -20,23 +20,24 @@
             <field name="name">Vista detallada</field>
             <field name="model">llantas_config.killer_list</field>
             <field name="arch" type="xml">
-                <tree edit="1" sample="1" >
+                <tree editable="top" sample="1">
                     <field name="product_id" widget="many2one"/>
-                    <field name="sku" />
+                    <field name="sku"/>
                     <field name="base_price" widget="monetary"/>
                     <field name="promotion_price" widget="monetary"/>
                     <field name="killer_price" widget="monetary"/>
-                    <field name="initial_date" />
-                    <field name="final_date" />
+                    <field name="initial_date"/>
+                    <field name="final_date"/>
                     <field name="marketplace_id" widget="many2one"/>
                     <field name="status" widget="badge"
-                decoration-danger="status == 'cancelled'"
-                decoration-muted="status == 'expired'"
-                decoration-success="status == 'active'"
-                decoration-warning="status == 'pause'"/>
+                        decoration-danger="status == 'cancelled'"
+                        decoration-muted="status == 'expired'"
+                        decoration-success="status == 'active'"
+                        decoration-warning="status == 'pause'"/>
                 </tree>
             </field>
-        </record>    
+        </record>
+
 
         <record id="llantas_config_killer_list_search" model="ir.ui.view">
             <field name="name">Buscar</field>

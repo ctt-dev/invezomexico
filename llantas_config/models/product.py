@@ -131,6 +131,13 @@ class product_template_inherit(models.Model):
         
     )
 
+    killer_ids = fields.One2many(
+        "llantas_config.killer_list",
+        "product_id",
+        string="Lista killer",
+        store=True
+    )
+
     # killer_ids = fields.One2many(
     #     "llantas_config.killer_list",
     #     "marketplace_id",
@@ -144,28 +151,28 @@ class product_template_inherit(models.Model):
         values['company_id'] = self.env.company.id
         return super(product_template_inherit, self).create(values)
     
-    is_killer=fields.Boolean(
-        string="Es killer?",
-        tracking=True,
-    )
+    # is_killer=fields.Boolean(
+    #     string="Es killer?",
+    #     tracking=True,
+    # )
 
-    killer_date=fields.Datetime(
-        string="Fecha final killer",
-        # related="killer_id.final_date",
-        tracking=True,
-    )
+    # killer_date=fields.Datetime(
+    #     string="Fecha final killer",
+    #     # related="killer_id.final_date",
+    #     tracking=True,
+    # )
 
-    killer_initial_date= fields.Datetime(
-        string="Fecha inicial killer",
-        tracking=True,
-        # related="killer_id.initial_date",
-        store=True,
-    )
+    # killer_initial_date= fields.Datetime(
+    #     string="Fecha inicial killer",
+    #     tracking=True,
+    #     # related="killer_id.initial_date",
+    #     store=True,
+    # )
 
-    killer_price=fields.Float(
-        string="Precio killer",
-        tracking=True,
-    )
+    # killer_price=fields.Float(
+    #     string="Precio killer",
+    #     tracking=True,
+    # )
 
      
     

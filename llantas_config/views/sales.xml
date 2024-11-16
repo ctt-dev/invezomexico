@@ -17,6 +17,13 @@
 
                      <field name="envio" attrs="{'invisible': [('mostrar_envio', '!=', True)]}" />
                      <field name="warehouse_id" />
+                     <field name="is_check" invisible="1" readonly="1"/>
+                     <label for="revisar_disponibilidad" />
+                     <div class="o_row">
+                        <button name="revisar_disponibilidad" type="object" string="Revisar disponibilidad" class="btn-primary" />
+                     </div>
+
+                     
                      <field name="commitment_date"/>
                      <field name="tipo_factura" />
                      <field name="es_killer" invisible="1"/>

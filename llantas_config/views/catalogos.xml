@@ -167,6 +167,8 @@
                     <field name="company_id" invisible="1"/>
                     <field name="imagen"/>
                     <field name="fee_marketplace" />
+                    <field name="shipping_cost" />
+                    
                     
                     <field name="yuju_tag" />
                     <field name="venta_directa" />
@@ -199,6 +201,8 @@
                                 <field name="company_id" invisible="1"/>
                                 <field name="yuju_tag"/>
                                 <field name="fee_marketplace" />
+                                <field name="shipping_cost" />
+                                
                                 <field name="color" widget="color_picker" required="0"/>
                             </group>
                             

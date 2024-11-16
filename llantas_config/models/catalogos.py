@@ -157,6 +157,10 @@ class marketplaces(models.Model):
         string="Fee"
     )
 
+    shipping_cost = fields.Float(
+        string="Costo de envio"
+    )
+
     @api.model
     def create(self, values):
         values['company_id'] = self.env.company.id

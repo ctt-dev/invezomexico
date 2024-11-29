@@ -206,9 +206,106 @@ class sale_order_inherit(models.Model):
     #         sale.order_line = [(3, id)]
     #     return sale
 
+    # @api.model
+    # def create(self, values):
+    #     # Verificación de campos y asignación de valores
+    #     if 'channel_order_reference' in values:
+    #         values['folio_venta'] = values['channel_order_reference']
+    #     elif 'channel_order_id' in values and not values.get('folio_venta'):
+    #         values['folio_venta'] = values['channel_order_id']
+    
+    #     if 'yuju_seller_shipping_cost' in values:
+    #         values['envio'] = values['yuju_seller_shipping_cost']
+    #     else:
+    #         total_shipping_cost = sum(line['product_uom_qty'] * values['marketplace'].shipping_cost for line in values.get('order_line', []))
+    #         values['envio'] = total_shipping_cost
+            
+    #     if 'yuju_marketplace_fee' in values:
+    #         values['comision'] = values['yuju_marketplace_fee']
+        
+    #     # Verificación de unicidad de 'folio_venta'
+    #     if 'folio_venta' in values:
+    #         venta_ids = self.search([
+    #             ('folio_venta', '=', values['folio_venta']),
+    #             ('folio_venta', '!=', False)
+    #         ])
+    #         if venta_ids:
+    #             raise UserError('El número de venta debe ser único.')
+        
+    #     # Asignar 'guia' si se ha proporcionado 'yuju_carrier_tracking_ref'
+    #     if 'yuju_carrier_tracking_ref' in values:
+    #         values['guia'] = values['yuju_carrier_tracking_ref']
+        
+    #     # Verificación de unicidad de 'guia'
+    #     guia = values.get('guia')
+    #     if guia:
+    #         ventas = self.search([
+    #             ('guia', '=', guia),
+    #             ('guia', '!=', False)
+    #         ])
+    #         if ventas:
+    #             raise UserError('El número de guía debe ser único.')
+    
+    #     # Actualizar marketplace en create
+    #     channel = values.get('channel')
+    #     if channel:
+    #         channel = self.remove_accents(channel.strip())
+    #         marketplace_record = self.env['llantas_config.marketplaces'].search([
+    #             ('company_id', '=', values.get('company_id')),
+    #             ('name', '=', channel)
+    #         ], limit=1)
+    #         values['marketplace'] = marketplace_record.id if marketplace_record else False
+
+    #     # Crear la venta usando el método estándar de Odoo
+    #     sale = super(sale_order_inherit, self).create(values)
+        
+    #     # # Asignar warehouse_id a la venta
+    #     # warehouse_id = False
+    #     # for line in sale.order_line:
+    #     #     # Obtener las ubicaciones internas donde hay existencia del producto
+    #     #     locations = []
+    #     #     for quant in line.product_id.stock_quant_ids:
+    #     #         if quant.quantity > 0 and quant.location_id.usage == 'internal':
+    #     #             locations.append(quant.location_id.display_name)
+    #     #             if quant.location_id.location_id:
+    #     #                 warehouse_id = quant.location_id.location_id.warehouse_id  # Almacén asociado a la ubicación interna
+            
+    #     #     if not locations:
+    #     #         # Si no hay inventario en ubicaciones internas, asignar el almacén predeterminado
+    #     #         warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
+    #     #         if not warehouse:
+    #     #             raise UserError("No se encontró el almacén predeterminado 'ALMACEN LLANTIRED- 3PL VIRTUAL' en el sistema.")
+    #     #         warehouse_id = warehouse
+
+    #     #     # Asignamos el warehouse_id encontrado o el predeterminado
+    #     #     sale.write({'warehouse_id': warehouse_id.id})
+        
+    #     # Crear líneas de orden para productos empaquetados (si aplica)
+    #     for line in sale.order_line:
+    #         if line.product_template_id.es_paquete:
+    #             # Aquí tenemos la lógica para los productos empaquetados
+    #             bom = line.product_template_id.bom_ids[0]  # Suponemos que existe una única BOM asociada
+    #             for prod in bom.bom_line_ids:
+    #                 price = line.price_unit
+    #                 # Creamos las nuevas líneas de orden basadas en la BOM
+    #                 ol = self.env['sale.order.line'].create({
+    #                     'order_id': sale.id,
+    #                     'customer_lead': 0.0,
+    #                     'name': prod.product_id.name,
+    #                     'product_id': prod.product_id.id,
+    #                     'product_uom': prod.product_uom_id.id,
+    #                     'product_uom_qty': prod.product_qty * line.product_uom_qty,  # Multiplicamos por la cantidad del paquete
+    #                     'price_unit': price / (prod.product_qty * line.product_uom_qty),  # Ajustamos el precio unitario
+    #                 })
+    #                 sale.order_line = [(4, ol.id)]  # Añadimos la nueva línea al pedido
+    #             # Finalmente eliminamos la línea original del pedido
+    #             sale.order_line = [(3, line.id)]
+        
+    #     return sale
+
     @api.model
     def create(self, values):
-        # Verificación de campos y asignación de valores
+        # Lógica simplificada en el método create
         if 'channel_order_reference' in values:
             values['folio_venta'] = values['channel_order_reference']
         elif 'channel_order_id' in values and not values.get('folio_venta'):
@@ -216,10 +313,7 @@ class sale_order_inherit(models.Model):
     
         if 'yuju_seller_shipping_cost' in values:
             values['envio'] = values['yuju_seller_shipping_cost']
-        else:
-            total_shipping_cost = sum(line['product_uom_qty'] * values['marketplace'].shipping_cost for line in values.get('order_line', []))
-            values['envio'] = total_shipping_cost
-            
+        
         if 'yuju_marketplace_fee' in values:
             values['comision'] = values['yuju_marketplace_fee']
         
@@ -231,10 +325,6 @@ class sale_order_inherit(models.Model):
             ])
             if venta_ids:
                 raise UserError('El número de venta debe ser único.')
-        
-        # Asignar 'guia' si se ha proporcionado 'yuju_carrier_tracking_ref'
-        if 'yuju_carrier_tracking_ref' in values:
-            values['guia'] = values['yuju_carrier_tracking_ref']
         
         # Verificación de unicidad de 'guia'
         guia = values.get('guia')
@@ -257,52 +347,9 @@ class sale_order_inherit(models.Model):
             values['marketplace'] = marketplace_record.id if marketplace_record else False
 
         # Crear la venta usando el método estándar de Odoo
-        sale = super(sale_order_inherit, self).create(values)
-        
-        # # Asignar warehouse_id a la venta
-        # warehouse_id = False
-        # for line in sale.order_line:
-        #     # Obtener las ubicaciones internas donde hay existencia del producto
-        #     locations = []
-        #     for quant in line.product_id.stock_quant_ids:
-        #         if quant.quantity > 0 and quant.location_id.usage == 'internal':
-        #             locations.append(quant.location_id.display_name)
-        #             if quant.location_id.location_id:
-        #                 warehouse_id = quant.location_id.location_id.warehouse_id  # Almacén asociado a la ubicación interna
-            
-        #     if not locations:
-        #         # Si no hay inventario en ubicaciones internas, asignar el almacén predeterminado
-        #         warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
-        #         if not warehouse:
-        #             raise UserError("No se encontró el almacén predeterminado 'ALMACEN LLANTIRED- 3PL VIRTUAL' en el sistema.")
-        #         warehouse_id = warehouse
-
-        #     # Asignamos el warehouse_id encontrado o el predeterminado
-        #     sale.write({'warehouse_id': warehouse_id.id})
-        
-        # Crear líneas de orden para productos empaquetados (si aplica)
-        for line in sale.order_line:
-            if line.product_template_id.es_paquete:
-                # Aquí tenemos la lógica para los productos empaquetados
-                bom = line.product_template_id.bom_ids[0]  # Suponemos que existe una única BOM asociada
-                for prod in bom.bom_line_ids:
-                    price = line.price_unit
-                    # Creamos las nuevas líneas de orden basadas en la BOM
-                    ol = self.env['sale.order.line'].create({
-                        'order_id': sale.id,
-                        'customer_lead': 0.0,
-                        'name': prod.product_id.name,
-                        'product_id': prod.product_id.id,
-                        'product_uom': prod.product_uom_id.id,
-                        'product_uom_qty': prod.product_qty * line.product_uom_qty,  # Multiplicamos por la cantidad del paquete
-                        'price_unit': price / (prod.product_qty * line.product_uom_qty),  # Ajustamos el precio unitario
-                    })
-                    sale.order_line = [(4, ol.id)]  # Añadimos la nueva línea al pedido
-                # Finalmente eliminamos la línea original del pedido
-                sale.order_line = [(3, line.id)]
-        
+        sale = super(SaleOrderInherit, self).create(values)
         return sale
-
+        
     @api.onchange('order_line')
     def change_lines(self):
         for sale in self:

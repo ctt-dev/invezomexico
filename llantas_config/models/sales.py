@@ -25,7 +25,7 @@ class sale_order_inherit(models.Model):
             if line.product_id.product_tmpl_id.es_paquete and line.product_id.product_tmpl_id.bom_ids:
                 pkg_value = int(line.product_id.product_tmpl_id.pkg_type)
                 bom_line = line.product_id.product_tmpl_id.bom_ids.bom_line_ids[0]
-                price_per_unit = line.price_unit / (line.product_uom_qty or 1)
+                price_per_unit = line.price_unit / (pkg_value or 1)
                 for prod in bom_line:
                     new_line_vals = {
                         'order_id': self.id,
@@ -33,7 +33,7 @@ class sale_order_inherit(models.Model):
                         'name': prod.product_id.name,
                         'product_id': prod.product_id.id,
                         'product_uom': prod.product_uom_id.id,
-                        'product_uom_qty': prod.product_qty * line.product_uom_qty,
+                        'product_uom_qty': pkg_value,
                         'price_unit': price_per_unit,  # Precio ajustado
                     }
                     new_lines.append((0, 0, new_line_vals))  # Añadimos la nueva línea

@@ -1072,8 +1072,8 @@ class sale_order_inherit(models.Model):
             order.amount_untaxed = amount_untaxed
             order.amount_tax = amount_tax
             order.amount_total = order.amount_untaxed + order.amount_tax
-            if order.marketplace and order.yuju_order_data and order.yuju_marketplace_fee == 0.00:
-                order.fee_sale = (order.amount_untaxed + order.amount_tax) * order.fee_import
+            # if order.marketplace and order.yuju_order_data and order.yuju_marketplace_fee == 0.00:
+            #     order.fee_sale = (order.amount_untaxed + order.amount_tax) * order.fee_import
             # raise UserError(str((order.amount_untaxed + order.amount_tax) * (1 + order.fee_import)))
 
      

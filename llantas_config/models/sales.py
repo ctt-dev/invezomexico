@@ -347,7 +347,7 @@ class sale_order_inherit(models.Model):
             values['marketplace'] = marketplace_record.id if marketplace_record else False
 
         # Crear la venta usando el método estándar de Odoo
-        sale = super(SaleOrderInherit, self).create(values)
+        sale = super(sale_order_inherit, self).create(values)
         return sale
         
     @api.onchange('order_line')

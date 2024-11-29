@@ -1029,23 +1029,23 @@ class sale_order_inherit(models.Model):
         for rec in self:
             fee = 0.0  # Valor por defecto si no se encuentra tarifa
     
-            if rec.marketplace and rec.yuju_order_data and rec.yuju_marketplace_fee == 0.00:
-                # Buscamos el marketplace en la misma compañía
-                marketplace = self.env['llantas_config.marketplaces'].search([
-                    ('name', 'ilike', rec.marketplace.name),
-                    ('company_id', '=', rec.company_id.id)
-                ], limit=1)
+            # if rec.marketplace and rec.yuju_order_data and rec.yuju_marketplace_fee == 0.00:
+            #     # Buscamos el marketplace en la misma compañía
+            #     marketplace = self.env['llantas_config.marketplaces'].search([
+            #         ('name', 'ilike', rec.marketplace.name),
+            #         ('company_id', '=', rec.company_id.id)
+            #     ], limit=1)
     
-                if marketplace:
-                    # Si encontramos el marketplace, obtenemos la tarifa del campo 'fee_marketplace'
-                    fee = marketplace.fee_marketplace or 0.0
-                else:
-                    raise UserError(
-                        f"No se encontró un marketplace que coincida con '{rec.marketplace.name}' para la compañía '{rec.company_id.name}'."
-                    )
+            #     if marketplace:
+            #         # Si encontramos el marketplace, obtenemos la tarifa del campo 'fee_marketplace'
+            #         fee = marketplace.fee_marketplace or 0.0
+            #     else:
+            #         raise UserError(
+            #             f"No se encontró un marketplace que coincida con '{rec.marketplace.name}' para la compañía '{rec.company_id.name}'."
+            #         )
     
-            # Asignamos el valor de la tarifa al campo fee_import
-            rec.fee_import = fee
+            # # Asignamos el valor de la tarifa al campo fee_import
+            # rec.fee_import = fee
     
 
     

@@ -691,66 +691,22 @@ class sale_order_inherit(models.Model):
             if self.marketplace.id and self.marketplace.category_id.id:
                 if self.marketplace.category_id not in self.partner_id.category_id:
                     self.partner_id.category_id += self.marketplace.category_id
-        
+    
             # Aplicar costo de envío si aún no está establecido
             if self.yuju_seller_shipping_cost == 0.0:
                 total_shipping_cost = sum(line.product_uom_qty for line in self.order_line) * self.marketplace.shipping_cost
                 self.write({'envio': total_shipping_cost})
-        
-            # Verificar y asignar warehouse_id para cada línea de pedido
+            
+            # Calcular costo del proveedor en las líneas de pedido
             for line in self.order_line:
-                # Calcular costo del proveedor
                 if line.costo_proveedor != 0.00:
-                    if line.product_id.product_tmpl_id.es_paquete:
-                        line.write({
-                            'costo_proveedor_2': ((line.costo_proveedor * float(line.product_id.product_tmpl_id.pkg_type)) * line.product_uom_qty)
-                        })
-                    else:
-                        line.write({'costo_proveedor_2': line.costo_proveedor})
+                    line.write({'costo_proveedor_2': line.costo_proveedor})
                     line.compute_costo_proveedor_total()
-        
-                # Actualizar detalles si el producto es un paquete
-                if line.product_id.product_tmpl_id.es_paquete and line.product_id.product_tmpl_id.bom_ids:
-                    pkg_value = int(line.product_id.product_tmpl_id.pkg_type)
-                    bom_line = line.product_id.product_tmpl_id.bom_ids.bom_line_ids[0]
-                    line.write({
-                        'product_id': bom_line.product_id.id,
-                        'product_uom': bom_line.product_uom_id.id,
-                        'name': bom_line.product_id.name,
-                        'product_uom_qty': (line.product_uom_qty * pkg_value),
-                        'price_unit': line.price_unit / (line.product_uom_qty * pkg_value),
-                    })
-        
-                # Obtener ubicaciones internas donde existe el producto
-                locations = []
-                warehouse_id = False
-                for quant in line.product_id.stock_quant_ids:
-                    # Verificar que la ubicación sea interna
-                    if quant.quantity > 0 and quant.location_id.usage == 'internal':
-                        locations.append(quant.location_id.display_name)
-        
-                        # Obtener el warehouse_id de la ubicación
-                        if quant.location_id.location_id:
-                            warehouse_id = quant.location_id.location_id.warehouse_id.id
-        
-                if locations:
-                    # Si hay ubicaciones internas con inventario, asignamos el warehouse_id
-                    pass  # Ya no es necesario mostrar mensaje, solo asignamos el warehouse_id
-                else:
-                    # Si no hay existencia, asignar el almacén predeterminado
-                    warehouse_id = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
-        
-                    if not warehouse_id:
-                        raise UserError("No se encontró el almacén predeterminado 'ALMACÉN LLANTIRED- 3PL VIRTUAL' en el sistema.")
-                    
-                    warehouse_id = warehouse_id.id
-        
-                # Guardar el warehouse_id en el campo correspondiente
-                self.write({'warehouse_id': warehouse_id})
-        
+    
             return res
         else:
             raise UserError("Debe de comprobar disponibilidad primero.")
+
 
 
 

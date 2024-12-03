@@ -20,28 +20,6 @@ class sale_order_inherit(models.Model):
 
     def revisar_disponibilidad(self):
         for line in self.order_line:  
-            new_lines = []
-            # Actualizar detalles si el producto es un paquete
-            if line.product_id.product_tmpl_id.es_paquete and line.product_id.product_tmpl_id.bom_ids:
-                pkg_value = int(line.product_id.product_tmpl_id.pkg_type)
-                bom_line = line.product_id.product_tmpl_id.bom_ids.bom_line_ids[0]
-                price_per_unit = line.price_unit / (pkg_value or 1)
-                for prod in bom_line:
-                    new_line_vals = {
-                        'order_id': self.id,
-                        'customer_lead': 0.0,
-                        'name': prod.product_id.name,
-                        'product_id': prod.product_id.id,
-                        'product_uom': prod.product_uom_id.id,
-                        'product_uom_qty': pkg_value,
-                        'price_unit': price_per_unit,  # Precio ajustado
-                    }
-                    new_lines.append((0, 0, new_line_vals))  # Añadimos la nueva línea
-                # Remover la línea original después de agregar sus componentes
-                self.order_line = [(3, line.id)]
-                self.order_line = new_lines
-    
-        for line in self.order_line:
             # Inicializar variables
             locations = {}
             preferred_warehouse = None
@@ -62,7 +40,6 @@ class sale_order_inherit(models.Model):
                     # Priorizar almacén "FELIX" si aplica
                     if current_company == 'LLANTIRED' and "ALMACEN LLANTIRED - FELIX" in warehouse.name:
                         preferred_warehouse = warehouse
-    
                     elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS' and "ALMACEN LA BODEGA - FELIX" in warehouse.name:
                         preferred_warehouse = warehouse
     
@@ -79,22 +56,22 @@ class sale_order_inherit(models.Model):
                     preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
     
             # Selección del almacén final
-            if not locations or max_stock == 0:  # Si no hay stock en ningún almacén
-                if preferred_warehouse:
-                    warehouse_id = preferred_warehouse.id  # Seleccionar almacén 3PL Virtual si existe
+            if max_stock > 0:  # Si hay stock disponible, priorizar almacén con más stock
+                warehouse_id = selected_warehouse
+            elif preferred_warehouse:  # Si no hay stock, usar el almacén 3PL Virtual
+                warehouse_id = preferred_warehouse.id
+            else:  # Si no hay 3PL Virtual, usar el único almacén disponible
+                warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
+                if warehouse:
+                    warehouse_id = warehouse.id
                 else:
-                    # Seleccionar el único almacén disponible como respaldo
-                    warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
-                    if warehouse:
-                        warehouse_id = warehouse.id
-                    else:
-                        raise UserError(f"No se encontró un almacén configurado para la empresa {current_company}.")
-            else:
-                warehouse_id = selected_warehouse  # Priorizar el almacén con más stock si existe stock
+                    raise UserError(f"No se encontró un almacén configurado para la empresa {current_company}.")
     
-            # Guardar el almacén seleccionado en la orden
+            # Asignar el almacén a la orden de venta
             self.write({'warehouse_id': warehouse_id})
-            self.is_check = True
+        
+        # Marcar como revisado
+        self.is_check = True
 
 
 
@@ -331,6 +308,8 @@ class sale_order_inherit(models.Model):
 
     @api.model
     def create(self, values):
+        _logger.warning('create')
+        
         # Lógica simplificada en el método create
         if 'channel_order_reference' in values:
             values['folio_venta'] = values['channel_order_reference']
@@ -375,21 +354,34 @@ class sale_order_inherit(models.Model):
         # Crear la venta usando el método estándar de Odoo
         sale = super(sale_order_inherit, self).create(values)
         return sale
-        
+
+    auto_warehouse_id = fields.Many2one(
+        'stock.warehouse',
+        string="Almacén Automático",
+        readonly=True,
+        help="Este es el almacén sugerido automáticamente. Puede ser diferente al seleccionado manualmente."
+    )
+    
     @api.onchange('order_line')
     def change_lines(self):
+        _logger.warning('change')
         for sale in self:
+            _logger.warning(sale)
+            _logger.warning(sale.order_line)
+            _logger.warning(sale.marketplace)
+        
+            # Procesar líneas que son paquetes
             for line in sale.order_line:
                 new_lines = []
                 if line.product_template_id.es_paquete:
                     # Obtenemos la primera BOM asociada al producto
-                    bom = line.product_template_id.bom_ids[:1]  # Cambiado a [:1] para mayor seguridad
+                    bom = line.product_template_id.bom_ids[:1]  # Usar [:1] para mayor seguridad
                     if not bom:
                         continue
-
+    
                     # Calculamos el precio para dividir entre los productos de la BOM
                     price_per_unit = line.price_unit / (line.product_uom_qty or 1)
-                    
+    
                     for prod in bom.bom_line_ids:
                         new_line_vals = {
                             'order_id': sale.id,
@@ -400,34 +392,71 @@ class sale_order_inherit(models.Model):
                             'product_uom_qty': prod.product_qty * line.product_uom_qty,
                             'price_unit': price_per_unit,  # Precio ajustado
                         }
-                        new_lines.append((0, 0, new_line_vals))  # Añadimos la nueva línea
+                        new_lines.append((0, 0, new_line_vals))  # Añadir la nueva línea
+    
                     # Remover la línea original después de agregar sus componentes
                     sale.order_line = [(3, line.id)]
                     sale.order_line = new_lines
                     _logger.warning(new_lines)
-
-            # Asignar el almacén según la disponibilidad
+    
+            # Asignar el almacén automáticamente, pero sin afectar el seleccionado manualmente
             warehouse_id = self._find_warehouse(sale)
-            sale.warehouse_id = warehouse_id  # Asignamos el warehouse_id encontrado o el predeterminado
+            sale.auto_warehouse_id = warehouse_id
 
     def _find_warehouse(self, sale):
         """
-        Función auxiliar para encontrar y retornar el almacén adecuado para la orden
+        Función auxiliar para encontrar y retornar el almacén adecuado para la orden.
+        Prioriza el stock disponible en la empresa actual.
         """
+        _logger.warning('find')
         warehouse_id = False
+        current_company = sale.company_id
+    
+        # Recolectar ubicaciones con stock por empresa
         for line in sale.order_line:
-            locations = [quant.location_id for quant in line.product_id.stock_quant_ids if quant.quantity > 0 and quant.location_id.usage == 'internal']
-            
+            locations = [
+                quant.location_id 
+                for quant in line.product_id.stock_quant_ids 
+                if quant.quantity > 0 
+                and quant.location_id.usage == 'internal' 
+                and quant.location_id.company_id == current_company
+            ]
+    
             if locations:
-                # Tomamos el almacén asociado a la primera ubicación interna con stock
-                warehouse_id = locations[0].location_id.warehouse_id.id
-            else:
-                # Almacén predeterminado si no hay ubicaciones internas con stock
-                warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
-                if not warehouse:
-                    raise UserError("No se encontró el almacén predeterminado 'ALMACEN LLANTIRED- 3PL VIRTUAL' en el sistema.")
-                warehouse_id = warehouse.id
+                # Priorizar el almacén con mayor stock dentro de la misma empresa
+                warehouse_stock = {}
+                for loc in locations:
+                    warehouse = loc.warehouse_id
+                    if warehouse:
+                        if warehouse.id not in warehouse_stock:
+                            warehouse_stock[warehouse.id] = loc.quantity
+                        else:
+                            warehouse_stock[warehouse.id] += loc.quantity
+    
+                # Seleccionar el almacén con mayor stock
+                if warehouse_stock:
+                    warehouse_id = max(warehouse_stock, key=warehouse_stock.get)
+    
+            # Si no hay stock en la misma empresa, usar el almacén 3PL Virtual
+            if not warehouse_id:
+                preferred_warehouse = self.env['stock.warehouse'].search([
+                    ('name', '=', f'ALMACEN {current_company.name.upper()}- 3PL VIRTUAL'),
+                    ('company_id', '=', current_company.id)
+                ], limit=1)
+                if preferred_warehouse:
+                    warehouse_id = preferred_warehouse.id
+                else:
+                    # Seleccionar cualquier almacén disponible como último recurso
+                    fallback_warehouse = self.env['stock.warehouse'].search([
+                        ('company_id', '=', current_company.id)
+                    ], limit=1)
+                    if fallback_warehouse:
+                        warehouse_id = fallback_warehouse.id
+                    else:
+                        raise UserError(f"No se encontró un almacén configurado para la empresa {current_company.name}.")
+    
         return warehouse_id
+
 
     
     @api.onchange('comprador_id')
@@ -449,6 +478,7 @@ class sale_order_inherit(models.Model):
         return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
         
     def write(self, values):
+        _logger.warning('wirte')
         for rec in self:
             # Actualizar marketplace en write
             if rec.channel:
@@ -740,6 +770,7 @@ class sale_order_inherit(models.Model):
 
     
     def create_purchase_for_sale_order(self):
+        _logger.warning('purch')
         for rec in self:
             if rec.state == 'sale':
                 for line in rec.order_line:

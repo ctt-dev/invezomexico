@@ -42,7 +42,7 @@ class sale_order_inherit(models.Model):
                 _logger.warning('revisar')
                 self.order_line = new_lines
                 _logger.warning('disponibilidad')
-                
+    
         for line in self.order_line:
             # Obtener ubicaciones internas donde existe el producto
             locations = []
@@ -54,7 +54,7 @@ class sale_order_inherit(models.Model):
                 # Verificar que la ubicación sea interna
                 if quant.quantity > 0 and quant.location_id.usage == 'internal':
                     locations.append(quant.location_id.display_name)
-                    
+    
                     # Priorizar almacenes "FELIX" según la empresa
                     if current_company == 'LLANTIRED' and "ALMACEN LLANTIRED - FELIX" in quant.location_id.warehouse_id.name:
                         preferred_warehouse = quant.location_id.warehouse_id.id
@@ -69,6 +69,9 @@ class sale_order_inherit(models.Model):
                         warehouse_id = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
                     elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS':
                         warehouse_id = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
+                    else:
+                        # Empresa no específica, seleccionar un almacén predeterminado genérico
+                        warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
                     
                     if warehouse_id:
                         warehouse_id = warehouse_id.id
@@ -77,11 +80,14 @@ class sale_order_inherit(models.Model):
                 else:
                     warehouse_id = preferred_warehouse
             else:
-                # Si no hay existencias, buscar el almacén predeterminado según la empresa
+                # Si no hay existencias, buscar el almacén predeterminado
                 if current_company == 'LLANTIRED':
                     warehouse_id = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
                 elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS':
                     warehouse_id = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
+                else:
+                    # Empresa no específica, seleccionar un almacén predeterminado genérico
+                    warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
                 
                 if warehouse_id:
                     warehouse_id = warehouse_id.id
@@ -91,6 +97,7 @@ class sale_order_inherit(models.Model):
             # Guardar el warehouse_id en el campo correspondiente
             self.write({'warehouse_id': warehouse_id})
             self.is_check = True
+
     
     marketplace = fields.Many2one(
         "llantas_config.marketplaces",

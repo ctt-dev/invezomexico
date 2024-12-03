@@ -34,7 +34,7 @@
                      <field name="is_check" invisible="1" readonly="1"/>
                      <label for="revisar_disponibilidad" />
                      <div class="o_row">
-                        <button name="revisar_disponibilidad" type="object" string="Revisar disponibilidad" class="btn-primary" />
+                        <button name="revisar_disponibilidad" type="object" string="Revisar disponibilidad" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                      </div>
 
                      

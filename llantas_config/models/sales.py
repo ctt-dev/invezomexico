@@ -411,14 +411,14 @@ class sale_order_inherit(models.Model):
         _logger.warning('find')
         warehouse_id = False
         current_company = sale.company_id
-    
+        
         # Recolectar ubicaciones con stock por empresa
         for line in sale.order_line:
             locations = [
-                quant.location_id 
-                for quant in line.product_id.stock_quant_ids 
-                if quant.quantity > 0 
-                and quant.location_id.usage == 'internal' 
+                quant.location_id
+                for quant in line.product_id.stock_quant_ids
+                if quant.quantity > 0
+                and quant.location_id.usage == 'internal'
                 and quant.location_id.company_id == current_company
             ]
     
@@ -428,10 +428,15 @@ class sale_order_inherit(models.Model):
                 for loc in locations:
                     warehouse = loc.warehouse_id
                     if warehouse:
+                        # Sumar las cantidades de stock en esa ubicación
+                        total_stock = sum(
+                            quant.quantity
+                            for quant in self.env['stock.quant'].search([('location_id', '=', loc.id)])
+                        )
                         if warehouse.id not in warehouse_stock:
-                            warehouse_stock[warehouse.id] = loc.quantity
+                            warehouse_stock[warehouse.id] = total_stock
                         else:
-                            warehouse_stock[warehouse.id] += loc.quantity
+                            warehouse_stock[warehouse.id] += total_stock
     
                 # Seleccionar el almacén con mayor stock
                 if warehouse_stock:
@@ -454,10 +459,11 @@ class sale_order_inherit(models.Model):
                         warehouse_id = fallback_warehouse.id
                     else:
                         raise UserError(f"No se encontró un almacén configurado para la empresa {current_company.name}.")
-    
+        
         return warehouse_id
 
-
+    
+    
     
     @api.onchange('comprador_id')
     def _change_vendedor(self):

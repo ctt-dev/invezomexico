@@ -275,8 +275,13 @@ class proveedores_link(models.Model):
     
         for record in data:
             if isinstance(record, dict):
-                sku_proveedor = record.get('SKU PROVEEDOR', 'N/A')
                 existencia = record.get('EXISTENCIA PROVEEDOR', 0)
+                
+                # Omitir registros con existencia igual a 0
+                if existencia == 0:
+                    continue
+    
+                sku_proveedor = record.get('SKU PROVEEDOR', 'N/A')
                 costo = record.get('COSTO PROVEEDOR', 0.0) * tipo_cambio
                 producto = record.get('PRODUCTO', 'N/A')
                 proveedor = record.get('PROVEEDOR', 'N/A')
@@ -330,6 +335,7 @@ class proveedores_link(models.Model):
             'proveedor': self.proveedor_id.name
         }
 
+
     def probar_json(self):
         url1 = "https://script.googleusercontent.com/macros/echo?user_content_key=-nPb1guziFdeML89XAF8sgJtQmuMVWAq0dYIzSc_wZs3QRZeZpoVTKxxZCIhlaOohqfBl6vOUGor4G14ndO5EM3JPYZbyKsjm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnFXKTdTCSsWPTXVM0gnF7bJnigLD7sxsdMOYrTVQl1vVMVRwkiVMGx9SsVmTKE85jS9VA075VAQmtNUHgqsKZo-8mzDTCqnGIg&lib=M4m5NS-apNCUtcNwkLEarFEAXVMBT1kpy"
 
@@ -379,8 +385,13 @@ class proveedores_link(models.Model):
         # Procesar cada registro del JSON
         for record in data:
             if isinstance(record, dict):
-                sku_proveedor = record.get('Codigo', 'N/A')
                 existencia = record.get('Cantidad', 0)
+                
+                # Omitir registros con cantidad igual a 0
+                if existencia == 0:
+                    continue
+    
+                sku_proveedor = record.get('Codigo', 'N/A')
                 costo = record.get('Precio', 0.0) * tipo_cambio
                 producto = record.get('Descripcion', 'N/A')
                 proveedor = record.get('Proveedor', 'N/A')
@@ -425,6 +436,7 @@ class proveedores_link(models.Model):
             'message': "Datos procesados correctamente",
             'proveedor': self.proveedor_id.name
         }
+
 
     def _cron_procesar_supplierinfo(self):
         batch_size = 1000

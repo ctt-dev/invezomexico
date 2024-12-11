@@ -18,60 +18,153 @@ class sale_order_inherit(models.Model):
         tracking=True,
     )
 
-    def revisar_disponibilidad(self):
-        for line in self.order_line:  
-            # Inicializar variables
-            locations = {}
-            preferred_warehouse = None
-            selected_warehouse = None
-            max_stock = 0
-            current_company = self.company_id.name  # Nombre de la compañía actual
+    # def revisar_disponibilidad(self):
+    #     for line in self.order_line:  
+    #         # Inicializar variables
+    #         locations = {}
+    #         preferred_warehouse = None
+    #         selected_warehouse = None
+    #         max_stock = 0
+    #         current_company = self.company_id.name  # Nombre de la compañía actual
     
-            # Recolectar información de stock por almacén
+    #         # Recolectar información de stock por almacén
+    #         for quant in line.product_id.stock_quant_ids:
+    #             if quant.quantity > 0 and quant.location_id.usage == 'internal':
+    #                 warehouse = quant.location_id.warehouse_id
+    #                 if warehouse:
+    #                     if warehouse.id not in locations:
+    #                         locations[warehouse.id] = quant.quantity
+    #                     else:
+    #                         locations[warehouse.id] += quant.quantity
+    
+    #                 # Priorizar almacén "FELIX" si aplica
+    #                 if current_company == 'LLANTIRED' and "ALMACEN LLANTIRED - FELIX" in warehouse.name:
+    #                     preferred_warehouse = warehouse
+    #                 elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS' and "ALMACEN LA BODEGA - FELIX" in warehouse.name:
+    #                     preferred_warehouse = warehouse
+    
+    #         # Determinar el almacén con mayor stock
+    #         if locations:
+    #             selected_warehouse = max(locations, key=locations.get)  # ID del almacén con más stock
+    #             max_stock = locations[selected_warehouse]
+    
+    #         # Verificar si existe el almacén 3PL Virtual según la empresa
+    #         if not preferred_warehouse:
+    #             if current_company == 'LLANTIRED':
+    #                 preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
+    #             elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS':
+    #                 preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
+    
+    #         # Selección del almacén final
+    #         if max_stock > 0:  # Si hay stock disponible, priorizar almacén con más stock
+    #             warehouse_id = selected_warehouse
+    #         elif preferred_warehouse:  # Si no hay stock, usar el almacén 3PL Virtual
+    #             warehouse_id = preferred_warehouse.id
+    #         else:  # Si no hay 3PL Virtual, usar el único almacén disponible
+    #             warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
+    #             if warehouse:
+    #                 warehouse_id = warehouse.id
+    #             else:
+    #                 raise UserError(f"No se encontró un almacén configurado para la empresa {current_company}.")
+    
+    #         # Asignar el almacén a la orden de venta
+    #         self.write({'warehouse_id': warehouse_id})
+        
+    #     # Marcar como revisado
+    #     self.is_check = True
+
+    def revisar_disponibilidad(self):
+        all_lines_available = True
+        preferred_warehouse = None
+        current_company = self.company_id.name  # Nombre de la compañía actual
+    
+        for line in self.order_line:
+            # Verificar si el producto de la línea es un paquete
+            if line.product_id.bom_ids and line.product_id.bom_ids[0].type == 'phantom':
+                # Si es un paquete, procesar sus líneas de BOM
+                for bom_line in line.product_id.bom_ids[0].bom_line_ids:
+                    product = bom_line.product_id
+                    quantity_needed = bom_line.product_qty * line.product_uom_qty
+                    available = self._check_product_availability(product, quantity_needed)
+                    if not available:
+                        all_lines_available = False
+            else:
+                # Si no es un paquete, procesar normalmente
+                available = self._check_product_availability(line.product_id, line.product_uom_qty)
+                if not available:
+                    all_lines_available = False
+    
+        # Verificar si hay un almacén "3PL Virtual" disponible
+        if not all_lines_available:
+            preferred_warehouse = self._get_preferred_3pl_warehouse(current_company)
+    
+        # Asignar el almacén final
+        if preferred_warehouse:
+            self.write({'warehouse_id': preferred_warehouse.id})
+        elif all_lines_available:
+            # Seleccionar almacén con mayor stock (puede ser cualquier almacén regular)
+            warehouse_id = self._select_warehouse_with_max_stock()
+            if warehouse_id:
+                self.write({'warehouse_id': warehouse_id})
+            else:
+                # Asignar el primer almacén interno que encuentre
+                fallback_warehouse = self._get_first_internal_warehouse()
+                if fallback_warehouse:
+                    self.write({'warehouse_id': fallback_warehouse.id})
+                else:
+                    raise UserError(f"No se encontró un almacén interno configurado para la empresa {current_company}.")
+        else:
+            # Asignar el primer almacén interno si no hay stock suficiente ni 3PL
+            fallback_warehouse = self._get_first_internal_warehouse()
+            if fallback_warehouse:
+                self.write({'warehouse_id': fallback_warehouse.id})
+            else:
+                raise UserError(f"No hay stock disponible y no se encontró un almacén 3PL Virtual ni un almacén interno para la empresa {current_company}.")
+    
+        # Marcar como revisado
+        self.is_check = True
+    
+    def _check_product_availability(self, product, quantity_needed):
+        """
+        Verifica si un producto tiene disponibilidad suficiente considerando
+        solo cantidades positivas en ubicaciones internas.
+        """
+        available_quantity = sum(
+            quant.quantity for quant in product.stock_quant_ids
+            if quant.quantity > 0 and quant.location_id.usage == 'internal'
+        )
+        return available_quantity >= quantity_needed
+    
+    def _get_preferred_3pl_warehouse(self, company_name):
+        # Buscar el almacén 3PL Virtual según la empresa
+        if company_name == 'LLANTIRED':
+            return self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
+        elif company_name == 'LA BODEGA LLANTAS Y ACCESORIOS':
+            return self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
+        return None
+    
+    def _select_warehouse_with_max_stock(self):
+        """
+        Selecciona el almacén con mayor stock disponible considerando
+        solo cantidades positivas.
+        """
+        stock_by_warehouse = {}
+        for line in self.order_line:
             for quant in line.product_id.stock_quant_ids:
                 if quant.quantity > 0 and quant.location_id.usage == 'internal':
                     warehouse = quant.location_id.warehouse_id
                     if warehouse:
-                        if warehouse.id not in locations:
-                            locations[warehouse.id] = quant.quantity
-                        else:
-                            locations[warehouse.id] += quant.quantity
+                        stock_by_warehouse[warehouse.id] = stock_by_warehouse.get(warehouse.id, 0) + quant.quantity
+        if stock_by_warehouse:
+            return max(stock_by_warehouse, key=stock_by_warehouse.get)
+        return None
     
-                    # Priorizar almacén "FELIX" si aplica
-                    if current_company == 'LLANTIRED' and "ALMACEN LLANTIRED - FELIX" in warehouse.name:
-                        preferred_warehouse = warehouse
-                    elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS' and "ALMACEN LA BODEGA - FELIX" in warehouse.name:
-                        preferred_warehouse = warehouse
-    
-            # Determinar el almacén con mayor stock
-            if locations:
-                selected_warehouse = max(locations, key=locations.get)  # ID del almacén con más stock
-                max_stock = locations[selected_warehouse]
-    
-            # Verificar si existe el almacén 3PL Virtual según la empresa
-            if not preferred_warehouse:
-                if current_company == 'LLANTIRED':
-                    preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
-                elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS':
-                    preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
-    
-            # Selección del almacén final
-            if max_stock > 0:  # Si hay stock disponible, priorizar almacén con más stock
-                warehouse_id = selected_warehouse
-            elif preferred_warehouse:  # Si no hay stock, usar el almacén 3PL Virtual
-                warehouse_id = preferred_warehouse.id
-            else:  # Si no hay 3PL Virtual, usar el único almacén disponible
-                warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
-                if warehouse:
-                    warehouse_id = warehouse.id
-                else:
-                    raise UserError(f"No se encontró un almacén configurado para la empresa {current_company}.")
-    
-            # Asignar el almacén a la orden de venta
-            self.write({'warehouse_id': warehouse_id})
-        
-        # Marcar como revisado
-        self.is_check = True
+    def _get_first_internal_warehouse(self):
+        """
+        Busca el primer almacén interno disponible.
+        """
+        warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
+        return warehouse
 
 
 

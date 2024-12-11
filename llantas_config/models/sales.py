@@ -81,13 +81,34 @@ class sale_order_inherit(models.Model):
         for line in self.order_line:
             # Verificar si el producto de la línea es un paquete
             if line.product_id.bom_ids and line.product_id.bom_ids[0].type == 'phantom':
-                # Si es un paquete, procesar sus líneas de BOM
+                # Si es un paquete, reemplazar por líneas de BOM
                 for bom_line in line.product_id.bom_ids[0].bom_line_ids:
                     product = bom_line.product_id
                     quantity_needed = bom_line.product_qty * line.product_uom_qty
+    
+                    # Verificar disponibilidad
                     available = self._check_product_availability(product, quantity_needed)
                     if not available:
                         all_lines_available = False
+    
+                    # Calcular el precio unitario basado en el precio del paquete
+                    price_unit = (
+                        line.price_unit / bom_line.product_qty
+                        if bom_line.product_qty > 0
+                        else 0.0
+                    )
+    
+                    # Crear líneas en la orden para cada producto de la BOM
+                    self.env['sale.order.line'].create({
+                        'order_id': self.id,
+                        'product_id': product.id,
+                        'product_uom_qty': quantity_needed,
+                        'product_uom': bom_line.product_uom_id.id,
+                        'price_unit': price_unit,
+                    })
+                
+                # Eliminar la línea original del paquete
+                line.unlink()
             else:
                 # Si no es un paquete, procesar normalmente
                 available = self._check_product_availability(line.product_id, line.product_uom_qty)
@@ -123,6 +144,8 @@ class sale_order_inherit(models.Model):
     
         # Marcar como revisado
         self.is_check = True
+
+
     
     def _check_product_availability(self, product, quantity_needed):
         """

@@ -484,23 +484,23 @@ class sale_order_inherit(models.Model):
         return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
         
     def write(self, values):
-        _logger.warning('wirte')
+        _logger.warning('write')
         for rec in self:
             # Actualizar marketplace en write
             if rec.channel:
                 # Quitar espacios y acentos
                 channel = self.remove_accents(rec.channel.strip())
-
+    
                 # Obtener las claves de selección para 'yuju_tag'
                 yuju_tag_selection = dict(self.env['llantas_config.marketplaces'].fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'], limit=1)
-
+    
                 # Revisar si el canal proporcionado coincide con alguna clave en el campo 'yuju_tag'
                 yuju_tag_key = None
                 for key, label in yuju_tag_selection.items():
                     if self.remove_accents(label.lower()) == channel.lower():
                         yuju_tag_key = key
                         break
-
+    
                 # Si no se encontró una clave para el tag 'channel', buscar solo por name
                 if not yuju_tag_key:
                     marketplace_record = self.env['llantas_config.marketplaces'].search([
@@ -515,13 +515,15 @@ class sale_order_inherit(models.Model):
                         ('yuju_tag', '=', yuju_tag_key),  # Priorizar coincidencia exacta en el tag
                         ('name', '=', channel)  # Luego, comparación exacta con el nombre
                     ], limit=1)
-
+    
+                # Si no se encontró un marketplace, registrar un log y dejar vacío el campo
                 if not marketplace_record:
-                    raise UserError(f"No se encontró el marketplace con el nombre o tag '{channel}' para la empresa actual.")
+                    _logger.warning(f"No se encontró el marketplace con el nombre o tag '{channel}' para la empresa actual.")
+                    values['marketplace'] = False  # Dejar el campo vacío
                 else:
                     values['marketplace'] = marketplace_record.id
                     values['fee_import'] = marketplace_record.fee_marketplace
-
+    
             # Actualización del carrier
             if 'yuju_carrier' in values:
                 yuju_carrier = values.get('yuju_carrier', '').strip()
@@ -529,14 +531,15 @@ class sale_order_inherit(models.Model):
                     carrier_record = rec.env['llantas_config.carrier'].search([
                         ('name', 'ilike', yuju_carrier),
                     ], limit=1)
-
+    
                     if carrier_record:
                         values['llantas_config_carrier_id'] = carrier_record.id
                     else:
-                        raise UserError(f"No se encontró el carrier con el nombre '{yuju_carrier}' para la empresa actual.")
+                        _logger.warning(f"No se encontró el carrier con el nombre '{yuju_carrier}' para la empresa actual.")
+                        values['llantas_config_carrier_id'] = False
                 else:
                     values['llantas_config_carrier_id'] = False
-
+    
             # Verificación de unicidad de folio_venta
             if 'folio_venta' in values:
                 venta_ids = rec.env['sale.order'].search([
@@ -546,62 +549,33 @@ class sale_order_inherit(models.Model):
                 ])
                 if venta_ids:
                     raise UserError('El número de venta debe ser único.')
-
-
+    
             if 'yuju_carrier_tracking_ref' in values:
                 values['guia'] = values['yuju_carrier_tracking_ref']
             elif rec.yuju_carrier_tracking_ref and not values.get('guia'):
-                # Si el valor no viene en `values`, tomar el valor actual de `rec`
                 values['guia'] = rec.yuju_carrier_tracking_ref
-
+    
             if 'channel_order_reference' in values:
                 values['folio_venta'] = values['channel_order_reference']
             elif rec.channel_order_reference and not values.get('folio_venta'):
-                # Si el valor no viene en `values`, tomar el valor actual de `rec`
                 values['folio_venta'] = rec.channel_order_id
-
-
+    
             # Verificar unicidad de 'guia'
             guia = values.get('guia')
             if guia:
                 ventas = self.env['sale.order'].search([
                     ('guia', '=', guia),
-                    ('id', '!=', rec.id),  # Excluir el registro actual
+                    ('id', '!=', rec.id),
                     ('guia', '!=', False)
                 ])
                 if ventas:
                     raise UserError('El número de guía debe ser único.')
-
+    
         # Llamada al método write del super para guardar los cambios
         result = super(sale_order_inherit, self).write(values)
-
-        data = []
-        _logger.warning(values)
-        # _logger.warning(rec.order_line)
-        # _logger.warning(result)
-        # for line in rec.order_line:
-        #     _logger.warning('orderline')
-        #     if line.product_template_id.es_paquete:
-        #         _logger.warning('paquete')
-        #         data.append([(3,line.id)])
-        #         bom = line.product_template_id.bom_ids[0]
-        #         cont = 0
-        #         for prod in bom.bom_line_ids:
-        #             price = line.price_unit
-        #             ol = self.env['sale.order.line'].create({
-        #                 'order_id': rec.id,
-        #                 'customer_lead': 0.0,
-        #                 'name': prod.product_id.name,
-        #                 'product_id': prod.product_id.id,
-        #                 'product_uom_qty': (prod.product_qty*line.product_uom_qty),
-        #                 'price_unit': price/(prod.product_qty*line.product_uom_qty)
-        #             })
-        #             data.append([(4, ol.id)])
-        # if data:
-        #     _logger.warning(data)
-        #     rec.order_line = data
-        
+    
         return result
+
     
     
     purchase_order = fields.Char(string="Purchase Order")

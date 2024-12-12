@@ -602,6 +602,11 @@ class sale_order_inherit(models.Model):
     def write(self, values):
         _logger.warning('write')
         for rec in self:
+            # Omitir validaciones si la acción es cancelar
+            if values.get('state') == 'cancel':
+                _logger.info("La orden se está cancelando, se omiten validaciones.")
+                return super(sale_order_inherit, self).write(values)
+    
             # Actualizar marketplace en write
             if rec.channel:
                 # Quitar espacios y acentos
@@ -666,11 +671,13 @@ class sale_order_inherit(models.Model):
                 if venta_ids:
                     raise UserError('El número de venta debe ser único.')
     
+            # Asignar 'guia' basado en 'yuju_carrier_tracking_ref'
             if 'yuju_carrier_tracking_ref' in values:
                 values['guia'] = values['yuju_carrier_tracking_ref']
             elif rec.yuju_carrier_tracking_ref and not values.get('guia'):
                 values['guia'] = rec.yuju_carrier_tracking_ref
     
+            # Asignar 'folio_venta' basado en 'channel_order_reference'
             if 'channel_order_reference' in values:
                 values['folio_venta'] = values['channel_order_reference']
             elif rec.channel_order_reference and not values.get('folio_venta'):
@@ -691,6 +698,7 @@ class sale_order_inherit(models.Model):
         result = super(sale_order_inherit, self).write(values)
     
         return result
+
 
     
     

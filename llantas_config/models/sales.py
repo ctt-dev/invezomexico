@@ -429,8 +429,6 @@ class sale_order_inherit(models.Model):
         # Lógica simplificada en el método create
         if 'channel_order_reference' in values:
             values['folio_venta'] = values['channel_order_reference']
-        elif 'channel_order_id' in values and not values.get('folio_venta'):
-            values['folio_venta'] = values['channel_order_id']
     
         if 'yuju_seller_shipping_cost' in values:
             values['envio'] = values['yuju_seller_shipping_cost']
@@ -598,7 +596,7 @@ class sale_order_inherit(models.Model):
         # Normalizar la cadena eliminando los acentos
         nfkd_form = unicodedata.normalize('NFKD', input_str)
         return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
-        
+    
     def write(self, values):
         _logger.warning('write')
         for rec in self:
@@ -611,57 +609,51 @@ class sale_order_inherit(models.Model):
             if rec.channel:
                 # Quitar espacios y acentos
                 channel = self.remove_accents(rec.channel.strip())
-    
+                
                 # Obtener las claves de selección para 'yuju_tag'
-                yuju_tag_selection = dict(self.env['llantas_config.marketplaces'].fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'], limit=1)
-    
-                # Revisar si el canal proporcionado coincide con alguna clave en el campo 'yuju_tag'
-                yuju_tag_key = None
-                for key, label in yuju_tag_selection.items():
-                    if self.remove_accents(label.lower()) == channel.lower():
-                        yuju_tag_key = key
-                        break
-    
-                # Si no se encontró una clave para el tag 'channel', buscar solo por name
-                if not yuju_tag_key:
-                    marketplace_record = self.env['llantas_config.marketplaces'].search([
-                        ('name', '=', channel),
-                        ('company_id', '=', rec.company_id.id)
-                    ], limit=1)
+                yuju_tag_selection = dict(self.env['llantas_config.marketplaces']
+                                           .fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'])
+                
+                yuju_tag_key = next((key for key, label in yuju_tag_selection.items() 
+                                     if self.remove_accents(label.lower()) == channel.lower()), None)
+                
+                # Buscar el marketplace
+                domain = [('company_id', '=', rec.company_id.id)]
+                if yuju_tag_key:
+                    domain.append(('yuju_tag', '=', yuju_tag_key))
                 else:
-                    # Buscar el marketplace usando coincidencia exacta de nombre o el tag 'yuju_tag'
-                    marketplace_record = self.env['llantas_config.marketplaces'].search([
-                        ('company_id', '=', rec.company_id.id),
-                        '|',
-                        ('yuju_tag', '=', yuju_tag_key),  # Priorizar coincidencia exacta en el tag
-                        ('name', '=', channel)  # Luego, comparación exacta con el nombre
-                    ], limit=1)
+                    domain.append(('name', '=', channel))
     
-                # Si no se encontró un marketplace, registrar un log y dejar vacío el campo
+                marketplace_record = self.env['llantas_config.marketplaces'].search(domain, limit=1)
+    
                 if not marketplace_record:
                     _logger.warning(f"No se encontró el marketplace con el nombre o tag '{channel}' para la empresa actual.")
-                    values['marketplace'] = False  # Dejar el campo vacío
+                    values['marketplace'] = False
                 else:
-                    values['marketplace'] = marketplace_record.id
-                    values['fee_import'] = marketplace_record.fee_marketplace
+                    values.update({
+                        'marketplace': marketplace_record.id,
+                        'fee_import': marketplace_record.fee_marketplace,
+                    })
     
             # Actualización del carrier
             if 'yuju_carrier' in values:
                 yuju_carrier = values.get('yuju_carrier', '').strip()
-                if yuju_carrier:
-                    carrier_record = rec.env['llantas_config.carrier'].search([
-                        ('name', 'ilike', yuju_carrier),
-                    ], limit=1)
-    
-                    if carrier_record:
-                        values['llantas_config_carrier_id'] = carrier_record.id
+                carrier_record = self.env['llantas_config.carrier'].search([
+                    ('name', 'ilike', yuju_carrier)
+                ], limit=1)
+                values['llantas_config_carrier_id'] = carrier_record.id if carrier_record else False
+
+            if 'channel_order_reference' in values and 'channel' in values:
+                if values['channel'] == 'Mercado Libre México':
+                    order_reference = values['channel_order_reference']
+                    if order_reference:  # Validar que no esté vacío o sea None
+                        values['link_venta'] = f'https://www.mercadolibre.com.mx/{order_reference}'
                     else:
-                        _logger.warning(f"No se encontró el carrier con el nombre '{yuju_carrier}' para la empresa actual.")
-                        values['llantas_config_carrier_id'] = False
-                else:
-                    values['llantas_config_carrier_id'] = False
+                        _logger.warning("El valor de 'channel_order_reference' está vacío. No se generó el link de venta.")
+
     
-            # Verificación de unicidad de folio_venta
+            # Asignar y verificar 'folio_venta'
+            values['folio_venta'] = values.get('channel_order_reference') or rec.channel_order_reference
             if 'folio_venta' in values:
                 venta_ids = rec.env['sale.order'].search([
                     ('folio_venta', '=', values['folio_venta']),
@@ -669,36 +661,41 @@ class sale_order_inherit(models.Model):
                     ('folio_venta', '!=', False)
                 ])
                 if venta_ids:
-                    raise UserError('El número de venta debe ser único.')
+                    _logger.warning(f"Folio de venta duplicado: {values['folio_venta']}.")
+                    values['folio_venta'] = False
     
-            # Asignar 'guia' basado en 'yuju_carrier_tracking_ref'
-            if 'yuju_carrier_tracking_ref' in values:
-                values['guia'] = values['yuju_carrier_tracking_ref']
-            elif rec.yuju_carrier_tracking_ref and not values.get('guia'):
-                values['guia'] = rec.yuju_carrier_tracking_ref
-    
-            # Asignar 'folio_venta' basado en 'channel_order_reference'
-            if 'channel_order_reference' in values:
-                values['folio_venta'] = values['channel_order_reference']
-            elif rec.channel_order_reference and not values.get('folio_venta'):
-                values['folio_venta'] = rec.channel_order_id
-    
-            # Verificar unicidad de 'guia'
-            guia = values.get('guia')
-            if guia:
+            # Asignar y verificar 'guia'
+            values['guia'] = values.get('yuju_carrier_tracking_ref') or rec.yuju_carrier_tracking_ref
+            if 'guia' in values:
                 ventas = self.env['sale.order'].search([
-                    ('guia', '=', guia),
+                    ('guia', '=', values['guia']),
                     ('id', '!=', rec.id),
                     ('guia', '!=', False)
                 ])
                 if ventas:
-                    raise UserError('El número de guía debe ser único.')
+                    _logger.warning(f"Número de guía duplicado: {values['guia']}.")
+                    values['guia'] = False
     
         # Llamada al método write del super para guardar los cambios
         result = super(sale_order_inherit, self).write(values)
-    
         return result
 
+
+    def update_existing_order(self):
+        """
+        Busca y actualiza una orden existente basada en la referencia de canal.
+        Si la orden existe, actualiza los campos proporcionados en 'values'.
+        """
+        for rec in self:
+            if rec.channel_order_reference and rec.channel:
+                order_reference = rec.channel_order_reference
+                channel = rec.channel
+                link=""
+                if channel == 'Mercado Libre México':
+                    link=f'https://www.mercadolibre.com.mx/{order_reference}'
+                    rec.write({'link_venta':link})
+    
+            
 
     
     
@@ -1258,14 +1255,24 @@ class sale_order_line_inherit(models.Model):
         string="Costo",
         tracking=True,
     )
-
+    
+    
     @api.depends('purchase_line_ids')
     def compute_costo_proveedor_total(self):
         for rec in self:
-            costo_proveedor_total = 0  # Inicializa la variable
-            for line in rec.purchase_line_ids:
-                costo_proveedor_total += line.price_unit  # Asegúrate de actualizar la variable adecuadamente
+            costo_proveedor_total = sum(line.price_unit for line in rec.purchase_line_ids)
             rec.costo_proveedor_total = costo_proveedor_total
+
+    @api.onchange('proveedor_id')
+    def _onchange_proveedor_id(self):
+        for line in self:
+            if line.proveedor_id:
+                # Validar existencia actual del proveedor
+                if line.proveedor_id.existencia_actual < line.product_uom_qty:
+                    raise UserError(
+                        f"El proveedor '{line.proveedor_id.partner_id.name}' no tiene suficiente cantidad disponible "
+                        f"({line.proveedor_id.existencia_actual}) para cubrir la cantidad requerida ({line.product_uom_qty})."
+                    )
         
     # def compute_costo_proveedor_total(self):
     #     for rec in self:
@@ -1486,11 +1493,11 @@ class sale_order_line_inherit(models.Model):
         for rec in self:
             # Calcular el total considerando el precio killer si es aplicable
             rec.total_con_killer = rec.price_total + (rec.killer_id_killer_price or 0)
+
     
         
     link_venta=fields.Char(
         string="Link de venta",
-        related="order_id.link_venta",
         store=True
     )
 

@@ -644,10 +644,11 @@ class sale_order_inherit(models.Model):
                 values['llantas_config_carrier_id'] = carrier_record.id if carrier_record else False
 
             if 'channel_order_reference' in values and 'channel' in values:
-                if values['channel'] == 'Mercado Libre México':
+                if values['channel']:
                     order_reference = values['channel_order_reference']
+                    channel = values['marketplace.url']
                     if order_reference:  # Validar que no esté vacío o sea None
-                        values['link_venta'] = f'https://www.mercadolibre.com.mx/{order_reference}'
+                        values['link_venta'] = f'{channel}{order_reference}'
                     else:
                         _logger.warning("El valor de 'channel_order_reference' está vacío. No se generó el link de venta.")
 

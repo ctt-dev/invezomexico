@@ -858,159 +858,91 @@ class sale_order_inherit(models.Model):
 
     
     def create_purchase_for_sale_order(self):
-        _logger.warning('purch')
+        _logger.warning('Iniciando creación de órdenes de compra...')
         for rec in self:
-            if rec.state == 'sale':
-                for line in rec.order_line:
-                    # Verifica las condiciones iniciales antes de crear la orden de compra
-                    if rec.amount_total < (line.product_uom_qty * line.costo_proveedor) and rec.es_killer == False:
-                        raise UserError("La creación de la orden de compra no es posible en este momento debido a que el total de la orden de compra excede el total de la orden de venta asociada.")
-                    
-                    if line.qty_available_today > 0:
-                        raise UserError("Actualmente, no es posible generar una orden de compra debido a que hay productos disponibles en stock. Se recomienda revisar el inventario existente antes de generar una nueva orden de compra.")
-                    
-                    # Procede con la creación o actualización de la orden de compra
+            if rec.state != 'sale':
+                raise UserError("La orden de venta debe estar confirmada para generar una orden de compra.")
+            
+            # Agrupar líneas por proveedor
+            lines_by_supplier = {}
+            for line in rec.order_line:
+                if line.proveedor_id:
+                    lines_by_supplier.setdefault(line.proveedor_id, []).append(line)
+            
+            if not lines_by_supplier:
+                raise UserError("No se encontraron líneas con proveedores asignados en esta orden de venta.")
+            
+            for proveedor, lines in lines_by_supplier.items():
+                # Validaciones
+                if any(line.qty_available_today > 0 for line in lines):
+                    raise UserError("No se puede generar una orden de compra porque hay productos disponibles en stock.")
+                
+                total_compra = sum(line.product_uom_qty * line.costo_proveedor for line in lines)
+                if total_compra > rec.amount_total and not rec.es_killer:
+                    raise UserError("El total de la orden de compra excede el total de la orden de venta asociada.")
+                
+                # Obtener la moneda
+                moneda = self.env['res.currency'].search([('name', '=', rec.currency_id.name)], limit=1)
+                if not moneda:
+                    raise UserError("No se encontró la moneda asociada a la orden de venta.")
+                
+                # Crear orden de compra
+                try:
+                    nueva_cotizacion_compra = self.env['purchase.order'].create({
+                        'partner_id': proveedor.partner_id.id,
+                        'currency_id': moneda.id,
+                        'company_id': self.env.company.id,
+                        'picking_type_id': rec.warehouse_id.in_type_id.id,
+                        'auto_sale_order_id': rec.id,
+                    })
+                    _logger.info(f"Orden de compra creada: {nueva_cotizacion_compra.name}")
+                except Exception as e:
+                    _logger.error(f"Error creando la orden de compra: {str(e)}")
+                    raise UserError("Ocurrió un error al intentar crear la orden de compra.")
+                
+                # Procesar líneas de compra
+                for line in lines:
+                    if not line.product_id.product_tmpl_id.es_paquete:
+                        # Crear línea de compra para productos normales
+                        purchase_line = self.env['purchase.order.line'].create({
+                            'order_id': nueva_cotizacion_compra.id,
+                            'product_id': line.product_id.id,
+                            'name': line.product_id.name,
+                            'product_qty': line.product_uom_qty,
+                            'product_uom': line.product_uom.id,
+                            'price_unit': line.costo_proveedor,
+                            'sale_order_id': rec.id,
+                            'codigo_proveedor': line.codigo_proveedor,
+                        })
+                        line.write({'purchase_line_ids': [(4, purchase_line.id)]})
                     else:
-                        if line.proveedor_id:
-                            # Busca la moneda
-                            moneda = self.env['res.currency'].search([('name', '=', rec.currency_id.name)])
-                            if not moneda:
-                                raise UserError("Moneda no encontrada")
-                            id_de_la_moneda = moneda.id
-                            
-                            # Si no existen líneas de orden de compra previas, crea una nueva orden de compra
-                            if not line.purchase_line_ids:
-                                # Crea la nueva orden de compra
-                                nueva_cotizacion_compra = self.env['purchase.order'].create({
-                                    'partner_id': line.proveedor_id.partner_id.id,
-                                    'currency_id': id_de_la_moneda,
-                                    'company_id': self.env.company.id,
-                                    'picking_type_id': self.warehouse_id.in_type_id.id,
-                                    'auto_sale_order_id': self.id,
-                                })
-                                
-                                # Si el producto no es un paquete
-                                if not line.product_id.product_tmpl_id.es_paquete:
-                                    # Crea la línea de orden de compra
-                                    purchase_line = self.env['purchase.order.line'].create({
-                                        'order_id': nueva_cotizacion_compra.id,
-                                        'product_id': line.product_id.id,
-                                        'name': line.product_id.name,
-                                        'product_qty': line.product_qty,
-                                        'product_uom': line.product_uom.id,
-                                        'price_unit': line.costo_proveedor,
-                                        'sale_order_id': rec.id,
-                                        'codigo_proveedor': line.codigo_proveedor,
-                                    })
-                                    
-                                    # Actualiza la relación entre la línea de venta y la nueva línea de compra
-                                    line.write({'purchase_line_ids': [(4, purchase_line.id)]})
-                                    
-                                    # Llama a la función compute_orden_compra
-                                    llantas = self.env['llantas_config.ctt_llantas'].search([('sale_id', '=', rec.id)], limit=1)
-                                    if llantas:
-                                        llantas.compute_orden_compra()
-    
-                                    # Crea la notificación
-                                    if rec.user_id and rec.user_id.parent_id:
-                                        self.env['mail.message'].create({
-                                            'model': 'sale.order',
-                                            'res_id': self.id,
-                                            'message_type': 'notification',
-                                            'subtype_id': 2,
-                                            'email_from': self.user_id.login,
-                                            'author_id': self.user_id.parent_id.id,
-                                            'body': "Orden de compra generada"
-                                        })
-                                
-                                # Si el producto es un paquete, maneja la lista de materiales
-                                else:
-                                    lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
-                                    if lmateriales:
-                                        for lmat in lmateriales:
-                                            # Crea líneas de compra para los materiales
-                                            purchase_line = self.env['purchase.order.line'].create({
-                                                'order_id': nueva_cotizacion_compra.id,
-                                                'product_id': lmat.product_id.id,
-                                                'name': lmat.product_id.product_tmpl_id.name,
-                                                'product_qty': lmat.product_qty,
-                                                'product_uom': line.product_uom.id,
-                                                'price_unit': line.costo_proveedor,
-                                                'sale_order_id': rec.id,
-                                                'codigo_proveedor': line.codigo_proveedor,
-                                            })
-                                            # Actualiza la relación
-                                            line.write({'purchase_line_ids': [(4, purchase_line.id)]})
-                                            
-                                            # Llama a la función compute_orden_compra
-                                            llantas = self.env['llantas_config.ctt_llantas'].search([('sale_id', '=', rec.id)], limit=1)
-                                            if llantas:
-                                                llantas.compute_orden_compra()
-    
-                                            # Crea la notificación
-                                            if rec.user_id and rec.user_id.parent_id:
-                                                self.env['mail.message'].create({
-                                                    'model': 'sale.order',
-                                                    'res_id': self.id,
-                                                    'message_type': 'notification',
-                                                    'subtype_id': 2,
-                                                    'email_from': self.user_id.login,
-                                                    'author_id': self.user_id.parent_id.id,
-                                                    'body': "Orden de compra generada"
-                                                })
-                                    else:
-                                        raise UserError('Este paquete no tiene lista de materiales, favor de agregarla.')
-                            
-                            # Si ya existen líneas de compra, actualiza la orden de compra existente
-                            else:
-                                purchase_id = False
-                                for purchase_line in line.purchase_line_ids:
-                                    purchase_id = purchase_line.order_id
-                                purchase_id.write({
-                                    'partner_id': line.proveedor_id.partner_id.id,
-                                    'currency_id': id_de_la_moneda,
-                                    'company_id': self.env.company.id,
-                                    'picking_type_id': self.warehouse_id.in_type_id.id,
-                                })
-    
-                                for purchase_line in purchase_id.order_line:
-                                    if purchase_line.sale_line_id.id == line.id:
-                                        lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
-                                        if lmateriales:
-                                            for lmat in lmateriales:
-                                                purchase_line.write({
-                                                    'product_id': lmat.product_id.id,
-                                                    'name': lmat.product_id.product_tmpl_id.name,
-                                                    'product_qty': lmat.product_qty,
-                                                    'product_uom': line.product_uom.id,
-                                                    'price_unit': line.costo_proveedor,
-                                                })
-                                        else:
-                                            purchase_line.write({
-                                                'product_id': line.product_id.id,
-                                                'name': line.product_id.name,
-                                                'product_qty': line.product_qty,
-                                                'product_uom': line.product_uom.id,
-                                                'price_unit': line.costo_proveedor,
-                                                'codigo_proveedor': line.codigo_proveedor,
-                                            })
-    
-                                # Llama a la función compute_orden_compra tras actualizar la orden de compra
-                                llantas = self.env['llantas_config.ctt_llantas'].search([('sale_id', '=', rec.id)], limit=1)
-                                if llantas:
-                                    llantas.compute_orden_compra()
-    
-                                # Crea la notificación de actualización
-                                if rec.user_id:
-                                    self.env['mail.message'].create({
-                                        'model': 'sale.order',
-                                        'res_id': self.id,
-                                        'message_type': 'notification',
-                                        'subtype_id': 2,
-                                        'email_from': self.user_id.login,
-                                        'author_id': self.user_id.id,
-                                        'body': "Orden de compra actualizada"
-                                    })
+                        # Crear líneas de compra para materiales del paquete
+                        lmateriales = self.env['mrp.bom.line'].search([('parent_product_tmpl_id', '=', line.product_id.product_tmpl_id.id)])
+                        if not lmateriales:
+                            raise UserError(f"El paquete '{line.product_id.name}' no tiene lista de materiales asignada.")
+                        for lmat in lmateriales:
+                            purchase_line = self.env['purchase.order.line'].create({
+                                'order_id': nueva_cotizacion_compra.id,
+                                'product_id': lmat.product_id.id,
+                                'name': lmat.product_id.product_tmpl_id.name,
+                                'product_qty': lmat.product_qty * line.product_uom_qty,  # Considerar cantidades del paquete
+                                'product_uom': line.product_uom.id,
+                                'price_unit': line.costo_proveedor,
+                                'sale_order_id': rec.id,
+                                'codigo_proveedor': line.codigo_proveedor,
+                            })
+                            line.write({'purchase_line_ids': [(4, purchase_line.id)]})
+                
+                # Notificar al usuario
+                if rec.user_id:
+                    rec.message_post(
+                        body=f"Se generó la orden de compra {nueva_cotizacion_compra.name}.",
+                        subtype_id=self.env.ref('mail.mt_note').id
+                    )
+        
+        _logger.warning('Finalizó la creación de órdenes de compra.')
+
+
 
     
 
@@ -1145,9 +1077,13 @@ class sale_order_inherit(models.Model):
         for rec in self:
             purchase_orders = rec._get_purchase_orders()
             if purchase_orders:
+                # Verifica si hay más de un pedido de compra
+                if len(purchase_orders) > 1:
+                    _logger.warning(f"Se encontraron múltiples órdenes de compra para {rec.id}. Usando la primera orden de compra.")
                 rec.purchase_order_id = purchase_orders[0].id  # Asignar el primer pedido de compra
             else:
                 rec.purchase_order_id = False
+
 
     purchase_order_id = fields.Many2one(
         'purchase.order',

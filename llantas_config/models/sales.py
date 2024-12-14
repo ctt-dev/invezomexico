@@ -604,28 +604,23 @@ class sale_order_inherit(models.Model):
             if values.get('state') == 'cancel':
                 _logger.info("La orden se está cancelando, se omiten validaciones.")
                 return super(sale_order_inherit, self).write(values)
-    
+            
             # Actualizar marketplace en write
             if rec.channel:
-                # Quitar espacios y acentos
                 channel = self.remove_accents(rec.channel.strip())
-                
-                # Obtener las claves de selección para 'yuju_tag'
                 yuju_tag_selection = dict(self.env['llantas_config.marketplaces']
                                            .fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'])
-                
                 yuju_tag_key = next((key for key, label in yuju_tag_selection.items() 
                                      if self.remove_accents(label.lower()) == channel.lower()), None)
                 
-                # Buscar el marketplace
                 domain = [('company_id', '=', rec.company_id.id)]
                 if yuju_tag_key:
                     domain.append(('yuju_tag', '=', yuju_tag_key))
                 else:
                     domain.append(('name', '=', channel))
-    
+        
                 marketplace_record = self.env['llantas_config.marketplaces'].search(domain, limit=1)
-    
+        
                 if not marketplace_record:
                     _logger.warning(f"No se encontró el marketplace con el nombre o tag '{channel}' para la empresa actual.")
                     values['marketplace'] = False
@@ -634,7 +629,7 @@ class sale_order_inherit(models.Model):
                         'marketplace': marketplace_record.id,
                         'fee_import': marketplace_record.fee_marketplace,
                     })
-    
+            
             # Actualización del carrier
             if 'yuju_carrier' in values:
                 yuju_carrier = values.get('yuju_carrier', '').strip()
@@ -642,44 +637,35 @@ class sale_order_inherit(models.Model):
                     ('name', 'ilike', yuju_carrier)
                 ], limit=1)
                 values['llantas_config_carrier_id'] = carrier_record.id if carrier_record else False
-
-            if 'channel_order_reference' in values and 'channel' in values:
-                if values['channel']:
-                    order_reference = values['channel_order_reference']
-                    channel = values['marketplace.url']
-                    if order_reference:  # Validar que no esté vacío o sea None
-                        values['link_venta'] = f'{channel}{order_reference}'
-                    else:
-                        _logger.warning("El valor de 'channel_order_reference' está vacío. No se generó el link de venta.")
-
     
             # Asignar y verificar 'folio_venta'
-            values['folio_venta'] = values.get('channel_order_reference') or rec.channel_order_reference
             if 'folio_venta' in values:
-                venta_ids = rec.env['sale.order'].search([
-                    ('folio_venta', '=', values['folio_venta']),
-                    ('id', '!=', rec.id),
-                    ('folio_venta', '!=', False)
-                ])
-                if venta_ids:
-                    _logger.warning(f"Folio de venta duplicado: {values['folio_venta']}.")
-                    values['folio_venta'] = False
-    
+                values['folio_venta'] = values['folio_venta'] or False
+                if values['folio_venta'] and values['folio_venta'] != rec.folio_venta:
+                    venta_ids = rec.env['sale.order'].search([
+                        ('folio_venta', '=', values['folio_venta']),
+                        ('id', '!=', rec.id),
+                        ('folio_venta', '!=', False)
+                    ])
+                    if venta_ids:
+                        raise ValidationError(f"El folio de venta '{values['folio_venta']}' ya existe en otra orden.")
+            
             # Asignar y verificar 'guia'
-            values['guia'] = values.get('yuju_carrier_tracking_ref') or rec.yuju_carrier_tracking_ref
             if 'guia' in values:
-                ventas = self.env['sale.order'].search([
-                    ('guia', '=', values['guia']),
-                    ('id', '!=', rec.id),
-                    ('guia', '!=', False)
-                ])
-                if ventas:
-                    _logger.warning(f"Número de guía duplicado: {values['guia']}.")
-                    values['guia'] = False
-    
+                values['guia'] = values['guia'] or False
+                if values['guia'] and values['guia'] != rec.guia:
+                    ventas = self.env['sale.order'].search([
+                        ('guia', '=', values['guia']),
+                        ('id', '!=', rec.id),
+                        ('guia', '!=', False)
+                    ])
+                    if ventas:
+                        raise ValidationError(f"Número de guía duplicado: {values['guia']}.")
+        
         # Llamada al método write del super para guardar los cambios
         result = super(sale_order_inherit, self).write(values)
         return result
+
 
 
     def update_existing_order(self):

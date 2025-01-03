@@ -152,6 +152,9 @@ class sale_order_inherit(models.Model):
         Verifica si un producto tiene disponibilidad suficiente considerando
         solo cantidades positivas en ubicaciones internas.
         """
+        _logger.warning(product.detailed_type)
+        if product.detailed_type == 'service':
+            return True
         available_quantity = sum(
             quant.quantity for quant in product.stock_quant_ids
             if quant.quantity > 0 and quant.location_id.usage == 'internal'
@@ -535,6 +538,8 @@ class sale_order_inherit(models.Model):
                 and quant.location_id.usage == 'internal'
                 and quant.location_id.company_id == current_company
             ]
+            if line.product_id.detailed_type == 'service':
+                continue
     
             if locations:
                 # Priorizar el almacén con mayor stock dentro de la misma empresa

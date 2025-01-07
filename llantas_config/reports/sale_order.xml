@@ -140,7 +140,7 @@
                                     <tr class="is-subtotal text-end">
                                         <td name="td_section_subtotal" colspan="99">
                                             <strong class="mr16">Subtotal</strong>
-                                            <span t-esc="(line.price_unit / 1.16) * line.product_uom_qty" t-options="{'widget': 'monetary', 'display_currency': o.pricelist_id.currency_id}"/>
+                                            <span t-esc="(line.price_unit / 1.16) * line.product_uom_qty" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
 
                                         </td>
                                     </tr>

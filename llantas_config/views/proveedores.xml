@@ -10,11 +10,14 @@
                     <field name="sku" />
                     <field name="sku_interno" />
                     <field name="producto" />
-                    <field name="marca" />
-                    <field name="aplicacion" />
-                    <field name="modelo" />
-                    <field name="medida" />
-                    <field name="uso" />
+                    <field name="marca" optional="hide"/>
+                    <field name="modelo" optional="hide"/>
+                    <field name="medida" optional="hide"/>
+                    <field name="indice_carga" optional="hide"/>
+                    <field name="indice_velocidad" optional="hide"/>
+                    <field name="ancho" optional="hide"/>
+                    <field name="alto" optional="hide"/>
+                    <field name="rin" optional="hide"/>
                     <field name="nombre_almacen" />       
                     <field name="existencia" />
                     <!-- <field name="product_id_qty_available" /> -->

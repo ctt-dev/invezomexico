@@ -821,27 +821,44 @@ class ctrl_llantas(models.Model):
         update_query_partner_params = []
         
         # Buscar registros en 'llantas_config.ctt_prov'
-        existencias = self.env['llantas_config.ctt_prov'].search(['|', ('sku_interno','=', False), ('sku_interno','=', ""), ('partner_id','=', False)], limit = 1000)
+        existencias = self.env['llantas_config.ctt_prov'].search(['|', ('sku_interno','=', False), ('sku_interno','=', ""), ('partner_id','=', False)], limit=1000)
         if existencias:
             for rec in existencias:
-                # Obtener el SKU del registro actual
                 sku = rec.sku
-                if rec.sku_interno == False or rec.sku_interno == "":
-                # Buscar el producto en 'llantas_config.sku_marketplace'
+                if not rec.sku_interno:
+                    # Buscar el producto en 'llantas_config.sku_marketplace'
                     producto = self.env['llantas_config.sku_marketplace'].search([
                         ('name', '=', sku),
                         ('product_id.es_paquete', '=', False)
                     ], limit=1)
                     
                     if producto:
+                        product_tmpl = producto.product_id
+                        
+                        # Obtener los valores adicionales
+                        marca = product_tmpl.marca_llanta.name or ''
+                        modelo = product_tmpl.modelo_llanta.name or ''
+                        medida = product_tmpl.medida_llanta.name or ''
+                        indice_carga = product_tmpl.indice_carga or ''
+                        indice_velocidad = product_tmpl.indice_velocidad or ''
+                        ancho = product_tmpl.ancho or ''
+                        alto = product_tmpl.alto or ''
+                        rin = product_tmpl.rin or ''
+                        
                         # Preparar la consulta de actualización para SKU
                         update_query_producto.append("""
                             UPDATE llantas_config_ctt_prov
-                            SET sku_interno = %s
+                            SET sku_interno = %s, marca = %s, modelo = %s, medida = %s,
+                                indice_carga = %s, indice_velocidad = %s, ancho = %s, 
+                                alto = %s, rin = %s
                             WHERE id = %s
                         """)
-                        update_query_producto_params.append((producto.product_id.default_code, rec.id))
-                if rec.partner_id == False:
+                        update_query_producto_params.append((
+                            product_tmpl.default_code, marca, modelo, medida,
+                            indice_carga, indice_velocidad, ancho, alto, rin, rec.id
+                        ))
+                
+                if not rec.partner_id:
                     # Buscar el proveedor en 'res.partner'
                     partner = self.env['res.partner'].search([
                         ('name', 'ilike', rec.nombre_proveedor)
@@ -887,18 +904,31 @@ class ctrl_llantas(models.Model):
     #     string="Cantidad de producto",
     #     related="product_id.qty_available"
     # )
-
-    aplicacion=fields.Char(
-        string="Aplicación",
+    indice_carga= fields.Char(
+        string="Indice de carga"
+    )
+    
+    indice_velocidad= fields.Char(
+        string="Indice de velocidad"
+    )
+    
+    ancho= fields.Char(
+        string="Ancho"
+    )
+    
+    alto= fields.Char(
+        string="Alto"
+    )
+    
+    rin= fields.Char(
+        string="Rin"
     )
 
     marca=fields.Char(
         string="Marca",
     )
 
-    uso=fields.Char(
-        string="Uso",
-    )
+    
 
     modelo=fields.Char(
         string="Modelo",
@@ -965,7 +995,19 @@ class ctrl_llantas(models.Model):
                             if line.es_paquete or line.detailed_type != 'product':
                                 continue
     
-                            supplier_info = self.env['product.supplierinfo'].search([('product_tmpl_id', '=', line.id), ('partner_id', '=', proveedor_id)], limit=1)
+                            # Extraer los nuevos campos del product.template
+                            marca = line.marca_llanta.name or ''
+                            modelo = line.modelo_llanta.name or ''
+                            medida = line.medida_llanta.name or ''
+                            indice_carga = line.indice_carga or ''
+                            indice_velocidad = line.indice_velocidad or ''
+                            ancho = line.ancho or ''
+                            alto = line.alto or ''
+                            rin = line.rin or ''
+    
+                            supplier_info = self.env['product.supplierinfo'].search(
+                                [('product_tmpl_id', '=', line.id), ('partner_id', '=', proveedor_id)], limit=1
+                            )
     
                             if supplier_info:
                                 if supplier_info.price == move.costo_sin_iva:
@@ -1002,7 +1044,12 @@ class ctrl_llantas(models.Model):
                                 count_agregados += 1
     
                             sku_proveedor_procesados.add(sku_proveedor)
-                            update_movs_data.append((move.id, fecha_actual, line.default_code, move.costo_sin_iva))
+    
+                            # Guardar datos para actualizar en llantas_config_ctt_prov
+                            update_movs_data.append((
+                                fecha_actual, line.default_code, move.costo_sin_iva, marca, modelo, medida,
+                                indice_carga, indice_velocidad, ancho, alto, rin, move.id
+                            ))
                     else:
                         count_sin_encontrar += 1
                         delete_ids.append(move.id)
@@ -1017,13 +1064,13 @@ class ctrl_llantas(models.Model):
         for proveedor, inserts in inserts_by_proveedor.items():
             self.env.cr.executemany(";\n".join([q for q, _ in inserts]), [v for _, v in inserts])
     
-        # Actualizar movimientos
+        # Actualizar movimientos en llantas_config_ctt_prov
         if update_movs_data:
             update_query = """
                 UPDATE llantas_config_ctt_prov SET procesado = TRUE, fecha_actualizacion = %s,
-                    sku_interno = %s, costo_sin_iva = %s WHERE id = %s
+                    sku_interno = %s, costo_sin_iva = %s, marca = %s, modelo = %s, medida = %s,
+                    indice_carga = %s, indice_velocidad = %s, ancho = %s, alto = %s, rin = %s WHERE id = %s
             """
-            update_movs_data = [(fecha_actual, sku_interno, costo_sin_iva, move_id) for move_id, fecha_actual, sku_interno, costo_sin_iva in update_movs_data]
             self.env.cr.executemany(update_query, update_movs_data)
     
         # Eliminar registros no encontrados
@@ -1035,6 +1082,7 @@ class ctrl_llantas(models.Model):
             'count_agregados': count_agregados,
             'count_sin_encontrar': count_sin_encontrar
         }
+
     
 class ProductSupplierinfoInherited(models.Model):
     _inherit = 'product.supplierinfo'

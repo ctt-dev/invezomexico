@@ -99,10 +99,26 @@
             <field name="model">llantas_config.ctt_prov</field>
             <field name="arch" type="xml">
                <search string="Buscar">
-                   <field name="codigo_producto" string="Producto" filter_domain="['|','|', ('codigo_producto', 'ilike', self),('sku', 'ilike', self),('producto','ilike',self)]"/>
+                   <field name="codigo_producto" string="Producto" filter_domain="['|', '|', '|', '|', '|',
+                        ('codigo_producto', 'ilike', self),
+                        ('sku', 'ilike', self),
+                        ('producto', 'ilike', self),
+                        ('marca', 'ilike', self),
+                        ('modelo', 'ilike', self),
+                        ('medida', 'ilike', self)
+                    ]" />
+
                     <field name="nombre_proveedor" string="Proveedor" filter_domain="[('nombre_proveedor', 'ilike', self)]"/>
                     <field name="nombre_almacen" string="Almacen" filter_domain="[('almacen', 'ilike', self)]"/>
                     <field name="sku" string="Sku" filter_domain="['|',('sku', 'ilike', self),('sku_interno', 'ilike', self)]"/>
+                    <field name="marca" filter_domain="[('marca', 'ilike', self)]"/>
+                    <field name="modelo" filter_domain="[('modelo', 'ilike', self)]"/>
+                    <field name="medida" filter_domain="[('medida', 'ilike', self)]"/>
+                    <field name="indice_carga" filter_domain="[('indice_carga', 'ilike', self)]"/>
+                    <field name="indice_velocidad" filter_domain="[('indice_velocidad', 'ilike', self)]"/>
+                    <field name="ancho" filter_domain="[('ancho', 'ilike', self)]"/>
+                    <field name="alto" filter_domain="[('alto', 'ilike', self)]"/>
+                    <field name="rin" filter_domain="[('rin', 'ilike', self)]"/>
                     
 
                    <filter string="Productos con existencias" name="existencia" domain="[('existencia', '>', 0)]"/>

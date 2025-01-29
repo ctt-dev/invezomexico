@@ -370,6 +370,23 @@ class sale_order_inherit(models.Model):
         readonly=True,
     )
 
+    ref_po = fields.Many2one('purchase.order', string="Referencia PO", compute="_compute_references")
+    ref_so = fields.Many2one('sale.order', string="Referencia SO", compute="_compute_references")
+
+    @api.depends('picking_type_id.code', 'origin')
+    def _compute_references(self):
+        for picking in self:
+            picking.ref_po = False
+            picking.ref_so = False
+
+            if picking.origin:  # Solo buscar si 'origin' tiene valor
+                if picking.picking_type_id.code == 'incoming':  # Tipo de movimiento: Entrante
+                    po = self.env['purchase.order'].search([('name', '=', picking.origin)], limit=1)
+                    picking.ref_po = po.id if po else False
+                elif picking.picking_type_id.code == 'outgoing':  # Tipo de movimiento: Saliente
+                    so = self.env['sale.order'].search([('name', '=', picking.origin)], limit=1)
+                    picking.ref_so = so.id if so else False
+
     # carrier_id=fields.Many2one(
     #     "llantas_config.carrier",
     #     string="Carrier",

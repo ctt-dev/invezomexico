@@ -855,7 +855,7 @@ class sale_order_inherit(models.Model):
         default = dict(default or {})
         default.update({
             'folio_venta': False,
-            'guia':False
+            'guia': False
         })
         return super(sale_order_inherit, self).copy(default)
         

@@ -41,6 +41,12 @@ class account_move_line_inherit(models.Model):
         related="pronto_pago.pronto_pago_porcentaje"
     )
 
+    purchase_order_id=fields.Many2one(
+        "purchase.order",
+        string="PO",
+        related="purchase_line_id.order_id"
+    )
+    
     @api.onchange('dias_transcurridos')
     def onchange_dias_transcurridos(self): 
         # raise UserError("onchange_dias_transcurridos")

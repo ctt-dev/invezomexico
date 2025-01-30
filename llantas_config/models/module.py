@@ -95,10 +95,16 @@ class ctrl_llantas(models.Model):
         # required=True
     )
 
+
     @api.depends('sale_id')
     def compute_orden_compra(self):
         for rec in self:
-            rec.orden_compra = rec.sale_id._get_purchase_orders().id if rec.sale_id else False
+            purchase_orders = rec.sale_id._get_purchase_orders() if rec.sale_id else False
+            if purchase_orders:
+                rec.orden_compra = purchase_orders[0].id  # Tomar solo la primera orden de compra
+            else:
+                rec.orden_compra = False
+
     orden_compra=fields.Many2one(
         "purchase.order",
         compute=compute_orden_compra,

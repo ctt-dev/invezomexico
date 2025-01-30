@@ -21,6 +21,10 @@
                                 <strong>Origen:</strong>
                                 <p class="m-0" t-field="o.invoice_origin"/>
                             </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                    <strong>Terminos:</strong>
+                                    <p class="m-0" t-field="o.invoice_payment_term_id.name"/>
+                                </div>
                             <div class="col-auto col-3 mw-100 mb-2" t-if="o.currency_id.name" name="customer_code">
                                 <strong>Moneda:</strong>
                                 <p class="m-0" t-field="o.currency_id.name"/>

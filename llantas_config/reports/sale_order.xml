@@ -38,6 +38,11 @@
                 </h2>
                 
                 <div class="row mt-4 mb-4" id="informations">
+                    
+                    <div t-if="doc.folio_venta" class="col-auto col-3 mw-100 mb-2" name="folio_venta">
+                        <strong>No. Venta:</strong>
+                        <p class="m-0" t-field="doc.folio_venta"/>
+                    </div>
                     <div t-if="doc.client_order_ref" class="col-auto col-3 mw-100 mb-2" name="informations_reference">
                         <strong>Su Referencia:</strong>
                         <p class="m-0" t-field="doc.client_order_ref"/>

@@ -202,25 +202,36 @@ class sale_advance_payment_inherit(models.TransientModel):
                     return '/autofacturador/xml_report/%s' % (x.id)
                     
     def create_invoices_portal(self, open_invoices, forma_pago, cfdi):
-        if(not self.sale_order_ids.invoice_ids):
-            moves = self._create_invoices_portal(self.sale_order_ids, cfdi, forma_pago)
+        """
+        Método para crear facturas desde el portal, validando si la orden ya fue facturada.
+        """
+        self.ensure_one()
+        sale_order = self.sale_order_ids
+
+        # Validar si la orden ya tiene una factura en estado 'posted'
+        existing_invoice = sale_order.invoice_ids.filtered(lambda inv: inv.state == 'posted')
+        if existing_invoice:
+            raise UserError(_("La orden ya ha sido facturada y no se puede volver a facturar."))
+
+        if not sale_order.invoice_ids:
+            moves = self._create_invoices_portal(sale_order, cfdi, forma_pago)
         else:
-            moves = self.sale_order_ids.invoice_ids
+            moves = sale_order.invoice_ids
             moves.update({
-                'partner_id' : self.sale_order_ids.partner_id,
-                'l10n_mx_edi_payment_method_id' : forma_pago.id,
-                'l10n_mx_edi_usage' : cfdi
+                'partner_id': sale_order.partner_id.id,
+                'l10n_mx_edi_payment_method_id': forma_pago.id,
+                'l10n_mx_edi_usage': cfdi
             })
-            if(not (moves.state == 'posted')):
+            if moves.state != 'posted':
                 moves.action_post()
                 moves.action_invoice_print()
         
         moves.action_invoice_print()
-        return moves
+        
         if open_invoices:
             return moves
-
-        return '/autofacturador/xml_report/%s' % (x.id)
+        
+        return '/autofacturador/xml_report/%s' % (moves.id)
 
     #=== BUSINESS METHODS ===#
 

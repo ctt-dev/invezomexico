@@ -107,5 +107,20 @@
           </form>
       </div>
       </t>
+      <t t-name="autofacturacion.portal_auto_invoice_download">
+        <t t-call="website.layout">
+            <div class="container text-center">
+                <h2>¡Factura generada correctamente!</h2>
+                <p>Tu factura ha sido generada con éxito. Puedes descargarla haciendo clic en el botón de abajo.</p>
+                <a t-att-href="file_url" class="btn btn-primary">Descargar Factura</a>
+                <script>
+                    setTimeout(function() {
+                        window.location.href = "/autofacturador/timbrado/<t t-esc="order_id"/>";
+                    }, 5000);  // Redirige después de 5 segundos
+                </script>
+            </div>
+        </t>
+    </t>
+
   </template>
   </odoo>

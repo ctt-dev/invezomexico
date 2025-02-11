@@ -153,12 +153,23 @@ class autofacturador(CustomerPortal):
                     portal_user = portal_wizard.user_ids
                     portal_user.email = email
                     portal_user.action_grant_access()
+    
             factura = request.env['sale.order'].sudo().search([('folio_venta', '=', order_id)])
-            if(factura.invoice_ids.edi_state == 'sent'):
+            if factura.invoice_ids.edi_state == 'sent':
                 return request.redirect('/autofacturador/timbrado/'+str(order_id)) 
+            
             factura.update({
-                    'partner_id' : cliente
-                })
+                'partner_id' : cliente
+            })
+            
+            # Aquí se agrega la lógica para verificar el proveedor del producto principal
+            for line in factura.order_line:
+                if not line.product_id.product_tmpl_id.seller_ids:  # Verifica si el producto tiene proveedor
+                    if line.bom_line_ids:  # Si tiene líneas de BOM
+                        for bom_line in line.bom_line_ids:
+                            # Asigna el proveedor de la línea del BOM al producto principal
+                            line.product_id.supplier_id = bom_line.supplier_id
+    
             facturador = request.env['sale.advance.payment.inv'].sudo().create({
                 'sale_order_ids' : factura,
             })
@@ -172,11 +183,12 @@ class autofacturador(CustomerPortal):
                 return request.redirect('/autofacturador/timbrado/'+str(order_id))
             invoice_sudo = self._document_check_access('account.move', invoice.id, access_token)
             return self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
-
+    
         except (AccessError) as a:
             raise a
         except (MissingError) as e:
             raise e
+
 
     @http.route(['/autofacturador/timbrar/<string:order_id>'], type='http', auth="public", website=True)
     def portal_my_factura_timbrar(self, order_id, access_token=None, report_type=None, download=False, **kw):

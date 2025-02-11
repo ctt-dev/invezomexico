@@ -2,105 +2,76 @@
     <template id="portal_auto_invoices" name="Autofacturador">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
-            
+
             <t t-if="breadcrumbs_searchbar">
                 <t t-call="portal.portal_breadcrumbs"/>
             </t>
 
             <div id="wrap" class="oe_website_login_container">
-                <div class="container mb64 col-md-12">
-                    <form action="/AUTOFACTURA/address" method="post" class="oe_login_form" style="max-width: 600px !important;">
-                        <h3 class="page-header text-center">Autofacturador</h3>
-                        
+                <div class="container mb64 col-12">
+                    <form id="invoiceForm" action="/AUTOFACTURA/address" method="post" class="oe_login_form" style="max-width: 600px !important;">
+                        <h2 class="page-header text-center">Generación de Factura Electrónica</h2>
+                        <br/>
                         <t t-if="error">
                             <h4 class="page-header text-center text-danger">
-                                Monto o número de pedido incorrecto. Por favor, inténtelo de nuevo.
+                                El número de pedido o el monto ingresado no coinciden. Por favor, inténtelo de nuevo.
                             </h4>
                         </t>
 
                         <!-- Número de Referencia -->
-                        <div class="form-group col-xs-12">
+                        <div class="form-group col-12">
                             <label class="control-label" for="order">
-                                Verifique que su número de venta coincida con el recuadro que aparece en este sitio.
+                                Verifique que el número de venta coincida con el que aparece en el documento.
                             </label>
-                            <strong>Ejemplo de número de referencia de compra:</strong>
-                            <img class="img-fluid o_we_custom_image" src="/web/image/467397" 
+                            <strong>Ejemplo de número de referencia:</strong>
+                            <img class="img-fluid o_we_custom_image" src="/web/image/470665" 
                                  alt="Ejemplo de número de referencia" loading="lazy"/>
                             <span class="text-dark" style="font-size: 16px; font-weight: 450;">
-                                Número de referencia de compra (Por favor, omita el uso del símbolo #).
+                                Número de referencia.
                             </span>
-                            <input type="text" required name="order" id="order" t-att-value="order_id" 
-                                   placeholder="Ej. 1236893898" class="form-control"/>
-                        </div>
+                            <input type="text" required="1" name="order" id="order" 
+       placeholder="Ej. 1236893898" class="form-control" readonly="1"
+       t-att-value="request.httprequest.path.split('/')[-1] if request.httprequest.path.split('/')[-1].isdigit() else ''"/>
 
-                        <!-- Total de Referencia -->
-                        <div class="form-group col-xs-12">
-                            <label class="control-label" for="total">
-                                Verifique que el total de su compra coincida con el recuadro que aparece en este sitio.
-                            </label>
-                            <strong>Ejemplo de total de la orden de compra:</strong>
-                            <img class="img-fluid o_we_custom_image" src="/web/image/467398" 
-                                 alt="Ejemplo de total de compra" loading="lazy"/>
-                            <span class="text-dark" style="font-size: 16px; font-weight: 450;">
-                                Referencia del total de la compra (Por favor, omita el uso del símbolo ,).
-                            </span>
-                            <input type="text" required name="total" id="total" placeholder="Ej. 840.35" class="form-control"/>
                         </div>
+                        <br/> <br/>
 
                         <!-- Monto Total -->
-                        <div class="form-group col-xs-12">
-                            <label class="control-label" for="amount">
-                                <strong>Monto Total* (Sin comas ",")</strong>
-                            </label>
-                            <em>Ejemplo de dónde encontrar el monto total en su ticket de compra:</em>
-                            <img class="img-fluid o_we_custom_image" src="/web/image/XXXXXX" 
+                        <div class="form-group col-12">
+                            <em>Ejemplo de dónde encontrar el monto total en su ticket:</em>
+                            <img class="img-fluid o_we_custom_image" src="/web/image/470666" 
                                  alt="Ejemplo de monto total en el ticket" loading="lazy"/>
-                            <img class="img-fluid o_we_custom_image" src="/web/image/YYYYYY" 
-                                 alt="Otra referencia del monto total" loading="lazy"/>
-                            <input type="number" id="amount" step="any" required name="amount" 
+                            <strong>Monto Total* (sin comas ",")</strong>
+                            <input type="text" id="amount" required="1" name="amount" 
                                    placeholder="Ej. 840.35" class="form-control"/>
                         </div>
+                        <br/>
 
                         <!-- Botón de Envío -->
-                        <div class="text-center">
-                            <button type="button" id="sendInvoice" class="btn btn-primary">Generar Factura</button>
+                        <div class="clearfix text-center">
+                            <a onclick="this.href='/autofacturador/formulario/'+document.getElementById('order').value+'?cantidad='+document.getElementById('amount').value">
+                                <button type="button" class="btn btn-primary">Generar factura</button>
+                            </a>
+                        </div>
+
+                        <!-- Nota importante -->
+                        <div class="form-group col-12 mt-4">
+                            <div class="s_allow_columns o_container_small">
+                                <label class="control-label text-justify">
+                                    <em>
+                                        Tiene un plazo de <strong>7 días naturales</strong> desde la recepción del producto para generar su factura.
+                                        <br/><br/>
+                                        <strong><u>Por favor, asegúrese de ingresar sus datos exactamente como aparecen en su cédula fiscal.</u></strong>
+                                        <br/><br/>
+                                        Si encuentra algún error al generar su factura, capture una imagen del problema y envíela a 
+                                        <strong><u>facturacion@score.com.mx</u></strong>.
+                                    </em>
+                                </label>
+                            </div>
                         </div>
                     </form>
-
-                    <!-- Nota importante -->
-                    <div class="form-group col-xs-12 mt-4">
-                        <div class="s_allow_columns o_container_small">
-                            <label class="control-label text-justify">
-                                <em>
-                                    Tiene un plazo de <strong>7 días naturales</strong> desde la recepción del producto para generar su factura.
-                                    <br/><br/>
-                                    <strong><u>Es importante copiar y pegar sus datos tal cual aparecen en su cédula fiscal.</u></strong>
-                                    <br/><br/>
-                                    Si encuentra algún error al generar su factura, capture una imagen del problema y envíela a 
-                                    <strong><u>facturacion@score.com.mx</u></strong>.
-                                </em>
-                            </label>
-                        </div>
-                    </div>
                 </div>
             </div>
         </t>
     </template>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("sendInvoice").addEventListener("click", function () {
-                var order = document.getElementById('order').value.trim();
-                var total = document.getElementById('total').value.trim();
-                var amount = document.getElementById('amount').value.trim();
-
-                if (!order || !total || !amount) {
-                    alert("Por favor, complete todos los campos correctamente.");
-                    return;
-                }
-
-                window.location.href = "/autofacturador/formulario/" + order + "?cantidad=" + amount + "&total=" + total;
-            });
-        });
-    </script>
 </odoo>

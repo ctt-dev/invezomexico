@@ -5,21 +5,21 @@
         <t t-call="portal.portal_breadcrumbs"/>
       </t>
       <t t-set="breadcrumbs_searchbar" t-value="True"/>
-      
+
       <!-- Cargar jQuery más reciente -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      
+
       <script type="text/javascript">
         $(document).ready(function() {
-          // Redirige después de 5 segundos
-          setTimeout(function() {
-            window.location.href = window.location.href.replace("timbrado", "timbrar");
-          }, 5000);
-
-          // Alerta y redirige después de 60 segundos
+          // Mostrar mensaje de descarga
           setTimeout(function() {
             alert("Archivo descargado y enviado por correo");
             window.location.href = window.location.href.replace("timbrado/", "");
+          }, 5000);
+
+          // Redirige después de 60 segundos
+          setTimeout(function() {
+            window.location.href = window.location.href.replace("timbrado", "timbrar");
           }, 60000);
         });
       </script>

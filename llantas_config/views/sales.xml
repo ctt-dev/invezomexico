@@ -45,6 +45,8 @@
                      <field name="json_data" invisible="1"/>
                      <field name="fee_import" readonly="1"/>
                      <field name="fee_sale" readonly="1" />
+                     <field name="ganancia" invisible="1"/>
+                     <field name="margin_percent" invisible="1"/>
                      <!-- <field name="status_venta" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/> -->
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
@@ -83,12 +85,15 @@
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
                     <field name="importe_descuento" optional="show"  />
                     <field name="precio_antes_dec" optional="show" readonly="1" />
-                    <field name="t1" optional="hide"/>
+                    <field name="ganancia" widget="monetary" optional="hide"/>
+                    <field name="margin_percent" widget="percent" optional="hide"/>
+                    
+                    <!-- <field name="t1" optional="hide"/>
                     <field name="t1_porcentaje" optional="hide"/>
                     <field name="t2" optional="hide"/>
                     <field name="t2_porcentaje" optional="hide"/>
                     <field name="t3" optional="hide"/>
-                    <field name="t3_porcentaje" optional="hide"/>
+                    <field name="t3_porcentaje" optional="hide"/> -->
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <button name="create_purchase_for_sale_order" type="object" string="Crear compra" class="btn-secondary" />
@@ -105,7 +110,19 @@
                         </group>
                     </page>
                 </xpath>
-                
+                <xpath expr="//field[@name='tax_totals']" position="after">
+                <!-- Reemplazar la vista original por la nueva vista de ganancia -->
+                <label for="ganancia" groups="base.group_user"/>
+                <div class="text-nowrap" groups="base.group_user">
+                    <!-- Mostrar el campo de ganancia como monetario -->
+                    <field name="ganancia" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+            
+                    <!-- Mostrar el porcentaje de margen, solo si hay un valor no nulo -->
+                    <span class="oe_inline" attrs="{'invisible': [('ganancia', '=', 0)]}">
+                        (<field name="margin_percent" nolabel="1" class="oe_inline" widget="float" options="{'precision': 1}"/>%)
+                    </span>
+                </div>
+            </xpath>
 
                 
             </field>
@@ -123,9 +140,14 @@
                     <field name="yuju_pack_id" optional="hide" />
                     <field name="fecha_venta" optional="hide" />
                     <field name="comprador_id" widget="many2one" optional="show"/>
+                    
                     <field name="status_ventas" widget="many2one_tags" />
                         <!-- domain="[('product_tmpl_id','=','order_line.product_template_id')]"/> -->
                 </xpath>
+                <field name="amount_total" position="after">
+                    <field name="ganancia" widget="monetary" optional="hide"/>
+                    <field name="margin_percent" widget="percent" optional="hide"/>
+                </field>
                 <field name="user_id" position="replace">
                     <field name="user_id" widget="many2one_avatar_user" optional="show" string="Usuario"/>
                 </field>
@@ -144,8 +166,13 @@
                     <field name="fecha_venta" optional="hide" />
                     <field name="comprador_id" widget="many2one" optional="show"/>
                     <field name="status_ventas" widget="many2one_tags" />
+                    
                         <!-- domain="[('product_tmpl_id','=','order_line.product_template_id')]"/> -->
                 </xpath>
+                <field name="amount_total" position="after">
+                    <field name="ganancia" widget="monetary" optional="hide"/>
+                    <field name="margin_percent" widget="percent" optional="hide"/>
+                </field>
                 <field name="user_id" position="replace">
                     <field name="user_id" widget="many2one_avatar_user" optional="show" string="Usuario"/>
                 </field>
@@ -174,6 +201,11 @@
                     <field name="name" string="Order" filter_domain="['|', '|', '|', '|', ('name', 'ilike', self),('folio_venta', 'ilike', self), ('client_order_ref', 'ilike', self), ('partner_id', 'child_of', self), ('yuju_pack_id', 'ilike', self)]"/>
                 </xpath>
             </field>
+        </record>
+
+        
+        <record id="sale_margin.sale_margin_sale_order" model="ir.ui.view">
+            <field name="active">False</field>
         </record>
         
        

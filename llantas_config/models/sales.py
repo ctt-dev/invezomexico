@@ -12,67 +12,43 @@ class sale_order_inherit(models.Model):
     _inherit = 'sale.order'
     _description = 'Orden de venta'
 
+
+    ganancia = fields.Float(string="Ganancia", compute="_compute_ganancia")
+    margin_percent = fields.Float(string="Margen (%)", compute="_compute_ganancia")
+
+
+    @api.depends('amount_total', 'amount_untaxed', 'order_line', 'comision', 'envio')
+    def _compute_ganancia(self):
+        for order in self:
+            total_venta = order.amount_total or 0  # ✅ Incluye IVA
+            total_sin_iva = order.amount_total / 1.16  # ✅ Evita división por 0
+            comision = order.comision or 0
+            envio = order.envio or 0
+    
+            # Buscar la OC vinculada a la venta
+            purchase_orders = self.env['purchase.order'].search([('origin', '=', order.name)], limit=1)
+    
+            if purchase_orders:
+                total_oc = purchase_orders.amount_total or 0  # ✅ Se usa `purchase.order`, no `purchase.order.line`
+            else:
+                # Si no hay OC, usar los costos de las líneas de venta
+                total_oc = sum(line.purchase_price * line.product_uom_qty for line in order.order_line if line.purchase_price)
+    
+            # **Cálculo de ganancia**
+            order.ganancia = total_venta - comision - envio - total_oc
+    
+            # **Cálculo del margen (%)**
+            order.margin_percent = round((order.ganancia / total_venta) * 100, 1) if total_sin_iva else 0
+    
+
+
+
     is_check=fields.Boolean(
         string="Revisar disponibilidad",
         default=False,
         tracking=True,
     )
-
-    # def revisar_disponibilidad(self):
-    #     for line in self.order_line:  
-    #         # Inicializar variables
-    #         locations = {}
-    #         preferred_warehouse = None
-    #         selected_warehouse = None
-    #         max_stock = 0
-    #         current_company = self.company_id.name  # Nombre de la compañía actual
     
-    #         # Recolectar información de stock por almacén
-    #         for quant in line.product_id.stock_quant_ids:
-    #             if quant.quantity > 0 and quant.location_id.usage == 'internal':
-    #                 warehouse = quant.location_id.warehouse_id
-    #                 if warehouse:
-    #                     if warehouse.id not in locations:
-    #                         locations[warehouse.id] = quant.quantity
-    #                     else:
-    #                         locations[warehouse.id] += quant.quantity
-    
-    #                 # Priorizar almacén "FELIX" si aplica
-    #                 if current_company == 'LLANTIRED' and "ALMACEN LLANTIRED - FELIX" in warehouse.name:
-    #                     preferred_warehouse = warehouse
-    #                 elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS' and "ALMACEN LA BODEGA - FELIX" in warehouse.name:
-    #                     preferred_warehouse = warehouse
-    
-    #         # Determinar el almacén con mayor stock
-    #         if locations:
-    #             selected_warehouse = max(locations, key=locations.get)  # ID del almacén con más stock
-    #             max_stock = locations[selected_warehouse]
-    
-    #         # Verificar si existe el almacén 3PL Virtual según la empresa
-    #         if not preferred_warehouse:
-    #             if current_company == 'LLANTIRED':
-    #                 preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
-    #             elif current_company == 'LA BODEGA LLANTAS Y ACCESORIOS':
-    #                 preferred_warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LA BODEGA- 3PL VIRTUAL')], limit=1)
-    
-    #         # Selección del almacén final
-    #         if max_stock > 0:  # Si hay stock disponible, priorizar almacén con más stock
-    #             warehouse_id = selected_warehouse
-    #         elif preferred_warehouse:  # Si no hay stock, usar el almacén 3PL Virtual
-    #             warehouse_id = preferred_warehouse.id
-    #         else:  # Si no hay 3PL Virtual, usar el único almacén disponible
-    #             warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
-    #             if warehouse:
-    #                 warehouse_id = warehouse.id
-    #             else:
-    #                 raise UserError(f"No se encontró un almacén configurado para la empresa {current_company}.")
-    
-    #         # Asignar el almacén a la orden de venta
-    #         self.write({'warehouse_id': warehouse_id})
-        
-    #     # Marcar como revisado
-    #     self.is_check = True
-
     def revisar_disponibilidad(self):
         all_lines_available = True
         preferred_warehouse = None
@@ -811,8 +787,9 @@ class sale_order_inherit(models.Model):
             res = super(sale_order_inherit, self).action_confirm()
             
             # Verificar si marketplace y categoría existen, y agregar categoría al cliente si es necesario
-            if self.marketplace.id and self.marketplace.category_id.id:
+            if self.marketplace.category_id.id:
                 if self.marketplace.category_id not in self.partner_id.category_id:
+                    # raise UserError(str(self.marketplace.category_id.name))
                     self.partner_id.category_id += self.marketplace.category_id
     
             # Aplicar costo de envío si aún no está establecido
@@ -1295,6 +1272,16 @@ class sale_order_line_inherit(models.Model):
         related="order_id.folio_venta",
         store=True
     )
+    ganancia= fields.Float(
+        string="Ganancia",
+        related="order_id.ganancia",
+    )
+    
+    margin_percent= fields.Float(
+        string="Margen de ganancia",
+        related="order_id.margin_percent",
+    )
+    
     fecha_venta=fields.Datetime(
         string="Fecha venta",
         related="order_id.fecha_venta",

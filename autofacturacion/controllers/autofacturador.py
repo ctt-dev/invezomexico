@@ -60,7 +60,9 @@ class autofacturador(CustomerPortal):
         _logger.warning(xml)
         _logger.warning(self)
         xml.move_id.action_invoice_print()
+        _logger.warning('p1')
         xml.move_id.send_mail_invoice_autofacturacion()
+        _logger.warning('p2')
         invoice_sudo = self._document_check_access('account.move', xml.move_id.id, access_token)
         pdf = self._show_report(model=invoice_sudo, report_type='pdf', report_ref='account.account_invoices', download=download)
         file_name = 'Factura-'+xml.move_id.name

@@ -24,7 +24,7 @@
                                 Verifique que el número de venta coincida con el que aparece en el documento.
                             </label>
                             <strong>Ejemplo de número de referencia:</strong>
-                            <img class="img-fluid o_we_custom_image" src="/web/image/470665" 
+                            <img class="img-fluid o_we_custom_image" src="/web/image/472165" 
                                  alt="Ejemplo de número de referencia" loading="lazy"/>
                             <span class="text-dark" style="font-size: 16px; font-weight: 450;">
                                 Número de referencia.
@@ -39,7 +39,7 @@
                         <!-- Monto Total -->
                         <div class="form-group col-12">
                             <em>Ejemplo de dónde encontrar el monto total en su ticket:</em>
-                            <img class="img-fluid o_we_custom_image" src="/web/image/470666" 
+                            <img class="img-fluid o_we_custom_image" src="/web/image/472167" 
                                  alt="Ejemplo de monto total en el ticket" loading="lazy"/>
                             <strong>Monto Total* (sin comas ",")</strong>
                             <input type="text" id="amount" required="1" name="amount" 

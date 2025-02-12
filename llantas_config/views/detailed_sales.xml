@@ -32,12 +32,14 @@
                     <field name="costo_proveedor" readonly="1" optional="show"/>
                     <field name="costo_proveedor_2" readonly="1" optional="hide"  />
                     <field name="costo_proveedor_total" readonly="1" optional="hide"  />
-                    <field name="t1" sum="t1" optional="hide" />
+                    <field name="ganancia" optional="hide" widget="monetary"/>
+                     <field name="margin_percent" widget="percent" optional="hide"/>
+                    <!-- <field name="t1" sum="t1" optional="hide" />
                     <field name="t1_porcentaje" sum="t1_porcentaje" optional="hide" />
                     <field name="t2" sum="t2" optional="hide" />
                     <field name="t2_porcentaje" sum="t2_porcentaje" optional="hide" />
                     <field name="t3" sum="t3" optional="hide" />
-                    <field name="t3_porcentaje" sum="t3_porcentaje" optional="hide" />
+                    <field name="t3_porcentaje" sum="t3_porcentaje" optional="hide" /> -->
                     <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" optional="hide"/>
                     <field name="discount" string="Disc.%"  optional="hide" widget="sol_discount"/>
                     <field name="is_killer" invisible="1" />

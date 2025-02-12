@@ -29,7 +29,8 @@
                     <field name="qty_invoiced" string="Invoiced" optional="hide"/>
                     <field name="fecha_venta" optional="show"/>
                     <field name="proveedor_id" optional="show"/>
-                    <field name="costo_proveedor" readonly="1" optional="show"/>
+                    <field name="costo_promedio" widget="monetary"/>
+                    <field name="costo_proveedor" readonly="1" optional="hide"/>
                     <field name="costo_proveedor_2" readonly="1" optional="hide"  />
                     <field name="costo_proveedor_total" readonly="1" optional="hide"  />
                     <field name="ganancia" optional="hide" widget="monetary"/>

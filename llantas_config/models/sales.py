@@ -31,14 +31,18 @@ class sale_order_inherit(models.Model):
             if purchase_orders:
                 total_oc = purchase_orders.amount_total or 0  # ✅ Se usa `purchase.order`, no `purchase.order.line`
             else:
-                # Si no hay OC, usar los costos de las líneas de venta
-                total_oc = sum(line.purchase_price * line.product_uom_qty for line in order.order_line if line.purchase_price)
+                # Si no hay OC, usar el precio estándar de los productos sumando el IVA
+                total_oc = sum(
+                    (line.product_id.standard_price * line.product_uom_qty) * 1.16
+                    for line in order.order_line if line.product_id.standard_price
+                )
     
             # **Cálculo de ganancia**
             order.ganancia = total_venta - comision - envio - total_oc
     
             # **Cálculo del margen (%)**
             order.margin_percent = round((order.ganancia / total_venta) * 100, 1) if total_sin_iva else 0
+
     
 
 
@@ -1155,6 +1159,40 @@ class sale_order_line_inherit(models.Model):
     )
     
 
+    costo_promedio = fields.Float(
+        "Costo Promedio",
+        compute="_compute_costo_promedio",
+        # store=True
+    )
+
+    @api.depends('product_id', 'order_id.date_order')
+    def _compute_costo_promedio(self):
+        for line in self:
+            if line.order_id.state in ['sale', 'done']:  # Solo calculamos cuando la venta está confirmada
+                # Inicializamos la lista de capas de valorización
+                costos = []
+                
+                product = line.product_id
+                if product:
+                    # Buscar las capas de valorización de este producto
+                    valorization_layers = self.env['stock.valuation.layer'].search([
+                        ('product_id', '=', product.id),
+                        ('create_date', '<=', line.order_id.date_order),  # Filtrar por fecha de la venta
+                        ('quantity', '>', 0)  # Solo considerar las entradas al inventario
+                    ], order='create_date desc')
+
+                    # Tomar el costo más reciente de la capa de valorización
+                    if valorization_layers:
+                        # Usamos el costo de la última capa de valorización para este producto
+                        costo_producto = valorization_layers[0].unit_cost
+                        costos.append(costo_producto)
+                
+                # Calculamos el costo promedio si encontramos costos
+                if costos:
+                    line.costo_promedio = sum(costos) / len(costos)
+                else:
+                    line.costo_promedio = 0.0
+    
     costo_proveedor=fields.Float(
         related="proveedor_id.price",
         string="Costo",

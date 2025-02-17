@@ -1168,30 +1168,25 @@ class sale_order_line_inherit(models.Model):
     @api.depends('product_id', 'order_id.date_order')
     def _compute_costo_promedio(self):
         for line in self:
-            if line.order_id.state in ['sale', 'done']:  # Solo calculamos cuando la venta está confirmada
-                # Inicializamos la lista de capas de valorización
-                costos = []
-                
-                product = line.product_id
-                if product:
-                    # Buscar las capas de valorización de este producto
-                    valorization_layers = self.env['stock.valuation.layer'].search([
-                        ('product_id', '=', product.id),
-                        ('create_date', '<=', line.order_id.date_order),  # Filtrar por fecha de la venta
-                        ('quantity', '>', 0)  # Solo considerar las entradas al inventario
-                    ], order='create_date desc')
+            costo_promedio = 0.0
+            if line.product_id:
+                # Verificar que order_id y date_order no sean None
+                if line.order_id and line.order_id.date_order:
+                    valuation_layers = self.env['stock.valuation.layer'].search([
+                        ('product_id', '=', line.product_id.id),
+                        ('create_date', '<=', line.order_id.date_order)
+                    ])
 
-                    # Tomar el costo más reciente de la capa de valorización
-                    if valorization_layers:
-                        # Usamos el costo de la última capa de valorización para este producto
-                        costo_producto = valorization_layers[0].unit_cost
-                        costos.append(costo_producto)
-                
-                # Calculamos el costo promedio si encontramos costos
-                if costos:
-                    line.costo_promedio = sum(costos) / len(costos)
-                else:
-                    line.costo_promedio = 0.0
+                    sum_value = sum(valuation_layers.mapped('value'))
+                    sum_qty = sum(valuation_layers.mapped('quantity'))
+
+                    if sum_qty > 0:
+                        costo_promedio = sum_value / sum_qty
+                    else:
+                        # Si no hay registros en stock.valuation.layer, usar el costo del producto
+                        costo_promedio = line.product_id.standard_price
+
+            line.costo_promedio = costo_promedio
     
     costo_proveedor=fields.Float(
         related="proveedor_id.price",

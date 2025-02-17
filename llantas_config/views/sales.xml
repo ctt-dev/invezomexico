@@ -65,8 +65,9 @@
                 </xpath>
                 <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="before">
                     <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
-                    <field name="costo_proveedor" readonly="1" optional="show"  />
-                    <field name="costo_proveedor_2" readonly="1" optional="hide"  />
+                    <field name="costo_proveedor" readonly="1" optional="show" invisible="1" />
+                    <field name="costo_proveedor_2" string="Costo proveedor" readonly="1" optional="hide"  />
+                    <field name="costo_promedio" readonly="1" optional="hide" />
                     
                     <field name="codigo_proveedor" invisible="1" />
                     <field name="is_killer" readonly="1" optional="hide" />

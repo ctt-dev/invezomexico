@@ -213,7 +213,7 @@
                     <t t-if="o.company_id.name == 'LLANTIRED' and o.currency_id.name == 'MXN'">021743040678913582</t>
                     <t t-if="o.company_id.name == 'LLANTIRED' and o.currency_id.name == 'USD'">072731013015735748</t>
                     <t t-if="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'USD'">021743070004580915</t>
-                    <t t-if="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'MXN'">021743040189731400</t>
+                    <t t-if="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'MXN'">021743040189731499</t>
                 </td>
             </tr>
             <tr>

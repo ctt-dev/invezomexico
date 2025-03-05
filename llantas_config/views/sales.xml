@@ -67,9 +67,9 @@
                     <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
                     <field name="costo_proveedor" readonly="1" optional="show" invisible="1" />
                     <field name="costo_proveedor_2" string="Costo proveedor" readonly="1" optional="hide"  />
-                    <field name="costo_promedio" readonly="1" optional="hide" />
-                    
-                    <field name="codigo_proveedor" invisible="1" />
+                    <field name="costo_promedio_historico" readonly="1" invisible="1"/>
+                    <field name="costo_promedio" readonly="1" />
+                    <field name="codigo_proveedor" invisible="1" optional="hide" />
                     <field name="is_killer" readonly="1" optional="hide" />
                     <field name="killer_id" widget="many2one" invisible="1"/>
                     <!-- <field name="killer_id_killer_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>

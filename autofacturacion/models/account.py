@@ -28,7 +28,8 @@ class account_inherit(models.Model):
     def update_lines(self):
         _logger.warning("INVOICELINE")
         for line in self.invoice_line_ids:
-            line.name = line.product_id.name
+            if line.product_id.id:
+                line.name = line.product_id.name
 
     def action_process_edi_web_services_for_autofacturacion(self, invoice_id):
         invoice_id = self.env['account.move'].browse(invoice_id)

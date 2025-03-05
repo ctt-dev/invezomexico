@@ -33,8 +33,8 @@ class sale_order_inherit(models.Model):
             else:
                 # Si no hay OC, usar el precio estándar de los productos sumando el IVA
                 total_oc = sum(
-                    (line.product_id.standard_price * line.product_uom_qty) * 1.16
-                    for line in order.order_line if line.product_id.standard_price
+                    (line.costo_promedio * line.product_uom_qty) * 1.16
+                    for line in order.order_line if line.costo_promedio
                 )
     
             # **Cálculo de ganancia**
@@ -583,8 +583,12 @@ class sale_order_inherit(models.Model):
         return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
     
     def write(self, values):
-        _logger.warning('write')
+        # _logger.warning('write')
         for rec in self:
+            for line in rec.order_line:
+                if line.product_id:
+                    # Guardar el costo promedio (standard_price) en la línea
+                    line.costo_promedio = line.product_id.standard_price
             # Omitir validaciones si la acción es cancelar
             if values.get('state') == 'cancel':
                 _logger.info("La orden se está cancelando, se omiten validaciones.")
@@ -1157,18 +1161,22 @@ class sale_order_line_inherit(models.Model):
         store=True,
         tracking=True,
     )
-    
 
     costo_promedio = fields.Float(
         "Costo Promedio",
-        compute="_compute_costo_promedio",
+        store=True
+    )
+
+    costo_promedio_historico = fields.Float(
+        "Costo promedio historico",
+        compute="_compute_costo_promedio_historico",
         # store=True
     )
 
     @api.depends('product_id', 'order_id.date_order')
-    def _compute_costo_promedio(self):
+    def _compute_costo_promedio_historico(self):
         for line in self:
-            costo_promedio = 0.0
+            costo_promedio_historico = 0.0
             if line.product_id:
                 # Verificar que order_id y date_order no sean None
                 if line.order_id and line.order_id.date_order:
@@ -1181,12 +1189,12 @@ class sale_order_line_inherit(models.Model):
                     sum_qty = sum(valuation_layers.mapped('quantity'))
 
                     if sum_qty > 0:
-                        costo_promedio = sum_value / sum_qty
+                        costo_promedio_historico = sum_value / sum_qty
                     else:
                         # Si no hay registros en stock.valuation.layer, usar el costo del producto
-                        costo_promedio = line.product_id.standard_price
+                        costo_promedio_historico = line.product_id.standard_price
 
-            line.costo_promedio = costo_promedio
+            line.costo_promedio_historico = costo_promedio_historico
     
     costo_proveedor=fields.Float(
         related="proveedor_id.price",

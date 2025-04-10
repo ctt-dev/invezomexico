@@ -1,0 +1,33 @@
+<odoo>
+    <data>
+        <record id="pos_order_credit_limit_inherit_view_form_inherit" model="ir.ui.view">
+            <field name="name">pos_order_view_credit_limit</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="after">
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                         <!-- <div class="oe_chatter">
+                            <field name="message_follower_ids" widget="mail_followers"/>
+                            <field name="activity_ids" widget="mail_activity"/>
+                            <field name="message_ids" widget="mail_thread"/>
+                        </div> -->
+                </xpath>
+                <xpath expr="//field[@name='lines']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_change_price', '=', 'False')]}</attribute>
+                </xpath>
+                 <field name="partner_id" position="after">
+                    <field name="can_modify_paid_credit" invisible="1"/>
+                    <field name="can_change_price" invisible="1"/>
+                    <field name="approve_credit_payment" attrs="{'readonly': [('can_modify_paid_credit', '=', 'False')], 'invisible': [('can_modify_paid_credit', '=', 'False')]}"/>
+                    <field name="paid_using_credit" invisible="0"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

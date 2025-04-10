@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit"
+       t-inherit-mode="extension" owl="1">
+        <xpath expr="//input[hasclass('partner-name')]" position="after">
+            <div class="partner-details-box clearfix">
+                <div class="Partner-details-right mb-3"
+                     style="font-size: initial;">
+                    <div class="partner-detail">
+                        <span class="label">Crédito</span>
+                        <t t-if="props.partner.credit_used">
+                            <span class="detail credit"><t t-esc="props.partner.credit_used"/></span>
+                        </t>
+                        <t t-if="!props.partner.credit_used">
+                            <span class="detail credit empty"><t t-esc="props.partner.credit_used"/></span>
+                        </t>
+                    </div>
+                </div>
+                <div class="partner-details-left mb-3"
+                     style="font-size: initial;">
+                    <div class="partner-detail">
+                        <span class="label">Limite</span>
+                        <t t-if="props.partner.blocking_stage">
+                            <span class="detail credit"><t t-esc="props.partner.blocking_stage"/></span>
+                        </t>
+                        <t t-if="!props.partner.blocking_stage">
+                            <span class="detail credit empty">N/A</span>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </t>
+    <t t-name="PartnerListScreen" t-inherit="point_of_sale.PartnerListScreen"
+       t-inherit-mode="extension" owl="1">
+        <xpath expr="//table[hasclass('partner-list')]//th[last()]"
+               position="after">
+                <th>Crédito Utilizado</th>
+            <th>Límite de Crédito</th>
+            <th>Credito Bloqueado</th>
+        </xpath>
+    </t>
+    <t t-name="PartnerLine" t-inherit="point_of_sale.PartnerLine"
+       t-inherit-mode="extension" owl="1">
+        <xpath expr="//tr/td[last()]" position="after">
+            <t t-if="props.partner.active_limit">
+                    <t t-if="props.partner.credit_used">
+                        <t t-if="props.partner.blocking_stage &lt;= props.partner.credit_used">
+                            <td t-attf-class="partner-blocking_stage" style="background-color: lightcoral;">
+                                <span style=""><t t-esc="props.partner.credit_used"/></span>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td t-attf-class="partner-blocking_stage">
+                                <span style=""><t t-esc="props.partner.credit_used"/></span>
+                            </td>
+                        </t>
+                        
+                    </t>
+                    <t t-if="props.partner.credit_used == False">
+                        <td t-attf-class="partner-blocking_stage">
+                                <span style=""><t t-esc="props.partner.credit_used"/></span>
+                        </td>
+                    </t>
+                </t>
+            <t t-else="">
+                <td>
+                        <span>N/A</span>
+                </td>
+            </t>
+            <t t-if="props.partner.active_limit">
+                <td t-attf-class="partner-blocking_stage">
+                    <t t-if="props.partner.blocking_stage">
+                        <t t-if="props.partner.blocking_stage &lt;= props.partner.credit_used">
+                            <span><t t-esc="props.partner.blocking_stage"/></span>
+                        </t>
+                        <t t-if="props.partner.blocking_stage &gt; props.partner.credit_used">
+                            <t t-esc="props.partner.blocking_stage"/>
+                        </t>
+
+                    </t>
+                    <t t-if="props.partner.blocking_stage == False">
+                        <span>0</span>
+                    </t>
+                </td>
+                </t>
+                <t t-else="">
+                    <td t-attf-class="partner-blocking_stage">
+                        <span>N/A</span>
+                    </td>
+                </t>
+            <td t-attf-class="partner-blocking_stage">
+                <t t-if="props.partner.message_blocked_credit">
+                    <t t-if="props.partner.message_blocked_credit">
+                            <t t-esc="props.partner.message_blocked_credit"/>
+
+                    </t>
+                </t>
+                <t t-if="props.partner.message_blocked_credit == False">
+                        <span>N/A</span>
+                </t>
+            </td>
+        </xpath>
+    </t>
+</templates>

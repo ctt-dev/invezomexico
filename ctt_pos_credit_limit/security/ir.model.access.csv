@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ctt_pos_credit_limit_debt_postponement,ctt_pos_credit_limit.debt_postponement,model_ctt_pos_credit_limit_debt_postponement,,1,1,1,0
+access_hr_employee_credit,Acceso a Créditos en Empleados,model_hr_employee,ctt_pos_credit_limit.group_manage_credit,1,1,1,0
+access_res_partner_credit,Acceso a Créditos en Clientes,model_res_partner,ctt_pos_credit_limit.group_manage_credit,1,1,1,0

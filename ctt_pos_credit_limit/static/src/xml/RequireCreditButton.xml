@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    
+        <t t-name="RequireCreditButton" owl="1">
+            <div class="control-button">
+                    <i class="fa fa-money" role="img" aria-label="Solicitar venta a crédito"
+                       title="Solicitar venta a crédito" /> Solicitar venta a crédito
+            </div>
+        </t>
+    <t t-name="RequireDiscountButton" owl="1">
+            <div class="control-button">
+                    <i class="fa fa-tag" role="img" aria-label="Solicitar venta a crédito"
+                       title="Solicitar descuento" /> Solicitar descuento
+            </div>
+        </t>
+    
+</templates>

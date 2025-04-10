@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="employee_credit_limit_inherit_view_form_inherit" model="ir.ui.view">
+            <field name="name">employee_inherit_view_credit_limit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='coach_id']" position="after">
+                    <field name="allow_aplazo" force_save="1" groups="ctt_pos_credit_limit.group_manage_credit"/>
+                    <field name="allow_credit_sale" groups="ctt_pos_credit_limit.group_manage_credit"/>
+                    <field name="allow_credit_block" groups="ctt_pos_credit_limit.group_manage_credit"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+

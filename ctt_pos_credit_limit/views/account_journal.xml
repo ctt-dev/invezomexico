@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="account_journal_credit_limit_inherit_view_form_inherit" model="ir.ui.view">
+            <field name="name">account_journal_inherit_view_credit_limit</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='active']" position="after">
+                    <!-- <field name="pos_credit" attrs="{'invisible':[('type', '!=', 'cash')]}"/> -->
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

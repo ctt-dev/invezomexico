@@ -1,0 +1,21 @@
+<t t-name="SelectDatePopup" owl="1">
+            <Draggable>
+                <div class="popup popup-textarea">
+                    <header class="title drag-handle">
+                        <t t-esc="props.title"/>
+                    </header>
+                    <div class="popup-textarea-wrap">
+                        <input type="date" t-model="state.inputValue" t-ref="input" max="2999-12-31"/>
+                        <textarea t-model="state.inputValueMotivo" placeholder="Motivo de convenio" t-ref="inputMotivo"/>
+                    </div>
+                    <footer class="footer">
+                        <div class="button confirm highlight" t-on-click="confirm">
+                            <t t-esc="props.confirmText"/>
+                        </div>
+                        <div class="button cancel" t-on-click="cancel">
+                            <t t-esc="props.cancelText"/>
+                        </div>
+                    </footer>
+                </div>
+            </Draggable>
+    </t>

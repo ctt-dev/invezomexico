@@ -17,3 +17,4 @@ from . import purchase
 from . import product_pricelist_item
 from . import account_journal
 from . import killer
+from . import account_payment

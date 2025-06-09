@@ -144,7 +144,8 @@ class marketplaces(models.Model):
             ('3401','Coppel'),
             ('1901','Shopify'),
             ('3101','Elektra'),
-            ('2102','Walmart')
+            ('2102','Walmart'),
+            ('2103','Sears')
         ],
     )
 

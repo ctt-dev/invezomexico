@@ -15,7 +15,7 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError , UserError
-from cfdiclient import Autenticacion, Fiel, SolicitaDescarga, VerificaSolicitudDescarga, DescargaMasiva, Validacion
+from cfdiclient import Autenticacion, Fiel, SolicitaDescargaRecibidos, VerificaSolicitudDescarga, DescargaMasiva
 
 _CFDI_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/CFDI/'
 
@@ -23,7 +23,16 @@ class l10n_mx_cfdi_request(models.Model):
     _name = 'l10n_mx.cfdi_request'
     _description = 'Modelo de solicitud'
     _order = 'id desc'
-    
+
+    @api.depends('name')
+    def compute_name(self):
+        for rec in self:
+            rec.name = rec.id_solicitud
+    name = fields.Char(
+        string="UUID",
+        compute=compute_name,
+        store=True
+    )
     
     id_solicitud=fields.Char(
         string="ID Solicitud"
@@ -102,9 +111,9 @@ class l10n_mx_cfdi_request(models.Model):
         fiel = self._read_fiel(keys_id)
         session = self._create_new_seassion(fiel)
         
-        descarga = SolicitaDescarga(fiel)
+        descarga = SolicitaDescargaRecibidos(fiel)
         # Recibidos
-        result = descarga.solicitar_descarga(session, record.rfc_consultant, record.start_date, record.end_date, rfc_receptor=record.rfc_receptor, tipo_solicitud='CFDI')
+        result = descarga.solicitar_descarga(session, record.rfc_consultant, record.start_date, record.end_date, rfc_receptor=record.rfc_receptor, tipo_solicitud='CFDI',estado_comprobante='Vigente')
         
         _logger.warning(result)
 
@@ -205,10 +214,10 @@ class l10n_mx_cfdi_request(models.Model):
         for paquete in paquetes:
             descarga = DescargaMasiva(fiel)
             descarga = descarga.descargar_paquete(session, self.rfc_consultant, paquete)
-            with open(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'wb') as fp:
-                fp.write(base64.b64decode(descarga['paquete_b64']))
-            with zipfile.ZipFile(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'r') as zip_ref:
-                zip_ref.extractall(_CFDI_DOWNLOAD_PATH_ROOT+'{}/'.format(self.id_solicitud))
+            if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete)):
+                with open(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'wb') as fp:
+                    if descarga['paquete_b64'] != None:
+                        fp.write(base64.b64decode(descarga['paquete_b64']))
 
         self.write({
             'done':True
@@ -222,9 +231,12 @@ class l10n_mx_cfdi_request(models.Model):
     
             file_data = self._read_cfdi(data)
     
-            company_id = self.env.company.id
+            company_id = self.env.user.company_id.id
             if self.company_id.id:
                 company_id = self.company_id.id
+            company_ids = self.env['res.company'].search([('vat','=',file_data['rfc_receptor'])])
+            if len(company_ids) > 0:
+                company_id = company_ids[0].id
             
             #Check if exists, if exists avoid creation...
             document_ids = self.env['l10n_mx.cfdi_document'].search([('uuid','=',file_data['uuid'])])
@@ -252,6 +264,11 @@ class l10n_mx_cfdi_request(models.Model):
         
     
     def create_request_documents(self):
+        paquetes = self.paquetes.split(',')
+        for paquete in paquetes:
+            with zipfile.ZipFile(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'r') as zip_ref:
+                zip_ref.extractall(_CFDI_DOWNLOAD_PATH_ROOT+'{}/'.format(self.id_solicitud))
+                
         xml_files = glob.glob(_CFDI_DOWNLOAD_PATH_ROOT+ self.id_solicitud + '/*.xml')
         [self.create_doc(file_path) for file_path in xml_files]
             
@@ -261,7 +278,7 @@ class l10n_mx_cfdi_request(models.Model):
         
     def automated_verification(self):
         
-        solicitudes = self.env['l10n_mx.cfdi_request'].search([('state','<=','2')])
+        solicitudes = self.env['l10n_mx.cfdi_request'].search([('state','in',['1','2'])])
         
         for solicitud in solicitudes:
             solicitud.verificar_solicitud()

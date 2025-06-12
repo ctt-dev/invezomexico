@@ -16,7 +16,6 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError , UserError
-from cfdiclient import Autenticacion, Fiel, SolicitaDescarga, VerificaSolicitudDescarga, DescargaMasiva, Validacion
 
 _CFDI_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/CFDI/'
 

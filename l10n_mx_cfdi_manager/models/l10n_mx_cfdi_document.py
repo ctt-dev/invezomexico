@@ -12,7 +12,7 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError , UserError
-from cfdiclient import Autenticacion, Fiel, SolicitaDescarga, VerificaSolicitudDescarga, DescargaMasiva, Validacion
+from cfdiclient import Validacion
 from lxml.objectify import fromstring
 
 class l10n_mx_cfdi_document(models.Model):

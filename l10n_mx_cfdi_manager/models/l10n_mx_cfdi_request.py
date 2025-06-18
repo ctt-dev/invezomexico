@@ -278,7 +278,7 @@ class l10n_mx_cfdi_request(models.Model):
         
     def automated_verification(self):
         
-        solicitudes = self.env['l10n_mx.cfdi_request'].search([('state','in',['1','2'])])
+        solicitudes = self.env['l10n_mx.cfdi_request'].search([('state','in',['0','1','2'])])
         
         for solicitud in solicitudes:
             solicitud.verificar_solicitud()

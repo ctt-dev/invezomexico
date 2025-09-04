@@ -16,6 +16,7 @@ class sale_order_inherit(models.Model):
     ganancia = fields.Float(string="Ganancia", compute="_compute_ganancia", store=True)
     margin_percent = fields.Float(string="Margen (%)", compute="_compute_ganancia", store=True)
 
+
     @api.depends('amount_total', 'amount_untaxed', 'order_line', 'comision', 'envio')
     def _compute_ganancia(self):
         # Cache de OC por origin
@@ -628,9 +629,17 @@ class sale_order_inherit(models.Model):
             if 'yuju_carrier' in values:
                 yuju_carrier = values.get('yuju_carrier', '').strip()
                 carrier_record = self.env['llantas_config.carrier'].search([
-                    ('name', 'ilike', yuju_carrier)
+                    ('name', '=ilike', yuju_carrier)  # Usa =ilike para coincidencia exacta sin case
                 ], limit=1)
-                values['llantas_config_carrier_id'] = carrier_record.id if carrier_record else False
+            
+                new_carrier_id = carrier_record.id if carrier_record else False
+            
+                # 🔥 EVITAR REESCRIBIR SI YA TIENE EL MISMO VALOR
+                for rec in self:
+                    if rec.llantas_config_carrier_id.id != new_carrier_id:
+                        values['llantas_config_carrier_id'] = new_carrier_id
+                    else:
+                        _logger.info("Carrier ya asignado, se omite escritura para evitar ciclo.")
     
             # Asignar y verificar 'folio_venta'
             if 'folio_venta' in values:
@@ -989,8 +998,7 @@ class sale_order_inherit(models.Model):
 
     llantas_config_carrier_id=fields.Many2one(
         "llantas_config.carrier",
-        string="Carrier", 
-        tracking=True
+        string="Carrier"
     )
 
     @api.depends('picking_ids', 'picking_ids.carrier_tracking_ref')

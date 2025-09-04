@@ -589,6 +589,9 @@ class sale_order_inherit(models.Model):
         return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
     
     def write(self, values):
+        if self.env.context.get('skip_carrier_update'):
+            _logger.info("Se omite actualización de carrier para evitar recursión.")
+            return super(sale_order_inherit, self).write(values)
         # _logger.warning('write')
         for rec in self:
             for line in rec.order_line:
@@ -625,21 +628,20 @@ class sale_order_inherit(models.Model):
                         'fee_import': marketplace_record.fee_marketplace,
                     })
             
-            # Actualización del carrier
+            # 🔥 Actualización del carrier
             if 'yuju_carrier' in values:
                 yuju_carrier = values.get('yuju_carrier', '').strip()
                 carrier_record = self.env['llantas_config.carrier'].search([
-                    ('name', '=ilike', yuju_carrier)  # Usa =ilike para coincidencia exacta sin case
+                    ('name', '=ilike', yuju_carrier)
                 ], limit=1)
-            
+    
                 new_carrier_id = carrier_record.id if carrier_record else False
-            
-                # 🔥 EVITAR REESCRIBIR SI YA TIENE EL MISMO VALOR
-                for rec in self:
-                    if rec.llantas_config_carrier_id.id != new_carrier_id:
-                        values['llantas_config_carrier_id'] = new_carrier_id
-                    else:
-                        _logger.info("Carrier ya asignado, se omite escritura para evitar ciclo.")
+    
+                if rec.llantas_config_carrier_id.id != new_carrier_id:
+                    values['llantas_config_carrier_id'] = new_carrier_id
+                    _logger.info(f"Carrier actualizado a: {yuju_carrier}")
+                else:
+                    _logger.info("Carrier ya asignado, se omite escritura.")
     
             # Asignar y verificar 'folio_venta'
             if 'folio_venta' in values:
@@ -666,8 +668,7 @@ class sale_order_inherit(models.Model):
                         raise ValidationError(f"Número de guía duplicado: {values['guia']}.")
         
         # Llamada al método write del super para guardar los cambios
-        result = super(sale_order_inherit, self).write(values)
-        return result
+        return super(sale_order_inherit, self.with_context(skip_carrier_update=True)).write(values)
 
 
 

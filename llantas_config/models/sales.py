@@ -13,35 +13,40 @@ class sale_order_inherit(models.Model):
     _description = 'Orden de venta'
 
 
-    ganancia = fields.Float(string="Ganancia", compute="_compute_ganancia")
-    margin_percent = fields.Float(string="Margen (%)", compute="_compute_ganancia")
-
+    ganancia = fields.Float(string="Ganancia", compute="_compute_ganancia", store=True)
+    margin_percent = fields.Float(string="Margen (%)", compute="_compute_ganancia", store=True)
 
     @api.depends('amount_total', 'amount_untaxed', 'order_line', 'comision', 'envio')
     def _compute_ganancia(self):
+        # Cache de OC por origin
+        origins = self.mapped("name")
+        purchase_map = {
+            po["origin"]: po["amount_total"]
+            for po in self.env["purchase.order"].read_group(
+                [("origin", "in", origins)],
+                ["origin", "amount_total"],
+                ["origin"],
+            )
+        }
+
         for order in self:
-            total_venta = order.amount_total or 0  # ✅ Incluye IVA
-            total_sin_iva = order.amount_total / 1.16  # ✅ Evita división por 0
+            total_venta = order.amount_total or 0
             comision = order.comision or 0
             envio = order.envio or 0
-    
-            # Buscar la OC vinculada a la venta
-            purchase_orders = self.env['purchase.order'].search([('origin', '=', order.name)], limit=1)
-    
-            if purchase_orders:
-                total_oc = purchase_orders.amount_total or 0  # ✅ Se usa `purchase.order`, no `purchase.order.line`
-            else:
-                # Si no hay OC, usar el precio estándar de los productos sumando el IVA
+
+            # Obtener el total de la OC vinculada
+            total_oc = purchase_map.get(order.name, 0)
+            if not total_oc:
                 total_oc = sum(
                     (line.costo_promedio * line.product_uom_qty) * 1.16
                     for line in order.order_line if line.costo_promedio
                 )
-    
-            # **Cálculo de ganancia**
+
+            # Cálculo de ganancia
             order.ganancia = total_venta - comision - envio - total_oc
-    
-            # **Cálculo del margen (%)**
-            order.margin_percent = round((order.ganancia / total_venta) * 100, 1) if total_sin_iva else 0
+
+            # Cálculo del margen (%)
+            order.margin_percent = round((order.ganancia / total_venta) * 100, 1) if total_venta else 0
 
     
 

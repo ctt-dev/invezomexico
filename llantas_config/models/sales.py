@@ -851,6 +851,20 @@ class sale_order_inherit(models.Model):
                     invoice_vals.update({'journal_id': self.marketplace.diarios_id.id})
         return invoice_vals
 
+    # Agrega este método para preservar las descripciones personalizadas en la factura
+    def _prepare_invoice_line(self, line):
+        """
+        Prepare the dict of values to create the new invoice line for a sales order line.
+        Preserve the custom description from sale order line.
+        """
+        vals = super(sale_order_inherit, self)._prepare_invoice_line(line)
+        
+        # Preservar la descripción personalizada de la línea de venta
+        if line.name and line.name != line.product_id.name:
+            vals['name'] = line.name
+        
+        return vals
+
     def copy(self, default=None):
         default = dict(default or {})
         default.update({

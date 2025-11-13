@@ -45,7 +45,7 @@
                     <filter name="filter_by_status_Definitivo" string="Definitivo" domain="[('status', '=', 'Definitivo')]"/>
                     <filter name="filter_by_status_Sentencia_Favorable" string="Sentencia Favorable" domain="[('status', '=', 'Sentencia Favorable')]"/>
                     <group expand="1" string="Group By">
-                        <filter string="Situación del contribuyente" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
+                        <filter string="Situación del contribuyente" name="group_by_status" context="{'group_by': 'status'}"/>
                     </group>
                 </search>
             </field>

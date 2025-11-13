@@ -5,7 +5,7 @@ from collections import OrderedDict
 from odoo.http import request
 import logging
 import zipfile
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter  # Cambio aquí - importación directa
 from io import BytesIO
 import datetime
 from odoo.addons.account.controllers.portal import PortalAccount
@@ -15,8 +15,6 @@ _logger = logging.getLogger(__name__)
 
 class PortalAccountInherit(PortalAccount):
     
-
-
     @http.route(['/my/invoices/<int:invoice_id>'], type='http', auth="public", website=True)
     def portal_my_invoice_detail(self, invoice_id, access_token=None, report_type=None, download=False, **kw):
         try:

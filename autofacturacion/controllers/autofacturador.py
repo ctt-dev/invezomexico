@@ -13,7 +13,7 @@ from odoo.exceptions import AccessError, MissingError, ValidationError
 from collections import OrderedDict
 from odoo.http import request, content_disposition
 from odoo.tools import ustr, osutil
-from odoo.tools.misc import xlsxwriter
+import xlsxwriter  # Cambio aquí - importación directa
 import webbrowser
 import zipfile
 import json
@@ -214,5 +214,3 @@ class autofacturador(CustomerPortal):
                     'order_id' : order_id,
                 }
         return request.render("autofacturacion.portal_auto_invoices_post", values)
-        
-

@@ -1,0 +1,45 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="l10n_mx_cfdi_metadata_tree">
+            <field name="name">Metadatos</field>
+            <field name="model">l10n_mx.cfdi_metadata</field>
+            <field name="arch" type="xml">
+                <list create="false" delete="false" edit="false">
+                    <field name="name"/>
+                    <field name="rfc_emisor"/>
+                    <field name="nombre_emisor"/>
+                    <field name="rfc_receptor"/>
+                    <field name="nombre_receptor"/>
+                    <field name="rfc_pac"/>
+                    <field name="date"/>
+                    <field name="cert_date"/>
+                    <field name="total"/>
+                    <field name="type_comprobante"/>
+                    <field name="state"/>
+                    <field name="cancel_date"/>
+                </list>
+            </field>
+        </record>
+
+        
+        <record id="l10n_mx_cfdi_metadata_action" model="ir.actions.act_window">
+            <field name="name">Solicitudes de METADATOS</field>
+            <field name="res_model">l10n_mx.cfdi_request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('request_type', '=', 'Metadata')]</field>
+            <field name="context">
+                {
+                    'default_request_type': 'Metadata',
+                }
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay solicitudes aún...
+                </p>
+            </field>
+        </record>
+        
+        <menuitem name="METADATOS" id="l10n_mx_cfdi_metadata_menu" parent="account.menu_finance_configuration" sequence="1001" action="l10n_mx_cfdi_metadata_action" groups="l10n_mx_cfdi_manager_admin"/>
+    </data>
+</odoo>

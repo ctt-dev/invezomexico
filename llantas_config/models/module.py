@@ -47,7 +47,7 @@ class ctrl_llantas(models.Model):
         store=True,
     )
 
-    yuju_pack_id = fields.Char(string="Yuju Pack ID", related="sale_id.yuju_pack_id")
+    # yuju_pack_id = fields.Char(string="Yuju Pack ID", related="sale_id.yuju_pack_id") UPGRADE
     
     numero_guia = fields.Char(string="Numero de Guia Envio", related="sale_id.guia")
     

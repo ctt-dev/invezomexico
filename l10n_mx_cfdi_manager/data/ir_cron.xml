@@ -1,16 +1,38 @@
 <odoo>
     <data>
+        <record id="ir_cron_auto_link_docs" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Vinculación diaria de documentos</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_link_docs()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=10, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="active" eval="False"/>
+        </record>
+        
         <record id="ir_cron_daily_request" model="ir.cron">
             <field name="name">Administrador de CFDI recibidos: Petición diaria</field>
             <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
             <field name="state">code</field>
-            <field name="code">model.automated_request()</field>
+            <field name="code">model.automated_daily_request()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
+            <!-- <field name="numbercall">-1</field> -->
             <field name="nextcall" eval="(DateTime.now().replace(hour=10, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="False"/>
-            <field name="doall" eval="False"/>
+            <!-- <field name="doall" eval="False"/> -->
+        </record>
+
+        <record id="ir_cron_metadata_request" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Petición de Metadata diaria</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">model.automated_metadata_request()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=10, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="active" eval="False"/>
         </record>
         
         <record id="ir_cron_set_get_cfdi_state_for_cfdi" model="ir.cron">
@@ -25,13 +47,13 @@ for cfdi in cfdis:
             </field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
+            <!-- <field name="numbercall">-1</field> -->
             <field name="nextcall" eval="(DateTime.now().replace(hour=9, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
-            <field name="doall" eval="False"/>
+            <!-- <field name="doall" eval="False"/> -->
         </record>
         
-        <record id="ir_cron_update_cfdi_status" model="ir.cron">
+        <!-- <record id="ir_cron_update_cfdi_status" model="ir.cron">
             <field name="name">Administrador de CFDI recibidos: Actualizar ESTADO de CFDI de 5 documentos</field>
             <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
             <field name="state">code</field>
@@ -43,11 +65,9 @@ for cfdi in cfdis:
             </field>
             <field name="interval_number">1</field>
             <field name="interval_type">minutes</field>
-            <field name="numbercall">-1</field>
             <field name="nextcall" eval="(DateTime.now() + timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
-            <field name="doall" eval="False"/>
-        </record>
+        </record> -->
         
         <record id="ir_cron_request_download" model="ir.cron">
             <field name="name">Administrador de CFDI recibidos: Descarga Automatica</field>
@@ -56,9 +76,9 @@ for cfdi in cfdis:
             <field name="code">model.automated_download()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">minutes</field>
-            <field name="numbercall">-1</field>
+            <!-- <field name="numbercall">-1</field> -->
             <field name="active" eval="True"/>
-            <field name="doall" eval="False"/>
+            <!-- <field name="doall" eval="False"/> -->
         </record>
         
         <record id="ir_cron_request_verification" model="ir.cron">
@@ -68,9 +88,9 @@ for cfdi in cfdis:
             <field name="code">model.automated_verification()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">minutes</field>
-            <field name="numbercall">-1</field>
+            <!-- <field name="numbercall">-1</field> -->
             <field name="active" eval="True"/>
-            <field name="doall" eval="False"/>
+            <!-- <field name="doall" eval="False"/> -->
         </record>
         
         <record id="ir_cron_check_cfdi_state_mail" model="ir.cron">
@@ -85,10 +105,10 @@ for move in moves:
             </field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
+            <!-- <field name="numbercall">-1</field> -->
             <field name="nextcall" eval="(DateTime.now().replace(hour=8, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="active" eval="True"/>
-            <field name="doall" eval="False"/>
+            <!-- <field name="doall" eval="False"/> -->
         </record>
         
 <!--         <record id="ir_cron_daily_efos" model="ir.cron">

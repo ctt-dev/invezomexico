@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError, UserError, Warning
+from odoo.exceptions import ValidationError, UserError
 
 class purchase_order(models.Model):
     _inherit = 'purchase.order'

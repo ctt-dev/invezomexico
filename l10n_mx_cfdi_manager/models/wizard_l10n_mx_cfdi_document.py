@@ -11,6 +11,12 @@ class WizardMoveDocument(models.TransientModel):
     move_id = fields.Integer(
         string="Factura"
     )
+    picking_id = fields.Integer(
+        string="Traslado"
+    )
+    payment_id = fields.Integer(
+        string="Pago"
+    )
     move_id_type = fields.Char(
         string="Tipo de factura"
     )
@@ -22,7 +28,12 @@ class WizardMoveDocument(models.TransientModel):
                 tipo_comprobante = "I"
             elif rec.move_id_type == "in_refund":
                 tipo_comprobante = "E"
+            elif rec.move_id_type == 'picking':
+                tipo_comprobante = "T"
+            elif rec.move_id_type == 'payment':
+                tipo_comprobante = "P"
             rec.tipo_comprobante = tipo_comprobante    
+    
     tipo_comprobante = fields.Char(
         string="Tipo de comprobante",
         compute=compute_tipo_comprobante,
@@ -62,17 +73,29 @@ class WizardMoveDocument(models.TransientModel):
     
     def event_wizard(self):
         if self.cfdi_document:
-            partner_bills = self.env['account.move'].search([('cfdi_document.uuid','=',self.cfdi_document.uuid)])
+
+            if self.move_id:
+                model = 'account.move'
+                search_id = self.move_id
+            elif self.picking_id:
+                model = 'stock.picking'
+                search_id = self.picking_id
+            else:
+                model = 'account.payment'
+                search_id = self.payment_id
+            
+            partner_bills = self.env[model].search([('cfdi_document.uuid','=',self.cfdi_document.uuid)])
             if len(partner_bills) > 0:
                 raise ValidationError("El UUID del documento que seleccionó ya se encuentra relacionado. Se recomienda revisar el listado de los documentos vinculados relacionados a el RFC ''" + str(self.cfdi_document.rfc_emisor) + "'' para continuar...")
                 
-            move = self.env['account.move'].search([('id','=',self.move_id)])
+            move = self.env[model].search([('id','=',search_id)])
             if self.cfdi_document.rfc_emisor != move.partner_id.vat:
                 raise UserError("RFC de documento CFDI no corresponde al del proveedor")
-                
-            if self.cfdi_document.total != move.amount_total:
-                if round(abs(self.cfdi_document.total - move.amount_total),2) > self.env.company.dif_allowed:
-                    raise UserError("La diferencia entre el total del asiento contable y el CFDI relacionado es mayor a $" + "{:.2f}".format(self.env.company.dif_allowed) + " pesos.")
+
+            if model == 'account.move':
+                if self.cfdi_document.total != move.amount_total:
+                    if round(abs(self.cfdi_document.total - move.amount_total),2) > self.env.company.dif_allowed:
+                        raise UserError("La diferencia entre el total del asiento contable y el CFDI relacionado es mayor a $" + "{:.2f}".format(self.env.company.dif_allowed) + " pesos.")
             
             move.write({
                 'cfdi_document':self.cfdi_document.id
@@ -83,6 +106,9 @@ class WizardMoveDocument(models.TransientModel):
             })
         else:
             raise UserError("Seleccione un documento")
+
+    def event_picking_wizard(self):
+        pass
             
     @api.onchange('date')
     def onchange_date(self):

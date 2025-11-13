@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError , UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class account_move(models.Model):
     _inherit = 'account.move'
-    _description = 'Herencia para relacion cfdi - facturas'
+    _description = 'Asientos contables'
+
+    def _l10n_mx_edi_add_payment_cfdi_values(self, cfdi_values, pay_results):
+        self.ensure_one()
+
+        if self.journal_id.l10n_mx_address_issued_id:
+            cfdi_values['issued_address'] = self.journal_id.l10n_mx_address_issued_id
+
+        super()._l10n_mx_edi_add_payment_cfdi_values(cfdi_values, pay_results)
+
+    
     
     cfdi_document=fields.Many2one(
         'l10n_mx.cfdi_document',
@@ -55,3 +68,32 @@ class account_move(models.Model):
         
         record = super(account_move, self).copy(default)
         return record
+
+    def action_multi_link_docs(self):
+        # _logger.warning(f'Facturas: {len(self)}')
+        for invoice in self:
+            # _logger.warning(f'Invoice: {invoice.name}')
+            cfdi_doc = self.env['l10n_mx.cfdi_document'].search([
+                ('link_state', '=', 'unlink'),
+                ('type_emision', '=', 'R'),
+                ('type_comprobante', '=', 'I'),
+                ('company_id', 'in', self.env.company.ids),
+                ('date', '=', invoice.invoice_date),
+                ('rfc_emisor', '=', invoice.partner_id.vat),
+                '&',
+                ('total', '>=', abs(invoice.amount_total_in_currency_signed + self.env.company.dif_allowed)),
+                ('total', '<=', abs(invoice.amount_total_in_currency_signed - self.env.company.dif_allowed)),
+            ])
+            # _logger.warning(f'Docs: {len(cfdi_doc)}')
+
+            # raise UserError('')
+            if len(cfdi_doc) == 1:
+                invoice.write({'cfdi_document':cfdi_doc.id})
+                cfdi_doc.write({'link_state':'link'})
+
+            elif len(cfdi_doc) > 1:
+                invoice_ref = invoice.ref.split(' ')[0]
+                for doc in cfdi_doc:
+                    if invoice_ref == doc.folio:
+                        invoice.write({'cfdi_document':doc.id})
+                        doc.write({'link_state':'link'})

@@ -1,6 +1,6 @@
 <odoo>
     <data>
-        <report id="l10n_mx_cfdi_document_report"
+        <!-- <report id="l10n_mx_cfdi_document_report"
                 model="l10n_mx.cfdi_document"
                 string="Documento CFDI"
                 report_type="qweb-pdf"
@@ -8,7 +8,18 @@
                 file="l10n_mx_cfdi_manager.l10n_mx_cfdi_document_report"
                 attachment_use="True"
                 print_report_name="(object.name)"
-                paperformat="base.paperformat_us" />
+                paperformat="base.paperformat_us" /> -->
+        <record id="l10n_mx_cfdi_document_report" model="ir.actions.report">
+            <field name="name">Documento CFDI</field>
+            <field name="model">l10n_mx.cfdi_document</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">l10n_mx_cfdi_manager.l10n_mx_cfdi_document</field>
+            <field name="report_file">l10n_mx_cfdi_manager.l10n_mx_cfdi_document_report</field>
+            <field name="print_report_name">(object.name)</field>
+            <field name="binding_model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="base.paperformat_us"/>
+        </record>
         
         <template id="l10n_mx_cfdi_document">
             <t t-call="web.html_container">
@@ -28,8 +39,8 @@
                                     <span t-if="doc.move_id"><strong>Asiento contable: </strong><span t-esc="doc.move_id.display_name"/><br/></span>
                                 </div>
                                 <div class="col-auto col-4">
-                                    <span t-if="doc.get_cfdi_data(' SubTotal')"><strong>Subtotal: </strong><span t-esc="float(doc.get_cfdi_data(' SubTotal'))" t-options='{"widget": "float", "precision": 2}'/><br/></span>
-                                    <span t-if="doc.get_cfdi_data(' Total')"><strong>Total: </strong><span t-esc="float(doc.get_cfdi_data(' Total'))" t-options='{"widget": "float", "precision": 2}'/><br/></span>
+                                    <span t-if="doc.get_cfdi_data(' SubTotal')"><strong>Subtotal: </strong><span t-esc="float(doc.get_cfdi_data(' SubTotal'))" t-options="{'widget': 'float', 'precision': 2}"/><br/></span>
+                                    <span t-if="doc.get_cfdi_data(' Total')"><strong>Total: </strong><span t-esc="float(doc.get_cfdi_data(' Total'))" t-options="{'widget': 'float', 'precision': 2}"/><br/></span>
                                     <span t-if="doc.get_cfdi_data('Moneda')"><strong>Moneda: </strong><span t-esc="doc.get_cfdi_data('Moneda')"/><br/></span>
                                     <span t-if="doc.get_cfdi_data('TipoCambio')"><strong>Tipo de cambio: </strong><span t-esc="doc.get_cfdi_data('TipoCambio')"/><br/></span>
                                     <span t-if="doc.get_cfdi_data('CondicionesDePago')"><strong>Condiciones de Pago: </strong><span t-esc="doc.get_cfdi_data('CondicionesDePago')"/><br/></span>
@@ -71,7 +82,7 @@
                                             <td class="text-start"><span t-esc="line['Unidad']"/></td>
                                             <td class="text-end"><span t-esc="line['ValorUnitario']"/></td>
                                             <td class="text-end" t-if="line['Importe'] != ''">
-                                                <span t-esc="float(line['Importe'])" t-options='{"widget": "float", "precision": 2}'/>
+                                                <span t-esc="float(line['Importe'])" t-options="{'widget': 'float', 'precision': 2}"/>
                                                 <t t-set="sum_importe" t-value="sum_importe+float(line['Importe'])"/>
                                             </td>
                                             <td class="text-end" t-if="line['Importe'] == ''">
@@ -116,12 +127,13 @@
                                                 <td class="text-start"><span t-esc="line['Descripcion']"/></td>
                                                 <td class="text-start"><span t-esc="impuesto['Impuesto']"/></td>
                                                 <td class="text-start"><span t-esc="impuesto['TipoFactor']"/></td>
-                                                <td class="text-start"><span t-esc="impuesto['TasaOCuota']"/></td>
-                                                <td class="text-end"><span t-esc="float(impuesto['Base'])" t-options='{"widget": "float", "precision": 2}'/></td>
-                                                <td class="text-end"><span t-esc="float(impuesto['Importe'])" t-options='{"widget": "float", "precision": 2}'/></td>
+                                                <td class="text-start"><span t-esc="impuesto['TasaOCuota']" t-if="impuesto['Imp_Ret'] == 'Imp'"/><span t-esc="'-'+str(impuesto['TasaOCuota'])" t-if="impuesto['Imp_Ret'] == 'Ret'"/></td>
+                                                <td class="text-end"><span t-esc="float(impuesto['Base'])" t-options="{'widget': 'float', 'precision': 2}"/></td>
+                                                <td class="text-end"><span t-esc="float(impuesto['Importe'])" t-options="{'widget': 'float', 'precision': 2}" t-if="impuesto['Imp_Ret'] == 'Imp'"/><span t-esc="-float(impuesto['Importe'])" t-options="{'widget': 'float', 'precision': 2}" t-if="impuesto['Imp_Ret'] == 'Ret'"/></td>
                                             </tr>
                                             <t t-set="sum_base" t-value="sum_importe+float(impuesto['Base'])"/>
-                                            <t t-set="sum_importe" t-value="sum_importe+float(impuesto['Importe'])"/>
+                                            <t t-set="sum_importe" t-value="sum_importe+float(impuesto['Importe'])" t-if="impuesto['Imp_Ret'] == 'Imp'"/>
+                                            <t t-set="sum_importe" t-value="sum_importe-float(impuesto['Importe'])" t-if="impuesto['Imp_Ret'] == 'Ret'"/>
                                         </t>
                                     </t>
                                     <tr>
@@ -129,8 +141,8 @@
                                         <td class="text-start"></td>
                                         <td class="text-start"></td>
                                         <td class="text-start"></td>
-                                        <td class="text-end"><strong><span t-esc="float(sum_base)" t-options='{"widget": "float", "precision": 2}'/></strong></td>
-                                        <td class="text-end"><strong><span t-esc="float(sum_importe)" t-options='{"widget": "float", "precision": 2}'/></strong></td>
+                                        <td class="text-end"></td>
+                                        <td class="text-end"><strong><span t-esc="float(sum_importe)" t-options="{'widget': 'float', 'precision': 2}"/></strong></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -154,19 +166,20 @@
                                         <tr>
                                             <td class="text-start"><span t-esc="impuesto['Impuesto']"/></td>
                                             <td class="text-start"><span t-esc="impuesto['TipoFactor']"/></td>
-                                            <td class="text-start"><span t-esc="impuesto['TasaOCuota']"/></td>
-                                            <td class="text-end"><span t-esc="float(impuesto['Base'])" t-options='{"widget": "float", "precision": 2}'/></td>
-                                            <td class="text-end"><span t-esc="float(impuesto['Importe'])" t-options='{"widget": "float", "precision": 2}'/></td>
+                                            <td class="text-start"><span t-esc="impuesto['TasaOCuota']" t-if="impuesto['Imp_Ret'] == 'Imp'"/><span t-esc="'-'+str(impuesto['TasaOCuota'])" t-if="impuesto['Imp_Ret'] == 'Ret'"/></td>
+                                            <td class="text-end"><span t-esc="float(impuesto['Base'])" t-options="{'widget': 'float', 'precision': 2}"/></td>
+                                            <td class="text-end"><span t-esc="float(impuesto['Importe'])" t-options="{'widget': 'float', 'precision': 2}" t-if="impuesto['Imp_Ret'] == 'Imp'"/><span t-esc="-float(impuesto['Importe'])" t-options="{'widget': 'float', 'precision': 2}" t-if="impuesto['Imp_Ret'] == 'Ret'"/></td>
                                         </tr>
                                         <t t-set="sum_base" t-value="sum_importe+float(impuesto['Base'])"/>
-                                        <t t-set="sum_importe" t-value="sum_importe+float(impuesto['Importe'])"/>
+                                        <t t-set="sum_importe" t-value="sum_importe+float(impuesto['Importe'])" t-if="impuesto['Imp_Ret'] == 'Imp'"/>
+                                        <t t-set="sum_importe" t-value="sum_importe-float(impuesto['Importe'])" t-if="impuesto['Imp_Ret'] == 'Ret'"/>
                                     </t>
                                     <tr>
                                         <td class="text-start"></td>
                                         <td class="text-start"></td>
                                         <td class="text-start"></td>
-                                        <td class="text-end"><strong><span t-esc="float(sum_base)" t-options='{"widget": "float", "precision": 2}'/></strong></td>
-                                        <td class="text-end"><strong><span t-esc="float(sum_importe)" t-options='{"widget": "float", "precision": 2}'/></strong></td>
+                                        <td class="text-end"></td>
+                                        <td class="text-end"><strong><span t-esc="float(sum_importe)" t-options="{'widget': 'float', 'precision': 2}"/></strong></td>
                                     </tr>
                                 </tbody>
                             </table>

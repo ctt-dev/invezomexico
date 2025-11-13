@@ -3,6 +3,7 @@
         <record model="ir.ui.view" id="l10n_mx_efos_tree">
             <field name="name">l10n_mx_efos_tree</field>
             <field name="model">l10n_mx.efos</field>
+            <field name="active">1</field>
             <field name="arch" type="xml">
                 <list create="0" delete="0" editable="top">
                     <field name="create_date" string="Actualización" readonly="1"/>
@@ -33,6 +34,7 @@
         <record id="l10n_mx_efos_search" model="ir.ui.view">
             <field name="name">l10n_mx_efos_tree</field>
             <field name="model">l10n_mx.efos</field>
+            <field name="active">1</field>
             <field name="arch" type="xml">
                 <search string="Search">
                     <field name="partner_id" string="Contribuyente"/>

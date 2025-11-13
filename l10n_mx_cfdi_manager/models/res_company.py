@@ -29,12 +29,17 @@ class res_company_inheritance(models.Model):
     sat_account_incoming_journal_id = fields.Many2one(
         'account.journal',
         string = 'Diario de proveedores',
-        domain = "[('type','=','purchase')]"
+        domain = ""
     )
     
     sat_account_egress_journal_id = fields.Many2one(
         'account.journal',
         string = 'Diario de notas de credito'
+    )
+    
+    sat_account_payment_journal_id = fields.Many2one(
+        'account.journal',
+        string = 'Diario de pagos'
     )
     
     product_unspsc_code_for_gasoline = fields.Many2many(
@@ -46,7 +51,7 @@ class res_company_inheritance(models.Model):
         string="Variación permitida para vinculación de CFDI",
         digits=(0,2),
         default=0.05,
-        required=1
+        required=True
     )
     
     generation_type = fields.Selection(
@@ -56,13 +61,21 @@ class res_company_inheritance(models.Model):
         ],
         string="Tipo de generación",
         default="TC",
-        required=1
+        required=True
     )
-    
+
+    concept_display_type = fields.Selection(
+        [
+            ('global','Global'),
+            ('detallado','Detallado')
+        ],
+        string="Detalle del concepto",
+        default="global"
+    )
     days_for_status_check = fields.Integer(
         string="Número de días para revisar vigencias",
         default=3,
-        required=1
+        required=True
     )
     
     sender_user_id = fields.Many2one(
@@ -73,6 +86,21 @@ class res_company_inheritance(models.Model):
     receiver_user_ids = fields.Many2many(
         'res.users',
         string="Usuarios remitentes"
+    )
+
+    days_to_sync_metadatos = fields.Integer(
+        string="Días para sincronización metadata",
+        default=90
+    )
+
+    python_api = fields.Selection(
+        [
+            ('cfdiclient','CFDI-Client'),
+            ('satcfdi','SAT-CFDI'),
+        ],
+        string="API Python",
+        default="cfdiclient",
+        required=True
     )
     
 #     @api.onchange('fiel_ids')

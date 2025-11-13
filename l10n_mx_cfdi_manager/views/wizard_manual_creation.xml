@@ -21,18 +21,18 @@
                 </form>
             </field>
         </record>
-
+        
         <record id="l10n_mx_wizard_manual_creation_action" model="ir.actions.act_window">
             <field name="name">Asistente para Crear CFDI de proveedores desde .ZIP</field>
             <field name="res_model">l10n_mx.wizard_manual_creation</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
-
+        
         <menuitem id="l10n_mx_wizard_manual_creation_menu"  
             name="Crear CFDI de proveedores desde .ZIP"  
             action="l10n_mx_wizard_manual_creation_action" 
             parent="account.menu_finance_payables"
-            sequence="2001" />
+            sequence="1011" />
     </data>
 </odoo>

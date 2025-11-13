@@ -9,16 +9,21 @@
                     <page string="Sincronización SAT">
                         <group>
                             <group>
-                                <field name="sat_account_incoming_journal_id" options="{'no_create': True}"/>
-                                <field name="sat_account_egress_journal_id" options="{'no_create': True}"/>
+                                <field name="id" invisible="1"/>
+                                <field name="sat_account_incoming_journal_id" options="{'no_create': True}" domain="[('type','=','purchase'),('company_id','=',id)]"/>
+                                <field name="sat_account_egress_journal_id" options="{'no_create': True}" domain="[('type','=','purchase'),('company_id','=',id)]"/>
+                                <field name="sat_account_payment_journal_id" options="{'no_create': True}" domain="[('type','in',['bank','cash']),('company_id','=',id)]"/>
                                 <field name="dif_allowed"/>
                                 <field name="generation_type"/>
+                                <field name="concept_display_type" invisible="generation_type == 'IG'"/>
                                 <field name="days_for_status_check"/>
+                                <field name="python_api"/>
                             </group>
                             <group>
                                 <field name="product_unspsc_code_for_gasoline" options="{'no_create': True}" widget="many2many_tags"/>
                                 <field name="sender_user_id" options="{'no_create': True}"/>
                                 <field name="receiver_user_ids" options="{'no_create': True}" widget="many2many_tags"/>
+                                <field name="days_to_sync_metadatos"/>
                             </group>
                         </group>
                         <group>

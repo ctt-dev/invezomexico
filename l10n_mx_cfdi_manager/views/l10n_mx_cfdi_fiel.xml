@@ -1,7 +1,5 @@
 <odoo>
     <data>
-        
-        <!-- VISTA FORM -->
         <record model="ir.ui.view" id="l10n_mx_cfdi_fiel_form">
             <field name="name">cfdi fiel form</field>
             <field name="model">l10n_mx.cfdi_fiel</field>
@@ -15,7 +13,6 @@
                             <field name="clave" string="Clave (.cer)" filename="clave_name" widget="binary" required="1"/>
                             <field name="company_id" readonly="1" save_force="1"/>
                             <field name="serial_number" string="Contraseña" password="True" required="1"/>
-<!--                             <label for="emition_date" string="Fechas"/> -->
                         </group>
                         <group string="Fechas">
                             <group>
@@ -29,9 +26,9 @@
                 </form>
             </field>
         </record>
-                <!-- VISTA FORM -->
+        
         <record model="ir.ui.view" id="l10n_mx_cfdi_fiel_tree">
-            <field name="name">cfdi fiel tree</field>
+            <field name="name">cfdi fiel list</field>
             <field name="model">l10n_mx.cfdi_fiel</field>
             <field name="arch" type="xml">
                 <list>

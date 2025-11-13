@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError, UserError, Warning
+from odoo.exceptions import ValidationError, UserError
 
 class res_partner(models.Model):
     _inherit = 'res.partner'
@@ -36,10 +36,10 @@ class res_partner(models.Model):
         return record
     
     def write(self, values):
-        for rec in self:
-            record = super(res_partner, rec).write(values)
-            if 'vat' in values:
-                efos_ids = self.env['l10n_mx.efos'].search([('rfc','=',values['vat'])])
+        result = super(res_partner, self).write(values)
+        if 'vat' in values:
+            for rec in self:
+                efos_ids = self.env['l10n_mx.efos'].search([('rfc', '=', values['vat'])])
                 for efos in efos_ids:
                     efos.partner_id = rec.id
-            return record
+        return result

@@ -18,7 +18,7 @@ class l10n_mx_cfdi_fiel(models.Model):
     )  
     
     partner_id_vat = fields.Char(
-        string="RFC del contribuyente",
+        string="RFC",
         related="partner_id.vat",
         store=True
     )    

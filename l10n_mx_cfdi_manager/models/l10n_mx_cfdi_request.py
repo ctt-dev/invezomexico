@@ -11,18 +11,37 @@ import base64
 import zipfile
 import glob
 import io
+import csv
 from xml.dom import minidom
 from xml.etree import ElementTree
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError , UserError
-from cfdiclient import Autenticacion, Fiel, SolicitaDescargaRecibidos, VerificaSolicitudDescarga, DescargaMasiva
+from cfdiclient import Autenticacion, Fiel, SolicitaDescargaEmitidos, VerificaSolicitudDescarga, DescargaMasiva, Validacion
+from cfdiclient.solicitadescargaRecibidos import SolicitaDescargaRecibidos
+
+from satcfdi.models import Signer
+from satcfdi.pacs.sat import SAT, TipoDescargaMasivaTerceros, EstadoSolicitud, EstadoComprobante
 
 _CFDI_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/CFDI/'
+_METADATA_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/METADATA/'
 
 class l10n_mx_cfdi_request(models.Model):
     _name = 'l10n_mx.cfdi_request'
     _description = 'Modelo de solicitud'
     _order = 'id desc'
+
+    @api.depends('id_solicitud','name')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = str(rec.id_solicitud) if rec.id_solicitud else "/"
+    
+    # def name_get(self):
+    #     res = super(l10n_mx_cfdi_request, self).name_get()
+    #     data = []
+    #     for e in self:
+    #         display_value = e.id_solicitud
+    #         data.append((e.id, display_value))
+    #     return data
 
     @api.depends('name')
     def compute_name(self):
@@ -55,6 +74,14 @@ class l10n_mx_cfdi_request(models.Model):
     rfc_emmiter=fields.Char(
         string="RFC emisor"
     )
+    type_emision = fields.Selection(
+        [
+            ('R', 'Recibido'),
+            ('E', 'Emitido'),
+        ],
+        string="Tipo de emisión",
+        default="R"
+    )
     state=fields.Selection(
         [
             ('0','Token inválido'),
@@ -82,6 +109,11 @@ class l10n_mx_cfdi_request(models.Model):
         'cfdi_request',
         string="Documentos CFDI"
     )
+    metadata_lines = fields.One2many(
+        'l10n_mx.cfdi_metadata',
+        'request_id',
+        string="Lineas de metadatos"
+    )
     attatch=fields.Binary(
         string="Adjunto"
     )
@@ -92,6 +124,15 @@ class l10n_mx_cfdi_request(models.Model):
     total_documents=fields.Integer(
         string="No. Documentos"
     )
+
+    request_type = fields.Selection(
+        [
+            ('CFDI','CFDI'),
+            ('Metadata','METADATA')
+        ], 
+        string="Tipo de solicitud",
+        default="CFDI"
+    )
     
     @api.onchange("company_id")
     def _auto_fill_rfc(self):
@@ -99,6 +140,11 @@ class l10n_mx_cfdi_request(models.Model):
             record.rfc_consultant = record.company_id.vat
             record.rfc_receptor = record.company_id.vat
 
+    def decode_base64(self, data):
+        if isinstance(data, bytes):
+            data = data.decode('utf-8')
+        return base64.b64decode(data)
+    
     @api.model
     def create(self,values):
         record = super(l10n_mx_cfdi_request, self).create(values)
@@ -107,23 +153,83 @@ class l10n_mx_cfdi_request(models.Model):
         
         if not keys_id:
             raise UserError("No se encontraron llaves de la compañia")
+        if record.company_id.python_api == 'cfdiclient':
+            fiel = self._read_fiel(keys_id)
+            session = self._create_new_seassion(fiel)
+            estado_comprobante = 'Vigente'
+            if record.request_type == 'Metadata':
+                estado_comprobante = 'Todos'
+            if record.type_emision == 'R':
+                # Recibidos
+                descarga = SolicitaDescargaRecibidos(fiel)
+                result = descarga.solicitar_descarga(session, record.rfc_consultant, record.start_date, record.end_date, rfc_receptor=record.rfc_receptor, tipo_solicitud=record.request_type, estado_comprobante=estado_comprobante)
+            elif record.type_emision == 'E':
+                # Emitidos
+                descarga = SolicitaDescargaEmitidos(fiel)
+                result = descarga.solicitar_descarga(session, record.rfc_consultant, record.start_date, record.end_date, rfc_emisor=record.rfc_receptor, tipo_solicitud=record.request_type, estado_comprobante=estado_comprobante)
             
-        fiel = self._read_fiel(keys_id)
-        session = self._create_new_seassion(fiel)
-        
-        descarga = SolicitaDescargaRecibidos(fiel)
-        # Recibidos
-        result = descarga.solicitar_descarga(session, record.rfc_consultant, record.start_date, record.end_date, rfc_receptor=record.rfc_receptor, tipo_solicitud='CFDI',estado_comprobante='Vigente')
-        
-        _logger.warning(result)
+            _logger.warning(result)
+    
+            # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
+            
+            record.write({
+                'id_solicitud':result['id_solicitud']
+            })
+            
+            record.verificar_solicitud()
+        elif record.company_id.python_api == 'satcfdi':
+            _logger.warning('PETICION SATCFDI')
+            # # Decodificar los binarios
+            # cer_bytes = self.decode_base64(keys_id.clave)
+            # key_bytes = self.decode_base64(keys_id.fiel)
+            # password = keys_id.serial_number
+            
+            # # Crear firmante y SAT service
+            # signer = Signer.load(
+            #     certificate=cer_bytes,
+            #     key=key_bytes,
+            #     password=password
+            # )
+            
+            # sat_service = SAT(
+            #     signer=signer
+            # )
 
-        # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
-        
-        record.write({
-            'id_solicitud':result['id_solicitud']
-        })
-        
-        record.verificar_solicitud()
+            sat_service = self._get_SAT_CFDI_service(keys_id)
+            response = False
+            tipo_solicitud = TipoDescargaMasivaTerceros.CFDI
+            if record.request_type == 'Metadata':
+                tipo_solicitud = TipoDescargaMasivaTerceros.METADATA
+            if record.type_emision == 'R':
+                # Facturas Recibidas
+                response = sat_service.recover_comprobante_received_request(
+                    fecha_inicial=record.start_date,
+                    fecha_final=record.end_date,
+                    rfc_receptor=record.rfc_receptor,
+                    tipo_solicitud=tipo_solicitud,
+                    estado_comprobante=EstadoComprobante.VIGENTE 
+                )
+            elif record.type_emision == 'E':
+                response = sat_service.recover_comprobante_emitted_request(
+                    fecha_inicial=record.start_date,
+                    fecha_final=record.end_date,
+                    rfc_emisor=record.rfc_receptor,
+                    tipo_solicitud=tipo_solicitud,
+                    estado_comprobante=EstadoComprobante.VIGENTE 
+                )
+            _logger.warning(str(response))
+            # Revisar estado de descarga
+            response_for_status = sat_service.recover_comprobante_status(str(response['IdSolicitud']))
+            _logger.warning(str(response_for_status))
+            
+            record.write({
+                'id_solicitud':response['IdSolicitud'],
+                # 'paquetes': ','.join(response_for_status['IdsPaquetes']),
+                # 'state': str(response_for_status['EstadoSolicitud']),
+                # 'total_documents': int(response_for_status['NumeroCFDIs'])
+            })
+            
+            record.verificar_solicitud()
         return record
     
     def _read_fiel(self,keys_id):
@@ -148,6 +254,25 @@ class l10n_mx_cfdi_request(models.Model):
         token = auth.obtener_token()
         return token
 
+    def _get_SAT_CFDI_service(self, keys_id=None):
+        # Decodificar los binarios
+        cer_bytes = self.decode_base64(keys_id.clave)
+        key_bytes = self.decode_base64(keys_id.fiel)
+        password = keys_id.serial_number
+        
+        # Crear firmante y SAT service
+        signer = Signer.load(
+            certificate=cer_bytes,
+            key=key_bytes,
+            password=password
+        )
+        
+        sat_service = SAT(
+            signer=signer
+        )
+
+        return sat_service
+
     def _read_cfdi(self,data):
         with io.BytesIO(base64.b64decode(data)) as xml_data:
             xml = minidom.parse(xml_data)
@@ -156,15 +281,22 @@ class l10n_mx_cfdi_request(models.Model):
             EMISOR = xml.getElementsByTagName('cfdi:Emisor')[0].getAttribute('Nombre')
             RFC_EMISOR = xml.getElementsByTagName('cfdi:Emisor')[0].getAttribute('Rfc')
             RFC_RECEPTOR = xml.getElementsByTagName('cfdi:Receptor')[0].getAttribute('Rfc')
-            TOTAL = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('Total')
             DATE = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('Fecha').split('T')
             METODO_PAGO = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('CondicionesDePago')
             CONCEPTOS = xml.getElementsByTagName('cfdi:Concepto')
             FOLIO = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('Folio')
             TYPE_C = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('TipoDeComprobante')
-            
-#             validacion = Validacion()
-#             estado = validacion.obtener_estado(RFC_EMISOR, RFC_RECEPTOR, TOTAL, UUID)
+            PUE_PPD = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('MetodoPago')
+            TOTAL = xml.getElementsByTagName('cfdi:Comprobante')[0].getAttribute('Total')
+            if TYPE_C == 'P':
+                if len(xml.getElementsByTagName('pago20:Pago')) > 0:
+                    TOTAL = xml.getElementsByTagName('pago20:Pago')[0].getAttribute('Monto')
+                if len(xml.getElementsByTagName('Pago20:Pago')) > 0:
+                    TOTAL = xml.getElementsByTagName('Pago20:Pago')[0].getAttribute('Monto')
+                if len(xml.getElementsByTagName('pago10:Pago')) > 0:
+                    TOTAL = xml.getElementsByTagName('pago10:Pago')[0].getAttribute('Monto')
+                if len(xml.getElementsByTagName('Pago10:Pago')) > 0:
+                    TOTAL = xml.getElementsByTagName('Pago10:Pago')[0].getAttribute('Monto')
             
             return {
                 'uuid': UUID,
@@ -177,51 +309,181 @@ class l10n_mx_cfdi_request(models.Model):
                 'metodo_pago': METODO_PAGO,
                 'conceptos': CONCEPTOS,
                 'folio': FOLIO,
-                'type': TYPE_C
+                'type': TYPE_C,
+                'pue_ppd': PUE_PPD
             }
     
     def verificar_solicitud(self):
-        
+        # raise UserError(self.company_id.python_api)
         keys_id = self.env['l10n_mx.cfdi_fiel'].search([('company_id','=',self.company_id.id)])
 
-        fiel = self._read_fiel(keys_id)
+        if not keys_id:
+            raise UserError("No se encontraron llaves de la compañia")
         
-        v_descarga = VerificaSolicitudDescarga(fiel, timeout=1000)
-        
-        session = self._create_new_seassion(fiel)
-        try:
-            result = v_descarga.verificar_descarga(session, self.rfc_consultant, self.id_solicitud)
-        except:
-            raise ValidationError("La petición no pudo verificarse correctamente, revise sus credenciales y RFC")
-        self.write({
-            'paquetes': ','.join(result['paquetes']),
-            'state': result['estado_solicitud'],
-            'total_documents': int(result['numero_cfdis'])
-        })
-        # {'estado_solicitud': '3', 'numero_cfdis': '8', 'cod_estatus': '5000', 'paquetes': ['a4897f62-a279-4f52-bc35-03bde4081627_01'], 'codigo_estado_solicitud': '5000', 'mensaje': 'Solicitud Aceptada'}
-        
-    def descargar_paquetes(self):
-        if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT):
-            os.makedirs(_CFDI_DOWNLOAD_PATH_ROOT)
+        if self.company_id.python_api == 'cfdiclient':
+            _logger.warning(f'VERIFICAR CFDICLIENT')
+            fiel = self._read_fiel(keys_id)
+            v_descarga = VerificaSolicitudDescarga(fiel, timeout=100)
+            session = self._create_new_seassion(fiel)
             
-        if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT + self.id_solicitud):
-            os.makedirs(_CFDI_DOWNLOAD_PATH_ROOT + self.id_solicitud)
-        paquetes = self.paquetes.split(',')
-        
-        keys_id = self.env['l10n_mx.cfdi_fiel'].search([('company_id','=',self.company_id.id)])
-        fiel = self._read_fiel(keys_id)
-        session = self._create_new_seassion(fiel)
-        for paquete in paquetes:
-            descarga = DescargaMasiva(fiel)
-            descarga = descarga.descargar_paquete(session, self.rfc_consultant, paquete)
-            if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete)):
-                with open(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'wb') as fp:
-                    if descarga['paquete_b64'] != None:
-                        fp.write(base64.b64decode(descarga['paquete_b64']))
+            try:
+                result = v_descarga.verificar_descarga(session, self.rfc_consultant, self.id_solicitud)
+                _logger.warning(result)
+                self.write({
+                    'paquetes': ','.join(result['paquetes']),
+                    'state': result['estado_solicitud'],
+                    'total_documents': int(result['numero_cfdis'])
+                })
+            except:
+                # continue
+                raise ValidationError("La petición no pudo verificarse correctamente, revise sus credenciales y RFC")
+            # {'estado_solicitud': '3', 'numero_cfdis': '8', 'cod_estatus': '5000', 'paquetes': ['a4897f62-a279-4f52-bc35-03bde4081627_01'], 'codigo_estado_solicitud': '5000', 'mensaje': 'Solicitud Aceptada'}
 
-        self.write({
-            'done':True
-        })
+        elif self.company_id.python_api == 'satcfdi':
+            _logger.warning(f'VERIFICAR SATCFDI')
+            # Decodificar los binarios
+            cer_bytes = self.decode_base64(keys_id.clave)
+            key_bytes = self.decode_base64(keys_id.fiel)
+            password = keys_id.serial_number
+            
+            # Crear firmante y SAT service
+            signer = Signer.load(
+                certificate=cer_bytes,
+                key=key_bytes,
+                password=password
+            )
+            
+            sat_service = SAT(
+                signer=signer
+            )
+            # sat_service = self._get_SAT_CFDI_service(keys_id)
+
+            try:
+                response_for_status = sat_service.recover_comprobante_status(self.id_solicitud)
+                _logger.warning(response_for_status)
+                self.write({
+                    'paquetes': ','.join(response_for_status['IdsPaquetes']),
+                    'state': str(response_for_status['EstadoSolicitud']),
+                    'total_documents': int(response_for_status['NumeroCFDIs'])
+                })
+            
+            except:
+                # continue
+                raise ValidationError("La petición no pudo verificarse correctamente, revise sus credenciales y RFC")
+        
+    # def descargar_paquetes(self):
+    #     if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT):
+    #         os.makedirs(_CFDI_DOWNLOAD_PATH_ROOT)
+
+    #     if not os.path.exists(_METADATA_DOWNLOAD_PATH_ROOT):
+    #         os.makedirs(_METADATA_DOWNLOAD_PATH_ROOT)
+            
+    #     if self.request_type == "CFDI":
+    #         if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT + self.id_solicitud):
+    #             os.makedirs(_CFDI_DOWNLOAD_PATH_ROOT + self.id_solicitud)
+    #     elif self.request_type == 'Metadata':
+    #         if not os.path.exists(_METADATA_DOWNLOAD_PATH_ROOT + self.id_solicitud):
+    #             os.makedirs(_METADATA_DOWNLOAD_PATH_ROOT + self.id_solicitud)
+        
+    #     paquetes = self.paquetes.split(',')
+        
+    #     keys_id = self.env['l10n_mx.cfdi_fiel'].search([('company_id','=',self.company_id.id)])
+    #     fiel = self._read_fiel(keys_id)
+    #     session = self._create_new_seassion(fiel)
+    #     for paquete in paquetes:
+    #         descarga = DescargaMasiva(fiel)
+    #         descarga = descarga.descargar_paquete(session, self.rfc_consultant, paquete)
+    #         if self.request_type == 'CFDI':
+    #             if not os.path.exists(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete)):
+    #                 with open(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'wb') as fp:
+    #                     if descarga['paquete_b64'] != None:
+    #                         fp.write(base64.b64decode(descarga['paquete_b64']))
+    #         elif self.request_type.request_type == 'Metadata':
+    #             if not os.path.exists(_METADATA_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete)):
+    #                 with open(_METADATA_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'wb') as fp:
+    #                     if descarga['paquete_b64'] != None:
+    #                         fp.write(base64.b64decode(descarga['paquete_b64']))
+
+    #     self.write({
+    #         'done':True
+    #     })
+
+    def descargar_paquetes(self):
+        # Crear directorios raíz si no existen
+        os.makedirs(_CFDI_DOWNLOAD_PATH_ROOT, exist_ok=True)
+        os.makedirs(_METADATA_DOWNLOAD_PATH_ROOT, exist_ok=True)
+    
+        # Determinar ruta de descarga según tipo de solicitud
+        if self.request_type == "CFDI":
+            root_path = _CFDI_DOWNLOAD_PATH_ROOT
+        elif self.request_type == "Metadata":
+            root_path = _METADATA_DOWNLOAD_PATH_ROOT
+        else:
+            raise UserError("Tipo de solicitud no reconocido: %s" % self.request_type)
+    
+        solicitud_path = os.path.join(root_path, self.id_solicitud)
+        os.makedirs(solicitud_path, exist_ok=True)
+    
+        # Obtener llaves
+        keys_id = self.env['l10n_mx.cfdi_fiel'].search([('company_id', '=', self.company_id.id)], limit=1)
+        if not keys_id:
+            raise UserError("No se encontraron llaves para la compañía.")
+
+        paquetes = self.paquetes.split(',')
+
+        if self.company_id.python_api == 'cfdiclient':
+            fiel = self._read_fiel(keys_id)
+            session = self._create_new_seassion(fiel)
+        
+            # Descargar paquetes
+            descarga = DescargaMasiva(fiel)
+        
+            for paquete in paquetes:
+                resultado = descarga.descargar_paquete(session, self.rfc_consultant, paquete)
+                b64_data = resultado.get('paquete_b64')
+        
+                if b64_data:
+                    file_path = os.path.join(solicitud_path, f"{paquete}.zip")
+                    if not os.path.exists(file_path):
+                        with open(file_path, 'wb') as fp:
+                            fp.write(base64.b64decode(b64_data))
+        elif self.company_id.python_api == 'satcfdi':
+            # Decodificar los binarios
+            cer_bytes = self.decode_base64(keys_id.clave)
+            key_bytes = self.decode_base64(keys_id.fiel)
+            password = keys_id.serial_number
+            
+            # Crear firmante y SAT service
+            signer = Signer.load(
+                certificate=cer_bytes,
+                key=key_bytes,
+                password=password
+            )
+            
+            sat_service = SAT(
+                signer=signer
+            )
+            # Revisar estado de descarga
+            response = sat_service.recover_comprobante_status(self.id_solicitud)
+            for id_paquete in paquetes:
+                try:
+                    response, paquete_b64 = sat_service.recover_comprobante_download(id_paquete=id_paquete)
+        
+                    if response.get("CodEstatus") == "5008":
+                        _logger.warning(f"El paquete {id_paquete} ha alcanzado el límite de descargas.")
+                        continue
+        
+                    if paquete_b64:
+                        paquete_bin = base64.b64decode(paquete_b64)
+                        ruta_zip = os.path.join(_CFDI_DOWNLOAD_PATH_ROOT, self.id_solicitud, f"{id_paquete}.zip")
+                        if not os.path.exists(ruta_zip):
+                            with open(ruta_zip, 'wb') as fp:
+                                fp.write(paquete_bin)
+                except Exception as e:
+                    _logger.error(f"Error al descargar el paquete {id_paquete}: {str(e)}")
+    
+        # Marcar como completado
+        self.write({'done': True})
         
     def create_doc(self,file_path):
         try:
@@ -230,7 +492,7 @@ class l10n_mx_cfdi_request(models.Model):
             file_name = file_path.split("/")[-1]
     
             file_data = self._read_cfdi(data)
-    
+
             company_id = self.env.user.company_id.id
             if self.company_id.id:
                 company_id = self.company_id.id
@@ -241,7 +503,10 @@ class l10n_mx_cfdi_request(models.Model):
             #Check if exists, if exists avoid creation...
             document_ids = self.env['l10n_mx.cfdi_document'].search([('uuid','=',file_data['uuid'])])
             if len(document_ids) == 0:
-                if file_data['rfc_receptor'] == self.env.company.vat:
+                type_emision = "R"
+                if file_data['rfc_emisor'] == self.env.company.vat:
+                    type_emision = 'E'
+                if file_data['rfc_receptor'] == self.env.company.vat or file_data['rfc_emisor'] == self.env.company.vat and self.env.company.id == company_id:
                     document = self.env['l10n_mx.cfdi_document'].create({
                         'cfdi_request': self.id,
                         'company_id': company_id,
@@ -256,6 +521,8 @@ class l10n_mx_cfdi_request(models.Model):
                         'date': datetime.datetime.strptime(file_data['date'][0],'%Y-%m-%d'),
                         'folio': file_data['folio'],
                         'type_comprobante': file_data['type'],
+                        'type_emision': type_emision,
+                        'metodo_pago': file_data['pue_ppd'],
                     })
         
                     document._extract_metada()
@@ -268,13 +535,71 @@ class l10n_mx_cfdi_request(models.Model):
         for paquete in paquetes:
             with zipfile.ZipFile(_CFDI_DOWNLOAD_PATH_ROOT + '{}/{}.zip'.format(self.id_solicitud,paquete), 'r') as zip_ref:
                 zip_ref.extractall(_CFDI_DOWNLOAD_PATH_ROOT+'{}/'.format(self.id_solicitud))
-                
+        
         xml_files = glob.glob(_CFDI_DOWNLOAD_PATH_ROOT+ self.id_solicitud + '/*.xml')
+        # raise UserError(xml_files)
         [self.create_doc(file_path) for file_path in xml_files]
             
         self.write({
             'docs_create':True
         })
+
+    def create_request_metadata(self):
+        paquetes = self.paquetes.split(',')
+        extract_path = os.path.join(_METADATA_DOWNLOAD_PATH_ROOT, self.id_solicitud)
+
+        for paquete in paquetes:
+            zip_path = os.path.join(extract_path, f"{paquete}.zip")
+            if os.path.isfile(zip_path):
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(extract_path)
+                    _logger.info(f"ZIP extraído: {zip_path}")
+            else:
+                _logger.warning(f"No se encontró el archivo ZIP: {zip_path}")
+        
+        self._process_metadata_txt_files(extract_path)
+        
+        self.write({
+            'docs_create':True
+        })
+
+    def _process_metadata_txt_files(self, folder_path):
+        txt_files = [f for f in os.listdir(folder_path) if f.lower().endswith('.txt')]
+        Metadata = self.env['l10n_mx.cfdi_metadata']
+        records_to_create = []
+
+        for file_name in txt_files:
+            file_path = os.path.join(folder_path, file_name)
+            with open(file_path, 'r', encoding='utf-8') as txt_file:
+                reader = csv.reader(txt_file, delimiter='~')
+                next(reader, None)  # Omitir encabezado
+
+                for row in reader:
+                    if len(row) < 12:
+                        continue
+
+                    records_to_create.append({
+                        'name': row[0].strip(),
+                        'rfc_emisor': row[1].strip(),
+                        'nombre_emisor': row[2].strip().strip('"'),
+                        'rfc_receptor': row[3].strip(),
+                        'nombre_receptor': row[4].strip(),
+                        'rfc_pac': row[5].strip(),
+                        'date': self._parse_datetime(row[6]),
+                        'cert_date': self._parse_datetime(row[7]),
+                        'total': float(row[8].strip() or 0),
+                        'type_comprobante': row[9].strip(),
+                        'state': row[10].strip(),
+                        'cancel_date': self._parse_datetime(row[11]) if len(row) > 11 else False,
+                        'request_id': self.id,
+                    })
+
+        if records_to_create:
+            Metadata.create(records_to_create)
+
+    def _parse_datetime(self, value):
+        value = value.strip()
+        return fields.Datetime.from_string(value) if value else False
         
     def automated_verification(self):
         
@@ -289,21 +614,32 @@ class l10n_mx_cfdi_request(models.Model):
         
         for solicitud in solicitudes:
             solicitud.descargar_paquetes()
-            
-    def automated_request(self):
+
+    
+    def _automated_request(self, request_type='CFDI', request_days=1):
+        _logger.warning("Accion planificada")
+        _logger.warning(f'request_type: {request_type}')
+        
         fiels = self.env['l10n_mx.cfdi_fiel'].search([])
         
         for fiel in fiels:
             date_end = datetime.datetime.now().date()
-            date_delta = datetime.timedelta(days=1)
+            date_delta = datetime.timedelta(days=request_days)
             data = {
                 'company_id':fiel.company_id.id,
                 'rfc_consultant': fiel.company_id.vat, 
                 'rfc_receptor': fiel.company_id.vat,
                 'start_date': date_end - date_delta,
-                'end_date': date_end
+                'end_date': date_end,
+                'request_type': request_type
             }
             request = self.env['l10n_mx.cfdi_request'].create(data)
+
+    def automated_daily_request(self):
+        self._automated_request(request_type='CFDI',request_days=1)
+
+    def automated_metadata_request(self):
+        self._automated_request(request_type='Metadata',request_days=90)
         
     def create_bill(self, document):
         data = self._read_cfdi(document.attatch)
@@ -458,7 +794,10 @@ class l10n_mx_cfdi_request(models.Model):
                     'done':True,
                     'docs_create':False,
                 })
-                
-#                 xml_files = glob.glob(folder+ '/*.xml')
-#                 [self.create_doc(file_path) for file_path in xml_files]
-                
+
+    def create_documents_from_zip(self, folder, filename):
+        with zipfile.ZipFile(_CFDI_DOWNLOAD_PATH_ROOT + 'MANUAL/{}/{}'.format(folder, filename), 'r') as zip_ref:
+            zip_ref.extractall(_CFDI_DOWNLOAD_PATH_ROOT+'MANUAL/{}/'.format(folder))
+            
+        xml_files = glob.glob(_CFDI_DOWNLOAD_PATH_ROOT + 'MANUAL/{}/*.xml'.format(folder))
+        [self.create_doc(file_path) for file_path in xml_files]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "EFOS Manager",
+    'name': "Administrador de EFOS",
 
     'summary': """""",
 

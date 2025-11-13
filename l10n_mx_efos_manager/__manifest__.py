@@ -16,6 +16,9 @@
     'category': 'Localization',
     'version': '1.0',
 
+    'external_dependencies': {
+        'python': ['satcfdi', 'cfdiclient', 'pytz', 'lxml']
+    },
     # any module necessary for this one to work correctly
     'depends': [
         'base',
@@ -26,12 +29,12 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv', IPGRADE
-        # 'data/ir_cron.xml',
-        # # 'data/res_config.xml',
-        # 'data/res_groups.xml',
-        # 'views/l10n_mx_efos.xml',
-        # 'views/res_partner.xml',
+        'security/ir.model.access.csv',
+        'data/ir_cron.xml',
+        # 'data/res_config.xml',
+        'data/res_groups.xml',
+        'views/l10n_mx_efos.xml',
+        'views/res_partner.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

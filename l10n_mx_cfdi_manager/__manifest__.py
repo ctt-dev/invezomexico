@@ -16,7 +16,12 @@
     'category': 'Localization',
     'version': '1.0.1',
     'external_dependencies': {
-        'python': ['satcfdi', 'cfdiclient', 'pytz', 'lxml']
+        'python': [
+            # 'satcfdi',
+            'cfdiclient',
+            'pytz',
+            'lxml'
+        ]
     },
 
     # any module necessary for this one to work correctly

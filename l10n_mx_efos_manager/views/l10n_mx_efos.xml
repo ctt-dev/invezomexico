@@ -31,7 +31,7 @@
             </field>
         </record>
         
-        <record id="l10n_mx_efos_search" model="ir.ui.view">
+        <!-- <record id="l10n_mx_efos_search" model="ir.ui.view">
             <field name="name">l10n_mx_efos_tree</field>
             <field name="model">l10n_mx.efos</field>
             <field name="active">1</field>
@@ -49,7 +49,7 @@
                     </group>
                 </search>
             </field>
-        </record>
+        </record> UPGRADE-->
         
         
         <record id="act_l10n_mx_efos" model="ir.actions.act_window">

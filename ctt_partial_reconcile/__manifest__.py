@@ -26,9 +26,9 @@
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
-        'views/account.xml',
-        'views/ctt_partial_reconcile_wizard.xml',
-        'views/res.xml',
+        # 'security/ir.model.access.csv', UPGRADE
+        # 'views/account.xml',
+        # 'views/ctt_partial_reconcile_wizard.xml',
+        # 'views/res.xml',
     ],
 }

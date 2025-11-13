@@ -1,6 +1,6 @@
 <odoo>
     <data>
-        <record id="l10n_mx_cfdi_request_filter" model="ir.ui.view">
+        <!-- <record id="l10n_mx_cfdi_request_filter" model="ir.ui.view">
             <field name="name">l10n_mx.cfdi_request.search</field>
             <field name="model">l10n_mx.cfdi_request</field>
             <field name="arch" type="xml">
@@ -19,7 +19,7 @@
                     </group>
                 </search>
             </field>
-        </record>  
+        </record>  UPGRADE -->
         
         <record model="ir.ui.view" id="l10n_mx_cfdi_request_tree">
             <field name="name">Solicitudes</field>

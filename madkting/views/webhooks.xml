@@ -4,16 +4,16 @@
     <record model="ir.ui.view" id="yuju_webook_record_tree_view">
       <field name="name">yuju.webhhook.record.tree.view</field>
       <field name="model">yuju.webhook.record</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Webhooks" >
+        <list string="Webhooks" >
           <field name="date_webhook"/>
           <field name="product_id"/>
           <field name="company_id"/>
           <field name="url"/>
           <field name="event"/>
           <field name="state"/>
-        </tree>
+        </list>
       </field>
     </record>
 
@@ -48,23 +48,23 @@
       <field name="name">Webhook Record</field>
       <field name="res_model">yuju.webhook.record</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
       <field name="domain">[]</field>
     </record>
 
     <record model="ir.ui.view" id="madkting.madkting_webhook_tree_view">
       <field name="name">madkting.webhook.tree.view</field>
       <field name="model">madkting.webhook</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Webhooks" >
+        <list string="Webhooks" >
           <field name="updated_at"/>
           <field name="hook_type"/>
           <field name="url"/>
           <field name="id_shop"/>
           <field name="company_id"/>
           <field name="active"/>
-        </tree>
+        </list>
       </field>
     </record>
 
@@ -98,7 +98,7 @@
       <field name="name">Madkting Webhook</field>
       <field name="res_model">madkting.webhook</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
       <field name="domain">[]</field>
     </record>
 

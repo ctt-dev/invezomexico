@@ -20,14 +20,14 @@
                             <div class="row mt16 o_settings_container">
                                 <div class="o_setting_left_pane">
                                     <field name="fiel_ids">
-                                        <tree>
+                                        <list>
                                             <field name="serial_number"/>
                                             <field name="fiel"/>
                                             <field name="clave"/>
                                             <field name="company_id"/>
                                             <field name="emition_date"/>
                                             <field name="expiration_date"/>
-                                        </tree>
+                                        </list>
                                     </field>
                                 </div>
                                

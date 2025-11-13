@@ -25,14 +25,14 @@
                             <div class="app_settings_block" data-string="l10n_mx_cfdi_manager" string="l10n_mx_cfdi_manager" data-key="l10n_mx_cfdi_manager">
                                 <div class="row o_settings_container">
                                     <field name="fiel_ids" context="{'default_company_id': id}">
-                                        <tree>
+                                        <list>
                                             <field name="serial_number" string="Contraseña" password="True"/>
                                             <field name="fiel"/>
                                             <field name="clave"/>
                                             <field name="company_id"/>
                                             <field name="emition_date"/>
                                             <field name="expiration_date"/>
-                                        </tree>
+                                        </list>
                                     </field>
                                 </div>
                             </div>

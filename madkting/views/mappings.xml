@@ -4,12 +4,12 @@
     <record model="ir.ui.view" id="madkting.yuju_mapping_model">
       <field name="name">yuju.mapping.model.tree.view</field>
       <field name="model">yuju.mapping.model</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Yuju Mapping Model">
+        <list string="Yuju Mapping Model">
           <field name="name"/>        
           <field name="code"/>        
-        </tree>
+        </list>
       </field>
     </record>
 
@@ -34,16 +34,16 @@
     <record model="ir.ui.view" id="madkting.yuju_mapping_field">
       <field name="name">yuju.mapping.field.tree.view</field>
       <field name="model">yuju.mapping.field</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Yuju Mapping Field">
+        <list string="Yuju Mapping Field">
           <field name="name"/>
           <field name="field"/>          
           <field name="mapping_type"/>
           <field name="default_value"/>          
           <field name="fieldtype"/>          
           <field name="model"/>          
-        </tree>
+        </list>
       </field>
     </record>
 
@@ -70,12 +70,12 @@
           <notebook>
             <page string="Valores">
               <field name="field_values">
-                <tree editable="bottom">
+                <list editable="bottom">
                   <field name="name" />
                   <field name="value" />
                   <field name="channel_id" />
                   <field name="ff_type" />
-                </tree>
+                </list>
               </field>
             </page>
           </notebook>
@@ -86,15 +86,15 @@
     <record model="ir.ui.view" id="madkting.yuju_mapping_field_value">
       <field name="name">yuju.mapping.field.value.tree.view</field>
       <field name="model">yuju.mapping.field.value</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Yuju Mapping Field Value">
+        <list string="Yuju Mapping Field Value">
           <field name="name"/>
           <field name="value"/>          
           <field name="channel_id"/>
           <field name="ff_type"/>
           <field name="field_id"/>
-        </tree>
+        </list>
       </field>
     </record>
 
@@ -122,14 +122,14 @@
     <record id="madkting.yuju_mapping_state" model="ir.ui.view">
       <field name="name">Mapeo de estados</field>
       <field name="model">yuju.mapping.state</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Mapeo de ciudades" editable="bottom">
+        <list string="Mapeo de ciudades" editable="bottom">
           <field name="name"/>
           <field name="name_state"/>
           <field name="name_city"/>
           <field name="country_id"/>
-        </tree>
+        </list>
       </field>
     </record>    
 
@@ -137,28 +137,28 @@
       <field name="name">Modelos Mapeados</field>
       <field name="res_model">yuju.mapping.model</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
     </record> 
 
     <record id="madkting.action_yuju_mapping_field" model="ir.actions.act_window">
       <field name="name">Mapeo de campos</field>
       <field name="res_model">yuju.mapping.field</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
     </record> 
 
     <record id="madkting.action_yuju_mapping_state" model="ir.actions.act_window">
       <field name="name">Mapeo de estados</field>
       <field name="res_model">yuju.mapping.state</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
     </record> 
 
     <record id="madkting.action_yuju_mapping_field_value" model="ir.actions.act_window">
       <field name="name">Valores de Campos mapeados</field>
       <field name="res_model">yuju.mapping.field.value</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
     </record>
 
     <!-- <menuitem name="Mapeo de campos" id="madkting.menu_mapping_field_list" parent="madkting.menu_config" action="madkting.action_yuju_mapping_field" position="2"/>

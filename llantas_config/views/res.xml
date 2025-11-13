@@ -12,13 +12,13 @@
                     <page string="Pronto pago">
                         <div>
                             <field name="pronto_pago">
-                                <tree string="Pronto pago" editable="top">
+                                <list string="Pronto pago" editable="top">
                                     <field name="name"/>
                                     <field name="pronto_pago_dias_vencimiento" string="Días de vencimiento"/>
                                     <field name="pronto_pago_porcentaje" string="Porcentaje"/>
                                     <field name="product_category" options="{'no_create_edit': True}"/>
                                     <field name="partner_id" invisible="1"/>
-                                </tree>
+                                </list>
                             </field>
                         </div>
                     </page>

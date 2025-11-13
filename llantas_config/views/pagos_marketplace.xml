@@ -4,7 +4,7 @@
             <field name="name">Resumen</field>
             <field name="model">llantas_config.pagos_marketplace</field>
             <field name="arch" type="xml">
-                <tree edit="0" sample="1">
+                <list edit="0" sample="1">
                     <field name="name"/>
                     <field name="sale_id"/>
                     <field name="folio_venta"/>
@@ -25,7 +25,7 @@
                     <button name="cambiar_a_pagado" string="Cambiar a Pagado" type="object" class="btn-success" />
                     <button name="cambiar_a_cancelado" string="Cambiar a cancelado" type="object" class="btn-warning"/>
                     <button name="cambiar_a_pendiente" string="Cambiar a pendiente" type="object" class="btn-secondary"/>
-                </tree>
+                </list>
             </field>
         </record>    
 
@@ -65,7 +65,7 @@
         <record id="ctt_llantas_action_pagos_marketplace_tree" model="ir.actions.act_window">
             <field name="name">Resumen</field>
             <field name="res_model">llantas_config.pagos_marketplace</field>
-            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="view_mode">list,form,graph,pivot</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
@@ -94,7 +94,7 @@
         <record model="ir.actions.act_window" id="pagos_marketplace">
             <field name="name">Pagos marketplace</field>
             <field name="res_model">llantas_config.pagos_marketplace</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="target">current</field>
         </record>
         <menuitem id="pagos_marketplace_menu" 

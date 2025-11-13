@@ -13,7 +13,7 @@
                         <field name="account_id" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('account_type','=',type)]" attrs="{'readonly':[('wizard_origin','!=','menu_item')]}"/>
                     </group>
                     <field name="line_ids_opc_1" attrs="{'readonly':[('account_id','=',False)],'invisible':[('partner_id','=',False)]}">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="wizard_id_1" invisible="1"/>
                             <field name="wizard_id_1_account_id" invisible="1"/>
                             <field name="wizard_id_1_partner_id" invisible="1"/>
@@ -24,11 +24,11 @@
                             <field name="line_id_balance" readonly="1" sum="line_id_balance" optional="hide"/>
                             <field name="line_id_amount_residual" readonly="1" sum="line_id_amount_residual" optional="show"/>
                             <field name="amount" required="1" sum="amount"/>
-                        </tree> 
+                        </list> 
                     </field>
                     
                     <field name="line_ids_opc_2" attrs="{'readonly':[('account_id','=',False)],'invisible':[('partner_id','!=',False)]}">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="wizard_id_2" invisible="1"/>
                             <field name="wizard_id_2_account_id" invisible="1"/>
                             <field name="wizard_id_2_partner_id" invisible="1"/>
@@ -39,7 +39,7 @@
                             <field name="line_id_balance" readonly="1" sum="line_id_balance" optional="hide"/>
                             <field name="line_id_amount_residual" readonly="1" sum="line_id_amount_residual" optional="show"/>
                             <field name="amount" required="1" sum="amount"/>
-                        </tree> 
+                        </list> 
                     </field>
                     <footer>
                         <button name="reconcile"

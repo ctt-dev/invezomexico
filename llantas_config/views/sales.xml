@@ -63,7 +63,7 @@
                              
                     </div>
                 </xpath>
-                <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="before">
+                <xpath expr="//page[@name='order_lines']//list//field[@name='price_unit']" position="before">
                     <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
                     <field name="costo_proveedor" readonly="1" optional="show" invisible="1" />
                     <field name="costo_proveedor_2" string="Costo proveedor" readonly="1" optional="hide"  />
@@ -83,7 +83,7 @@
                     
                         <!-- domain="[('product_tmpl_id','=',productos_proveedor)]"/> -->
                 </xpath>
-                <xpath expr="//page[@name='order_lines']//tree//field[@name='price_unit']" position="after">
+                <xpath expr="//page[@name='order_lines']//list//field[@name='price_unit']" position="after">
                     <field name="importe_descuento" optional="show"  />
                     <field name="precio_antes_dec" optional="show" readonly="1" />
                     <field name="ganancia" widget="monetary" optional="hide"/>
@@ -134,7 +134,7 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_quotation_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//tree//field[@name='name']" position="before">
+                <xpath expr="//list//field[@name='name']" position="before">
                     <field name="marketplace_name" />
                     
                     <field name="folio_venta" optional="show"/>
@@ -159,7 +159,7 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//tree//field[@name='name']" position="before">
+                <xpath expr="//list//field[@name='name']" position="before">
                     <field name="marketplace_name" />
                     
                     <field name="folio_venta" optional="show"/>

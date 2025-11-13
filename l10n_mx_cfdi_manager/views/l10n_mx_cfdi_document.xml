@@ -75,7 +75,7 @@
             <field name="name">Documentos</field>
             <field name="model">l10n_mx.cfdi_document</field>
             <field name="arch" type="xml">
-                <tree create="false" editable="top">
+                <list create="false" editable="top">
                     <field name="date" string="Fecha" readonly="1"/>
                     <field name="rfc_emisor" string="RFC Emisor" readonly="1"/>
                     <field name="emisor" string="Emisor" readonly="1" optional="hide"/>
@@ -98,14 +98,14 @@
                     <button name="show_bill" type="object" icon="fa-eye" string="Ver Factura" attrs="{'invisible':[('link_state','=','unlink')]}"/>
                     <button name="verify_state" type="object" icon="fa-refresh" string="Verificar Estado"/>
                     <button name="show_preview" type="object" icon="fa-eye" string="Ver"/>
-                </tree>
+                </list>
             </field>
         </record>
         
         <record id="act_l10n_mx_cfdi_document" model="ir.actions.act_window">
             <field name="name">Documentos</field>
             <field name="res_model">l10n_mx.cfdi_document</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="context">
                 {
                     'search_default_link_state_unlink': 1,

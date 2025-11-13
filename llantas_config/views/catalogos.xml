@@ -16,17 +16,17 @@
             <field name="name">tree.marca_llanta</field>
             <field name="model">llantas_config.marca_llanta</field>
             <field name="arch" type="xml">
-                <tree string="Marca de llanta" editable="top">
+                <list string="Marca de llanta" editable="top">
                     <field name="name"/>
                     <field name="color" widget="color_picker"/>
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="llantas_marca">
             <field name="name">Marca de llanta</field>
             <field name="res_model">llantas_config.marca_llanta</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         
@@ -36,17 +36,17 @@
             <field name="name">tree.modelo_llanta</field>
             <field name="model">llantas_config.modelo_llanta</field>
             <field name="arch" type="xml">
-                <tree string="Modelo de llanta" editable="top">
+                <list string="Modelo de llanta" editable="top">
                     <field name="name"/>
                     <field name="color" widget="color_picker"/>
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="llantas_modelo">
             <field name="name">Modelo de llanta</field>
             <field name="res_model">llantas_config.modelo_llanta</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         <menuitem id="llantas_modelo_llanta_menu" 
@@ -59,17 +59,17 @@
             <field name="name">tree.medida_llanta</field>
             <field name="model">llantas_config.medida_llanta</field>
             <field name="arch" type="xml">
-                <tree string="Medida de llanta" editable="top">
+                <list string="Medida de llanta" editable="top">
                     <field name="name"/>
                     <field name="color" widget="color_picker"/>
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="llantas_medida">
             <field name="name">Medida de llanta</field>
             <field name="res_model">llantas_config.medida_llanta</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         
@@ -107,11 +107,11 @@
             <field name="name">tree.almacen</field>
             <field name="model">llantas_config.almacen</field>
             <field name="arch" type="xml">
-                <tree string="Status" editable="bottom">
+                <list string="Status" editable="bottom">
                     <field name="name"/>
                     <field name="proveedor" domain="[('category_id','like','PROVEEDOR')]"/>
                     <field name="color" widget="color_picker" required="0"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -143,7 +143,7 @@
         <record model="ir.actions.act_window" id="llantas_almacen">
             <field name="name">Almacen</field>
             <field name="res_model">llantas_config.almacen</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="target">current</field>
         </record>
         
@@ -157,7 +157,7 @@
             <field name="name">tree.marketplace</field>
             <field name="model">llantas_config.marketplaces</field>
             <field name="arch" type="xml">
-                <tree string="Status" sample="1" multi_edit="1">
+                <list string="Status" sample="1" multi_edit="1">
                     <field name="name" required="1"/>
                     <field name="url" />
                     <field name="mostrar_comision" />
@@ -173,7 +173,7 @@
                     <field name="yuju_tag" />
                     <field name="venta_directa" />
                     <field name="color" widget="color_picker" required="0" optional="hide"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -220,7 +220,7 @@
         <record model="ir.actions.act_window" id="llantas_marketplaces">
             <field name="name">Marketplaces</field>
             <field name="res_model">llantas_config.marketplaces</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="target">main</field>
         </record>
         
@@ -235,18 +235,18 @@
             <field name="name">status_ventas_tree</field>
             <field name="model">llantas_config.status_ventas</field>
             <field name="arch" type="xml">
-                <tree string="status" editable="bottom">
+                <list string="status" editable="bottom">
                     <field name="name"/>
                     <field name="description" />
                     <field name="color" widget="color_picker"/>
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="llantas_status_ventas">
             <field name="name">Estatus</field>
             <field name="res_model">llantas_config.status_ventas</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         <menuitem id="llantas_status_ventas_menu" 
@@ -259,19 +259,19 @@
             <field name="name">carrier_</field>
             <field name="model">llantas_config.carrier</field>
             <field name="arch" type="xml">
-                <tree string="Carrier" editable="bottom">
+                <list string="Carrier" editable="bottom">
                     <field name="name"/>
                     <field name="url"/>
                     <field name="is_trackeable" />
                     
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="llantas_carrier">
             <field name="name">Carrier</field>
             <field name="res_model">llantas_config.carrier</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         <menuitem id="llantas_carrier_menu" 
@@ -284,20 +284,20 @@
             <field name="name">tree.sku_marketplace</field>
             <field name="model">llantas_config.sku_marketplace</field>
             <field name="arch" type="xml">
-                <tree string="sku_marketplace" editable="top">
+                <list string="sku_marketplace" editable="top">
                     <field name="name"/>
                     <field name="product_id" required="1"/>
                     <field name="marketplace"/>
                     <field name="Proveedor_id"/>
                     <field name="color" widget="color_picker"/>
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="sku_marketplace">
             <field name="name">SKU Markeplace</field>
             <field name="res_model">llantas_config.sku_marketplace</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         <menuitem id="llantas_sku_marketplace_menu" 
@@ -310,19 +310,19 @@
             <field name="name">tree.almacenes_prov</field>
             <field name="model">llantas_config.almacenes_prov</field>
             <field name="arch" type="xml">
-                <tree string="almacenes proveedor" editable="top">
+                <list string="almacenes proveedor" editable="top">
                     <field name="partner_id" required="1"/>
                     <field name="sucursal" required="1"/>
                     <field name="almacen" required="1"/>
                     <field name="almacen_proveedor" />
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="almacenes_proveedores">
             <field name="name">almacenes_prov</field>
             <field name="res_model">llantas_config.almacenes_prov</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         
@@ -336,7 +336,7 @@
             <field name="name">tree.compatibilidad</field>
             <field name="model">llantas_config.compatibilidad</field>
             <field name="arch" type="xml">
-                <tree string="Compatibilidad" editable="top">
+                <list string="Compatibilidad" editable="top">
                     
                     <field name="brand_id" required="1"/>
                     <field name="model_id" required="1"/>
@@ -344,7 +344,7 @@
                     <field name="version" />
                     <field name="medida"/>
                     <field name="product_id"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -381,7 +381,7 @@
         <record id="action_compatibilidades" model="ir.actions.act_window">
             <field name="name">compatibilidad</field>
             <field name="res_model">llantas_config.compatibilidad</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
         </record>
@@ -408,20 +408,20 @@
             <field name="name">tree.pronto_pago</field>
             <field name="model">llantas_config.pronto_pago</field>
             <field name="arch" type="xml">
-                <tree string="Pronto pago" editable="top">
+                <list string="Pronto pago" editable="top">
                     <field name="name"/>
                     <field name="pronto_pago_dias_vencimiento" string="Días de vencimiento"/>
                     <field name="pronto_pago_porcentaje" string="Porcentaje"/>
                     <field name="product_category" options="{'no_create_edit': True}"/>
                     <field name="partner_id" invisible="0"/>
-                </tree>
+                </list>
             </field>
         </record>
        
         <record model="ir.actions.act_window" id="pronto_pago">
             <field name="name">pronto_pago</field>
             <field name="res_model">llantas_config.pronto_pago</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="target">current</field>
         </record>
         

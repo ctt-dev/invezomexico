@@ -2,7 +2,6 @@
 from odoo import models, fields, api, tools, _
 import logging
 import datetime
-from odoo.exceptions import Warning
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)

@@ -34,9 +34,9 @@
             <field name="name">cfdi fiel tree</field>
             <field name="model">l10n_mx.cfdi_fiel</field>
             <field name="arch" type="xml">
-                <tree>
+                <list>
                     <field name="company_id"/>
-                </tree>
+                </list>
             </field>
         </record>
     </data>

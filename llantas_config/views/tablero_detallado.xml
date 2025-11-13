@@ -4,7 +4,7 @@
         <record id="ctt_llantas_action_detallada_list_form" model="ir.actions.act_window">
             <field name="name">Vista detallada</field>
             <field name="res_model">sale.order.line</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="context">{'create': True}</field>
             <field name="target">main</field>
             <field name="help" type="html">
@@ -20,7 +20,7 @@
             <field name="name">Vista detallada</field>
             <field name="model">sale.order.line</field>
             <field name="arch" type="xml">
-                <tree edit="0" sample="1">
+                <list edit="0" sample="1">
                     <!-- <field name="name" /> -->
                     <field name="producto"/>
                     <field name="comprador_id"/>
@@ -44,7 +44,7 @@
                     <field name="comentarios" optional="hide"/>
                     <field name="dias" readonly="1"/>
                     <field name="company_id" invisible="1"/> -->
-                </tree>
+                </list>
             </field>
         </record>    
 <!-- 

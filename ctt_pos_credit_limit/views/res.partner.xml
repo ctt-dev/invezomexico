@@ -30,13 +30,13 @@
                     </page>
                     <page name="aplazos" string="Convenio de Deuda" >
                         <field name="postponements" nolabel="1"  attrs="{'readonly':[('can_make_aplazo', '!=', True)]}">
-                            <tree string="Aplazos" editable="top" deletable="true">
+                            <list string="Aplazos" editable="top" deletable="true">
                                 <field name="partner" invisible="1"/>
                                 <field name="limit_date"/>
                                 <field name="authorized"/>
                                 <field name="request"/>
                                 <field name="motive"/>
-                            </tree>
+                            </list>
                         </field>
                     </page>
                 </xpath>

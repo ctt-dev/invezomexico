@@ -6,9 +6,9 @@
     <record model="ir.ui.view" id="madkting.sale_list">
       <field name="name">sale.order.tree</field>
       <field name="model">sale.order</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Yuju orders" create="false">
+        <list string="Yuju orders" create="false">
           <field name="name"/>
           <field name="channel"/>
           <field name="channel_order_reference"/>
@@ -16,7 +16,7 @@
           <field name="invoice_status"/>
           <field name="order_progress"/>
           <field name="payment_status"/>
-        </tree>
+        </list>
       </field>
     </record>
     
@@ -78,7 +78,7 @@
       <field name="name">Ventas Sincronizadas</field>
       <field name="res_model">sale.order</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
       <field name="domain">[('channel_order_id', '!=', False)]</field>
     </record>
 

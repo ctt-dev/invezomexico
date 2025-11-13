@@ -4,14 +4,14 @@
     <record model="ir.ui.view" id="madkting.madkting_config_tree_view">
       <field name="name">madkting.config.tree.view</field>
       <field name="model">madkting.config</field>
-      <field name="type">tree</field>
+      <field name="type">list</field>
       <field name="arch" type="xml">
-        <tree string="Configuration" >
+        <list string="Configuration" >
           <field name="company_id"/>
           <field name="dbname"/>
           <field name="webhook_stock_enabled"/>
           <field name="stock_source_multi"/>
-        </tree>
+        </list>
       </field>
     </record>
 
@@ -125,7 +125,7 @@
       <field name="name">Madkting Config</field>
       <field name="res_model">madkting.config</field>
       <field name="view_id"></field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
       <field name="domain">[]</field>
     </record>
 

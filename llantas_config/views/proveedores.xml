@@ -149,15 +149,15 @@
                     <field name="url" />
                     <field name="company_id" />
                     <field name="color" widget="color_picker" required="0"/>
-                    <button name="process_link" string="Descargar existencias" type="object" class="btn-info" attrs="{'invisible': [('url', '=', False)]}"/>
-                    <button name="action_open_modal" string="Procesar" type="object" class="btn-success" attrs="{'invisible': [('proveedor_id', '=', False)]}" context="{'default_proveedores_links_id':active_id}"/>
+                    <button name="process_link" string="Descargar existencias" type="object" class="btn-info" invisible="not url"/>
+                    <button name="action_open_modal" string="Procesar" type="object" class="btn-success" invisible="not proveedor_id" context="{'default_proveedores_links_id':active_id}"/>
                     <button name="procesar_concentrado" string="Descargar concentrado" type="object" class="btn-info" />
                     <button name="procesar_supplierinfo" string="Procesar concentrado" type="object" class="btn-info" />
-                    <field name="query_create" optional="hide" attrs="{'invisible': [('name', '!=', 'Concentrado')]}"/>
-                    <field name="query_update" optional="hide" attrs="{'invisible': [('name', '!=', 'Concentrado')]}"/>
-                    <field name="query_delete" optional="hide" attrs="{'invisible': [('name', '!=', 'Concentrado')]}"/>
-                    <field name="porcentaje" widget="progress_bar" optional="hide" attrs="{'invisible': [('name', '!=', 'Concentrado')]}"/>
-                    <field name="obteniendo_datos" optional="hide" attrs="{'invisible': [('name', '!=', 'Concentrado')]}"/>
+                    <field name="query_create" optional="hide" invisible="name != 'Concentrado'"/>
+                    <field name="query_update" optional="hide" invisible="name != 'Concentrado'"/>
+                    <field name="query_delete" optional="hide" invisible="name != 'Concentrado'"/>
+                    <field name="porcentaje" widget="progress_bar" optional="hide" invisible="name != 'Concentrado'"/>
+                    <field name="obteniendo_datos" optional="hide" invisible="name != 'Concentrado'"/>
                     <field name="query_insert_descargas" invisible="0" optional="hide"/>
                     <field name="query_update_descargas" invisible="0" optional="hide"/>
                     <field name="procesar_descargas" invisible="0" optional="hide"/>

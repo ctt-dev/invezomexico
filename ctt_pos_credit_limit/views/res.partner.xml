@@ -13,13 +13,13 @@
                             <!-- <field name="aplazo_actual" readolony="1"/> !-->
                             <field name="credit" string="Total vencido"/>
                             <field name="credit_used" />
-                            <field name="active_limit" string="Activar Limites de Credito" attrs="{'readonly': [('can_block_credit', '!=', True)]}"/>
-                            <field name="warning_stage" attrs="{'readonly':[('active_limit', '!=', True),('can_block_credit','!=',True)]}"/>
-                            <field name="blocking_stage" attrs="{'readonly':[('active_limit', '!=', True),('can_block_credit','!=',True)]}"/>
+                            <field name="active_limit" string="Activar Limites de Credito" readonly="not can_block_credit"/>
+                            <field name="warning_stage" readonly="not active_limit or not can_block_credit"/>
+                            <field name="blocking_stage" readonly="not active_limit or not can_block_credit"/>
                             <field name="can_block_credit" invisible="1"/>
                             <field name="can_make_aplazo" invisible="1"/>
                             <field name="compute_limit" invisible="1"/>
-                            <field name="message_blocked_credit" attrs="{'readonly': [('can_block_credit', '!=', True)]}"/>
+                            <field name="message_blocked_credit" readonly="not can_block_credit"/>
                         </group>
                         <group string="Sales" name="sale" priority="1">
                             <field name="property_supplier_payment_term_id"/>
@@ -29,7 +29,7 @@
                         </group>
                     </page>
                     <page name="aplazos" string="Convenio de Deuda" >
-                        <field name="postponements" nolabel="1"  attrs="{'readonly':[('can_make_aplazo', '!=', True)]}">
+                        <field name="postponements" nolabel="1" readonly="not can_make_aplazo">
                             <list string="Aplazos" editable="top" deletable="true">
                                 <field name="partner" invisible="1"/>
                                 <field name="limit_date"/>
@@ -42,11 +42,10 @@
                 </xpath>
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="required_oc" string="Se requiere orden de compra?"/>
-                    <field name="deny_credit" attrs="{'readonly': [('can_block_credit', '!=', True)]}"/>
+                    <field name="deny_credit" readonly="not can_block_credit"/>
                 </xpath>
 
             </field>
         </record>
     </data>
 </odoo>
-

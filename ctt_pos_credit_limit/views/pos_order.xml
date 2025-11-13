@@ -19,12 +19,12 @@
                         </div> -->
                 </xpath>
                 <xpath expr="//field[@name='lines']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_change_price', '=', 'False')]}</attribute>
+                    <attribute name="readonly">can_change_price == 'False'</attribute>
                 </xpath>
                  <field name="partner_id" position="after">
                     <field name="can_modify_paid_credit" invisible="1"/>
                     <field name="can_change_price" invisible="1"/>
-                    <field name="approve_credit_payment" attrs="{'readonly': [('can_modify_paid_credit', '=', 'False')], 'invisible': [('can_modify_paid_credit', '=', 'False')]}"/>
+                    <field name="approve_credit_payment" readonly="can_modify_paid_credit == 'False'" invisible="can_modify_paid_credit == 'False'"/>
                     <field name="paid_using_credit" invisible="0"/>
                 </field>
             </field>

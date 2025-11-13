@@ -63,7 +63,7 @@
             <group>
               <field name="model"/>          
               <field name="fieldtype"/>    
-              <field name="model_relation" attrs="{'invisible' : [('fieldtype', '!=', 'relation')]}"/>
+              <field name="model_relation" invisible="fieldtype != 'relation'"/>
               <field name="mapping_type"/>
             </group>
           </group>

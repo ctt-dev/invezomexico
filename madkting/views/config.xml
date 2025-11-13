@@ -85,19 +85,19 @@
                   <field name="invoice_webhook_enabled"/>
                   <field name="auto_webhook_after_invoice_enabled"/>
                   <field name="invoice_prefix_id_folio"/>
-                  <field name="invoice_country" attrs="{'required' : [('invoice_webhook_enabled', '=', True)], 'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_currency" attrs="{'required' : [('invoice_webhook_enabled', '=', True)], 'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_prefix_file" attrs="{'required' : [('invoice_webhook_enabled', '=', True)], 'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_prefix_pdf_file" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_add_pdf_file" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_save_pdf_attachment" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
+                  <field name="invoice_country" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_currency" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_prefix_file" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_prefix_pdf_file" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_add_pdf_file" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_save_pdf_attachment" invisible="not invoice_webhook_enabled"/>
                 </group>
                 <group>
-                  <field name="invoice_serie" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_serie_ticket" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_doc_type" attrs="{'required' : [('invoice_webhook_enabled', '=', True)], 'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_separator" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
-                  <field name="invoice_partner_vat" attrs="{'invisible' : [('invoice_webhook_enabled', '=', False)]}"/>
+                  <field name="invoice_serie" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_serie_ticket" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_doc_type" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_separator" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_partner_vat" invisible="not invoice_webhook_enabled"/>
                 </group>
               </group>
             </page>
@@ -105,11 +105,11 @@
               <group>
                 <group>                  
                   <field name="dropship_enabled"/>
-                  <field name="dropship_picking_type" attrs="{'required' : [('dropship_enabled', '=', True)], 'invisible' : [('dropship_enabled', '=', False)]}"/>
-                  <field name="dropship_webhook_enabled" attrs="{'required' : [('dropship_enabled', '=', True)], 'invisible' : [('dropship_enabled', '=', False)]}"/>
-                  <field name="dropship_default_route_id" attrs="{'required' : [('dropship_enabled', '=', True)], 'invisible' : [('dropship_enabled', '=', False)]}"/>
-                  <field name="dropship_route_id" attrs="{'required' : [('dropship_enabled', '=', True)], 'invisible' : [('dropship_enabled', '=', False)]}"/>
-                  <field name="dropship_mto_route_id" attrs="{'required' : [('dropship_enabled', '=', True)], 'invisible' : [('dropship_enabled', '=', False)]}"/>
+                  <field name="dropship_picking_type" required="dropship_enabled" invisible="not dropship_enabled"/>
+                  <field name="dropship_webhook_enabled" required="dropship_enabled" invisible="not dropship_enabled"/>
+                  <field name="dropship_default_route_id" required="dropship_enabled" invisible="not dropship_enabled"/>
+                  <field name="dropship_route_id" required="dropship_enabled" invisible="not dropship_enabled"/>
+                  <field name="dropship_mto_route_id" required="dropship_enabled" invisible="not dropship_enabled"/>
                 </group>
                 <group>
                   

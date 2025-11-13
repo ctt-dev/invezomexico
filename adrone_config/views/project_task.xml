@@ -60,7 +60,7 @@
                      </page>
                  </xpath>
                 <xpath expr="//group//group[1]//field[@name='user_ids']" position="after">
-                    <field name="planned_date_end" widget="daterange" options="{'related_start_date': 'planned_date_begin'}" attrs="{'required': [('planned_date_begin', '!=', False)]}"/>
+                    <field name="planned_date_end" widget="daterange" options="{'related_start_date': 'planned_date_begin'}" required="planned_date_begin != False"/>
                  </xpath>
             </field>
         </record>

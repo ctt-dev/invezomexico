@@ -22,20 +22,20 @@
                 
                  <xpath expr="//group[@name='order_details']//field[@name='payment_term_id']" position="after">
                     
-                     <field name="comprador_id" domain="['|',('category_ids','ilike','COMP'),('category_ids','ilike','Comp')]" attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"/> 
+                     <field name="comprador_id" domain="['|',('category_ids','ilike','COMP'),('category_ids','ilike','Comp')]" readonly="state in ('done','cancel')"/> 
                      <field name="ventas_status" widget="selection"/>
                     <field name="mostrar_comision" invisible="1"/>
                      <field name="mostrar_envio" invisible="1"/>
-                     <field name="comision" attrs="{'invisible': [('mostrar_comision', '!=', True)]}" />
+                     <field name="comision" invisible="not mostrar_comision"/>
 
 
-                     <field name="envio" attrs="{'invisible': [('mostrar_envio', '!=', True)]}" />
+                     <field name="envio" invisible="not mostrar_envio"/>
                      <field name="warehouse_id" options="{'no_create': True}" />
                      <field name="auto_warehouse_id" invisible="0" />
                      <field name="is_check" invisible="1" readonly="1"/>
                      <label for="revisar_disponibilidad" />
                      <div class="o_row">
-                        <button name="revisar_disponibilidad" type="object" string="Revisar disponibilidad" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="revisar_disponibilidad" type="object" string="Revisar disponibilidad" class="btn-primary" invisible="state != 'draft'"/>
                      </div>
 
                      
@@ -53,11 +53,11 @@
                     <div class="oe_title">
                         <group string="Información general" style="background-color: #fff">
                             <field name="marketplace" string="Canal de venta" options="{'no_create_edit': True}"/>
-                            <field name="link_venta" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
-                            <field name="folio_venta" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}" />
-                            <field name="yuju_pack_id" readonly="1" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
-                            <field name="link_facturacion" widget="url" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
-                             <field name="fecha_venta" attrs="{'invisible': [('mostrar_comision', '!=', True),('mostrar_envio', '!=', True)]}"/>
+                            <field name="link_venta" widget="url" invisible="not mostrar_comision and not mostrar_envio"/>
+                            <field name="folio_venta" invisible="not mostrar_comision and not mostrar_envio"/>
+                            <field name="yuju_pack_id" readonly="1" invisible="not mostrar_comision and not mostrar_envio"/>
+                            <field name="link_facturacion" widget="url" invisible="not mostrar_comision and not mostrar_envio"/>
+                             <field name="fecha_venta" invisible="not mostrar_comision and not mostrar_envio"/>
                             <!-- <field name="invoice_id" invisible="1"/> -->
                         </group>
                              
@@ -72,9 +72,9 @@
                     <field name="codigo_proveedor" invisible="1" optional="hide" />
                     <field name="is_killer" readonly="1" optional="hide" />
                     <field name="killer_id" widget="many2one" invisible="1"/>
-                    <!-- <field name="killer_id_killer_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
-                    <field name="killer_id_base_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/>
-                    <field name="killer_id_promotion_price" attrs="{'invisible': [('is_killer', '=', True)]}" readonly="1" optional="show"/> -->
+                    <!-- <field name="killer_id_killer_price" invisible="not is_killer" readonly="1" optional="show"/>
+                    <field name="killer_id_base_price" invisible="not is_killer" readonly="1" optional="show"/>
+                    <field name="killer_id_promotion_price" invisible="not is_killer" readonly="1" optional="show"/> -->
                     <field name="killer_id_killer_price" readonly="1" optional="hide"/>
                     <field name="killer_id_base_price" readonly="1" optional="hide"/>
                     <field name="killer_id_promotion_price" readonly="1" optional="hide"/>
@@ -102,7 +102,7 @@
                 <xpath expr="//page[@name='other_information']" position="after">
                     <page string="Envio">
                         <group>
-                            <!-- <field name="detailed_info" readonly="0" widget="html" attrs="{'invisible': [('state', 'in', ['draft', 'send'])]}"/> -->
+                            <!-- <field name="detailed_info" readonly="0" widget="html" invisible="state in ('draft', 'send')"/> -->
                             <field name="traspaso_name" readonly="1"/>
                             <field name="llantas_config_carrier_id"/>
                             <field name="guia" readonly="0"/>
@@ -119,7 +119,7 @@
                     <field name="ganancia" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
             
                     <!-- Mostrar el porcentaje de margen, solo si hay un valor no nulo -->
-                    <span class="oe_inline" attrs="{'invisible': [('ganancia', '=', 0)]}">
+                    <span class="oe_inline" invisible="ganancia == 0">
                         (<field name="margin_percent" nolabel="1" class="oe_inline" widget="float" options="{'precision': 1}"/>%)
                     </span>
                 </div>

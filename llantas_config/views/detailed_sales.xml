@@ -17,7 +17,7 @@
                     <field name="product_uom" string="UoM" />
                     <field name="importe_descuento" optional="hide"/>
                     <field name="precio_antes_dec" widget="monetary" optional="hide"/>
-                    <field name="price_unit" widget="monetary" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                    <field name="price_unit" widget="monetary" readonly="qty_invoiced '&gt;' 0"/>
                     <field name="killer_id_base_price" sum="base_price" widget="monetary" optional="show"/>
                     <field name="killer_id_promotion_price" sum="promotion_price" widget="monetary" optional="show"/>
                    

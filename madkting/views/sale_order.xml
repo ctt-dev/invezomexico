@@ -30,16 +30,16 @@
             <group>
               <group>
                 <separator string="Order Info"/>
-                <field name="channel" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="fulfillment" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="channel_id" attrs="{'readonly':[(1,'=',1)]}" groups="madkting.madkting_api_group"/>
-                <field name="yuju_shop_id" attrs="{'readonly':[(1,'=',1)]}" groups="madkting.madkting_api_group"/>
+                <field name="channel" readonly="1"/>
+                <field name="fulfillment" readonly="1"/>
+                <field name="channel_id" readonly="1" groups="madkting.madkting_api_group"/>
+                <field name="yuju_shop_id" readonly="1" groups="madkting.madkting_api_group"/>
                 <field name="channel_order_id" groups="madkting.madkting_api_group"/> 
                 <field name="yuju_pack_id" />
                 <field name="channel_order_reference" />                
-                <field name="yuju_seller_id" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="yuju_update_date_order" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="yuju_payment_date_order" attrs="{'readonly':[(1,'=',1)]}"/>
+                <field name="yuju_seller_id" readonly="1"/>
+                <field name="yuju_update_date_order" readonly="1"/>
+                <field name="yuju_payment_date_order" readonly="1"/>
                 <separator string="Detalle de la venta"/>
                 <field name="yuju_order_data" />
               </group>
@@ -52,15 +52,15 @@
                 <field name="yuju_carrier"/>
                 <field name="yuju_payment_method" readonly="True"/>
                 <field name="yuju_shipping_type" readonly="True"/>
-                <field name="yuju_marketplace_fee" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="yuju_carrier_tracking_ref" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="yuju_seller_shipping_cost" attrs="{'readonly':[(1,'=',1)]}"/>
-                <field name="yuju_error" attrs="{'readonly':[(1,'=',1)]}" />
-                <field name="yuju_shipping_id" attrs="{'readonly':[(1,'=',1)]}" groups="madkting.madkting_api_group"/>
-                <field name="payment_id" attrs="{'readonly':[(1,'=',1)]}" groups="madkting.madkting_api_group"/>
-                <field name="yuju_url_label" attrs="{'invisible': [(1, '=', 1)]}"/>
+                <field name="yuju_marketplace_fee" readonly="1"/>
+                <field name="yuju_carrier_tracking_ref" readonly="1"/>
+                <field name="yuju_seller_shipping_cost" readonly="1"/>
+                <field name="yuju_error" readonly="1" />
+                <field name="yuju_shipping_id" readonly="1" groups="madkting.madkting_api_group"/>
+                <field name="payment_id" readonly="1" groups="madkting.madkting_api_group"/>
+                <field name="yuju_url_label" invisible="1"/>
                 <separator string="Acciones"/>
-                <button name="download_label" string="Descargar Guia" type="object" class="oe_highlight" attrs="{'invisible': [('yuju_url_label', '=', '')]}"/>
+                <button name="download_label" string="Descargar Guia" type="object" class="oe_highlight" invisible="not yuju_url_label"/>
                 <button name="test_print_invoice" string="Generar Invoice PDF" type="object" class="oe_highlight" />
               </group>
             </group>

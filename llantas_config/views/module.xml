@@ -267,45 +267,40 @@
         </record>
 
         <record id="llantas_config_search" model="ir.ui.view">
-            <field name="name">Buscar</field>
-            <field name="model">llantas_config.ctt_llantas</field>
-            <field name="arch" type="xml">
-               <search string="Buscar">
-                   <!-- <field name="sale_id" string="Venta" filter_domain="['|','|','|',('sale_id', 'ilike', self),('no_venta', 'ilike', self),('orden_entrega','ilike',self), ('yuju_pack_id', 'ilike', self)]"/> UPGRADE -->
-                    <field name="partner_name" string="Cliente" filter_domain="[('partner_name', 'ilike', self)]"/>
-                    <!-- <field name="marketplace" string="Marketplace" filter_domain="[('marketplace', 'ilike', self)]"/> -->
-                    <field name="comprador_id" string="Comprador" filter_domain="[('comprador_id', 'ilike', self)]"/>
-                    <field name="status_id" string="Status" filter_domain="[('status_id', 'ilike', self)]"/>
-                    <field name="proveedor_id" string="Proveedor" />
-                    <field name="marketplace_name"/>
-                    <field name="tdp" filter_domain="[('tdp', 'ilike', self)]"/>
-                   <field name="orden_compra" filter_domain="[('orden_compra', 'ilike', self)]"/>
-                   <field name="factura_prov_name" filter_domain="[('factura_prov_name', 'ilike', self)]"/>
-
-                   <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>
-                   <filter name="fecha" string="Fecha" date="fecha"/>
-               
-                    <separator/>
-                   <group expand="0" string="Group By">
-                    <filter string="Cliente" name="partner_name" domain="[]" context="{'group_by': 'partner_name'}"/>
-                    <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
-                    <filter string="Comprador" name="comprador_name" domain="[]" context="{'group_by': 'comprador_name'}"/>
-                    <filter string="Tipo de facturación" name="tipo_factura" domain="[]" context="{'group_by': 'tipo_factura'}"/>
-                    <filter string="Estado de pago proveedor" name="payment_status" domain="[]" context="{'group_by': 'payment_status'}"/>
-                       
-                       
-
-
-                    <filter string="Status" name="status_id" domain="[]" context="{'group_by': 'status_id'}"/>
-                    <filter string="Proveedor" name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
-                    <filter string="Order Date" name="fecha" domain="[]" context="{'group_by': 'fecha'}"/>
-                       
-                       
-                    </group>
-                       
-                </search>
-            </field>
-        </record>
+        <field name="name">Buscar</field>
+        <field name="model">llantas_config.ctt_llantas</field>
+        <field name="arch" type="xml">
+            <search string="Buscar">
+                <!-- Campos de búsqueda -->
+                <field name="partner_name" string="Cliente"/>
+                <field name="comprador_id" string="Comprador"/>
+                <field name="status_id" string="Status"/>
+                <field name="proveedor_id" string="Proveedor"/>
+                <field name="marketplace_name"/>
+                <field name="tdp"/>
+                <field name="orden_compra"/>
+                <field name="factura_prov_name"/>
+    
+                <!-- Filtros predefinidos -->
+                <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>
+                <filter name="fecha" string="Fecha" date="fecha"/>
+            
+                <separator/>
+                
+                <!-- Grupos para agrupar resultados -->
+                <group expand="0" string="Group By">
+                    <filter string="Cliente" name="partner_name" context="{'group_by': 'partner_name'}"/>
+                    <filter name="marketplace_name" string="Marketplace" context="{'group_by': 'marketplace_name'}"/>
+                    <filter string="Comprador" name="comprador_name" context="{'group_by': 'comprador_name'}"/>
+                    <filter string="Tipo de facturación" name="tipo_factura" context="{'group_by': 'tipo_factura'}"/>
+                    <filter string="Estado de pago proveedor" name="payment_status" context="{'group_by': 'payment_status'}"/>
+                    <filter string="Status" name="status_id" context="{'group_by': 'status_id'}"/>
+                    <filter string="Proveedor" name="proveedor_id" context="{'group_by': 'proveedor_id'}"/>
+                    <filter string="Order Date" name="fecha" context="{'group_by': 'fecha'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     
        
 

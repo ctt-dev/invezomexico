@@ -59,12 +59,11 @@
         <record id="account_view_invoice_search_inherit" model="ir.ui.view">
             <field name="name">account_view_invoice_search_inherit</field>
             <field name="model">account.move</field>
-             <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//search//field[@name='journal_id']" position="before">
-                    <field name="partner_id" string="Cliente (Exacto)" filter_domain="[('partner_id.name', '=', self)]"/>
-                    <field name="marketplace_sale_order" />
-                    
+                    <field name="partner_id" string="Cliente (Exacto)"/>
+                    <field name="marketplace_sale_order"/>
                 </xpath>
             </field>
         </record>

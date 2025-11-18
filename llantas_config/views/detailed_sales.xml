@@ -78,12 +78,12 @@
                     <filter name="fecha_venta" date="fecha_venta"/>
                    
                    <group expand="0" string="Group By">
-                        <filter name="nombre_producto" domain="[]" context="{'group_by': 'nombre_producto'}"/>
-                       <filter name="proveedor_id" domain="[]" context="{'group_by': 'proveedor_id'}"/>
-                       <filter name="marketplace_id" domain="[]" context="{'group_by': 'marketplace_id'}"/>
-                       <filter name="order_id" domain="[]" context="{'group_by': 'order_id'}"/>
-                       <filter name="comprador" domain="[]" context="{'group_by': 'comprador'}"/>
-                       <filter name="partner_id" domain="[]" context="{'group_by': 'partner_id'}"/>
+                        <filter name="nombre_producto" context="{'group_by': 'nombre_producto'}"/>
+                       <filter name="proveedor_id" context="{'group_by': 'proveedor_id'}"/>
+                       <filter name="marketplace_id" context="{'group_by': 'marketplace_id'}"/>
+                       <filter name="order_id" context="{'group_by': 'order_id'}"/>
+                       <filter name="comprador" context="{'group_by': 'comprador'}"/>
+                       <filter name="partner_id" context="{'group_by': 'partner_id'}"/>
 
                     </group>
 

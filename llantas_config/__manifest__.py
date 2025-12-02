@@ -67,7 +67,7 @@
         'views/account_move.xml',
         # 'reports/report_invoice.xml', TODO: El elemento "<div id="right-elements">" no se puede localizar en la vista principal
         'views/res_company.xml',
-        'views/product_pricelist_item.xml',
+        # 'views/product_pricelist_item.xml', **UPGRADE
         'views/purchase.xml',
         # 'reports/sale_order.xml', TODO: El elemento "<td name="td_product_quantity">" no se puede localizar en la vista principal
         'reports/report_picking.xml',

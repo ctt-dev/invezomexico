@@ -39,7 +39,8 @@
         </record>
 
 
-        <record id="llantas_config_killer_list_search" model="ir.ui.view">
+        <!-- TODO: CORREGIR VISTA SEARCH -->
+        <!-- <record id="llantas_config_killer_list_search" model="ir.ui.view">
             <field name="name">Buscar</field>
             <field name="model">llantas_config.killer_list</field>
             <field name="arch" type="xml">
@@ -62,7 +63,7 @@
                        
                 </search>
             </field>
-        </record>
+        </record> -->
 
         <record id="ctt_llantas_action_list_product_killer_tree" model="ir.actions.act_window">
             <field name="name">Vista detallada</field>
@@ -93,7 +94,8 @@
             </field>
         </record>    
 
-        <record id="llantas_config_killer_noproduct_list_search" model="ir.ui.view">
+        <!-- TODO: CORREGIR VISTA SEARCH -->
+        <!-- <record id="llantas_config_killer_noproduct_list_search" model="ir.ui.view">
             <field name="name">Buscar</field>
             <field name="model">llantas_config.killer_no_product</field>
             <field name="arch" type="xml">
@@ -110,7 +112,7 @@
                        
                 </search>
             </field>
-        </record>
+        </record> -->
         
 <!-- 
        <menuitem id="llantas_tablero_detallado_menu_list" 

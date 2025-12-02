@@ -36,7 +36,8 @@
             </field>
         </record>
 
-        <record id="ctt_llantas_action_proveedor_list_search" model="ir.ui.view">
+        <!-- CORREGIR VISTA SEARCH -->
+        <!-- <record id="ctt_llantas_action_proveedor_list_search" model="ir.ui.view">
             <field name="name">Buscar</field>
             <field name="model">llantas_config.ctt_prov_cargar</field>
             <field name="arch" type="xml">
@@ -64,7 +65,7 @@
                 </search>
             </field>
         </record>
-
+ -->
 
         <record id="ctt_llantas_action_proveedor_list_form_cargar" model="ir.actions.act_window">
             <field name="name">Consultar existencias</field>

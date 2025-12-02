@@ -94,7 +94,8 @@
             </field>
         </record>
 
-        <record id="llantas_config_proveedor_list_search" model="ir.ui.view">
+        <!-- CORREGIR VISTA SEARCH -->
+        <!-- <record id="llantas_config_proveedor_list_search" model="ir.ui.view">
             <field name="name">Buscar</field>
             <field name="model">llantas_config.ctt_prov</field>
             <field name="arch" type="xml">
@@ -127,7 +128,6 @@
                     <separator/>
                    <group expand="0" string="Group By">
                     <filter string="Proveedor" name="nombre_proveedor" domain="[]" context="{'group_by': 'nombre_proveedor'}"/>
-                    <!-- <filter name="marketplace" string="Marketplace" domain="[]" context="{'group_by': 'marketplace'}"/> -->
                     <filter string="Almacen" name="nombre_almacen" domain="[]" context="{'group_by': 'nombre_almacen'}"/>
                     <filter string="Producto" name="producto" domain="[]" context="{'group_by': 'producto'}"/>
                     <filter string="Sku" name="sku" domain="[]" context="{'group_by': 'sku'}"/>
@@ -137,7 +137,7 @@
                        
                 </search>
             </field>
-        </record>
+        </record> -->
 
         <record id="tree_view_proveedores_links" model="ir.ui.view">
             <field name="name">link.Proveedores</field>
@@ -150,7 +150,7 @@
                     <field name="company_id" />
                     <field name="color" widget="color_picker" required="0"/>
                     <button name="process_link" string="Descargar existencias" type="object" class="btn-info" invisible="not url"/>
-                    <button name="action_open_modal" string="Procesar" type="object" class="btn-success" invisible="not proveedor_id" context="{'default_proveedores_links_id':active_id}"/>
+                    <button name="action_open_modal" string="Procesar" type="object" class="btn-success" invisible="not proveedor_id" context="{'default_proveedores_links_id':context.get('active_id')}"/>
                     <button name="procesar_concentrado" string="Descargar concentrado" type="object" class="btn-info" />
                     <button name="procesar_supplierinfo" string="Procesar concentrado" type="object" class="btn-info" />
                     <field name="query_create" optional="hide" invisible="name != 'Concentrado'"/>

@@ -39,7 +39,8 @@
           parent="stock.menu_warehouse_report" 
           sequence="1001" />
 
-        <record id="view_llantas_config_listado_precios_search" model="ir.ui.view">
+        <!-- TODO: CORREGIR VISTA SEARCH -->
+        <!-- <record id="view_llantas_config_listado_precios_search" model="ir.ui.view">
             <field name="name">listado.precios.search</field>
             <field name="model">stock.quant</field>
             <field name="arch" type="xml">
@@ -54,7 +55,7 @@
 
                 </search>
             </field>
-        </record>
+        </record> -->
 
 
         

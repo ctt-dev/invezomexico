@@ -24,7 +24,7 @@
     ],
     # always loaded
     'data': [
-        'views/config_view.xml',
+        # 'views/config_view.xml', **UPGRADE
     ],
     # only loaded in demonstration mode
     'demo': [

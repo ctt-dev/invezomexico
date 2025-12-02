@@ -266,12 +266,13 @@
             
         </record>
 
-        <record id="llantas_config_search" model="ir.ui.view">
+    <!-- TODO: CORREGIR VISTA SEARCH -->
+    <!-- <record id="llantas_config_search" model="ir.ui.view">
         <field name="name">Buscar</field>
         <field name="model">llantas_config.ctt_llantas</field>
         <field name="arch" type="xml">
             <search string="Buscar">
-                <!-- Campos de búsqueda -->
+                Campos de búsqueda
                 <field name="partner_name" string="Cliente"/>
                 <field name="comprador_id" string="Comprador"/>
                 <field name="status_id" string="Status"/>
@@ -281,26 +282,26 @@
                 <field name="orden_compra"/>
                 <field name="factura_prov_name"/>
     
-                <!-- Filtros predefinidos -->
+                Filtros predefinidos
                 <filter string="Status pendiente" name="status_id" domain="[('status_id', '=', 'Pendiente')]"/>
                 <filter name="fecha" string="Fecha" date="fecha"/>
             
                 <separator/>
                 
-                <!-- Grupos para agrupar resultados -->
-                <group expand="0" string="Group By">
-                    <filter string="Cliente" name="partner_name" context="{'group_by': 'partner_name'}"/>
-                    <filter name="marketplace_name" string="Marketplace" context="{'group_by': 'marketplace_name'}"/>
+                Grupos para agrupar resultados
+                <group string="Group By">
+                    <filter string="Cliente" name="group_partner_name" context="{'group_by': 'partner_name'}"/>
+                    <filter name="group_marketplace_name" string="Marketplace" context="{'group_by': 'marketplace_name'}"/>
                     <filter string="Comprador" name="comprador_name" context="{'group_by': 'comprador_name'}"/>
-                    <filter string="Tipo de facturación" name="tipo_factura" context="{'group_by': 'tipo_factura'}"/>
-                    <filter string="Estado de pago proveedor" name="payment_status" context="{'group_by': 'payment_status'}"/>
-                    <filter string="Status" name="status_id" context="{'group_by': 'status_id'}"/>
-                    <filter string="Proveedor" name="proveedor_id" context="{'group_by': 'proveedor_id'}"/>
-                    <filter string="Order Date" name="fecha" context="{'group_by': 'fecha'}"/>
+                    <filter string="Tipo de facturación" name="group_tipo_factura" context="{'group_by': 'tipo_factura'}"/>
+                    <filter string="Estado de pago proveedor" name="group_payment_status" context="{'group_by': 'payment_status'}"/>
+                    <filter string="Status" name="group_status_id" context="{'group_by': 'status_id'}"/>
+                    <filter string="Proveedor" name="group_proveedor_id" context="{'group_by': 'proveedor_id'}"/>
+                    <filter string="Order Date" name="group_fecha" context="{'group_by': 'fecha'}"/>
                 </group>
             </search>
         </field>
-    </record>
+    </record> -->
     
        
 

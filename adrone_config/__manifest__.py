@@ -37,7 +37,7 @@
         'mrp',
         'delivery',
         'industry_fsm',
-        'llantas_config'
+        'llantas_config',
     ],
 
     # always loaded
@@ -50,8 +50,8 @@
         'reports/formato_tareas.xml',
         'wizard/wizard_import_flight.info.xml',
         'views/flight_sheet.xml',
-        'reports/report_invoices.xml',
-        'views/sale.xml',
+        # 'reports/report_invoices.xml', TODO: El elemento "<div id="right-elements">" no se puede localizar en la vista principal
+        # 'views/sale.xml', **UPGRADE
         'views/res_company.xml',
     ],
     # only loaded in demonstration mode

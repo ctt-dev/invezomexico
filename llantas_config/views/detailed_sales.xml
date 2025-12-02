@@ -14,10 +14,10 @@
                     <field name="codigo_prod"/>
                     <field name="nombre_producto" optional="show"/>
                     <field name="product_uom_qty" optional="show"/>
-                    <field name="product_uom" string="UoM" />
+                    <field name="product_uom_id" string="UoM" />
                     <field name="importe_descuento" optional="hide"/>
                     <field name="precio_antes_dec" widget="monetary" optional="hide"/>
-                    <field name="price_unit" widget="monetary" readonly="qty_invoiced '&gt;' 0"/>
+                    <field name="price_unit" widget="monetary" readonly="qty_invoiced > 0"/>
                     <field name="killer_id_base_price" sum="base_price" widget="monetary" optional="show"/>
                     <field name="killer_id_promotion_price" sum="promotion_price" widget="monetary" optional="show"/>
                    
@@ -42,7 +42,7 @@
                     <field name="t2_porcentaje" sum="t2_porcentaje" optional="hide" />
                     <field name="t3" sum="t3" optional="hide" />
                     <field name="t3_porcentaje" sum="t3_porcentaje" optional="hide" /> -->
-                    <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" optional="hide"/>
+                    <field name="tax_ids" widget="many2many_tags" options="{'no_create': True}" optional="hide"/>
                     <field name="discount" string="Disc.%"  optional="hide" widget="sol_discount"/>
                     <field name="is_killer" invisible="1" />
                     
@@ -59,7 +59,8 @@
             </field>
         </record>
 
-        <record id="llantas_config_ov_detalle_search" model="ir.ui.view">
+        <!-- TODO: CORREGIR VISTA SEARCH -->
+        <!-- <record id="llantas_config_ov_detalle_search" model="ir.ui.view">
             <field name="name">ov_detalle</field>
             <field name="model">sale.order.line</field>
             <field name="arch" type="xml">
@@ -91,7 +92,7 @@
 
                 </search>
             </field>
-        </record>
+        </record> -->
         
         
         <record model="ir.actions.act_window" id="ov_detalle">

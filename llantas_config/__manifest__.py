@@ -38,6 +38,7 @@
         'website_sale',
         'mrp',
         'delivery',
+        'stock_delivery',
         'fleet',
     ],
 
@@ -52,7 +53,7 @@
         'views/module.xml',
         'views/proveedores.xml',
         'views/subir_existencias.xml',
-        'views/sales.xml',
+        # 'views/sales.xml', TODO: Error por campo yuju_pack_id?
         'views/marketplaces.xml',
         'views/stock.xml',
         'views/tablero_detallado.xml',
@@ -60,15 +61,15 @@
         'views/pagos_marketplace.xml',
         'views/detailed_sales.xml',
         'views/wizard_subir_existencias.xml',
-        'reports/purchase.xml',
+        # 'reports/purchase.xml', TOTO: Error con elemento th_amount
         'reports/Reporte_cotizacion_Racko.xml',
         # 'reports/new_invoice.xml',
         'views/account_move.xml',
-        'reports/report_invoice.xml',
+        # 'reports/report_invoice.xml', TODO: El elemento "<div id="right-elements">" no se puede localizar en la vista principal
         'views/res_company.xml',
         'views/product_pricelist_item.xml',
         'views/purchase.xml',
-        'reports/sale_order.xml',
+        # 'reports/sale_order.xml', TODO: El elemento "<td name="td_product_quantity">" no se puede localizar en la vista principal
         'reports/report_picking.xml',
         # 'views/style.css',
         'views/tablero_killer.xml',

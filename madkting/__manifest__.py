@@ -28,14 +28,14 @@
     ],
     # always loaded
     'data': [
-        'security/security.xml',
-        'security/ir.model.access.csv',
-        'views/config.xml',
-        'views/mappings.xml',
-        'views/webhooks.xml',
-        'views/sale_order.xml',
-        'views/product.xml',
-        'views/menu_items.xml',
+        # 'security/security.xml',**UPGRADE
+        # 'security/ir.model.access.csv',**UPGRADE
+        # 'views/config.xml',**UPGRADE
+        # 'views/mappings.xml',**UPGRADE
+        # 'views/webhooks.xml',**UPGRADE
+        # 'views/sale_order.xml',**UPGRADE
+        # 'views/product.xml',**UPGRADE
+        # 'views/menu_items.xml',**UPGRADE
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -84,7 +84,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            'llantas_config/static/src/**/*',
+            # 'llantas_config/static/src/**/*', **UPGRADE
         ],
     },    
 }

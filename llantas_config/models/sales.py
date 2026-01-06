@@ -66,6 +66,7 @@ class sale_order_inherit(models.Model):
     
         for line in self.order_line:
             # Verificar si el producto de la línea es un paquete
+            # CORREGIDO: En Odoo 19 el campo type está en product.template
             if line.product_id.bom_ids and line.product_id.bom_ids[0].type == 'phantom':
                 # Si es un paquete, reemplazar por líneas de BOM
                 for bom_line in line.product_id.bom_ids[0].bom_line_ids:
@@ -100,36 +101,6 @@ class sale_order_inherit(models.Model):
                 available = self._check_product_availability(line.product_id, line.product_uom_qty)
                 if not available:
                     all_lines_available = False
-    
-        # Verificar si hay un almacén "3PL Virtual" disponible
-        if not all_lines_available:
-            preferred_warehouse = self._get_preferred_3pl_warehouse(current_company)
-    
-        # Asignar el almacén final
-        if preferred_warehouse:
-            self.write({'warehouse_id': preferred_warehouse.id})
-        elif all_lines_available:
-            # Seleccionar almacén con mayor stock (puede ser cualquier almacén regular)
-            warehouse_id = self._select_warehouse_with_max_stock()
-            if warehouse_id:
-                self.write({'warehouse_id': warehouse_id})
-            else:
-                # Asignar el primer almacén interno que encuentre
-                fallback_warehouse = self._get_first_internal_warehouse()
-                if fallback_warehouse:
-                    self.write({'warehouse_id': fallback_warehouse.id})
-                else:
-                    raise UserError(f"No se encontró un almacén interno configurado para la empresa {current_company}.")
-        else:
-            # Asignar el primer almacén interno si no hay stock suficiente ni 3PL
-            fallback_warehouse = self._get_first_internal_warehouse()
-            if fallback_warehouse:
-                self.write({'warehouse_id': fallback_warehouse.id})
-            else:
-                raise UserError(f"No hay stock disponible y no se encontró un almacén 3PL Virtual ni un almacén interno para la empresa {current_company}.")
-    
-        # Marcar como revisado
-        self.is_check = True
 
 
     
@@ -138,8 +109,9 @@ class sale_order_inherit(models.Model):
         Verifica si un producto tiene disponibilidad suficiente considerando
         solo cantidades positivas en ubicaciones internas.
         """
-        _logger.warning(product.detailed_type)
-        if product.detailed_type == 'service':
+        # CORREGIDO: En Odoo 19 usar product.type en lugar de product_tmpl_id.detailed_type
+        _logger.warning(product.type)
+        if product.type == 'service':
             return True
         available_quantity = sum(
             quant.quantity for quant in product.stock_quant_ids
@@ -412,51 +384,61 @@ class sale_order_inherit(models.Model):
     #     return sale
 
     @api.model
-    def create(self, values):
+    def create(self, vals_list):
         _logger.warning('create')
         
-        # Lógica simplificada en el método create
-        if 'channel_order_reference' in values:
-            values['folio_venta'] = values['channel_order_reference']
-    
-        if 'yuju_seller_shipping_cost' in values:
-            values['envio'] = values['yuju_seller_shipping_cost']
+        # Asegurarnos de que vals_list sea una lista
+        if not isinstance(vals_list, list):
+            vals_list = [vals_list]
         
-        if 'yuju_marketplace_fee' in values:
-            values['comision'] = values['yuju_marketplace_fee']
+        processed_vals_list = []
         
-        # Verificación de unicidad de 'folio_venta'
-        if 'folio_venta' in values:
-            venta_ids = self.search([
-                ('folio_venta', '=', values['folio_venta']),
-                ('folio_venta', '!=', False)
-            ])
-            if venta_ids:
-                raise UserError('El número de venta debe ser único.')
+        for values in vals_list:
+            # Lógica simplificada en el método create
+            if 'channel_order_reference' in values:
+                values['folio_venta'] = values['channel_order_reference']
+            
+            if 'yuju_seller_shipping_cost' in values:
+                values['envio'] = values['yuju_seller_shipping_cost']
+            
+            if 'yuju_marketplace_fee' in values:
+                values['comision'] = values['yuju_marketplace_fee']
+            
+            # Verificación de unicidad de 'folio_venta'
+            if 'folio_venta' in values:
+                venta_ids = self.search([
+                    ('folio_venta', '=', values['folio_venta']),
+                    ('folio_venta', '!=', False)
+                ])
+                if venta_ids:
+                    raise UserError('El número de venta debe ser único.')
+            
+            # Verificación de unicidad de 'guia' - CORREGIDO
+            if 'guia' in values:
+                guia = values.get('guia')
+                if guia:
+                    ventas = self.search([
+                        ('guia', '=', guia),
+                        ('guia', '!=', False)
+                    ])
+                    if ventas:
+                        raise UserError('El número de guía debe ser único.')
+            
+            # Actualizar marketplace en create
+            channel = values.get('channel')
+            if channel:
+                channel = self.remove_accents(channel.strip())
+                marketplace_record = self.env['llantas_config.marketplaces'].search([
+                    ('company_id', '=', values.get('company_id')),
+                    ('name', '=', channel)
+                ], limit=1)
+                values['marketplace'] = marketplace_record.id if marketplace_record else False
+            
+            processed_vals_list.append(values)
         
-        # Verificación de unicidad de 'guia'
-        guia = values.get('guia')
-        if guia:
-            ventas = self.search([
-                ('guia', '=', guia),
-                ('guia', '!=', False)
-            ])
-            if ventas:
-                raise UserError('El número de guía debe ser único.')
-    
-        # Actualizar marketplace en create
-        channel = values.get('channel')
-        if channel:
-            channel = self.remove_accents(channel.strip())
-            marketplace_record = self.env['llantas_config.marketplaces'].search([
-                ('company_id', '=', values.get('company_id')),
-                ('name', '=', channel)
-            ], limit=1)
-            values['marketplace'] = marketplace_record.id if marketplace_record else False
-
         # Crear la venta usando el método estándar de Odoo
-        sale = super(sale_order_inherit, self).create(values)
-        return sale
+        sales = super(sale_order_inherit, self).create(processed_vals_list)
+        return sales
 
     auto_warehouse_id = fields.Many2one(
         'stock.warehouse',
@@ -517,6 +499,9 @@ class sale_order_inherit(models.Model):
         
         # Recolectar ubicaciones con stock por empresa
         for line in sale.order_line:
+            # CORREGIDO: En Odoo 19 usar line.product_id.type en lugar de detailed_type
+            product_type = line.product_id.type
+            
             locations = [
                 quant.location_id
                 for quant in line.product_id.stock_quant_ids
@@ -524,7 +509,9 @@ class sale_order_inherit(models.Model):
                 and quant.location_id.usage == 'internal'
                 and quant.location_id.company_id == current_company
             ]
-            if line.product_id.detailed_type == 'service':
+            
+            # CORREGIDO: Verificar el tipo de producto usando product_id.type
+            if product_type == 'service':
                 continue
     
             if locations:
@@ -592,20 +579,23 @@ class sale_order_inherit(models.Model):
         if self.env.context.get('skip_carrier_update'):
             _logger.info("Se omite actualización de carrier para evitar recursión.")
             return super(sale_order_inherit, self).write(values)
-        # _logger.warning('write')
+        
         for rec in self:
             for line in rec.order_line:
                 if line.product_id:
                     # Guardar el costo promedio (standard_price) en la línea
                     line.costo_promedio = line.product_id.standard_price
+            
             # Omitir validaciones si la acción es cancelar
             if values.get('state') == 'cancel':
                 _logger.info("La orden se está cancelando, se omiten validaciones.")
                 return super(sale_order_inherit, self).write(values)
             
-            # Actualizar marketplace en write
-            if rec.channel:
-                channel = self.remove_accents(rec.channel.strip())
+            # Actualizar marketplace en write - CORREGIDO
+            # Usar yuju_channel en lugar de channel
+            channel = rec.yuju_channel if hasattr(rec, 'yuju_channel') else None
+            if channel:
+                channel = self.remove_accents(channel.strip())
                 yuju_tag_selection = dict(self.env['llantas_config.marketplaces']
                                            .fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'])
                 yuju_tag_key = next((key for key, label in yuju_tag_selection.items() 
@@ -1155,28 +1145,14 @@ class sale_order_inherit(models.Model):
     @api.depends('order_line.price_subtotal', 'order_line.price_tax', 'order_line.price_total', 'fee_sale')
     def _compute_amounts(self):
         """Compute the total amounts of the SO."""
+        # PRIMERO: Llamar al método base para calcular los montos estándar
+        # Esto asegura que amount_untaxed, amount_tax y amount_total se calculen correctamente
+        super(sale_order_inherit, self)._compute_amounts()
+        
+        # SEGUNDO: Agregar nuestra lógica personalizada para fee_sale
         for order in self:
-            order = order.with_company(order.company_id)
-            order_lines = order.order_line.filtered(lambda x: not x.display_type)
-
-            if order.company_id.tax_calculation_rounding_method == 'round_globally':
-                tax_results = order.env['account.tax']._compute_taxes([
-                    line._convert_to_tax_base_line_dict()
-                    for line in order_lines
-                ])
-                totals = tax_results['totals']
-                amount_untaxed = totals.get(order.currency_id, {}).get('amount_untaxed', 0.0)
-                amount_tax = totals.get(order.currency_id, {}).get('amount_tax', 0.0)
-            else:
-                amount_untaxed = sum(order_lines.mapped('price_subtotal'))
-                amount_tax = sum(order_lines.mapped('price_tax'))
-
-            order.amount_untaxed = amount_untaxed
-            order.amount_tax = amount_tax
-            order.amount_total = order.amount_untaxed + order.amount_tax
             if order.marketplace and order.yuju_order_data and order.yuju_marketplace_fee == 0.00:
                 order.fee_sale = (order.amount_untaxed + order.amount_tax) * order.fee_import
-            # raise UserError(str((order.amount_untaxed + order.amount_tax) * (1 + order.fee_import)))
 
      
 class sale_order_line_inherit(models.Model):

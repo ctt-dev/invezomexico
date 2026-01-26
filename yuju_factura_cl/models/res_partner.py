@@ -28,7 +28,7 @@ class ResPartner(models.Model):
 
         config = self.env['madkting.config'].get_config()
 
-        if config.validate_doctype_nit:
+        if config and config.validate_doctype_nit:
             logger.debug("No fix vat number")
             return vat
         
@@ -70,7 +70,7 @@ class ResPartner(models.Model):
 
         config = self.env['madkting.config'].get_config()
         
-        if customer_data.get('doc_type') and customer_data.get('vat') and config.validate_doctype_nit:
+        if customer_data.get('doc_type') and customer_data.get('vat') and config and config.validate_doctype_nit:
             logger.debug("Se valida VAT y DOC TYPE")
             is_customer_rut = False
             customer_vat = customer_data.get("vat")
@@ -86,7 +86,7 @@ class ResPartner(models.Model):
                 customer_data["doc_type"] = config.doctype_default
                 logger.debug(f"Se asigna DOC TYPE por default {config.doctype_default}")
 
-            if config.vat_prefix:
+            if config and config.vat_prefix:
                 customer_data["vat"] = f"{config.vat_prefix}{customer_data['vat']}"
                 logger.debug(f"Agrega prefijo al VAT {customer_data['vat']}")
 

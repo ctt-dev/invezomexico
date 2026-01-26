@@ -26,13 +26,14 @@ class YujuMappingField(models.Model):
     model_relation = fields.Many2one('yuju.mapping.model', 'Modelo Relacion')
     field_values = fields.One2many('yuju.mapping.field.value', 'field_id', 'Valores campos')
     company_id = fields.Many2one('res.company', 'Company')
+    remove_after_process = fields.Boolean("Quitar campo despues del mapeo", help="Quita el campo de los datos que se envian despues de que son procesados.", default=True)
     mapping_type = fields.Selection([
         ("fields", "Mapeo de campos"),
         ("defaults", "Valores por Default"),
     ], "Tipo de Mapeo")
 
     @api.model
-    def get_field_mappings(self, record_data, model, channel_id=None, ff_type=None):
+    def get_field_mappings(self, record_data, model, channel_id=None, ff_type=None, company_id=None):
         logger.debug(f"## Se buscan mapeo de campos {model} ##")
         logger.debug(record_data)
 
@@ -42,13 +43,14 @@ class YujuMappingField(models.Model):
             logger.debug(f"No se encontraron mapeos para el model {model}")
             return record_data
 
-        company_id = self.env.user.company_id.id
-        domain = [('model', '=', mapping_model.id), '|', ('company_id', '=', company_id), ('company_id', '=', False)]
-        mapping_fields = self.search(domain)
-        logger.debug(domain)
+        if not company_id:
+            company_id = self.env.user.company_id.id
+        mapping_fields = self.search([('model', '=', mapping_model.id), '|', ('company_id', '=', company_id), ('company_id', '=', False)])
+
         logger.debug("Mappings encontrados")
         logger.debug(mapping_fields)
-        
+
+        processed_fields = []
         for mapping in mapping_fields:
             tipo_mapeo = mapping.mapping_type
             yuju_field = mapping.name
@@ -56,6 +58,7 @@ class YujuMappingField(models.Model):
             default_value = mapping.default_value 
             tipo_campo = mapping.fieldtype
             model_rel = mapping.model_relation
+            remove_after = mapping.remove_after_process
 
             logger.debug(f"Yuju Field: {yuju_field}")
             logger.debug(f"Tipo Mapeo: {tipo_mapeo}")
@@ -73,8 +76,10 @@ class YujuMappingField(models.Model):
                 if yuju_field not in record_data:
                     continue
 
-                yuju_value = record_data.pop(yuju_field)
+                yuju_value = record_data.get(yuju_field)
                 logger.debug(f"Yuju Value: {yuju_value}")
+                if yuju_field not in processed_fields and remove_after:
+                    processed_fields.append(yuju_field)
                 
                 if not yuju_value:
                     logger.debug("Valor Yuju nulo")
@@ -93,7 +98,7 @@ class YujuMappingField(models.Model):
                     logger.debug("Tipo campo mapeo: RELATION")
                     try:
                         model_code = model_rel.code
-                        rel_value = self.env[model_code].search(['|', ('name', '=', yuju_value), ('code', '=', yuju_value)], limit=1)
+                        rel_value = self.env[model_code].search(['|', ('name', '=ilike', yuju_value), ('code', '=ilike', yuju_value)], limit=1)
                     except Exception as e:
                         logger.error(f'No se pudo obtener informacion del modelo {model_code}, validar que el modelo exista y tenga acceso, {e}')
                     else:
@@ -162,6 +167,11 @@ class YujuMappingField(models.Model):
                         record_data.update(update_data)
                         
                         continue
+
+        if processed_fields:
+            for pf in processed_fields:
+                if pf in record_data:
+                    record_data.pop(pf)
 
         return record_data
 

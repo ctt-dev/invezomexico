@@ -2,7 +2,7 @@
   <data>
 
     <record model="ir.ui.view" id="madkting.yuju_mapping_model">
-      <field name="name">yuju.mapping.model.tree.view</field>
+      <field name="name">yuju.mapping.model.list.view</field>
       <field name="model">yuju.mapping.model</field>
       <field name="type">list</field>
       <field name="arch" type="xml">
@@ -32,7 +32,7 @@
     </record>
 
     <record model="ir.ui.view" id="madkting.yuju_mapping_field">
-      <field name="name">yuju.mapping.field.tree.view</field>
+      <field name="name">yuju.mapping.field.list.view</field>
       <field name="model">yuju.mapping.field</field>
       <field name="type">list</field>
       <field name="arch" type="xml">
@@ -63,8 +63,9 @@
             <group>
               <field name="model"/>          
               <field name="fieldtype"/>    
-              <field name="model_relation" invisible="fieldtype != 'relation'"/>
+              <field name="model_relation" invisible="fieldtype != 'relation'" />
               <field name="mapping_type"/>
+              <field name="remove_after_process" invisible="mapping_type != 'fields'" />   
             </group>
           </group>
           <notebook>
@@ -84,7 +85,7 @@
     </record>
 
     <record model="ir.ui.view" id="madkting.yuju_mapping_field_value">
-      <field name="name">yuju.mapping.field.value.tree.view</field>
+      <field name="name">yuju.mapping.field.value.list.view</field>
       <field name="model">yuju.mapping.field.value</field>
       <field name="type">list</field>
       <field name="arch" type="xml">

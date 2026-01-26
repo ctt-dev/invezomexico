@@ -1,8 +1,8 @@
 <odoo>
   <data>
 
-    <record model="ir.ui.view" id="madkting.madkting_config_tree_view">
-      <field name="name">madkting.config.tree.view</field>
+    <record model="ir.ui.view" id="madkting.madkting_config_list_view">
+      <field name="name">madkting.config.list.view</field>
       <field name="model">madkting.config</field>
       <field name="type">list</field>
       <field name="arch" type="xml">
@@ -34,11 +34,18 @@
               <group>
                 <group>
                   <field name="webhook_stock_enabled"/>
+                  <field name="webhook_auto_send_enabled"/>
                   <field name="webhook_product_mapped" />
+                  <field name="webhook_stock_cron_enabled"/>
+                  <field name="webhook_product_batchsize"/>
+                  <field name="webhook_product_limit"/>
                   <field name="stock_source_multi"/>
                   <field name="stock_source_channels"/>
-                  <field name="stock_quant_available_quantity_enabled"/>
+                  <!-- <field name="stock_locations_children"/> -->
+                  <field name="simple_stock_locations"/>
+                  <!-- <field name="stock_quant_available_quantity_enabled"/> -->
                   <field name="webhook_price_enabled"/>
+                  <!-- <field name="validate_price_webhook_enabled"/> -->
                   <field name="default_pricelist"/>
                   <field name="log_enabled"/>
                   <field name="order_detail_enabled"/>
@@ -46,11 +53,12 @@
                 </group>
                 <group>
                   <field name="validate_partner_exists"/>
+                  <field name="partner_name_invoice_address"/>
                   <field name="validate_barcode_exists"/>
                   <field name="simple_description_enabled"/>
                   <field name="product_shared_catalog_enabled" />
-                  <field name="search_state_by_mapping" />
-                  <field name="search_city_by_mapping" />
+                  <!-- <field name="search_state_by_mapping" />
+                  <field name="search_city_by_mapping" /> -->
                 </group>
               </group>
             </page>
@@ -69,6 +77,8 @@
                 </group>
                 <group>
                   <field name="shipping_webhook_enabled"/>
+                  <field name="invoice_doctype_enabled"/>
+                  <field name="order_search_days"/>
                   <field name="update_order_name"/>
                   <field name="update_order_name_pack"/>
                   <field name="orders_force_cancel"/>
@@ -84,20 +94,26 @@
                   <field name="invoice_unconfirmed"/>
                   <field name="invoice_webhook_enabled"/>
                   <field name="auto_webhook_after_invoice_enabled"/>
+                  <field name="invoice_auto_retry"/>
+                  <field name="invoice_max_retries"/>
+                  <field name="invoice_before_days"/>
+                  <field name="invoice_max_records"/>
                   <field name="invoice_prefix_id_folio"/>
-                  <field name="invoice_country" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_currency" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_prefix_file" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_prefix_pdf_file" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_add_pdf_file" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_save_pdf_attachment" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_country" required="invoice_webhook_enabled == True" invisible="invoice_webhook_enabled == False" />
+                  <field name="invoice_currency" required="invoice_webhook_enabled == True" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_prefix_file" required="invoice_webhook_enabled == True" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_prefix_pdf_file" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_add_pdf_file" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_print_pdf_file" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_save_pdf_attachment" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_validate_attached_formats" invisible="invoice_webhook_enabled == False"/>
                 </group>
                 <group>
-                  <field name="invoice_serie" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_serie_ticket" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_doc_type" required="invoice_webhook_enabled" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_separator" invisible="not invoice_webhook_enabled"/>
-                  <field name="invoice_partner_vat" invisible="not invoice_webhook_enabled"/>
+                  <field name="invoice_serie" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_serie_ticket" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_doc_type" required="invoice_webhook_enabled == True" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_separator" invisible="invoice_webhook_enabled == False"/>
+                  <field name="invoice_partner_vat" invisible="invoice_webhook_enabled == False"/>
                 </group>
               </group>
             </page>
@@ -105,11 +121,11 @@
               <group>
                 <group>                  
                   <field name="dropship_enabled"/>
-                  <field name="dropship_picking_type" required="dropship_enabled" invisible="not dropship_enabled"/>
-                  <field name="dropship_webhook_enabled" required="dropship_enabled" invisible="not dropship_enabled"/>
-                  <field name="dropship_default_route_id" required="dropship_enabled" invisible="not dropship_enabled"/>
-                  <field name="dropship_route_id" required="dropship_enabled" invisible="not dropship_enabled"/>
-                  <field name="dropship_mto_route_id" required="dropship_enabled" invisible="not dropship_enabled"/>
+                  <field name="dropship_picking_type" required="dropship_enabled == True" invisible="dropship_enabled == False" />
+                  <field name="dropship_webhook_enabled" required="dropship_enabled == True" invisible="dropship_enabled == False"/>
+                  <field name="dropship_default_route_id" required="dropship_enabled == True" invisible="dropship_enabled == False"/>
+                  <field name="dropship_route_id" required="dropship_enabled == True" invisible="dropship_enabled == False"/>
+                  <field name="dropship_mto_route_id" required="dropship_enabled == True" invisible="dropship_enabled == False"/>
                 </group>
                 <group>
                   

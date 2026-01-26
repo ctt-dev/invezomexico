@@ -4,7 +4,7 @@
     
     <!-- explicit list view definition -->
     <record model="ir.ui.view" id="madkting.sale_list">
-      <field name="name">sale.order.tree</field>
+      <field name="name">sale.order.list</field>
       <field name="model">sale.order</field>
       <field name="type">list</field>
       <field name="arch" type="xml">
@@ -30,16 +30,18 @@
             <group>
               <group>
                 <separator string="Order Info"/>
-                <field name="channel" readonly="1"/>
-                <field name="fulfillment" readonly="1"/>
-                <field name="channel_id" readonly="1" groups="madkting.madkting_api_group"/>
-                <field name="yuju_shop_id" readonly="1" groups="madkting.madkting_api_group"/>
-                <field name="channel_order_id" groups="madkting.madkting_api_group"/> 
+                <field name="channel" readonly="True"/>
+                <field name="yuju_shop_id" readonly="True" groups="madkting.madkting_api_group"/>
+                <field name="fulfillment"/>
+                <field name="channel_id" groups="madkting.madkting_api_group" />
                 <field name="yuju_pack_id" />
-                <field name="channel_order_reference" />                
-                <field name="yuju_seller_id" readonly="1"/>
-                <field name="yuju_update_date_order" readonly="1"/>
-                <field name="yuju_payment_date_order" readonly="1"/>
+                <field name="channel_order_id" groups="madkting.madkting_api_group" /> 
+                <field name="channel_order_reference" />                 
+                <field name="yuju_seller_id" readonly="True"/>
+                <field name="yuju_create_date_order" readonly="True"/>
+                <field name="yuju_update_date_order" readonly="True"/>
+                <field name="yuju_payment_date_order" readonly="True"/>
+                <field name="yuju_due_date" readonly="True"/>
                 <separator string="Detalle de la venta"/>
                 <field name="yuju_order_data" />
               </group>
@@ -48,19 +50,21 @@
                 <field name="order_progress"/>
                 <field name="yuju_shipping_status"/>
                 <field name="yuju_invoice_status"/>
+                <field name="yuju_invoice_retries"/>
+                <field name="webhook_last_update"/>
                 <field name="yuju_invoice_doctype"/>
                 <field name="yuju_carrier"/>
                 <field name="yuju_payment_method" readonly="True"/>
                 <field name="yuju_shipping_type" readonly="True"/>
-                <field name="yuju_marketplace_fee" readonly="1"/>
-                <field name="yuju_carrier_tracking_ref" readonly="1"/>
-                <field name="yuju_seller_shipping_cost" readonly="1"/>
-                <field name="yuju_error" readonly="1" />
-                <field name="yuju_shipping_id" readonly="1" groups="madkting.madkting_api_group"/>
-                <field name="payment_id" readonly="1" groups="madkting.madkting_api_group"/>
-                <field name="yuju_url_label" invisible="1"/>
+                <field name="yuju_marketplace_fee" readonly="True"/>
+                <field name="yuju_carrier_tracking_ref" readonly="True"/>
+                <field name="yuju_seller_shipping_cost" readonly="True"/>
+                <field name="yuju_shipping_id" readonly="True" groups="madkting.madkting_api_group"/>
+                <field name="payment_id" readonly="True" groups="madkting.madkting_api_group"/>
+                <field name="yuju_url_label" invisible="True"/>
+                <field name="yuju_error" readonly="True" />
                 <separator string="Acciones"/>
-                <button name="download_label" string="Descargar Guia" type="object" class="oe_highlight" invisible="not yuju_url_label"/>
+                <button name="download_label" string="Descargar Guia" type="object" class="oe_highlight" invisible="yuju_url_label == ''" />
                 <button name="test_print_invoice" string="Generar Invoice PDF" type="object" class="oe_highlight" />
               </group>
             </group>

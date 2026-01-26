@@ -16,8 +16,8 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     def _get_invoice_folio(self):
-        company_id = self.env.user.company_id.id
-        config = self.env['madkting.config'].get_config()
+        company_id = self.company_id.id
+        config = self.env['madkting.config'].get_config(self.company_id.id)
         doc_id = config.cafs_document_type_id.id
         domain = [
             ("state", "=", "posted"),
@@ -55,6 +55,8 @@ class SaleOrder(models.Model):
                                         description='order {} invoice folio not found'.format(order_id))
 
             invoice_separator = config.invoice_separator
+            if not invoice_separator:
+                invoice_separator = ' '
             logger.info(f"Separador serie y folio {invoice_separator}")
             last_folio = invoice_folio.split(invoice_separator)
             logger.info(last_folio)

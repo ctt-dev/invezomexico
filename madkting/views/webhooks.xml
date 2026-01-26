@@ -1,16 +1,18 @@
 <odoo>
   <data>
 
-    <record model="ir.ui.view" id="yuju_webook_record_tree_view">
-      <field name="name">yuju.webhhook.record.tree.view</field>
+    <record model="ir.ui.view" id="yuju_webook_record_list_view">
+      <field name="name">yuju.webhhook.record.list.view</field>
       <field name="model">yuju.webhook.record</field>
       <field name="type">list</field>
       <field name="arch" type="xml">
         <list string="Webhooks" >
           <field name="date_webhook"/>
           <field name="product_id"/>
+          <field name="date_send_webhook"/>
+          <field name="date_response_webhook"/>
           <field name="company_id"/>
-          <field name="url"/>
+          <!-- <field name="url"/> -->
           <field name="event"/>
           <field name="state"/>
         </list>
@@ -36,6 +38,8 @@
             </group>
             <group>
               <field name="date_webhook"/>
+              <field name="date_send_webhook"/>
+              <field name="date_response_webhook"/>
               <field name="data"/>
               <field name="message"/>
             </group>
@@ -52,8 +56,8 @@
       <field name="domain">[]</field>
     </record>
 
-    <record model="ir.ui.view" id="madkting.madkting_webhook_tree_view">
-      <field name="name">madkting.webhook.tree.view</field>
+    <record model="ir.ui.view" id="madkting.madkting_webhook_list_view">
+      <field name="name">madkting.webhook.list.view</field>
       <field name="model">madkting.webhook</field>
       <field name="type">list</field>
       <field name="arch" type="xml">

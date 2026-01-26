@@ -40,23 +40,31 @@ class MadktingStockMoveListener(Component):
             return
 
         company_id = record.company_id.id if record and record.company_id else None
+        if not company_id:
+            logger.debug("No company id for record")
+            return
+        
         config = self.env['madkting.config'].get_config(company_id)
 
         if not config:
             logger.warning("No config set in webhook listener")
             return
+        
+        if not config.webhook_stock_enabled:
+            logger.debug("Webhook stock not enabled")
+            return
 
         record_state = getattr(record, 'state', None)
+        if record_state in ['assigned', 'done', 'cancel']:
 
-        if record_state in ['assigned', 'done', 'cancel'] and record.product_id.id_product_madkting:
-            try:
-                wh_records = self.env["yuju.webhook.record"]
-                wh_records.prepare_webhook(record.product_id, record.company_id.id)
-            except Exception as ex:
-                post_message = f"Error on webhook listener {record.name}: {ex}"
-                logger.exception(post_message)
-                if config.webhook_detail_enabled:
-                    record.product_id.message_post(body=post_message)
+            if config.webhook_stock_cron_enabled:
+                if not record.product_id.webhook_pending:
+                    logger.info("Update product webhook pending")
+                    record.product_id.webhook_pending = True
+            else:
+                logger.info("Webhook stock cron not enabled")
+                auto_send = config.webhook_auto_send_enabled
+                record.product_id.send_webhook_action(auto_send=auto_send, config=config)
 
-        
+
 # https://apps.yuju.io/api/sales/in/2301?id_shop=1085876

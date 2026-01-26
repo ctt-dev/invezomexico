@@ -13,7 +13,7 @@
     'email': "gerardo.lopez@yuju.io",
     'website': "https://yuju.io/",
     'category': 'Sales',
-    'version': '0.1.1',
+    'version': '0.0.2',
     'license': 'Other proprietary',
 
     # any module necessary for this one to work correctly
@@ -24,7 +24,7 @@
     ],
     # always loaded
     'data': [
-        # 'views/config_view.xml', **UPGRADE
+        'views/config_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -43,30 +43,3 @@
         "views/**/*",  # exclude all files in a folder hierarchy recursively
     ]
 }
-
-# Version 0.0.1
-# *** Agrega configuracion para validar folios
-
-# Version 0.0.2
-# *** Corrige dependencia modulo madkting
-
-# Version 0.0.3
-# *** FIX code id documento en metodo search usa objeto
-
-# Version 0.0.4
-# *** FIX code self empty in message post
-
-# Version 0.0.5
-# *** Agrega config validacion doctype NIT
-
-# Version 0.0.6
-# *** Actualiza metodo busca ultimo folio para generar boletas 
-
-# Version 0.0.7
-# *** Fix call method name
-
-# Version 0.1.0
-# *** Agrega validacion RUT, aplica regla para asignar guion y definir DOC TYPE
-
-# Version 0.1.1
-# *** Agrega dependencia del modulo Enterprise l10n_cl_edi (Necesario para validar folios)

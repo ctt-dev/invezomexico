@@ -13,7 +13,7 @@
     'email': "gerardo.lopez@yuju.io",
     'website': "https://yuju.io/",
     'category': 'Sales',
-    'version': '0.0.6',
+    'version': '0.0.3',
     'license': 'Other proprietary',
 
     # any module necessary for this one to work correctly
@@ -24,9 +24,9 @@
     # always loaded
     'data': [
         # 'security/security.xml',
-        # 'security/ir.model.access.csv', **UPGRADE
-        # 'views/product_view.xml',**UPGRADE
-        # 'views/config_view.xml',**UPGRADE
+        'security/ir.model.access.csv',
+        'views/product_view.xml',
+        'views/config_view.xml',
         # 'views/templates.xml',
     ],
     # only loaded in demonstration mode
@@ -46,12 +46,3 @@
         "views/**/*",  # exclude all files in a folder hierarchy recursively
     ]
 }
-
-# Version 0.0.3
-# *** Agrega configuracion para actualizar tipo de producto en Odoo
-
-# Version 0.0.4
-# *** Fix method override mdk_create variation list
-
-# Version 0.0.5
-# *** Show config view fields for combos

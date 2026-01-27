@@ -1,0 +1,127 @@
+<odoo>
+    <data>
+        <record id="mail_template_cfdi_document_check" model="mail.template">
+            <!-- <field name="name">Cambios de estado en documentos CFDI</field> -->
+            <field name="name">CFDI document state changes</field>
+            <field name="model_id" ref="l10n_mx_cfdi_manager.model_l10n_mx_cfdi_document"/>
+            <!-- <field name="subject">Cambio en estado de documento CFDI ${object.uuid}</field> -->
+            <field name="subject">Change detected on state of CFDI document ${object.uuid}</field>
+            <field name="auto_delete">1</field>
+            <field name="body_html" type="html">
+<table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;padding-top: 16px; background-color: rgb(241, 241, 241); font-family: Verdana, Arial, sans-serif; color: rgb(69, 71, 72); width: 1037px;">
+    <tbody>
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="border-collapse:separate;padding: 16px; background-color: white;">
+                    <tbody>
+                        <tr>
+                            <td align="center" style="min-width:590px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="590" style="border-collapse:separate;min-width: 590px; padding: 0px 8px;">
+                                    <tbody>
+                                        <tr>
+                                            <td valign="middle">
+                                                <!-- <span style="font-size:10px;">El documento CFDI</span> -->
+                                                <span style="font-size:10px;">CFDI document</span>
+                                                <br/>
+                                                <b style="font-weight:bolder;">
+                                                    <font style="font-size:18px;">${object.uuid}</font>
+                                                    <!-- <span style="font-size:18px;"> tiene un estado </span> -->
+                                                    <span style="font-size:18px;"> changes its state to </span>
+                                                    <font style="font-size:18px;">${object.cfdi_state}.</font>
+                                                </b>
+                                            </td>
+                                            <td valign="middle" align="right">
+                                                <img src="https://mrmikke-elroble-stag-6282849.dev.odoo.com/logo.png?company=${object.company_id.id}" alt="${object.company_id.name}" style="border-style:none;vertical-align:middle;padding: 0px; margin: 0px; height: auto; width: 80px;" width="80" height="35.1094"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="text-align:center;">
+                                                <hr width="100%" style="border-top-color:rgba(0, 0, 0, 0.1);border-top-style:solid;border-top-width:1px;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;overflow-y:visible;overflow-x:visible;height:0px;box-sizing:content-box;margin: 16px 0px; border-width: medium; border-style: none; border-top-color: initial; background-color: rgb(204, 204, 204); clear: both; font-size: 0px; min-height: 1px; line-height: 0;"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="min-width:590px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="590" style="border-collapse:separate;min-width: 590px; padding: 0px 8px;">
+                                    <tbody>
+                                        <tr>
+                                            <!-- <td valign="top">
+                                                Estimado/a usuario,<br/><br/>Se le informa que al documento CFDI con UUID 
+                                                <span style="font-weight:bolder;">${object.uuid} </span>
+                                                tiene un estado nuevo ante el SAT. Se recomienda revisar los documentos relacionados al mismo.
+                                                <div style="font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;margin: 16px 0px;">
+                                                    <a href="/web?#action=648&amp;cids=1&amp;menu_id=262&amp;model=l10n_mx.cfdi_document&amp;view_type=form&amp;id=${object.id}" style="text-decoration:none;background-color:transparent;color: rgb(255, 255, 255); background-color: rgb(135, 90, 123); padding: 8px 16px; border-radius: 5px;" target="_blank">
+                                                        Ver documento CFDI
+                                                    </a>
+                                                </div>
+                                            </td> -->
+                                            <td valign="top">
+                                                Dear user,<br/><br/>You are informed that the CFDI document with UUID 
+                                                <span style="font-weight:bolder;">${object.uuid} </span>
+                                                has a new status before the SAT. It is recommended to review the documents related to it.
+                                                <div style="font-size:13px;font-family:&quot;Lucida Grande&quot;, Helvetica, Verdana, Arial, sans-serif;margin: 16px 0px;">
+                                                    <a href="/web?#action=648&amp;cids=1&amp;menu_id=262&amp;model=l10n_mx.cfdi_document&amp;view_type=form&amp;id=${object.id}" style="text-decoration:none;background-color:transparent;color: rgb(255, 255, 255); background-color: rgb(135, 90, 123); padding: 8px 16px; border-radius: 5px;" target="_blank">
+                                                        Go to CFDI document
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center;">
+                                                <hr width="100%" style="border-top-color:rgba(0, 0, 0, 0.1);border-top-style:solid;border-top-width:1px;border-left-width:0px;border-bottom-width:0px;border-right-width:0px;overflow-y:visible;overflow-x:visible;height:0px;box-sizing:content-box;margin: 16px 0px; border-width: medium; border-style: none; border-top-color: initial; background-color: rgb(204, 204, 204); clear: both; font-size: 0px; min-height: 1px; line-height: 0;"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="min-width:590px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="590" style="border-collapse:separate;min-width: 590px; font-size: 11px; padding: 0px 8px;">
+                                    <tbody>
+                                        <tr>
+                                            <td valign="middle" align="left">${object.company_id.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="middle" align="left" style="opacity:0.7;"> </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="min-width:590px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="border-collapse:separate;min-width: 590px; padding: 8px;">
+                    <tbody>
+                        <tr>
+                            <!-- <td style="text-align:center;">
+                                Creado por 
+                                <a target="_blank" href="https://www.odoo.com/?utm_source=db&amp;utm_medium=auth" style="text-decoration:none;background-color:transparent;color: rgb(135, 90, 123);">
+                                    Odoo
+                                </a>
+                            </td> -->
+                            <td style="text-align:center;">
+                                Created by
+                                <a target="_blank" href="https://www.odoo.com/?utm_source=db&amp;utm_medium=auth" style="text-decoration:none;background-color:transparent;color: rgb(135, 90, 123);">
+                                    Odoo
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+            </field>
+            
+        </record>
+    </data>
+</odoo>

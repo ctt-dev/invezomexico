@@ -1,0 +1,123 @@
+<odoo>
+    <data>
+        <record id="l10n_mx_cfdi_request_filter" model="ir.ui.view">
+            <field name="name">l10n_mx.cfdi_request.search</field>
+            <field name="model">l10n_mx.cfdi_request</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="id_solicitud" string="UUID"/>
+                    <filter name="start_date" string="Fecha inicial" date="start_date"/>
+                    <filter name="end_date" string="Fecha final" date="end_date"/>
+                    <separator/>
+                    <filter name="type_emision_r" string="Recibidos" domain="[('type_emision', '=', 'R')]"/>
+                    <filter name="type_emision_e" string="Emitidos" domain="[('type_emision', '=', 'E')]"/>
+                    <group>
+                        <filter string="Tipo de emisión" name="group_by_type_emision" domain="[]" context="{'group_by': 'type_emision'}"/>
+                        <filter string="Fecha inicial" name="group_by_start_date" domain="[]" context="{'group_by': 'start_date'}"/>
+                        <filter string="Fecha final" name="group_by_end_date" domain="[]" context="{'group_by': 'end_date'}"/>
+                        <filter string="Estado" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>  
+        
+        <record model="ir.ui.view" id="l10n_mx_cfdi_request_tree">
+            <field name="name">Solicitudes</field>
+            <field name="model">l10n_mx.cfdi_request</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="id_solicitud" string="UUID"/>
+                    <field name="start_date" string="Fecha inicial"/>
+                    <field name="end_date" string="Fecha final"/>
+                    <field name="type_emision" string="Tipo de emisión"/>
+                    <field name="state" string="Estado de la solicitud"/>
+                    <field name="done" string="Descargado"/>
+                    <field name="docs_create" invisible="0"/> 
+                    <field name="total_documents"/>
+                    <!-- <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" attrs="{'invisible':['|',('done','=',False),('docs_create','!=',False)]}"/> -->
+                    <!-- <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" invisible="done == False or docs_create != False"/> -->
+                    <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" invisible="not done or docs_create or request_type != 'CFDI'"/>
+                    <button name="create_request_metadata" type="object" icon="fa-archive" string="DESCOMPRIMIR METADATOS" invisible="not done or docs_create or request_type != 'Metadata'"/>
+                    <button name="verificar_solicitud" type="object" string="VERIFICAR"/>                    
+                </list>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="l10n_mx_cfdi_request_form">
+            <field name="name">Solicitud</field>
+            <field name="model">l10n_mx.cfdi_request</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                    <field name="request_type" invisible="1"/>
+                        <group>
+                            <group>
+                                <field name="company_id" string="Compañia" domain="[('id','in',allowed_company_ids),('fiel_ids','!=',False)]" options="{'no_create': True}" required="1" readonly="state"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="rfc_consultant" invisible="1" force_save="1"/>
+                            <field name="rfc_receptor" invisible="1" force_save="1"/>
+                            <group>
+                                <field name="type_emision" string="Tipo de emisión" required="1" readonly="state"/>
+                                <field name="start_date" string="Fecha inicial" required="1" readonly="state"/>
+                                <field name="end_date" string="Fecha final" required="1" readonly="state"/>
+                            </group>
+                            <group>
+                                <field name="state" string="Estado de la solicitud" readonly="1" force_save="1"/>
+                                <field name="done" string="Descargado" readonly="1" force_save="1" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <!-- <page string="Documentos" attrs="{'invisible':[('done','=',False)]}"> -->
+                            <page string="Documentos" invisible="done == False or request_type != 'CFDI'">
+                                <field name="cfdi_documents"/>
+                            </page>
+                            <page string="Metadatos" invisible="done == False or request_type != 'Metadata'">
+                                <field name="metadata_lines"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="act_l10n_mx_cfdi_request_r" model="ir.actions.act_window">
+            <field name="name">Solicitudes</field>
+            <field name="res_model">l10n_mx.cfdi_request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('request_type', '=', 'CFDI')]</field>
+            <field name="context">
+                {
+                    'search_default_type_emision_r': 1,
+                    'default_request_type': 'CFDI',
+                }
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay solicitudes aún...
+                </p>
+            </field>
+        </record>
+        <record id="act_l10n_mx_cfdi_request_e" model="ir.actions.act_window">
+            <field name="name">Solicitudes</field>
+            <field name="res_model">l10n_mx.cfdi_request</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('request_type', '=', 'CFDI')]</field>
+            <field name="context">
+                {
+                    'search_default_type_emision_e': 1,
+                    'default_type_emision': 'E',
+                    'default_request_type': 'CFDI',
+                }
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay solicitudes aún...
+                </p>
+            </field>
+        </record>
+        
+        <menuitem name="Solicitudes de descarga" id="l10n_mx_cfdi_manager.cfdi_request_r" parent="account.menu_finance_payables" sequence="1002" action="l10n_mx_cfdi_manager.act_l10n_mx_cfdi_request_r" groups="l10n_mx_cfdi_manager_admin"/>
+        <menuitem name="Solicitudes de descarga" id="l10n_mx_cfdi_manager.cfdi_request_e" parent="account.menu_finance_receivables" sequence="1002" action="l10n_mx_cfdi_manager.act_l10n_mx_cfdi_request_e" groups="l10n_mx_cfdi_manager_admin"/>
+    </data>
+</odoo>

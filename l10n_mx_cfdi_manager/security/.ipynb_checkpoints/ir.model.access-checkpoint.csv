@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_mx_cfdi_document,l10n_mx.cfdi_document,model_l10n_mx_cfdi_document,,1,1,1,0
+access_l10n_mx_cfdi_request,l10n_mx.cfdi_request,model_l10n_mx_cfdi_request,,1,1,1,1
+access_l10n_mx_cfdi_fiel,l10n_mx.cfdi_fiel,model_l10n_mx_cfdi_fiel,,1,1,1,1
+access_l10n_mx_cfdi_document_wizard,l10n_mx.cfdi_document_wizard,model_l10n_mx_cfdi_document_wizard,,1,1,1,1

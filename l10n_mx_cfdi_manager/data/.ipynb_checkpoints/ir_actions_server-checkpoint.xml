@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <record id="ir_action_server_create_moves" model="ir.actions.server">
+            <field name="name">Crear y mostrar Facturas/Notas de crédito</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="binding_model_id" ref="model_l10n_mx_cfdi_document"/>
+<!--             <field name="binding_view_types">list</field> -->
+            <field name="sequence">1</field>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.create_bill_showing_new_record()
+            </field>
+        </record>
+        
+        <record id="ir_action_download_attachment" model="ir.actions.server">
+            <field name="name">Descargar documento(s)</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="binding_model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                action = records.action_download_xml()
+            </field>
+        </record>
+        
+        <record id="ir_action_document" model="ir.actions.server">
+            <field name="name">Verificar estado en SAT</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="binding_model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="binding_view_types">list</field>
+            <field name="sequence">1</field>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    if len(records) > 10:
+                        raise UserError("Debido al alto tiempo de espera para verificar un documento se recomienda no seleecionar mas de 10 registros")
+                    else:
+                        for rec in records:
+                            rec.verify_state()
+            </field>
+        </record>
+    </data>
+</odoo>

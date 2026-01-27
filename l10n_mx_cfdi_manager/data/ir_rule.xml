@@ -1,0 +1,25 @@
+<odoo>
+    <data>
+        <record id="ir_rule_l10n_mx_cfdi_document" model="ir.rule">
+            <field name="name">l10n_mx.cfdi_document company_rule</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_document"/>
+            <field name="active" eval="True"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        
+        <record id="ir_rule_l10n_mx_cfdi_request" model="ir.rule">
+            <field name="name">l10n_mx.cfdi_request company_rule</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="active" eval="True"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

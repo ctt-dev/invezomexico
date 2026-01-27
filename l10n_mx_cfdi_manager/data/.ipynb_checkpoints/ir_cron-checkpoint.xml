@@ -1,0 +1,130 @@
+<odoo>
+    <data>
+        <record id="ir_cron_daily_request" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Petición diaria</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">model.automated_request()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=10, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="active" eval="False"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+        <record id="ir_cron_set_get_cfdi_state_for_cfdi" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Solicitar ESTADO de CFDI de documentos de los últimos días</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">
+date_to_check = datetime.date.today() - datetime.timedelta(days=env.company.days_for_status_check)
+cfdis = env['l10n_mx.cfdi_document'].search([('date','>=',date_to_check)])
+for cfdi in cfdis:
+  cfdi.write({'get_cfdi_state': True})
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=9, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+        <record id="ir_cron_update_cfdi_status" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Actualizar ESTADO de CFDI de 5 documentos</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">
+cfdis = env['l10n_mx.cfdi_document'].search([('get_cfdi_state','=',True)], limit=5)
+
+for cfdi in cfdis:
+  cfdi.verify_state()
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+        <record id="ir_cron_request_download" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Descarga Automatica</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">model.automated_download()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+        <record id="ir_cron_request_verification" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Verificación SAT Automatica</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">model.automated_verification()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+        <record id="ir_cron_check_cfdi_state_mail" model="ir.cron">
+            <field name="name">Administrador de CFDI recibidos: Mandar correo si se encuentran CFDI cancelados relacionados</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">
+moves = env['account.move'].search([('cfdi_document','!=',False),('cfdi_document.cfdi_state','not in',['Vigente','',False])])
+
+for move in moves:
+  move.cfdi_document.send_mail_for_state_change()
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(DateTime.now().replace(hour=8, minute=0, second=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record>
+        
+<!--         <record id="ir_cron_daily_efos" model="ir.cron">
+            <field name="name">Consulta: EFOS</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_efos"/>
+            <field name="state">code</field>
+            <field name="code">model.download_efos_list_sat()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record> -->
+        
+<!--         <record id="ir_cron_prueba" model="ir.cron">
+            <field name="name">Prueba facturas</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">model.prueba_conceptos()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record> -->
+        
+<!--         <record id="ir_cron_request_download" model="ir.cron">
+            <field name="name">Solicitudes: Recuperar documentos</field>
+            <field name="model_id" ref="model_l10n_mx_cfdi_request"/>
+            <field name="state">code</field>
+            <field name="code">model.create_failure_request()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+        </record> -->
+    </data>
+</odoo>

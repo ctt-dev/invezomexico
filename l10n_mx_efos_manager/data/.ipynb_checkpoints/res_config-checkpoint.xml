@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+        <record model="res.config.settings" id="res_config_settings"> 
+            <field name="group_warning_purchase" eval="1"/> 
+        </record>
+        <function model="res.config.settings" name="execute">
+            <value model="res.config.settings" search="[('id', '=', ref('res_config_settings'))]"/>
+        </function>
+    </data>
+</odoo>

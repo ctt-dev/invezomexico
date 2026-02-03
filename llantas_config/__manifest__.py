@@ -53,7 +53,7 @@
         'views/module.xml',
         'views/proveedores.xml',
         'views/subir_existencias.xml',
-        # 'views/sales.xml', TODO: Error por campo yuju_pack_id?
+        'views/sales.xml',
         'views/marketplaces.xml',
         'views/stock.xml',
         'views/tablero_detallado.xml',
@@ -67,9 +67,9 @@
         'views/account_move.xml',
         # 'reports/report_invoice.xml', TODO: El elemento "<div id="right-elements">" no se puede localizar en la vista principal
         'views/res_company.xml',
-        # 'views/product_pricelist_item.xml', **UPGRADE
+        'views/product_pricelist_item.xml',
         'views/purchase.xml',
-        # 'reports/sale_order.xml', TODO: El elemento "<td name="td_product_quantity">" no se puede localizar en la vista principal
+        'reports/sale_order.xml',
         'reports/report_picking.xml',
         # 'views/style.css',
         'views/tablero_killer.xml',
@@ -84,7 +84,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            # 'llantas_config/static/src/**/*', **UPGRADE
+            'llantas_config/static/src/**/*',
         ],
     },    
 }

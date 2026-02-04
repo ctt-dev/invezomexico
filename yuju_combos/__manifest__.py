@@ -13,7 +13,7 @@
     'email': "gerardo.lopez@yuju.io",
     'website': "https://yuju.io/",
     'category': 'Sales',
-    'version': '0.0.3',
+    'version': '19.0.0.0.1',
     'license': 'Other proprietary',
 
     # any module necessary for this one to work correctly

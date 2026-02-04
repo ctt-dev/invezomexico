@@ -415,7 +415,7 @@ class ProductTemplate(models.Model):
             # logger.debug("No need to update price for products.")
             return res
         for product in self:
-            if "list_price" in values:
+            if "lst_price" in values:
                 products = self.env['product.product'].search([('product_tmpl_id', '=', product.id)])
                 for p in products:
                     p.webhook_price_pending = True

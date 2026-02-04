@@ -97,7 +97,7 @@ class ResPartner(models.Model):
             'country_code': str, # MX
             'email': str,
             'phone': str,
-            'mobile': str,
+            # 'mobile': str,
             'company_id': int,
             'company_name': str
         }
@@ -106,29 +106,40 @@ class ResPartner(models.Model):
         logger.debug("CREAR CUSTOMER")
         logger.debug(customer_data)
 
+        # Se agrega lista de campos validas disponibles para crear el cliente V19
+        create_fields = ["vat", "email", "phone", "company_id", "name", "street", "street2", "zip", "city", 
+                         "company_name", "comment", "tz", "active", "country_id"]
+        
+        create_customer_data = dict()
+        for field in create_fields:
+            if field in customer_data and customer_data[field] is not None:
+                create_customer_data[field] = customer_data[field]
+
+        customer_data = create_customer_data
+
         company_id = None
         if customer_data.get('company_id'):
             company_id = customer_data.get('company_id')
 
         config = self.env['madkting.config'].get_config(company_id)
 
-        defaults = {
-            'active': True,
-            'customer_rank': 1,
-            'employee': False,
-            'is_company': False,
-            'industry_id': False,
-            'color': 0
-        }
-        customer_data.update(defaults)
+        # defaults = {
+        #     'active': True,
+        #     'customer_rank': 1,
+        #     'employee': False,
+        #     'is_company': False,
+        #     'industry_id': False,
+        #     'color': 0
+        # }
+        # customer_data.update(defaults)
         # partners = {
         #     'delivery': customer_data.pop('shipping_address', dict()),
         #     'invoice': customer_data.pop('billing_address', dict())
         # }
         
 
-        if hasattr(self, 'partner_gid'):
-            defaults['partner_gid'] = 0
+        # if hasattr(self, 'partner_gid'):
+        #     defaults['partner_gid'] = 0
 
         partner_exist = False
         partner_found = None
@@ -158,15 +169,27 @@ class ResPartner(models.Model):
                     code='create_costumer_error',
                     description='Error trying to create new costumer: {}'.format(ex)
                 )
-        warnings = list()
         
-        remove_fields = ['image', 'image_medium', 'image_small', 'image_1920',
-                         'image_1024', 'image_512', 'image_256', 'image_128']
-        new_customer_data = new_customer.copy_data()[0]
-        new_customer_data['id'] = new_customer.id
-        for field in remove_fields:
-            new_customer_data.pop(field, None)
-        return results.success_result(data=new_customer_data, warnings=warnings)
+        if not new_customer or not new_customer.id:
+            return results.error_result(
+                code='create_costumer_error',
+                description='Error trying to create new costumer.'
+            )
+        # warnings = list()
+        
+        # remove_fields = ['image', 'image_medium', 'image_small', 'image_1920',
+        #                  'image_1024', 'image_512', 'image_256', 'image_128']
+        # logger.debug("## NEW CUSTOMER CREATED ##")
+        # logger.debug(new_customer)
+        # new_customer_data = new_customer.copy_data()[0]
+        # logger.debug(new_customer_data)
+        # new_customer_data['id'] = new_customer.id
+        # for field in remove_fields:
+        #     new_customer_data.pop(field, None)
+        # logger.debug("RETURN NEW CUSTOMER DATA")
+        # logger.debug(new_customer_data)
+        # return_data = {"id": new_customer.id}
+        return results.success_result({"id": new_customer.id})
 
     @api.model
     def update_mapping_fields(self, customer_data, model='res.partner'):

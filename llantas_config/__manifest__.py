@@ -69,7 +69,7 @@
         'views/res_company.xml',
         'views/product_pricelist_item.xml',
         'views/purchase.xml',
-        'reports/sale_order.xml',
+        # 'reports/sale_order.xml', TODO:  El elemento "<td name="td_product_quantity">" no se puede localizar en la vista principal
         'reports/report_picking.xml',
         # 'views/style.css',
         'views/tablero_killer.xml',

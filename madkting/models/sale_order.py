@@ -365,6 +365,10 @@ class SaleOrder(models.Model):
                 if field in line:
                     logger.debug(f"## Remove field ## {field}")
                     line.pop(field)
+            
+            if 'product_uom' in line:
+                product_uom_id = line.pop('product_uom')
+                line['product_uom_id'] = int(product_uom_id)
 
             product_tax_rate = line.pop('tax_rate', False)
             line['order_id'] = new_sale.id
@@ -395,9 +399,9 @@ class SaleOrder(models.Model):
             
             # YUJU envia la UDM Pieza(s) Id:1, lo cual genera un problema con 
             # productos que manejan otras unidades de medida.
-            line_product_uom_id = int(line.get('product_uom'))
-            if product.uom_id.id != line_product_uom_id:
-                line['product_uom'] = product.uom_id.id
+            # line_product_uom_id = int(line.get('product_uom'))
+            # if product.uom_id.id != line_product_uom_id:
+            #     line['product_uom'] = product.uom_id.id
 
             try:
                 logger.debug(line)
@@ -417,7 +421,8 @@ class SaleOrder(models.Model):
                 )
             else:                    
                 if not set_tax_rate_by_product and tax_cache.get(tax_rate):
-                    new_line.tax_id = tax_cache[tax_rate]
+                    # new_line.tax_ids = [tax_cache[tax_rate]]
+                    new_line.tax_ids = [(6, 0, [tax_cache[tax_rate].id])]
                     continue
                 if set_tax_rate_by_product and product_tax_rate:
                     if not tax_cache.get(product_tax_rate):
@@ -427,12 +432,12 @@ class SaleOrder(models.Model):
                                                                     ('active', '=', True),
                                                                     ('company_id', '=', company_id)],
                                                                     limit=1)
-                    new_line.tax_id = tax_cache.get(product_tax_rate)
+                    new_line.tax_ids = [(6, 0, [tax_cache.get(product_tax_rate).id])]
 
-                if new_line.tax_id and config.order_remove_tax_default and not tax_rate and not set_tax_rate_by_product:
+                if new_line.tax_ids and config.order_remove_tax_default and not tax_rate and not set_tax_rate_by_product:
                     logger.info(
                         "Se quitan impuestos por default si no se recibe impuesto desde Yuju")
-                    new_line.tax_id = [(6, 0, [])]
+                    new_line.tax_ids = [(6, 0, [])]
                     continue
 
         try:

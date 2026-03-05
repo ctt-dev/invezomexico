@@ -49,19 +49,37 @@
                             <kanban>
                                 <field name="id" />
                                 <field name="name"/>
-                                <field name="listado_marketplace" />
+                                <field name="listado_marketplace" />  <!-- IMPORTANTE: Este campo debe estar aquí -->
+                                <field name="tipo_producto"/>
+                                <field name="image_1920"/>
                                 <templates>
-                                    <t t-name="kanban-box">
-                                        <div class="oe_kanban_global_click">
-                                            <div>
-                                                <b style="font-size:15px"><field name="listado_marketplace"/></b><br/>
-                                                <field name="tipo_producto"/>
+                                    <t t-name="card" class="flex-row">
+                                        <main class="pe-2">
+                                            <div class="mb-1">
+                                                <div class="d-flex mb-0 h5">
+                                                    <b style="font-size:15px" t-if="record.listado_marketplace">
+                                                        <!-- Intenta primero con value en lugar de raw_value -->
+                                                        <t t-esc="record.data.listado_marketplace or ''"/>
+                                                    </b>
+                                                    <b style="font-size:15px" t-else="">
+                                                        Sin listado
+                                                    </b>
+                                                </div>
                                             </div>
-                                        </div>  
+                                            <span t-if="record.tipo_producto">
+                                                Tipo: <t t-esc="record.data.tipo_producto or ''"/>
+                                            </span>
+                                            <span t-else="">
+                                                Tipo: No especificado
+                                            </span>
+                                        </main>
+                                        <aside t-if="record.image_1920 and (record.image_1920.value or record.data.image_1920)">
+                                            <field name="image_1920" widget="image" alt="Marketplace" options="{'img_class': 'w-100 object-fit-contain', 'preview_image': 'image_1920'}"/>
+                                        </aside>
                                     </t>
                                 </templates>
                             </kanban>
-                            <form string="Contact / Address">
+                            <form string="Marketplace">
                                 <sheet>
                                     <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'avatar_128'}"/>
                                     <group>
@@ -186,39 +204,31 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_kanban_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='activity_state']" position="after">
-                    <div>
-                        <field name="alto"/>
-                        <field name="ancho" />
-                        <field name="rin" />
-                        <field name="modelo_llanta" />
-                        <field name="marca_llanta" />
-                        <field name="medida_llanta" />
-                        <field name="es_llanta"/>
-                    </div>
-                </xpath>
-                <xpath expr="//div[@name='product_lst_price']" position="after">
-                    <div invisible="not es_llanta">
-                        <table>
-                            <tr>
-                                <td><b>Alto:</b></td>
-                                <td><field name="alto"/></td>
-                                <td><b>Ancho:</b></td>
-                                <td><field name="ancho"/></td>
-                            </tr>
-                            <tr>
-                                <td><b>Rin:</b></td>
-                                <td><field name="rin"/></td>
-                                <td><b>Marca:</b></td>
-                                <td><field name="marca_llanta"/></td>
-                            </tr>
-                            <tr>
-                                <td><b>Medida:</b></td>
-                                <td><field name="medida_llanta"/></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </table>
+                <!-- En Odoo 19, el template se llama 'card' y tiene estructura main/aside -->
+                <xpath expr="//t[@t-name='card']//main" position="inside">
+                    <div t-if="record.es_llanta" class="mt-2 small">
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark me-1" t-if="record.alto.value">
+                                <b>Alto:</b> <t t-esc="record.alto.value"/>
+                            </span>
+                            <span class="badge bg-light text-dark me-1" t-if="record.ancho.value">
+                                <b>Ancho:</b> <t t-esc="record.ancho.value"/>
+                            </span>
+                            <span class="badge bg-light text-dark me-1" t-if="record.rin.value">
+                                <b>Rin:</b> <t t-esc="record.rin.value"/>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mt-1">
+                            <span class="badge bg-light text-dark me-1" t-if="record.marca_llanta.value">
+                                <b>Marca:</b> <t t-esc="record.marca_llanta.value"/>
+                            </span>
+                            <span class="badge bg-light text-dark me-1" t-if="record.modelo_llanta.value">
+                                <b>Modelo:</b> <t t-esc="record.modelo_llanta.value"/>
+                            </span>
+                            <span class="badge bg-light text-dark me-1" t-if="record.medida_llanta.value">
+                                <b>Medida:</b> <t t-esc="record.medida_llanta.value"/>
+                            </span>
+                        </div>
                     </div>
                 </xpath>
             </field>

@@ -478,11 +478,27 @@ class ctrl_llantas(models.Model):
         compute=compute_tdp
     )
     
+    # @api.model
+    # def create(self, values):
+    #     if 'sale_id' in values:
+    #         sale_id = self.env['sale.order'].browse(values['sale_id'])
+    #         values['proveedor_id'] = sale_id._get_purchase_orders().partner_id.id
+    #     return super(ctrl_llantas, self).create(values)
+
     @api.model
     def create(self, values):
-        if 'sale_id' in values:
+        # CORRECCIÓN: Manejar el caso donde hay múltiples órdenes de compra
+        if 'sale_id' in values and not values.get('proveedor_id'):
             sale_id = self.env['sale.order'].browse(values['sale_id'])
-            values['proveedor_id'] = sale_id._get_purchase_orders().partner_id.id
+            if sale_id:
+                purchase_orders = sale_id._get_purchase_orders()
+                if purchase_orders:
+                    # Si hay múltiples órdenes, tomamos el partner de la primera
+                    # Asumiendo que todas tienen el mismo proveedor
+                    values['proveedor_id'] = purchase_orders[0].partner_id.id
+                else:
+                    values['proveedor_id'] = False
+        
         return super(ctrl_llantas, self).create(values)
     
     def write(self, values):

@@ -270,7 +270,7 @@ class l10n_mx_cfdi_document(models.Model):
             cfdi = CFDI.from_string(base64.b64decode(self.attatch))
             sat = SAT()
             response = sat.status(cfdi=cfdi)
-            _logger.warning(str(response))
+            # _logger.warning(str(response))
             self.write({
                 'cfdi_state': response['Estado'],
                 'get_cfdi_state': False
@@ -777,8 +777,8 @@ class l10n_mx_cfdi_document(models.Model):
             lines = []
             
             if self.env.company.generation_type == "TC":
-                _logger.warning("CONCEPTOS")
-                _logger.warning(data['conceptos'])
+                # _logger.warning("CONCEPTOS")
+                # _logger.warning(data['conceptos'])
                 for concepto in data['conceptos']:
                     importe = concepto.getAttribute('Importe') if concepto.getAttribute('Importe') != "" else 0
                     descuento = concepto.getAttribute('Descuento') if concepto.getAttribute('Descuento') != "" else 0
@@ -797,8 +797,8 @@ class l10n_mx_cfdi_document(models.Model):
                             is_gasoline = True
                     for retencion in retenciones:
                         if traslado.getAttribute('TipoFactor') == 'Tasa':
-                            _logger.warning("RETENCION")
-                            _logger.warning(retencion.getAttribute('TasaOCuota'))
+                            # _logger.warning("RETENCION")
+                            # _logger.warning(retencion.getAttribute('TasaOCuota'))
                             rets.append(round(-float(retencion.getAttribute('TasaOCuota'))*100,4))
                             
                     claveunidad = concepto.getAttribute('ClaveUnidad')
@@ -821,8 +821,8 @@ class l10n_mx_cfdi_document(models.Model):
                         # 'importe_full': float(importe)
                     })
 
-                _logger.warning("LINES")
-                _logger.warning(lines)
+                # _logger.warning("LINES")
+                # _logger.warning(lines)
 
                 for line in lines:
                     if line['is_gasoline']:
@@ -862,8 +862,8 @@ class l10n_mx_cfdi_document(models.Model):
 
                     else:
 
-                        _logger.warning('CRATE LINE')
-                        _logger.warning(line)
+                        # _logger.warning('CRATE LINE')
+                        # _logger.warning(line)
                         rets_id = []
                         tax_rets = self.env['account.tax']
                         tax_list = self.env['account.tax']

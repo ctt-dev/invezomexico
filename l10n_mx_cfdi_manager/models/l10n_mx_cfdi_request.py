@@ -168,7 +168,7 @@ class l10n_mx_cfdi_request(models.Model):
                 descarga = SolicitaDescargaEmitidos(fiel)
                 result = descarga.solicitar_descarga(session, record.rfc_consultant, record.start_date, record.end_date, rfc_emisor=record.rfc_receptor, tipo_solicitud=record.request_type, estado_comprobante=estado_comprobante)
             
-            _logger.warning(result)
+            # _logger.warning(result)
     
             # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
             
@@ -178,7 +178,7 @@ class l10n_mx_cfdi_request(models.Model):
             
             record.verificar_solicitud()
         elif record.company_id.python_api == 'satcfdi':
-            _logger.warning('PETICION SATCFDI')
+            # _logger.warning('PETICION SATCFDI')
             # # Decodificar los binarios
             # cer_bytes = self.decode_base64(keys_id.clave)
             # key_bytes = self.decode_base64(keys_id.fiel)
@@ -217,10 +217,10 @@ class l10n_mx_cfdi_request(models.Model):
                     tipo_solicitud=tipo_solicitud,
                     estado_comprobante=EstadoComprobante.VIGENTE 
                 )
-            _logger.warning(str(response))
+            # _logger.warning(str(response))
             # Revisar estado de descarga
             response_for_status = sat_service.recover_comprobante_status(str(response['IdSolicitud']))
-            _logger.warning(str(response_for_status))
+            # _logger.warning(str(response_for_status))
             
             record.write({
                 'id_solicitud':response['IdSolicitud'],
@@ -321,14 +321,14 @@ class l10n_mx_cfdi_request(models.Model):
             raise UserError("No se encontraron llaves de la compañia")
         
         if self.company_id.python_api == 'cfdiclient':
-            _logger.warning(f'VERIFICAR CFDICLIENT')
+            # _logger.warning(f'VERIFICAR CFDICLIENT')
             fiel = self._read_fiel(keys_id)
             v_descarga = VerificaSolicitudDescarga(fiel, timeout=100)
             session = self._create_new_seassion(fiel)
             
             try:
                 result = v_descarga.verificar_descarga(session, self.rfc_consultant, self.id_solicitud)
-                _logger.warning(result)
+                # _logger.warning(result)
                 self.write({
                     'paquetes': ','.join(result['paquetes']),
                     'state': result['estado_solicitud'],
@@ -340,7 +340,7 @@ class l10n_mx_cfdi_request(models.Model):
             # {'estado_solicitud': '3', 'numero_cfdis': '8', 'cod_estatus': '5000', 'paquetes': ['a4897f62-a279-4f52-bc35-03bde4081627_01'], 'codigo_estado_solicitud': '5000', 'mensaje': 'Solicitud Aceptada'}
 
         elif self.company_id.python_api == 'satcfdi':
-            _logger.warning(f'VERIFICAR SATCFDI')
+            # _logger.warning(f'VERIFICAR SATCFDI')
             # Decodificar los binarios
             cer_bytes = self.decode_base64(keys_id.clave)
             key_bytes = self.decode_base64(keys_id.fiel)
@@ -360,7 +360,7 @@ class l10n_mx_cfdi_request(models.Model):
 
             try:
                 response_for_status = sat_service.recover_comprobante_status(self.id_solicitud)
-                _logger.warning(response_for_status)
+                # _logger.warning(response_for_status)
                 self.write({
                     'paquetes': ','.join(response_for_status['IdsPaquetes']),
                     'state': str(response_for_status['EstadoSolicitud']),
@@ -617,8 +617,8 @@ class l10n_mx_cfdi_request(models.Model):
 
     
     def _automated_request(self, request_type='CFDI', request_days=1):
-        _logger.warning("Accion planificada")
-        _logger.warning(f'request_type: {request_type}')
+        # _logger.warning("Accion planificada")
+        # _logger.warning(f'request_type: {request_type}')
         
         fiels = self.env['l10n_mx.cfdi_fiel'].search([])
         

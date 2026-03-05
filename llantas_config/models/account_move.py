@@ -191,6 +191,14 @@ class account_move_inherit(models.Model):
         related="invoice_line_ids.sale_line_ids.folio_venta"
     )
 
+    def _create_invoices(self, grouped=False, final=False):
+        """
+        Crear facturas sin validar disponibilidad
+        """
+        return super(sale_order_inherit, self.with_context(
+            skip_availability_check=True
+        ))._create_invoices(grouped=grouped, final=final)
+
 class ResCurrency(models.Model):
     _inherit = 'res.currency'
 

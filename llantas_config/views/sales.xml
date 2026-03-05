@@ -33,6 +33,7 @@
                      <field name="warehouse_id" options="{'no_create': True}" />
                      <field name="auto_warehouse_id" invisible="0" />
                      <field name="is_check" invisible="1" readonly="1"/>
+                     <field name="disponibilidad_verificada" invisible="1" readonly="1"/>
                      <label for="revisar_disponibilidad" />
                      <div class="o_row">
                         <button name="revisar_disponibilidad" type="object" string="Revisar disponibilidad" class="btn-primary" invisible="state != 'draft'"/>
@@ -51,13 +52,13 @@
                  </xpath>
                 <xpath expr="//sheet//group[@name='sale_header']" position="before">
                     <div class="oe_title">
-                        <group string="Información general" style="background-color: #fff">
+                        <group string="Información general">
                             <field name="marketplace" string="Canal de venta" options="{'no_create_edit': True}"/>
-                            <field name="link_venta" widget="url" invisible="not mostrar_comision and not mostrar_envio"/>
-                            <field name="folio_venta" invisible="not mostrar_comision and not mostrar_envio"/>
+                            <field name="link_venta" widget="url" invisible="not (mostrar_comision and mostrar_envio) or es_venta_directa"/>
+                            <field name="folio_venta" invisible="not (mostrar_comision and mostrar_envio) or es_venta_directa"/>
                             <!-- <field name="yuju_pack_id" readonly="1" invisible="not mostrar_comision and not mostrar_envio"/> -->
-                            <field name="link_facturacion" widget="url" invisible="not mostrar_comision and not mostrar_envio"/>
-                             <field name="fecha_venta" invisible="not mostrar_comision and not mostrar_envio"/>
+                            <field name="link_facturacion" widget="url" invisible="not (mostrar_comision and mostrar_envio) or es_venta_directa"/>
+                             <field name="fecha_venta" invisible="not (mostrar_comision and mostrar_envio) or es_venta_directa"/>
                             <!-- <field name="invoice_id" invisible="1"/> -->
                         </group>
                              
@@ -112,18 +113,17 @@
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                <!-- Reemplazar la vista original por la nueva vista de ganancia -->
-                <label for="ganancia" groups="base.group_user"/>
-                <div class="text-nowrap" groups="base.group_user">
-                    <!-- Mostrar el campo de ganancia como monetario -->
-                    <field name="ganancia" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-            
-                    <!-- Mostrar el porcentaje de margen, solo si hay un valor no nulo -->
-                    <span class="oe_inline" invisible="ganancia == 0">
-                        (<field name="margin_percent" nolabel="1" class="oe_inline" widget="float" options="{'precision': 1}"/>%)
-                    </span>
-                </div>
-            </xpath>
+                    <label for="ganancia" groups="base.group_user"/>
+                    <div class="text-nowrap" groups="base.group_user">
+                        <!-- Mostrar el campo de ganancia como monetario -->
+                        <field name="ganancia" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                
+                        <!-- Mostrar el porcentaje de margen, solo si hay un valor no nulo -->
+                        <span class="oe_inline" invisible="ganancia == 0">
+                            (<field name="margin_percent" nolabel="1" class="oe_inline" widget="float" options="{'precision': 1}"/>%)
+                        </span>
+                    </div>
+                </xpath>
 
                 
             </field>

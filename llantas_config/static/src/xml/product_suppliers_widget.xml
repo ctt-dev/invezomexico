@@ -34,7 +34,7 @@
                                         <td colspan="3">Total de existencia actual:</td>
                                         <td><t t-esc="state.totalExistencia"/></td>
                                     </tr>
-                                </foot>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

@@ -17,7 +17,7 @@ class sale_order_inherit(models.Model):
     margin_percent = fields.Float(string="Margen (%)", compute="_compute_ganancia", store=True)
 
 
-    @api.depends('amount_total', 'amount_untaxed', 'order_line', 'comision', 'envio')
+    @api.depends('amount_untaxed', 'amount_tax', 'order_line', 'comision', 'envio')
     def _compute_ganancia(self):
         # Cache de OC por origin
         origins = self.mapped("name")
@@ -29,25 +29,39 @@ class sale_order_inherit(models.Model):
                 ["origin"],
             )
         }
-
+    
         for order in self:
-            total_venta = order.amount_total or 0
+            # Usar amount_untaxed (sin IVA) para la base de cálculo
+            base_venta = order.amount_untaxed or 0
             comision = order.comision or 0
             envio = order.envio or 0
-
-            # Obtener el total de la OC vinculada
+            
+            # Costo de productos (sin IVA)
+            costo_productos = 0
+            for line in order.order_line:
+                if line.costo_promedio:
+                    # costo_promedio ya debe ser sin IVA
+                    costo_productos += line.costo_promedio * line.product_uom_qty
+    
+            # Obtener total de OC si existe
             total_oc = purchase_map.get(order.name, 0)
-            if not total_oc:
-                total_oc = sum(
-                    (line.costo_promedio * line.product_uom_qty) * 1.16
-                    for line in order.order_line if line.costo_promedio
-                )
-
-            # Cálculo de ganancia
-            order.ganancia = total_venta - comision - envio - total_oc
-
-            # Cálculo del margen (%)
-            order.margin_percent = round((order.ganancia / total_venta) * 100, 1) if total_venta else 0
+            if total_oc:
+                # Si total_oc viene con IVA, lo dividimos entre 1.16
+                costo_total = total_oc / 1.16
+            else:
+                costo_total = costo_productos
+    
+            # Cálculo de ganancia (todo sin IVA para consistencia)
+            ganancia_neta = base_venta - comision - envio - costo_total
+            
+            # Asignar valores
+            order.ganancia = ganancia_neta
+    
+            # Calcular margen sobre base_venta (sin IVA)
+            if base_venta:
+                order.margin_percent = round((ganancia_neta / base_venta) * 100, 1)
+            else:
+                order.margin_percent = 0
 
     
 
@@ -66,7 +80,6 @@ class sale_order_inherit(models.Model):
     
         for line in self.order_line:
             # Verificar si el producto de la línea es un paquete
-            # CORREGIDO: En Odoo 19 el campo type está en product.template
             if line.product_id.bom_ids and line.product_id.bom_ids[0].type == 'phantom':
                 # Si es un paquete, reemplazar por líneas de BOM
                 for bom_line in line.product_id.bom_ids[0].bom_line_ids:
@@ -85,12 +98,12 @@ class sale_order_inherit(models.Model):
                         else 0.0
                     )
     
-                    # Crear líneas en la orden para cada producto de la BOM
+                    # CORREGIDO: Asegurar que product_uom esté incluido
                     self.env['sale.order.line'].create({
                         'order_id': self.id,
                         'product_id': product.id,
                         'product_uom_qty': quantity_needed,
-                        'product_uom': bom_line.product_uom_id.id,
+                        'product_uom_id': bom_line.product_uom_id.id or product.uom_id.id,  # CORRECCIÓN: Usar la UOM de la BOM o la del producto
                         'price_unit': price_unit,
                     })
                 
@@ -101,6 +114,36 @@ class sale_order_inherit(models.Model):
                 available = self._check_product_availability(line.product_id, line.product_uom_qty)
                 if not available:
                     all_lines_available = False
+    
+        # Verificar si hay un almacén "3PL Virtual" disponible
+        if not all_lines_available:
+            preferred_warehouse = self._get_preferred_3pl_warehouse(current_company)
+    
+        # Asignar el almacén final
+        if preferred_warehouse:
+            self.write({'warehouse_id': preferred_warehouse.id})
+        elif all_lines_available:
+            # Seleccionar almacén con mayor stock (puede ser cualquier almacén regular)
+            warehouse_id = self._select_warehouse_with_max_stock()
+            if warehouse_id:
+                self.write({'warehouse_id': warehouse_id})
+            else:
+                # Asignar el primer almacén interno que encuentre
+                fallback_warehouse = self._get_first_internal_warehouse()
+                if fallback_warehouse:
+                    self.write({'warehouse_id': fallback_warehouse.id})
+                else:
+                    raise UserError(f"No se encontró un almacén interno configurado para la empresa {current_company}.")
+        else:
+            # Asignar el primer almacén interno si no hay stock suficiente ni 3PL
+            fallback_warehouse = self._get_first_internal_warehouse()
+            if fallback_warehouse:
+                self.write({'warehouse_id': fallback_warehouse.id})
+            else:
+                raise UserError(f"No hay stock disponible y no se encontró un almacén 3PL Virtual ni un almacén interno para la empresa {current_company}.")
+    
+        # Marcar como revisado
+        self.is_check = True
 
 
     
@@ -109,14 +152,20 @@ class sale_order_inherit(models.Model):
         Verifica si un producto tiene disponibilidad suficiente considerando
         solo cantidades positivas en ubicaciones internas.
         """
-        # CORREGIDO: En Odoo 19 usar product.type en lugar de product_tmpl_id.detailed_type
-        _logger.warning(product.type)
+        _logger.warning(f"Verificando disponibilidad para {product.name}, cantidad necesaria: {quantity_needed}")
+        
+        # Verificar el tipo de producto
         if product.type == 'service':
             return True
-        available_quantity = sum(
-            quant.quantity for quant in product.stock_quant_ids
-            if quant.quantity > 0 and quant.location_id.usage == 'internal'
-        )
+        
+        # Obtener la cantidad disponible en ubicaciones internas
+        available_quantity = 0.0
+        for quant in product.stock_quant_ids:
+            if quant.quantity > 0 and quant.location_id.usage == 'internal':
+                available_quantity += quant.quantity
+        
+        _logger.warning(f"Cantidad disponible: {available_quantity}")
+        
         return available_quantity >= quantity_needed
     
     def _get_preferred_3pl_warehouse(self, company_name):
@@ -206,6 +255,31 @@ class sale_order_inherit(models.Model):
 
 
     json_data = fields.Text(string="JSON Data")
+
+    es_venta_directa = fields.Boolean(
+        string="Es Venta Directa",
+        compute="_compute_es_venta_directa",
+        store=False  # No es necesario almacenar si solo se usa en vistas
+    )
+    
+    @api.depends('marketplace_name')
+    def _compute_es_venta_directa(self):
+        # Palabras clave que identifican una venta directa
+        keywords = ['VENTA DIRECTA', 'VENTA DIRECTA CON', 'VENTA DIRECTA CON', 'VENTA DIRECTA CONTADO']
+        
+        for rec in self:
+            es_directa = False
+            if rec.marketplace_name:
+                # Convertir a mayúsculas para comparación insensible
+                marketplace_upper = rec.marketplace_name.upper()
+                
+                # Verificar si alguna keyword está contenida en el texto
+                for keyword in keywords:
+                    if keyword in marketplace_upper:
+                        es_directa = True
+                        break
+            
+        rec.es_venta_directa = es_directa
 
     # @api.model
     # def create(self, values):
@@ -434,11 +508,34 @@ class sale_order_inherit(models.Model):
                 ], limit=1)
                 values['marketplace'] = marketplace_record.id if marketplace_record else False
             
+            # Verificación de unicidad de 'folio_venta' - SOLO si no estamos en contexto de copia
+            if not self.env.context.get('skip_folio_validation'):
+                if 'folio_venta' in values:
+                    venta_ids = self.search([
+                        ('folio_venta', '=', values['folio_venta']),
+                        ('folio_venta', '!=', False)
+                    ])
+                    if venta_ids:
+                        raise UserError('El número de venta debe ser único.')
+            
+            # Verificación de unicidad de 'guia' - SOLO si no estamos en contexto de copia
+            if not self.env.context.get('skip_folio_validation'):
+                if 'guia' in values:
+                    guia = values.get('guia')
+                    if guia:
+                        ventas = self.search([
+                            ('guia', '=', guia),
+                            ('guia', '!=', False)
+                        ])
+                        if ventas:
+                            raise UserError('El número de guía debe ser único.')
+            
             processed_vals_list.append(values)
         
         # Crear la venta usando el método estándar de Odoo
         sales = super(sale_order_inherit, self).create(processed_vals_list)
         return sales
+
 
     auto_warehouse_id = fields.Many2one(
         'stock.warehouse',
@@ -795,29 +892,43 @@ class sale_order_inherit(models.Model):
         
     
 
+    disponibilidad_verificada = fields.Boolean(
+        string="Disponibilidad verificada",
+        default=False,
+        readonly=True
+    )
+    
+    
     def action_confirm(self):
-        if self.is_check:
-            res = super(sale_order_inherit, self).action_confirm()
-            
-            # Verificar si marketplace y categoría existen, y agregar categoría al cliente si es necesario
-            if self.marketplace.category_id.id:
-                if self.marketplace.category_id not in self.partner_id.category_id:
-                    # raise UserError(str(self.marketplace.category_id.name))
-                    self.partner_id.category_id += self.marketplace.category_id
+        for order in self:
+            # Solo validar si está en borrador
+            if order.state not in ['draft', 'sent']:
+                return super(sale_order_inherit, order).action_confirm()
     
-            # Aplicar costo de envío si aún no está establecido
-            if self.yuju_seller_shipping_cost == 0.0:
-                total_shipping_cost = sum(line.product_uom_qty for line in self.order_line) * self.marketplace.shipping_cost
-                self.write({'envio': total_shipping_cost})
-            
-            # Calcular costo del proveedor en las líneas de pedido
-            for line in self.order_line:
-                if line.costo_proveedor != 0.00:
-                    line.write({'costo_proveedor_2': line.costo_proveedor})
-                    line.compute_costo_proveedor_total()
+            # Permitir si viene con contexto especial
+            if order.env.context.get('skip_availability_check') or order.disponibilidad_verificada:
+                return super(sale_order_inherit, order).action_confirm()
     
-            return res
-        else:
+            if order.is_check:
+                res = super(sale_order_inherit, order).action_confirm()
+    
+                if order.marketplace.category_id:
+                    if order.marketplace.category_id not in order.partner_id.category_id:
+                        order.partner_id.category_id += order.marketplace.category_id
+    
+                if order.yuju_seller_shipping_cost == 0.0:
+                    total_shipping_cost = sum(
+                        line.product_uom_qty for line in order.order_line
+                    ) * order.marketplace.shipping_cost
+                    order.write({'envio': total_shipping_cost})
+    
+                for line in order.order_line:
+                    if line.costo_proveedor:
+                        line.write({'costo_proveedor_2': line.costo_proveedor})
+                        line.compute_costo_proveedor_total()
+    
+                return res
+    
             raise UserError("Debe de comprobar disponibilidad primero.")
 
 
@@ -857,13 +968,22 @@ class sale_order_inherit(models.Model):
 
     def copy(self, default=None):
         default = dict(default or {})
-        default.update({
-            'folio_venta': False,
-            'guia': False
-        })
-        return super(sale_order_inherit, self).copy(default)
         
-    # user = self.env.user
+        # Generar nuevo número de orden usando el método estándar de Odoo
+        new_sequence = self.env['ir.sequence'].next_by_code('sale.order') or '/'
+        
+        default.update({
+            'name': new_sequence,
+            'folio_venta': False,
+            'guia': False,
+            'link_venta': False,  # También limpiar links si existen
+        })
+        
+        # Crear una copia sin ejecutar validaciones de unicidad
+        return super(sale_order_inherit, self.with_context(
+            skip_folio_validation=True,
+            mail_create_nolog=True  # Evitar logs innecesarios
+        )).copy(default)
 
     
     def create_purchase_for_sale_order(self):
@@ -918,7 +1038,7 @@ class sale_order_inherit(models.Model):
                             'product_id': line.product_id.id,
                             'name': line.product_id.name,
                             'product_qty': line.product_uom_qty,
-                            'product_uom': line.product_uom.id,
+                            'product_uom_id': line.product_uom_id.id,
                             'price_unit': line.costo_proveedor,
                             'sale_order_id': rec.id,
                             'codigo_proveedor': line.codigo_proveedor,
@@ -935,7 +1055,7 @@ class sale_order_inherit(models.Model):
                                 'product_id': lmat.product_id.id,
                                 'name': lmat.product_id.product_tmpl_id.name,
                                 'product_qty': lmat.product_qty * line.product_uom_qty,  # Considerar cantidades del paquete
-                                'product_uom': line.product_uom.id,
+                                'product_uom_id': line.product_uom_id.id,
                                 'price_unit': line.costo_proveedor,
                                 'sale_order_id': rec.id,
                                 'codigo_proveedor': line.codigo_proveedor,
@@ -1181,23 +1301,35 @@ class sale_order_line_inherit(models.Model):
     def _compute_costo_promedio_historico(self):
         for line in self:
             costo_promedio_historico = 0.0
-            if line.product_id:
-                # Verificar que order_id y date_order no sean None
-                if line.order_id and line.order_id.date_order:
-                    valuation_layers = self.env['stock.valuation.layer'].search([
-                        ('product_id', '=', line.product_id.id),
-                        ('create_date', '<=', line.order_id.date_order)
-                    ])
-
-                    sum_value = sum(valuation_layers.mapped('value'))
-                    sum_qty = sum(valuation_layers.mapped('quantity'))
-
-                    if sum_qty > 0:
-                        costo_promedio_historico = sum_value / sum_qty
+            if line.product_id and line.order_id and line.order_id.date_order:
+                try:
+                    # Intentar primero con stock.valuation.layer
+                    if 'stock.valuation.layer' in self.env:
+                        valuation_layers = self.env['stock.valuation.layer'].search([
+                            ('product_id', '=', line.product_id.id),
+                            ('create_date', '<=', line.order_id.date_order)
+                        ])
+                        
+                        if valuation_layers:
+                            sum_value = sum(valuation_layers.mapped('value'))
+                            sum_qty = sum(valuation_layers.mapped('quantity'))
+                            
+                            if sum_qty > 0:
+                                costo_promedio_historico = sum_value / sum_qty
+                            else:
+                                costo_promedio_historico = line.product_id.standard_price
+                        else:
+                            costo_promedio_historico = line.product_id.standard_price
                     else:
-                        # Si no hay registros en stock.valuation.layer, usar el costo del producto
+                        # Si no existe valuation.layer, usar standard_price
                         costo_promedio_historico = line.product_id.standard_price
-
+                        
+                except Exception as e:
+                    _logger.warning(f"Error calculando costo histórico: {e}")
+                    costo_promedio_historico = line.product_id.standard_price
+            else:
+                costo_promedio_historico = line.product_id.standard_price if line.product_id else 0.0
+    
             line.costo_promedio_historico = costo_promedio_historico
     
     costo_proveedor=fields.Float(
@@ -1217,12 +1349,21 @@ class sale_order_line_inherit(models.Model):
     def _onchange_proveedor_id(self):
         for line in self:
             if line.proveedor_id:
-                # Validar existencia actual del proveedor
-                if line.proveedor_id.existencia_actual < line.product_uom_qty:
-                    raise UserError(
-                        f"El proveedor '{line.proveedor_id.partner_id.name}' no tiene suficiente cantidad disponible "
-                        f"({line.proveedor_id.existencia_actual}) para cubrir la cantidad requerida ({line.product_uom_qty})."
-                    )
+                # Solo validar si existe_actual está definido y es mayor a 0
+                if hasattr(line.proveedor_id, 'existencia_actual'):
+                    existencia = line.proveedor_id.existencia_actual or 0
+                    
+                    # Si existencia_actual es 0, probablemente no está calculado
+                    if existencia == 0:
+                        _logger.warning(f"existencia_actual es 0 para {line.proveedor_id.partner_id.name}")
+                        # No bloquear, solo advertir
+                        continue
+                    
+                    if existencia < line.product_uom_qty:
+                        raise UserError(
+                            f"El proveedor '{line.proveedor_id.partner_id.name}' no tiene suficiente cantidad disponible "
+                            f"({existencia}) para cubrir la cantidad requerida ({line.product_uom_qty})."
+                        )
         
     # def compute_costo_proveedor_total(self):
     #     for rec in self:
@@ -1380,7 +1521,7 @@ class sale_order_line_inherit(models.Model):
     @api.onchange('product_id','proveedor_id')
     def onchange_product_id_for_llantired(self):
         if self.product_id.id and self.order_id.id and self.order_id.partner_id.id and self.order_id.pricelist_id.id:
-            self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
+            self.price_unit = self.pricelist_item_id._compute_price(self.product_id, self.product_uom_qty, self.product_uom_id, self.order_id.date_order, self.order_id.currency_id, self.costo_proveedor)
 
 
     is_killer = fields.Boolean(

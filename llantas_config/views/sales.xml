@@ -65,14 +65,14 @@
                     </div>
                 </xpath>
                 <xpath expr="//page[@name='order_lines']//list//field[@name='price_unit']" position="before">
-                    <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" />
+                    <field name="proveedor_id" domain="[('product_tmpl_id','=',product_template_id)]" style="background-color: yellow;" optional="hide" />
                     <field name="costo_proveedor" readonly="1" optional="show" invisible="1" />
                     <field name="costo_proveedor_2" string="Costo proveedor" readonly="1" optional="hide"  />
-                    <field name="costo_promedio_historico" readonly="1" invisible="1"/>
-                    <field name="costo_promedio" readonly="1" />
+                    <field name="costo_promedio_historico" readonly="1" invisible="1" optional="hide"/>
+                    <field name="costo_promedio" readonly="1" optional="hide"/>
                     <field name="codigo_proveedor" invisible="1" optional="hide" />
                     <field name="is_killer" readonly="1" optional="hide" />
-                    <field name="killer_id" widget="many2one" invisible="1"/>
+                    <field name="killer_id" widget="many2one" invisible="1" optional="hide"/>
                     <!-- <field name="killer_id_killer_price" invisible="not is_killer" readonly="1" optional="show"/>
                     <field name="killer_id_base_price" invisible="not is_killer" readonly="1" optional="show"/>
                     <field name="killer_id_promotion_price" invisible="not is_killer" readonly="1" optional="show"/> -->
@@ -125,6 +125,47 @@
                     </div>
                 </xpath>
 
+                <xpath expr="//page[@name='order_lines']//list//field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='qty_delivered']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='qty_invoiced']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='product_uom_id']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='price_unit']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='tax_ids']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='discount']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='customer_lead']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <!-- También puedes modificar los campos de precio subtotal/total -->
+                <xpath expr="//page[@name='order_lines']//list//field[@name='price_subtotal']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                
+                <xpath expr="//page[@name='order_lines']//list//field[@name='price_total']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+
                 
             </field>
         </record>
@@ -162,7 +203,7 @@
                 <xpath expr="//list//field[@name='name']" position="before">
                     <field name="marketplace_name" />
                     
-                    <field name="folio_venta" optional="show"/>
+                    <!-- <field name="folio_venta" optional="show"/> -->
                     <!-- <field name="yuju_pack_id" optional="hide" /> -->
                     <field name="fecha_venta" optional="hide" />
                     <field name="comprador_id" widget="many2one" optional="show"/>
@@ -179,6 +220,23 @@
                 </field>
             </field>
         </record>
+        
+        <record id="view_sale_order3_tree_view" model="ir.ui.view">
+            <field name="name">sale_order3_tree_view</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list//field[@name='name']" position="before">
+                  
+                    <field name="folio_venta" optional="show"/>
+                  
+                </xpath>
+               
+            </field>
+        </record>
+
+
+
 
         <record id="view_sale_order_search_inherit" model="ir.ui.view">
             <field name="name">sale_order_seach_inherit</field>

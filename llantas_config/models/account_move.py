@@ -199,6 +199,24 @@ class account_move_inherit(models.Model):
             skip_availability_check=True
         ))._create_invoices(grouped=grouped, final=final)
 
+    def action_post(self):
+        for move in self:
+            if move.move_type in ('out_invoice', 'in_invoice'):
+    
+                
+                for line in move.invoice_line_ids:
+                    if not line.tax_ids.mapped('name'):
+                        raise UserError(
+                            "No se puede confirmar la factura %s.\n\n"
+                            "Existen productos que no tienen impuestos configurados:"
+                            % (move.name or 'BORRADOR')
+                        )
+                    else:
+                        continue
+                        # raise UserError(str(line.tax_ids.mapped('name')))
+    
+        return super().action_post()
+
 class ResCurrency(models.Model):
     _inherit = 'res.currency'
 

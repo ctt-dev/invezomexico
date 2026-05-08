@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <report
-            id="report_control_de_aplicacion"
-            model="sale.order"
-            string="Control de aplicaciones"
-            report_type="qweb-pdf"
-            name="adrone_config.report_control_de_aplicaciones"
-            file="adrone_config.report_control_de_aplicaciones"
-            attachment_use="True"
-            print_report_name = "('Control de aplicacions')"/>
+       <record id="report_control_de_aplicacion" model="ir.actions.report">
+            <field name="name">Control de aplicaciones</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">adrone_config.report_control_de_aplicaciones</field>
+            <field name="report_file">adrone_config.report_control_de_aplicaciones</field>
+            <field name="attachment_use">True</field>
+            <field name="print_report_name">'Control de aplicaciones - %s' % (object.name)</field>
+        </record>
         
         <template id="report_control_de_aplicaciones">
             

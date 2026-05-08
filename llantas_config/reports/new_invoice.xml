@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <report
-            id="report_factura_nueva"
-            model="account.move"
-            string="Factura Actualizado"
-            report_type="qweb-pdf"
-            name="llantas_config.report_factura_nuevas"
-            file="llantas_config.report_factura_nuevas"
-            attachment_use="True"
-            print_report_name = "('Factura-')"/>
+        <record id="report_factura_nueva" model="ir.actions.report">
+            <field name="name">Factura Actualizado</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">llantas_config.report_factura_nuevas</field>
+            <field name="report_file">llantas_config.report_factura_nuevas</field>
+            <field name="attachment">'Factura_%s.pdf' % (object.name)</field>
+            <field name="print_report_name">'Factura-%s' % (object.name)</field>
+        </record>
         
         <template id="report_factura_nuevas">
             <t t-name="studio_main_report">

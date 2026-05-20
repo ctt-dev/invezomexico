@@ -66,7 +66,14 @@ class sale_order_inherit(models.Model):
     
 
 
-
+    @api.onchange('marketplace')
+    def onchange_marketplace_for_llantas_config(self):
+        if self.company_id and getattr(self.company_id, 'name', '') != 'ADRONE':
+            if self.marketplace.id: 
+                if self.marketplace.diarios_id.id:
+                    self.journal_id = self.marketplace.diarios_id
+                    # raise UserError(str(self.journal_id.name))
+            
     is_check=fields.Boolean(
         string="Revisar disponibilidad",
         default=False,

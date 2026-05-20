@@ -225,11 +225,10 @@ class ResCurrency(models.Model):
         Converts the amount to text, handling the currency and the decimal part.
         """
         self.ensure_one()
-        # Convert the integer part to words
+
         integer_part = int(amount)
         decimal_part = int(round((amount - integer_part) * 100))
-        
-        # Get the currency name and its abbreviation
+
         if self.name == 'MXN':
             currency_text = 'PESOS'
             currency_abbr = 'M.N.'
@@ -237,12 +236,25 @@ class ResCurrency(models.Model):
             currency_text = 'DÓLARES'
             currency_abbr = 'USD'
         else:
-            currency_text = self.currency_unit_label.upper() if self.currency_unit_label else self.name.upper()
+            currency_text = (
+                self.currency_unit_label.upper()
+                if self.currency_unit_label
+                else self.name.upper()
+            )
             currency_abbr = self.name.upper()
-        
-        # Convert the integer part to words
-        amount_words = num2words(integer_part, lang=self.env.context.get('lang', 'es')).upper()
-        
-        # Combine the integer part in words, the decimal part as numbers, and the currency
-        return '%s %s %02d/100 %s' % (amount_words, currency_text, decimal_part, currency_abbr)
 
+        # FIX
+        lang = self.env.context.get('lang') or 'es_MX'
+        lang = lang[:2]
+
+        amount_words = num2words(
+            integer_part,
+            lang=lang
+        ).upper()
+
+        return '%s %s %02d/100 %s' % (
+            amount_words,
+            currency_text,
+            decimal_part,
+            currency_abbr
+        )

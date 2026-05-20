@@ -256,6 +256,10 @@
                     <filter string="Comprador" name="comprador_id" domain="[]" context="{'group_by': 'comprador_id'}"/>
                     
                 </xpath>
+                <field name="name" position="replace" >
+                    <field name="name" string="Order" filter_domain="['|', '|','|', ('name', 'ilike', self), ('client_order_ref', 'ilike', self), ('partner_id', 'child_of', self), ('folio_venta', 'ilike', self)]"/>
+                    <field name="folio_venta" />
+                </field>
                 <!-- <xpath expr="//search//field[@name='name']" position="replace">
                     <field name="name" string="Order" filter_domain="['|', '|', '|', '|', ('name', 'ilike', self),('folio_venta', 'ilike', self), ('client_order_ref', 'ilike', self), ('partner_id', 'child_of', self), ('yuju_pack_id', 'ilike', self)]"/>
                 </xpath> -->

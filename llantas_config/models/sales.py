@@ -507,89 +507,110 @@ class sale_order_inherit(models.Model):
         return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
     
     def write(self, values):
+
         if self.env.context.get('skip_carrier_update'):
-            _logger.info("Se omite actualización de carrier para evitar recursión.")
-            return super(sale_order_inherit, self).write(values)
-        
+            return super().write(values)
+    
+        if values.get('state') == 'cancel':
+            return super().write(values)
+    
         for rec in self:
-            for line in rec.order_line:
-                if line.product_id:
-                    # Guardar el costo promedio (standard_price) en la línea
-                    line.costo_promedio = line.product_id.standard_price
-            
-            # Omitir validaciones si la acción es cancelar
-            if values.get('state') == 'cancel':
-                _logger.info("La orden se está cancelando, se omiten validaciones.")
-                return super(sale_order_inherit, self).write(values)
-            
-            # Actualizar marketplace en write - CORREGIDO
-            # Usar yuju_channel en lugar de channel
-            channel = rec.yuju_channel if hasattr(rec, 'yuju_channel') else None
+    
+            vals = values.copy()
+    
+            # Actualizar costo promedio
+            for line in rec.order_line.filtered(lambda l: l.product_id):
+                line.costo_promedio = line.product_id.standard_price
+    
+            # Marketplace
+            channel = (rec.channel or '').strip()
+    
             if channel:
-                channel = self.remove_accents(channel.strip())
-                yuju_tag_selection = dict(self.env['llantas_config.marketplaces']
-                                           .fields_get(allfields=['yuju_tag'])['yuju_tag']['selection'])
-                yuju_tag_key = next((key for key, label in yuju_tag_selection.items() 
-                                     if self.remove_accents(label.lower()) == channel.lower()), None)
-                
+    
+                yuju_tag_selection = dict(
+                    self.env['llantas_config.marketplaces']
+                    .fields_get(allfields=['yuju_tag'])['yuju_tag']['selection']
+                )
+    
+                yuju_tag_key = next(
+                    (
+                        key for key, label in yuju_tag_selection.items()
+                        if label == channel
+                    ),
+                    False
+                )
+    
+                if not yuju_tag_key:
+                    yuju_tag_key = next(
+                        (
+                            key for key, label in yuju_tag_selection.items()
+                            if label and label.lower() == channel.lower()
+                        ),
+                        False
+                    )
+    
                 domain = [('company_id', '=', rec.company_id.id)]
+    
                 if yuju_tag_key:
                     domain.append(('yuju_tag', '=', yuju_tag_key))
                 else:
                     domain.append(('name', '=', channel))
-        
-                marketplace_record = self.env['llantas_config.marketplaces'].search(domain, limit=1)
-        
-                if not marketplace_record:
-                    _logger.warning(f"No se encontró el marketplace con el nombre o tag '{channel}' para la empresa actual.")
-                    values['marketplace'] = False
-                else:
-                    values.update({
-                        'marketplace': marketplace_record.id,
-                        'fee_import': marketplace_record.fee_marketplace,
-                    })
-            
-            # 🔥 Actualización del carrier
-            if 'yuju_carrier' in values:
-                yuju_carrier = values.get('yuju_carrier', '').strip()
-                carrier_record = self.env['llantas_config.carrier'].search([
+    
+                marketplace = self.env[
+                    'llantas_config.marketplaces'
+                ].search(domain, limit=1)
+    
+                vals.update({
+                    'marketplace': marketplace.id or False,
+                    'fee_import': marketplace.fee_marketplace or 0,
+                })
+    
+            # Carrier
+            if 'yuju_carrier' in vals:
+    
+                yuju_carrier = (vals.get('yuju_carrier') or '').strip()
+    
+                carrier = self.env[
+                    'llantas_config.carrier'
+                ].search([
                     ('name', '=ilike', yuju_carrier)
                 ], limit=1)
     
-                new_carrier_id = carrier_record.id if carrier_record else False
+                if rec.llantas_config_carrier_id.id != carrier.id:
+                    vals['llantas_config_carrier_id'] = carrier.id
     
-                if rec.llantas_config_carrier_id.id != new_carrier_id:
-                    values['llantas_config_carrier_id'] = new_carrier_id
-                    _logger.info(f"Carrier actualizado a: {yuju_carrier}")
-                else:
-                    _logger.info("Carrier ya asignado, se omite escritura.")
+            # Folio duplicado
+            if vals.get('folio_venta'):
     
-            # Asignar y verificar 'folio_venta'
-            if 'folio_venta' in values:
-                values['folio_venta'] = values['folio_venta'] or False
-                if values['folio_venta'] and values['folio_venta'] != rec.folio_venta:
-                    venta_ids = rec.env['sale.order'].search([
-                        ('folio_venta', '=', values['folio_venta']),
-                        ('id', '!=', rec.id),
-                        ('folio_venta', '!=', False)
-                    ])
-                    if venta_ids:
-                        raise ValidationError(f"El folio de venta '{values['folio_venta']}' ya existe en otra orden.")
-            
-            # Asignar y verificar 'guia'
-            if 'guia' in values:
-                values['guia'] = values['guia'] or False
-                if values['guia'] and values['guia'] != rec.guia:
-                    ventas = self.env['sale.order'].search([
-                        ('guia', '=', values['guia']),
-                        ('id', '!=', rec.id),
-                        ('guia', '!=', False)
-                    ])
-                    if ventas:
-                        raise ValidationError(f"Número de guía duplicado: {values['guia']}.")
-        
-        # Llamada al método write del super para guardar los cambios
-        return super(sale_order_inherit, self.with_context(skip_carrier_update=True)).write(values)
+                exists = self.env['sale.order'].search_count([
+                    ('folio_venta', '=', vals['folio_venta']),
+                    ('id', '!=', rec.id),
+                ])
+    
+                if exists:
+                    raise ValidationError(
+                        f"El folio '{vals['folio_venta']}' ya existe."
+                    )
+    
+            # Guía duplicada
+            if vals.get('guia'):
+    
+                exists = self.env['sale.order'].search_count([
+                    ('guia', '=', vals['guia']),
+                    ('id', '!=', rec.id),
+                ])
+    
+                if exists:
+                    raise ValidationError(
+                        f"La guía '{vals['guia']}' ya existe."
+                    )
+    
+            super(
+                sale_order_inherit,
+                rec.with_context(skip_carrier_update=True)
+            ).write(vals)
+    
+        return True
 
 
 

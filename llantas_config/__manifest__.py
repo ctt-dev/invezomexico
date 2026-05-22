@@ -61,15 +61,15 @@
         'views/pagos_marketplace.xml',
         'views/detailed_sales.xml',
         'views/wizard_subir_existencias.xml',
-        # 'reports/purchase.xml', TOTO: Error con elemento th_amount
+        'reports/purchase.xml',
         'reports/Reporte_cotizacion_Racko.xml',
-        # 'reports/new_invoice.xml',
+        'reports/new_invoice.xml',
         'views/account_move.xml',
         # 'reports/report_invoice.xml', TODO: El elemento "<div id="right-elements">" no se puede localizar en la vista principal
         'views/res_company.xml',
         'views/product_pricelist_item.xml',
         'views/purchase.xml',
-        # 'reports/sale_order.xml', TODO:  El elemento "<td name="td_product_quantity">" no se puede localizar en la vista principal
+        'reports/sale_order.xml',
         'reports/report_picking.xml',
         # 'views/style.css',
         'views/tablero_killer.xml',
@@ -77,6 +77,7 @@
         'reports/sale_order_racko.xml',
         'views/list_prices_view.xml',
         'views/account_payment.xml',
+        'views/wizard_stock_picking_validate.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

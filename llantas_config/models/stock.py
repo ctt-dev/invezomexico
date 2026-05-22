@@ -415,4 +415,20 @@ class sale_order_inherit(models.Model):
     #     compute="_compute_rastreador", 
     #     readonly=True
     # )
-    
+
+
+class StockPickingValidateWizard(models.TransientModel):
+    _name = 'stock.picking.validate.wizard'
+    _description = 'Confirmar validación de movimientos'
+
+    picking_ids = fields.Many2many('stock.picking')
+
+    def action_confirm_validate(self):
+        for picking in self.picking_ids:
+            res = picking.button_validate()
+
+            # Por si retorna wizard de backorder/immediate transfer
+            if isinstance(res, dict):
+                return res
+
+        return {'type': 'ir.actions.act_window_close'}

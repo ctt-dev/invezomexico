@@ -288,259 +288,86 @@ class sale_order_inherit(models.Model):
             
         rec.es_venta_directa = es_directa
 
-    # @api.model
-    # def create(self, values):
-    #     if 'channel_order_reference' in values:
-    #         values['folio_venta'] = values['channel_order_reference']
-    #     elif 'channel_order_id' in values and not values.get('folio_venta'):
-    #         # Si el valor no viene en `values`, tomar el valor actual de `rec`
-    #         values['folio_venta'] = values['channel_order_id']
-
-    #     if 'yuju_seller_shipping_cost' in values:
-    #         values['envio'] = values['yuju_seller_shipping_cost']
-    #     if 'yuju_marketplace_fee' in values:
-    #         values['comision'] = values['yuju_marketplace_fee']
-                
-    #     # Verificación de unicidad de 'folio_venta'
-    #     if 'folio_venta' in values:
-    #         venta_ids = self.search([
-    #             ('folio_venta', '=', values['folio_venta']),
-    #             ('folio_venta', '!=', False)
-    #         ])
-    #         if venta_ids:
-    #             raise UserError('El número de venta debe ser único.')
     
-    #     # Asignar 'guia' si se ha proporcionado 'yuju_carrier_tracking_ref'
-    #     if 'yuju_carrier_tracking_ref' in values:
-    #         values['guia'] = values['yuju_carrier_tracking_ref']
-        
-    #     # Verificación de unicidad de 'guia'
-    #     guia = values.get('guia')
-    #     if guia:
-    #         ventas = self.search([
-    #             ('guia', '=', guia),
-    #             ('guia', '!=', False)
-    #         ])
-    #         if ventas:
-    #             raise UserError('El número de guía debe ser único.')
-    
-    #     # Actualizar marketplace en create
-    #     channel = values.get('channel')
-    #     if channel:
-    #         # Quitar espacios y acentos
-    #         channel = self.remove_accents(channel.strip())
-    
-    #         # Buscar el marketplace usando solo el nombre
-    #         marketplace_record = self.env['llantas_config.marketplaces'].search([
-    #             ('company_id', '=', values.get('company_id')),
-    #             ('name', '=', channel)
-    #         ], limit=1)
-    
-    #         # Si no se encuentra, dejar el valor de 'marketplace' como False
-    #         values['marketplace'] = marketplace_record.id if marketplace_record else False
-    
-    #     # Llamada al método create del super para crear el registro
-    #     _logger.warning(values)
-    #     sale = super(sale_order_inherit, self).create(values)
-    #     data = []
-    #     for rec in sale.order_line:
-    #         if rec.product_template_id.es_paquete:
-    #             lista = rec.product_template_id.bom_ids[0]
-    #             _logger.warning(lista)
-    #             cont = 0
-    #             for prod in lista.bom_line_ids:
-    #                 if cont == 0:
-    #                     price = rec.price_unit
-    #                 else:
-    #                     price = 0
-    #                 ol = self.env['sale.order.line'].create({
-    #                     'order_id': sale.id,
-    #                     'customer_lead': 0.0,
-    #                     'name': prod.product_id.name,
-    #                     'product_id': prod.product_id.id,
-    #                     'product_uom_qty': (prod.product_qty*rec.product_uom_qty),
-    #                     'price_unit': price/(prod.product_qty*rec.product_uom_qty)
-    #                 })
-    #                 sale.order_line = [(4, ol.id)]
-    #         data.append(rec.id)
-    #     for id in data:
-    #         sale.order_line = [(3, id)]
-    #     return sale
-
-    # @api.model
-    # def create(self, values):
-    #     # Verificación de campos y asignación de valores
-    #     if 'channel_order_reference' in values:
-    #         values['folio_venta'] = values['channel_order_reference']
-    #     elif 'channel_order_id' in values and not values.get('folio_venta'):
-    #         values['folio_venta'] = values['channel_order_id']
-    
-    #     if 'yuju_seller_shipping_cost' in values:
-    #         values['envio'] = values['yuju_seller_shipping_cost']
-    #     else:
-    #         total_shipping_cost = sum(line['product_uom_qty'] * values['marketplace'].shipping_cost for line in values.get('order_line', []))
-    #         values['envio'] = total_shipping_cost
-            
-    #     if 'yuju_marketplace_fee' in values:
-    #         values['comision'] = values['yuju_marketplace_fee']
-        
-    #     # Verificación de unicidad de 'folio_venta'
-    #     if 'folio_venta' in values:
-    #         venta_ids = self.search([
-    #             ('folio_venta', '=', values['folio_venta']),
-    #             ('folio_venta', '!=', False)
-    #         ])
-    #         if venta_ids:
-    #             raise UserError('El número de venta debe ser único.')
-        
-    #     # Asignar 'guia' si se ha proporcionado 'yuju_carrier_tracking_ref'
-    #     if 'yuju_carrier_tracking_ref' in values:
-    #         values['guia'] = values['yuju_carrier_tracking_ref']
-        
-    #     # Verificación de unicidad de 'guia'
-    #     guia = values.get('guia')
-    #     if guia:
-    #         ventas = self.search([
-    #             ('guia', '=', guia),
-    #             ('guia', '!=', False)
-    #         ])
-    #         if ventas:
-    #             raise UserError('El número de guía debe ser único.')
-    
-    #     # Actualizar marketplace en create
-    #     channel = values.get('channel')
-    #     if channel:
-    #         channel = self.remove_accents(channel.strip())
-    #         marketplace_record = self.env['llantas_config.marketplaces'].search([
-    #             ('company_id', '=', values.get('company_id')),
-    #             ('name', '=', channel)
-    #         ], limit=1)
-    #         values['marketplace'] = marketplace_record.id if marketplace_record else False
-
-    #     # Crear la venta usando el método estándar de Odoo
-    #     sale = super(sale_order_inherit, self).create(values)
-        
-    #     # # Asignar warehouse_id a la venta
-    #     # warehouse_id = False
-    #     # for line in sale.order_line:
-    #     #     # Obtener las ubicaciones internas donde hay existencia del producto
-    #     #     locations = []
-    #     #     for quant in line.product_id.stock_quant_ids:
-    #     #         if quant.quantity > 0 and quant.location_id.usage == 'internal':
-    #     #             locations.append(quant.location_id.display_name)
-    #     #             if quant.location_id.location_id:
-    #     #                 warehouse_id = quant.location_id.location_id.warehouse_id  # Almacén asociado a la ubicación interna
-            
-    #     #     if not locations:
-    #     #         # Si no hay inventario en ubicaciones internas, asignar el almacén predeterminado
-    #     #         warehouse = self.env['stock.warehouse'].search([('name', '=', 'ALMACEN LLANTIRED- 3PL VIRTUAL')], limit=1)
-    #     #         if not warehouse:
-    #     #             raise UserError("No se encontró el almacén predeterminado 'ALMACEN LLANTIRED- 3PL VIRTUAL' en el sistema.")
-    #     #         warehouse_id = warehouse
-
-    #     #     # Asignamos el warehouse_id encontrado o el predeterminado
-    #     #     sale.write({'warehouse_id': warehouse_id.id})
-        
-    #     # Crear líneas de orden para productos empaquetados (si aplica)
-    #     for line in sale.order_line:
-    #         if line.product_template_id.es_paquete:
-    #             # Aquí tenemos la lógica para los productos empaquetados
-    #             bom = line.product_template_id.bom_ids[0]  # Suponemos que existe una única BOM asociada
-    #             for prod in bom.bom_line_ids:
-    #                 price = line.price_unit
-    #                 # Creamos las nuevas líneas de orden basadas en la BOM
-    #                 ol = self.env['sale.order.line'].create({
-    #                     'order_id': sale.id,
-    #                     'customer_lead': 0.0,
-    #                     'name': prod.product_id.name,
-    #                     'product_id': prod.product_id.id,
-    #                     'product_uom': prod.product_uom_id.id,
-    #                     'product_uom_qty': prod.product_qty * line.product_uom_qty,  # Multiplicamos por la cantidad del paquete
-    #                     'price_unit': price / (prod.product_qty * line.product_uom_qty),  # Ajustamos el precio unitario
-    #                 })
-    #                 sale.order_line = [(4, ol.id)]  # Añadimos la nueva línea al pedido
-    #             # Finalmente eliminamos la línea original del pedido
-    #             sale.order_line = [(3, line.id)]
-        
-    #     return sale
-
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
-        _logger.warning('create')
-        
-        # Asegurarnos de que vals_list sea una lista
-        if not isinstance(vals_list, list):
-            vals_list = [vals_list]
-        
-        processed_vals_list = []
-        
+
+        _logger.warning('CREATE SALE ORDER')
+
         for values in vals_list:
-            # Lógica simplificada en el método create
-            if 'channel_order_reference' in values:
+
+            # =====================================================
+            # FOLIO VENTA
+            # =====================================================
+
+            if values.get('channel_order_reference'):
                 values['folio_venta'] = values['channel_order_reference']
-            
-            if 'yuju_seller_shipping_cost' in values:
+
+            # =====================================================
+            # ENVÍO / COMISIÓN
+            # =====================================================
+
+            if values.get('yuju_seller_shipping_cost'):
                 values['envio'] = values['yuju_seller_shipping_cost']
-            
-            if 'yuju_marketplace_fee' in values:
+
+            if values.get('yuju_marketplace_fee'):
                 values['comision'] = values['yuju_marketplace_fee']
-            
-            # Verificación de unicidad de 'folio_venta'
-            if 'folio_venta' in values:
-                venta_ids = self.search([
-                    ('folio_venta', '=', values['folio_venta']),
-                    ('folio_venta', '!=', False)
-                ])
-                if venta_ids:
-                    raise UserError('El número de venta debe ser único.')
-            
-            # Verificación de unicidad de 'guia' - CORREGIDO
-            if 'guia' in values:
-                guia = values.get('guia')
-                if guia:
-                    ventas = self.search([
-                        ('guia', '=', guia),
-                        ('guia', '!=', False)
-                    ])
-                    if ventas:
-                        raise UserError('El número de guía debe ser único.')
-            
-            # Actualizar marketplace en create
+
+            # =====================================================
+            # MARKETPLACE
+            # =====================================================
+
             channel = values.get('channel')
+
             if channel:
-                channel = self.remove_accents(channel.strip())
-                marketplace_record = self.env['llantas_config.marketplaces'].search([
+
+                channel = self.remove_accents(
+                    channel.strip()
+                )
+
+                marketplace = self.env[
+                    'llantas_config.marketplaces'
+                ].search([
                     ('company_id', '=', values.get('company_id')),
                     ('name', '=', channel)
                 ], limit=1)
-                values['marketplace'] = marketplace_record.id if marketplace_record else False
-            
-            # Verificación de unicidad de 'folio_venta' - SOLO si no estamos en contexto de copia
+
+                values['marketplace'] = marketplace.id or False
+
+            # =====================================================
+            # VALIDACIONES
+            # =====================================================
+
             if not self.env.context.get('skip_folio_validation'):
-                if 'folio_venta' in values:
-                    venta_ids = self.search([
-                        ('folio_venta', '=', values['folio_venta']),
-                        ('folio_venta', '!=', False)
+
+                folio = values.get('folio_venta')
+
+                if folio:
+
+                    exists = self.search_count([
+                        ('folio_venta', '=', folio)
                     ])
-                    if venta_ids:
-                        raise UserError('El número de venta debe ser único.')
-            
-            # Verificación de unicidad de 'guia' - SOLO si no estamos en contexto de copia
-            if not self.env.context.get('skip_folio_validation'):
-                if 'guia' in values:
-                    guia = values.get('guia')
-                    if guia:
-                        ventas = self.search([
-                            ('guia', '=', guia),
-                            ('guia', '!=', False)
-                        ])
-                        if ventas:
-                            raise UserError('El número de guía debe ser único.')
-            
-            processed_vals_list.append(values)
-        
-        # Crear la venta usando el método estándar de Odoo
-        sales = super(sale_order_inherit, self).create(processed_vals_list)
+
+                    if exists:
+                        raise UserError(
+                            _('El número de venta debe ser único.')
+                        )
+
+                guia = values.get('guia')
+
+                if guia:
+
+                    exists = self.search_count([
+                        ('guia', '=', guia)
+                    ])
+
+                    if exists:
+                        raise UserError(
+                            _('El número de guía debe ser único.')
+                        )
+
+        sales = super().create(vals_list)
+
         return sales
 
 

@@ -29,7 +29,7 @@ access_llantas_config_llantas_config_wizard_killer_list,llantas_config.wizard_ki
 access_llantas_config_llantas_config_killer_no_product,llantas_config.killer_no_product,model_llantas_config_killer_no_product,,1,1,1,1
 access_stock_quant_wizard,access_stock_quant_wizard,model_stock_quant_wizard,,1,1,1,1
 
-
+access_stock_picking_validate_wizard,stock.picking.validate.wizard,model_stock_picking_validate_wizard,base.group_user,1,1,1,1
 
 
 

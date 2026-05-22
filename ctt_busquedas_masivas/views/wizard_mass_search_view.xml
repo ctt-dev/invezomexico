@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ctt_busquedas_masivas_wizard_form" model="ir.ui.view">
+        <field name="name">ctt.busquedas.masivas.wizard.form</field>
+        <field name="model">ctt.busquedas.masivas.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Búsqueda Masiva de Órdenes">
+                <header>
+                    <button name="action_open_orders" 
+                            string="Ver Órdenes" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="not order_ids"/>
+                    <button name="action_clear_results" 
+                            string="Limpiar" 
+                            type="object" 
+                            class="btn-secondary"
+                            invisible="not order_ids"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Configuración de búsqueda">
+                            <field name="search_field" 
+                                   widget="selection"
+                                   options="{'required': True}"/>
+                            <field name="use_exact_match"/>
+                        </group>
+                        
+                        <group string="Valores a buscar" colspan="2">
+                            <field name="sale_order_names" 
+                                   nolabel="1"
+                                   placeholder="Ejemplo: SO001, SO002, SO003&#10;O uno por línea:&#10;SO004&#10;SO005"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Resultados de la búsqueda" colspan="2">
+                        <field name="result_count" 
+                               widget="integer" 
+                               class="oe_inline"
+                               string="Total encontradas:"/>
+                        <field name="order_ids" 
+                               widget="many2many_tags" 
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               nolabel="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_search_multiple_sales_orders" 
+                            string="🔍 Buscar" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="❌ Cancelar" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ctt_busquedas_masivas_wizard" model="ir.actions.act_window">
+        <field name="name">Búsqueda Múltiple de Órdenes</field>
+        <field name="res_model">ctt.busquedas.masivas.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

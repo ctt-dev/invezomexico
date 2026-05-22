@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_view_tree_inherit_mass_search" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.mass.search</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
+        <field name="arch" type="xml">
+            <!-- Añadir botón en el header de la vista de lista -->
+            <xpath expr="//list/header" position="inside">
+                <button name="%(ctt_busquedas_masivas.action_ctt_busquedas_masivas_wizard)d"
+                        type="action"
+                        string="🔍 Múltiple"
+                        class="btn-primary"
+                        display="always"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

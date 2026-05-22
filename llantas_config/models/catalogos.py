@@ -483,7 +483,7 @@ class proveedores_link(models.Model):
                     lines = self.env['product.template'].search([
                         ('default_code', '=', move.sku_interno),
                         ('es_paquete', '=', False),
-                        ('detailed_type', '=', 'product')
+                        ('detailed_type', '=', 'consu')
                     ])
                     if lines:
                         for line in lines:
@@ -679,7 +679,7 @@ class proveedores_link(models.Model):
             ])
             if lines:
                 for line in lines:
-                    if line.es_paquete or line.detailed_type != 'product':
+                    if line.es_paquete or line.detailed_type != 'consu':
                         continue
     
                     sku_proveedor = (line.id, proveedor)
@@ -1240,7 +1240,7 @@ class proveedores_link(models.Model):
                 for line in lines:
                     # if line.es_paquete or line.detailed_type != 'product':
                     #     continue
-                    if line.detailed_type != 'product':
+                    if line.detailed_type != 'consu':
                         continue
 
                     sku_proveedor = (line.id, proveedor)

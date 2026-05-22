@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ctt_busquedas_masivas_invoice_wizard_form" model="ir.ui.view">
+        <field name="name">ctt.busquedas.masivas.invoice.wizard.form</field>
+        <field name="model">ctt.busquedas.masivas.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Búsqueda Masiva de Facturas">
+                <header>
+                    <button name="action_open_invoices" 
+                            string="Ver Facturas" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="not invoice_ids"/>
+                    <button name="action_clear_results" 
+                            string="Limpiar" 
+                            type="object" 
+                            class="btn-secondary"
+                            invisible="not invoice_ids"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Configuración de búsqueda">
+                            <field name="search_field" 
+                                   widget="selection"
+                                   options="{'required': True}"/>
+                            <field name="use_exact_match"/>
+                        </group>
+                        
+                        <group string="Valores a buscar" colspan="2">
+                            <field name="invoice_values" 
+                                   nolabel="1"
+                                   placeholder="Ejemplo: INV001, INV002, INV003&#10;O uno por línea:&#10;INV004&#10;INV005"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Resultados de la búsqueda" colspan="2">
+                        <field name="result_count" 
+                               widget="integer" 
+                               class="oe_inline"
+                               string="Total encontradas:"/>
+                        <field name="invoice_ids" 
+                               widget="many2many_tags" 
+                               options="{'no_create': True, 'no_create_edit': True}"
+                               nolabel="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_search_multiple_invoices" 
+                            string="🔍 Buscar" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="❌ Cancelar" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ctt_busquedas_masivas_invoice_wizard" model="ir.actions.act_window">
+        <field name="name">Búsqueda Múltiple de Facturas</field>
+        <field name="res_model">ctt.busquedas.masivas.invoice.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

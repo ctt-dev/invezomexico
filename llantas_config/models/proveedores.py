@@ -992,7 +992,7 @@ class ctrl_llantas(models.Model):
                     lines = self.env['product.template'].search([('default_code', '=', move.sku_interno)])
                     if lines:
                         for line in lines:
-                            if line.es_paquete or line.detailed_type != 'product':
+                            if line.es_paquete or line.detailed_type != 'consu':
                                 continue
     
                             # Extraer los nuevos campos del product.template

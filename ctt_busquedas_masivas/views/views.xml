@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="ctt_busquedas_masivas.list">
+      <field name="name">ctt_busquedas_masivas list</field>
+      <field name="model">ctt_busquedas_masivas.ctt_busquedas_masivas</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="ctt_busquedas_masivas.action_window">
+      <field name="name">ctt_busquedas_masivas window</field>
+      <field name="res_model">ctt_busquedas_masivas.ctt_busquedas_masivas</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="ctt_busquedas_masivas.action_server">
+      <field name="name">ctt_busquedas_masivas server</field>
+      <field name="model_id" ref="model_ctt_busquedas_masivas_ctt_busquedas_masivas"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="ctt_busquedas_masivas" id="ctt_busquedas_masivas.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="ctt_busquedas_masivas.menu_1" parent="ctt_busquedas_masivas.menu_root"/>
+    <menuitem name="Menu 2" id="ctt_busquedas_masivas.menu_2" parent="ctt_busquedas_masivas.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="ctt_busquedas_masivas.menu_1_list" parent="ctt_busquedas_masivas.menu_1"
+              action="ctt_busquedas_masivas.action_window"/>
+    <menuitem name="Server to list" id="ctt_busquedas_masivas" parent="ctt_busquedas_masivas.menu_2"
+              action="ctt_busquedas_masivas.action_server"/>
+-->
+  </data>
+</odoo>

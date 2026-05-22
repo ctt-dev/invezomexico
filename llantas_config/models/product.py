@@ -175,67 +175,21 @@ class ProductProductInherit(models.Model):
         return [('id', 'in', ids)]
 
     @api.model
-    def _name_search(
-        self,
-        name='',
-        args=None,
-        operator='ilike',
-        limit=100,
-        name_get_uid=None,
-    ):
-
-        args = args or []
-
-        domain = []
-
-        if name:
-
+    def _search_display_name(self, operator, value):
+    
+        domain = super()._search_display_name(operator, value)
+    
+        sku_products = self.env['llantas_config.sku_marketplace'].search([
+            ('name', operator, value)
+        ]).mapped('product_id.product_variant_id').ids
+    
+        if sku_products:
             domain = expression.OR([
-
-                [('default_code', operator, name)],
-
-                [('name', operator, name)],
-
-                [('barcode', operator, name)],
-
-                [('sku_alternos.name', operator, name)],
-
+                domain,
+                [('id', 'in', sku_products)]
             ])
-
-            # Buscar [SKU]
-            match = re.search(r'\[(.*?)\]', name)
-            if match:
-                domain = expression.OR([
-                    domain,
-                    [('default_code', '=', match.group(1))]
-                ])
-
-            # Proveedor
-            if self._context.get('partner_id'):
-
-                supplierinfo_ids = self.env[
-                    'product.supplierinfo'
-                ].search([
-                    ('partner_id', '=', self._context['partner_id']),
-                    '|',
-                    ('product_code', operator, name),
-                    ('product_name', operator, name),
-                ])
-
-                if supplierinfo_ids:
-
-                    domain = expression.OR([
-                        domain,
-                        [('product_tmpl_id.seller_ids', 'in', supplierinfo_ids.ids)]
-                    ])
-
-        products = self._search(
-            expression.AND([args, domain]),
-            limit=limit,
-            access_rights_uid=name_get_uid,
-        )
-
-        return products
+    
+        return domain
 
 
 class ProductSupplierinfoInherit(models.Model):

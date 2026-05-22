@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_view_tree_inherit_mass_search" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit.mass.search</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list/header" position="inside">
+                <button name="%(ctt_busquedas_masivas.action_ctt_busquedas_masivas_invoice_wizard)d"
+                        type="action"
+                        string="🔍 Múltiple"
+                        class="btn-primary"
+                        display="always"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -138,7 +138,7 @@ class marketplaces(models.Model):
 
     yuju_tag=fields.Selection(
         [
-            ('13','Mercado Libre Mexico'),
+            ('13','Mercado Libre México'),
             ('2201','Claro Shop'),
             ('2401','Liverpool'),
             ('3401','Coppel'),

@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 import logging
 import datetime
 import re
-from odoo.osv import expression
+from odoo.fields import Domain
 from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 from odoo.tools.float_utils import float_round

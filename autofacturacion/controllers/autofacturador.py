@@ -4,7 +4,7 @@
 from odoo import http, _
 import logging
 import base64
-from odoo.osv import expression
+from odoo.fields import Domain
 import io
 from io import BytesIO
 import threading

@@ -158,7 +158,7 @@ class InvoiceMassSearchWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': f'Facturas Encontradas ({self.result_count})',
             'res_model': 'account.move',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.invoice_ids.ids)],
             'target': 'current',
         }

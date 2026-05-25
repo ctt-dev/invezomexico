@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_invoice_mx_replacement" inherit_id="l10n_mx_edi.report_invoice_document">
+        <xpath expr="//div[@class='page']" position="replace">
+        </xpath>
+    </template>
+</odoo>

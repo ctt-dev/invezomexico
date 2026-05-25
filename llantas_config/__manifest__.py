@@ -63,9 +63,8 @@
         'views/wizard_subir_existencias.xml',
         'reports/purchase.xml',
         'reports/Reporte_cotizacion_Racko.xml',
-        'reports/new_invoice.xml',
         'views/account_move.xml',
-        # 'reports/report_invoice.xml', TODO: El elemento "<div id="right-elements">" no se puede localizar en la vista principal
+        'reports/report_invoice.xml',
         'views/res_company.xml',
         'views/product_pricelist_item.xml',
         'views/purchase.xml',
@@ -78,6 +77,7 @@
         'views/list_prices_view.xml',
         'views/account_payment.xml',
         'views/wizard_stock_picking_validate.xml',
+        # 'reports/mx_report.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

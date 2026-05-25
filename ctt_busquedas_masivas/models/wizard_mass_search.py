@@ -145,7 +145,7 @@ class SaleOrderMassSearchWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': f'Órdenes de Venta Encontradas ({self.result_count})',
             'res_model': 'sale.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.order_ids.ids)],
             'target': 'current',
         }

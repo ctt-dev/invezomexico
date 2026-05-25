@@ -42,8 +42,8 @@ class account_move(models.Model):
                     if rec.reversed_entry_id.id:
                         if rec.journal_id.type == 'general':
                             if rec.date > tax_lock_date and rec.reversed_entry_id.date > tax_lock_date:
-                                full_reconcile_ids = rec.env['account.full.reconcile'].search([('exchange_move_id','in',[rec.id, rec.reversed_entry_id.id])])
-                                full_reconcile_ids.write({'exchange_move_id': False})
+                                # full_reconcile_ids = rec.env['account.full.reconcile'].search([('exchange_move_id','in',[rec.id, rec.reversed_entry_id.id])])
+                                # full_reconcile_ids.write({'exchange_move_id': False})
                                 partial_reconcile_ids = rec.env['account.partial.reconcile'].search([('exchange_move_id','in',[rec.id, rec.reversed_entry_id.id])])
                                 partial_reconcile_ids.write({'exchange_move_id': False})
                         

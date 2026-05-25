@@ -1,0 +1,73 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ctt_auto_cancel_reversed_moves
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-13 23:22+0000\n"
+"PO-Revision-Date: 2024-08-13 23:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.model,name:ctt_auto_cancel_reversed_moves.model_account_move
+msgid "Asientos contables"
+msgstr "Asientos contables"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model_terms:ir.ui.view,arch_db:ctt_auto_cancel_reversed_moves.base_view_company_form
+msgid "Automatic cancellation for reversed journal entries"
+msgstr "Cancelación automática de asientos contables revertidos"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.actions.server,name:ctt_auto_cancel_reversed_moves.ir_cron_ctt_auto_cancel_reversed_moves_daily_cron_ir_actions_server
+msgid "Automatic cancellation for reversed journal entries: Daily cron"
+msgstr "Cancelación automática de asientos contables revertidos: Tarea diaria"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model_terms:ir.ui.view,arch_db:ctt_auto_cancel_reversed_moves.account_view_move_form
+msgid "Cancelled by reversal"
+msgstr "Cancelado por reversión"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_bank_statement_line__cacrm_tax_cash_basis_origin_move_id
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_move__cacrm_tax_cash_basis_origin_move_id
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_payment__cacrm_tax_cash_basis_origin_move_id
+msgid "Cash Basis Origin (Original)"
+msgstr "Origen de base de efectivo (Original)"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.model,name:ctt_auto_cancel_reversed_moves.model_res_company
+msgid "Compañías"
+msgstr "Compañías"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_res_company__cacrm_journal_ids
+msgid "Journals for automatic reversal"
+msgstr "Diarios para reversión automática"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.actions.server,name:ctt_auto_cancel_reversed_moves.run_cancel_reversed_moves_manually_action
+#: model:ir.ui.menu,name:ctt_auto_cancel_reversed_moves.run_cancel_reversed_moves_manually_menu
+msgid "Run cancel reversed moves manually"
+msgstr "Ejecutar cancelación de asientos revertidos manualmente"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_bank_statement_line__cacrm_tax_cash_basis_rec_id
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_move__cacrm_tax_cash_basis_rec_id
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_payment__cacrm_tax_cash_basis_rec_id
+msgid "Tax Cash Basis Entry of (Original)"
+msgstr "Asiento de base de impuesto en efectivo de (Original)"
+
+#. module: ctt_auto_cancel_reversed_moves
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_bank_statement_line__cacrm_cancelled_by_reversal
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_move__cacrm_cancelled_by_reversal
+#: model:ir.model.fields,field_description:ctt_auto_cancel_reversed_moves.field_account_payment__cacrm_cancelled_by_reversal
+msgid "¿Cancelled by reversal?"
+msgstr "¿Cancelado por reversión?"

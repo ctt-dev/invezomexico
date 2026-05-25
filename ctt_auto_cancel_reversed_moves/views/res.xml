@@ -1,0 +1,19 @@
+<odoo>
+    <data>  
+        <record id="base_view_company_form" model="ir.ui.view">
+            <field name="name">base_view_company_form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="active">1</field>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook[1]" position="inside">
+                    <page string="Automatic cancellation for reversed journal entries">
+                        <group>
+                            <field name="cacrm_journal_ids" widget="many2many_tags"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,30 @@
+<odoo>
+    <data>  
+        <record id="account_view_move_form" model="ir.ui.view">
+            <field name="name">account_view_move_form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="active">1</field>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook[1]" position="inside">
+                    <page string="Cancelled by reversal">
+                        <group>
+                            <field name="cacrm_cancelled_by_reversal"/>
+                            <field name="cacrm_tax_cash_basis_origin_move_id"/>
+                            <field name="cacrm_tax_cash_basis_rec_id"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="run_cancel_reversed_moves_manually_action" model="ir.actions.server">
+            <field name="name">Run cancel reversed moves manually</field>
+            <field name="model_id" ref="model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">model.cancel_reversed_moves()</field>
+        </record>
+
+        <menuitem id="run_cancel_reversed_moves_manually_menu" name="Run cancel reversed moves manually" parent="account.menu_finance_entries" action="run_cancel_reversed_moves_manually_action"/>
+    </data>
+</odoo>

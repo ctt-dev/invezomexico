@@ -93,7 +93,7 @@ class WizardImportlistadokillers(models.TransientModel):
                             '|',
                             ('default_code', '=', record.get('SKU INTERNO')),
                             ('name', '=', record.get('producto'))
-                        ])
+                        ],limit=1)
 
                         if products:
                             # Crear un nuevo registro en killer_list
@@ -136,7 +136,7 @@ class WizardImportlistadokillers(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': 'Vista detallada',
             'res_model': 'llantas_config.killer_list',
-            'view_mode': 'tree',
+            'view_mode': 'list',
             'context': {'search_default_active_filter': 1},
             'target': 'main',
             'view_id': self.env.ref('llantas_config.view_llantas_list_killer_tree').id,

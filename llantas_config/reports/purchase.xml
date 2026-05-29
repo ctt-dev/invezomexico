@@ -4,351 +4,140 @@
     <!-- ====================================================== -->
     <!-- PURCHASE STOCK -->
     <!-- ====================================================== -->
-
     <template id="purchase_stock_report_purchaseorder_document_for_llantas"
               inherit_id="purchase_stock.report_purchaseorder_document">
-
-        <!-- Eliminar shipping -->
-        <xpath expr="//t[@t-else='']"
-               position="replace"/>
-
+        <xpath expr="//t[@t-else='']" position="replace">
+            <!-- Vacío intencional -->
+        </xpath>
     </template>
-
 
     <!-- ====================================================== -->
     <!-- PURCHASE ORDER -->
     <!-- ====================================================== -->
-
     <template id="purchase_report_purchaseorder_document_for_llantas"
-              inherit_id="purchase.report_purchaseorder_document">
+              inherit_id="purchase.report_purchaseorder_document" priority="99">
 
+        <!-- ====================================================== -->
+        <!-- HEADER - Reemplazar todo el bloque de información -->
+        <!-- ====================================================== -->
+        <xpath expr="//div[@id='informations']" position="replace">
 
-        <!-- ================================================== -->
-        <!-- ADDRESS -->
-        <!-- ================================================== -->
-
-        <xpath expr="//t[@t-set='address']"
-               position="replace">
-
-            <t t-set="address">
-
-                <div t-field="o.partner_id"
-                     t-options="{
-                        'widget': 'contact',
-                        'fields': ['address', 'name'],
-                        'no_marker': True
-                     }"/>
-
-                <div t-if="o.partner_id.vat">
-
-                    <strong>
-
-                        <t t-if="o.company_id.country_id.vat_label"
-                           t-esc="o.company_id.country_id.vat_label"/>
-
-                        <t t-else="">RFC</t>
-
-                    </strong>:
-
-                    <span t-field="o.partner_id.vat"/>
-
-                </div>
-
-                <div t-if="o.partner_id.phone">
-
-                    <strong>Teléfono:</strong>
-
-                    <span t-field="o.partner_id.phone"/>
-
-                </div>
-
-            </t>
-
-        </xpath>
-
-
-        <!-- ================================================== -->
-        <!-- HEADER EXTRA -->
-        <!-- ================================================== -->
-
-        <xpath expr="//div[hasclass('page')]"
-               position="inside">
-
-            <div class="row mb-4">
-
-                <div class="col-5">
-
-                    <strong>
-                        NOTA IMPORTANTE:
-                    </strong>
-
-                    Este número de Orden de Compra debe aparecer
-                    en toda factura, conocimiento de embarque,
-                    guía de transporte, nota de remisión
-                    y correspondencia relacionada.
-
-                </div>
-
+            <!-- Nota importante -->
+            <div class="mt-3 mb-3" style="background-color: #e8f5e9; border-left: 4px solid #73A07B; padding: 10px;">
+                <strong>⚠️ NOTA IMPORTANTE</strong><br/>
+                Este número de Orden de Compra debe aparecer en toda factura, guía, remisión o correspondencia.
             </div>
 
-            <div class="row mb-4">
-
-                <!-- ORDEN VENTA -->
-                <div class="col-3"
-                     t-if="o.auto_sale_order_id.name">
-
-                    <strong>Orden de venta:</strong>
-
-                    <p class="m-0"
-                       t-field="o.auto_sale_order_id.name"/>
-
-                    <p class="m-0"
-                       t-field="o.auto_sale_order_id.folio_venta"/>
-
-                </div>
-
-                <!-- FECHA VENTA -->
-                <div class="col-3"
-                     t-if="o.auto_sale_order_id.fecha_venta">
-
-                    <strong>Fecha venta:</strong>
-
-                    <p class="m-0"
-                       t-field="o.auto_sale_order_id.fecha_venta"/>
-
-                </div>
-
-                <!-- USER -->
-                <div class="col-3"
-                     t-if="o.user_id">
-
+            <!-- Fechas -->
+            <div class="row mb-3">
+                <div class="col-3" t-if="o.user_id">
                     <strong>Pedido por:</strong>
-
-                    <p class="m-0"
-                       t-field="o.user_id"/>
-
+                    <div><span t-field="o.user_id"/></div>
                 </div>
-
-                <!-- REFERENCIA -->
-                <div class="col-3"
-                     t-if="o.partner_ref">
-
-                    <strong>Referencia proveedor:</strong>
-
-                    <p class="m-0"
-                       t-field="o.partner_ref"/>
-
+                <div class="col-3" t-if="o.partner_ref">
+                    <strong>Ref. Compra:</strong>
+                    <div><span t-field="o.partner_ref"/></div>
                 </div>
-
+                <div class="col-3" t-if="o.date_approve">
+                    <strong>Fecha Orden:</strong>
+                    <div><span t-field="o.date_approve" t-options="{'date_only': 'true'}"/></div>
+                </div>
+                <div class="col-3" t-if="o.date_planned">
+                    <strong>Llegada Esperada:</strong>
+                    <div><span t-field="o.date_planned" t-options="{'date_only': 'true'}"/></div>
+                </div>
             </div>
 
         </xpath>
 
+        <!-- ====================================================== -->
+        <!-- TABLA DE PRODUCTOS - TODAS LAS COLUMNAS CON MISMO COLOR -->
+        <!-- ====================================================== -->
+        
+        <!-- Estilo de la tabla -->
+        <xpath expr="//table[1]" position="attributes">
+            <attribute name="style">font-size: 10pt; width: 100%; margin-top: 20px; margin-bottom: 20px;</attribute>
+        </xpath>
 
-        <!-- ================================================== -->
-        <!-- INFORMATIONS -->
-        <!-- ================================================== -->
+        <!-- Eliminar cabecera original de cantidad -->
+        <xpath expr="//th[@name='th_quantity']" position="replace"/>
 
-        <xpath expr="//div[@id='informations']"
-               position="inside">
+        <!-- Modificar cabecera de Descripción con el mismo color -->
+        <xpath expr="//th[@name='th_description']" position="attributes">
+            <attribute name="style">background-color: #73A07B; color: white; padding: 8px;</attribute>
+            <attribute name="class">text-start</attribute>
+        </xpath>
 
-            <!-- FECHA ORDEN -->
-            <div class="col-3"
-                 t-if="o.state in ['purchase','done'] and o.date_approve">
+        <!-- Modificar cabecera de Descuento -->
+        <xpath expr="//th[@name='th_discount']" position="attributes">
+            <attribute name="style">background-color: #73A07B; color: white; padding: 8px;</attribute>
+            <attribute name="class">text-end</attribute>
+        </xpath>
 
-                <strong>Fecha orden:</strong>
+        <!-- Modificar cabecera de Impuestos -->
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="style">background-color: #73A07B; color: white; padding: 8px;</attribute>
+            <attribute name="class">text-end</attribute>
+        </xpath>
 
-                <p class="m-0"
-                   t-field="o.date_approve"/>
+        <!-- Nuevas cabeceras (Cantidad, Unidad, Código, Código Proveedor) -->
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th class="text-center" style="background-color: #73A07B; color: white; padding: 8px;">Cant.</th>
+            <th class="text-center" style="background-color: #73A07B; color: white; padding: 8px;">Unidad</th>
+            <th class="text-center" style="background-color: #73A07B; color: white; padding: 8px;">Código</th>
+            <th class="text-center" style="background-color: #73A07B; color: white; padding: 8px;">Código Proveedor</th>
+        </xpath>
 
-            </div>
+        <!-- Precio Unitario -->
+        <xpath expr="//th[@name='th_price_unit']" position="replace">
+            <th name="th_price_unit" class="text-center" style="background-color: #73A07B; color: white; padding: 8px;">Precio Unitario</th>
+        </xpath>
 
-            <!-- FECHA LIMITE -->
-            <div class="col-3"
-                 t-if="o.date_order">
+        <!-- Subtotal -->
+        <xpath expr="//th[@name='th_subtotal']" position="replace">
+            <th name="th_subtotal" class="text-center" style="background-color: #73A07B; color: white; padding: 8px;">Monto</th>
+        </xpath>
 
-                <strong>Fecha límite:</strong>
+        <!-- ====================================================== -->
+        <!-- CELDAS DE LA TABLA -->
+        <!-- ====================================================== -->
 
-                <p class="m-0"
-                   t-field="o.date_order"/>
+        <!-- Eliminar celda original de cantidad -->
+        <xpath expr="//td[span[@t-field='line.product_qty']]" position="replace"/>
 
+        <!-- Nuevas celdas -->
+        <xpath expr="//td[@id='product']" position="before">
+            <td class="text-center"><strong><span t-field="line.product_qty"/></strong></td>
+            <td class="text-center"><span t-field="line.product_uom_id.name" groups="uom.group_uom"/></td>
+            <td class="text-center"><span t-field="line.product_id.default_code"/></td>
+            <td class="text-center"><span t-field="line.codigo_proveedor"/></td>
+        </xpath>
+
+        <!-- ====================================================== -->
+        <!-- MONTO EN LETRA DESPUÉS DE TOTALES -->
+        <!-- ====================================================== -->
+        
+        <xpath expr="//div[@id='total']" position="after">
+            
+            <!-- Monto en letra -->
+            <div class="mt-3" style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px;">
+                <strong>💰 IMPORTE CON LETRA</strong><br/>
+                <span style="text-transform: uppercase;">
+                    <t t-esc="o.currency_id.with_context(lang=o.partner_id.lang or 'es_ES').amount_to_text(o.amount_total)"/>
+                </span>
             </div>
 
         </xpath>
 
-
-        <!-- ================================================== -->
-        <!-- TABLE STYLE -->
-        <!-- ================================================== -->
-
-        <xpath expr="//table[contains(@class,'table')]"
-               position="attributes">
-
-            <attribute name="style">
-                font-size:12px;
-            </attribute>
-
-        </xpath>
-
-
-        <!-- ================================================== -->
-        <!-- TABLE HEAD -->
-        <!-- ================================================== -->
-
-        <xpath expr="//table[contains(@class,'table')]/thead"
-               position="replace">
-
-            <thead>
-
-                <tr>
-
-                    <th class="text-center">
-                        Cant.
-                    </th>
-
-                    <th class="text-center">
-                        Unidad
-                    </th>
-
-                    <th class="text-center">
-                        Código
-                    </th>
-
-                    <th class="text-center">
-                        Código proveedor
-                    </th>
-
-                    <th>
-                        Descripción
-                    </th>
-
-                    <th class="text-center">
-                        Precio unitario
-                    </th>
-
-                    <th class="text-center">
-                        Impuestos
-                    </th>
-
-                    <th class="text-center">
-                        Importe
-                    </th>
-
-                </tr>
-
-            </thead>
-
-        </xpath>
-
-
-        <!-- ================================================== -->
-        <!-- TABLE BODY -->
-        <!-- ================================================== -->
-
-        <xpath expr="//table[contains(@class,'table')]/tbody"
-               position="replace">
-
-            <tbody>
-
-                <t t-foreach="o.order_line"
-                   t-as="line">
-            
-                    <tr>
-            
-                        <!-- CANTIDAD -->
-                        <td class="text-center">
-                            <span t-field="line.product_qty"/>
-                        </td>
-            
-                        <!-- UNIDAD -->
-                        <td class="text-center">
-                            <span t-field="line.product_uom_id"/>
-                        </td>
-            
-                        <!-- CODIGO -->
-                        <td class="text-center">
-                            <span t-field="line.product_id.default_code"/>
-                        </td>
-            
-                        <!-- CODIGO PROVEEDOR -->
-                        <td class="text-center">
-                            <span t-field="line.codigo_proveedor"/>
-                        </td>
-            
-                        <!-- DESCRIPCION -->
-                        <td>
-                            <span t-field="line.name"/>
-                        </td>
-            
-                        <!-- PRECIO -->
-                        <td class="text-center">
-                            <span t-field="line.price_unit"/>
-                        </td>
-            
-                        <!-- IMPUESTOS -->
-                        <td class="text-center">
-                            <span t-esc="', '.join(line.tax_ids.mapped('name'))"/>
-                        </td>
-            
-                        <!-- IMPORTE -->
-                        <td class="text-center">
-                            <span t-field="line.price_subtotal"/>
-                        </td>
-            
-                    </tr>
-            
-                </t>
-            
-            </tbody>
-
-        </xpath>
-
-
-        <!-- ================================================== -->
-        <!-- TOTAL + NOTES -->
-        <!-- ================================================== -->
-
-        <xpath expr="//div[@id='total']"
-               position="after">
-
-            <!-- IMPORTE CON LETRA -->
-            <div class="mt-4">
-
-                <h5>
-                    Importe con letra
-                </h5>
-
-                <span style="font-size:10pt;"
-                      t-esc="o.currency_id.with_context(
-                            lang=o.partner_id.lang or 'es_ES'
-                      ).amount_to_text(o.amount_total)"/>
-
+        <!-- ====================================================== -->
+        <!-- OBSERVACIONES - MODIFICAR LA EXISTENTE -->
+        <!-- ====================================================== -->
+        
+        <xpath expr="//p[@t-field='o.note']" position="replace">
+            <div class="mt-3" style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 10px;" t-if="o.note">
+                <strong>📌 OBSERVACIONES</strong><br/>
+                <span t-field="o.note"/>
             </div>
-
-            <!-- NOTAS -->
-            <div class="mt-4"
-                 t-if="o.note">
-
-                <table class="table table-sm">
-
-                    <tr>
-
-                        <th width="25%">
-                            Referencia proveedor
-                        </th>
-
-                        <td>
-
-                            <span t-field="o.note"/>
-
-                        </td>
-
-                    </tr>
-
-                </table>
-
-            </div>
-
         </xpath>
 
     </template>

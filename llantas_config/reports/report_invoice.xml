@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <template id="external_layout_boxed_llantas"
+              inherit_id="web.external_layout_boxed">
+            <xpath expr="//img[@t-att-src]" position="attributes">
+                <attribute name="style">max-height:60px !important; height:60px !important; width:auto !important;</attribute>
+            </xpath>
+        </template>
         
         <template id="invoice_llantired" inherit_id="account.report_invoice_document" priority="99">
             
@@ -38,52 +44,176 @@
                 </div>
             </xpath>
 
-            <!-- Datos Bancarios y Términos de Pago -->
-            <xpath expr="//div[@id='right-elements']" position="before">
-                <div style="clear: both;"></div>
-                <div class="mt-2 mb-2" style="width: 100%; float: left;">
-                    
-                    <!-- Datos Bancarios -->
-                    <div style="width: 45%; float: left; font-size: 8pt;" t-if="o.move_type == 'out_invoice' and o.state == 'posted'">
-                        <strong style="background-color: #73A07B; color: white; display: block; padding: 5px;">DATOS PARA TRANSFERENCIA BANCARIA</strong>
-                        <table class="table table-sm" style="margin-bottom: 0; font-size: 8pt;">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 30%;"><strong>BANCO:</strong></td>
-                                    <td>
-                                        <t t-if="o.currency_id.name == 'USD'">BANORTE (DÓLARES)</t>
-                                        <t t-else="">HSBC</t>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>CONCEPTO:</strong></td>
-                                    <td><span t-field="o.payment_reference" t-options="{'widget': 'text'}"/></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>CLABE:</strong></td>
-                                    <td>
-                                        <t t-if="o.company_id.name == 'LLANTIRED' and o.currency_id.name == 'MXN'">021743040678913582</t>
-                                        <t t-elif="o.company_id.name == 'LLANTIRED' and o.currency_id.name == 'USD'">072731013015735748</t>
-                                        <t t-elif="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'MXN'">021743040189731499</t>
-                                        <t t-elif="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'USD'">021743070004580915</t>
-                                        <t t-elif="o.company_id.name == 'A-DRONE'">072731011952302184</t>
-                                        <t t-else=""><span t-field="o.company_id.bank_ids.acc_number"/></t>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Términos de Pago -->
-                    <div style="width: 45%; float: right; font-size: 8pt;">
-                        <strong style="background-color: #f0f0f0; display: block; padding: 5px;">TÉRMINOS DE PAGO</strong>
-                        <div style="padding: 8px;">
-                            <span t-field="o.invoice_payment_term_id.note"/>
-                            <span t-if="not o.invoice_payment_term_id.note" t-field="o.invoice_payment_term_id.name"/>
+            <!-- ====================================================== -->
+            <!-- DATOS BANCARIOS + TOTALES COMPACTOS -->
+            <!-- ====================================================== -->
+            
+            <xpath expr="//div[@id='right-elements']" position="replace">
+            
+                <div id="right-elements"
+                     class="row mt-2"
+                     style="width:100%; font-size:8pt;">
+            
+                    <!-- ============================================= -->
+                    <!-- IZQUIERDA -->
+                    <!-- ============================================= -->
+                    <div class="col-7">
+            
+                        <!-- DATOS BANCARIOS -->
+                        <div t-if="o.move_type == 'out_invoice' and o.state == 'posted'"
+                             style="border:1px solid #d9d9d9; margin-bottom:6px;">
+            
+                            <div style="
+                                background:#73A07B;
+                                color:white;
+                                padding:4px 6px;
+                                font-weight:bold;
+                                font-size:8pt;
+                            ">
+                                DATOS PARA TRANSFERENCIA BANCARIA
+                            </div>
+            
+                            <table style="
+                                width:100%;
+                                font-size:7pt;
+                                border-collapse:collapse;
+                            ">
+                                <tbody>
+            
+                                    <tr>
+                                        <td style="padding:2px 4px; width:28%;">
+                                            <strong>BANCO:</strong>
+                                        </td>
+            
+                                        <td style="padding:2px 4px;">
+            
+                                            <t t-if="o.currency_id.name == 'USD'">
+                                                BANORTE (DÓLARES)
+                                            </t>
+            
+                                            <t t-else="">
+                                                HSBC
+                                            </t>
+            
+                                        </td>
+                                    </tr>
+            
+                                    <tr>
+                                        <td style="padding:2px 4px;">
+                                            <strong>CONCEPTO:</strong>
+                                        </td>
+            
+                                        <td style="padding:2px 4px;">
+                                            <span t-field="o.payment_reference"
+                                                  t-options="{'widget': 'text'}"/>
+                                        </td>
+                                    </tr>
+            
+                                    <tr>
+                                        <td style="padding:2px 4px;">
+                                            <strong>CLABE:</strong>
+                                        </td>
+            
+                                        <td style="padding:2px 4px;">
+            
+                                            <t t-if="o.company_id.name == 'LLANTIRED' and o.currency_id.name == 'MXN'">
+                                                021743040678913582
+                                            </t>
+            
+                                            <t t-elif="o.company_id.name == 'LLANTIRED' and o.currency_id.name == 'USD'">
+                                                072731013015735748
+                                            </t>
+            
+                                            <t t-elif="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'MXN'">
+                                                021743040189731499
+                                            </t>
+            
+                                            <t t-elif="o.company_id.name == 'LA BODEGA LLANTAS Y ACCESORIOS' and o.currency_id.name == 'USD'">
+                                                021743070004580915
+                                            </t>
+            
+                                            <t t-elif="o.company_id.name == 'A-DRONE'">
+                                                072731011952302184
+                                            </t>
+            
+                                            <t t-else="">
+                                                <span t-field="o.company_id.bank_ids.acc_number"/>
+                                            </t>
+            
+                                        </td>
+                                    </tr>
+            
+                                </tbody>
+                            </table>
                         </div>
+            
+                        <!-- TERMINOS -->
+                        <div style="border:1px solid #d9d9d9;">
+            
+                            <div style="
+                                background:#f2f2f2;
+                                padding:4px 6px;
+                                font-weight:bold;
+                                font-size:8pt;
+                            ">
+                                TÉRMINOS DE PAGO
+                            </div>
+            
+                            <div style="
+                                padding:6px;
+                                font-size:7pt;
+                                line-height:1.15;
+                            ">
+            
+                                <span t-field="o.invoice_payment_term_id.note"/>
+            
+                                <span t-if="not o.invoice_payment_term_id.note"
+                                      t-field="o.invoice_payment_term_id.name"/>
+            
+                            </div>
+            
+                        </div>
+            
                     </div>
+            
+                    <!-- ============================================= -->
+                    <!-- DERECHA -->
+                    <!-- ============================================= -->
+                    <div class="col-5">
+            
+                        <div id="total" class="clearfix row">
+            
+                            <div class="ms-auto">
+            
+                                <table class="o_total_table table table-borderless"
+                                       style="font-size:8pt;">
+            
+                                    <!-- TAX TOTALS -->
+                                    <t t-if="o.tax_totals">
+            
+                                        <t t-set="tax_totals"
+                                           t-value="o.tax_totals"/>
+            
+                                        <t t-set="currency"
+                                           t-value="o.currency_id"/>
+            
+                                        <t t-call="account.document_tax_totals"/>
+            
+                                    </t>
+            
+                                </table>
+            
+                            </div>
+            
+                        </div>
+            
+                    </div>
+            
                 </div>
+            
             </xpath>
+
+
 
             <!-- Cambiar el encabezado de Precio Unitario para que diga "Precio SIN IVA" -->
             <xpath expr="//th[@name='th_priceunit']/span" position="replace">
@@ -106,6 +236,168 @@
                     <t t-esc="'%.4f' % subtotal_without_tax"/>
                 </span>
             </xpath>
+
+            <!-- ====================================================== -->
+            <!-- COMPACTAR PAYMENT TERM / REFERENCIAS -->
+            <!-- ====================================================== -->
+            
+            <!-- Payment Reference -->
+            <xpath expr="//div[@class='mb-3' and @t-if=&quot;o.move_type in ('out_invoice', 'in_refund') and o.payment_reference&quot;]"
+                   position="attributes">
+            
+                <attribute name="style">
+                    margin-bottom:4px !important;
+                    font-size:7pt !important;
+                    line-height:1.1 !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- Payment Terms -->
+            <xpath expr="//div[@class='mb-3'][.//span[@id='payment_terms_note_id']]"
+                   position="attributes">
+            
+                <attribute name="style">
+                    margin-bottom:4px !important;
+                    font-size:7pt !important;
+                    line-height:1.1 !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- Términos y condiciones -->
+            <xpath expr="//div[@name='comment']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    font-size:6pt !important;
+                    line-height:1.0 !important;
+                    margin-bottom:2px !important;
+                    text-align:justify;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- Notas fiscales -->
+            <xpath expr="//p[@name='taxes_legal_notes']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    font-size:6pt !important;
+                    line-height:1.0 !important;
+                    margin-bottom:2px !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- ====================================================== -->
+            <!-- QR MÁS PEQUEÑO -->
+            <!-- ====================================================== -->
+            
+            <xpath expr="//div[@id='qrcode']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    margin-bottom:2px !important;
+                    font-size:6pt !important;
+                    line-height:1.0 !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- Imagen QR -->
+            <xpath expr="//div[@id='qrcode_image']//img[1]"
+                   position="attributes">
+            
+                <attribute name="style">
+                    width:70px !important;
+                    height:70px !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- Logo centro QR -->
+            <xpath expr="//img[@id='qrcode_odoo_logo']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    width:16px !important;
+                    height:16px !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- Texto QR -->
+            <xpath expr="//div[@id='qrcode_info']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    font-size:6pt !important;
+                    line-height:1 !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- ====================================================== -->
+            <!-- QR DE LINK DE PAGO -->
+            <!-- ====================================================== -->
+            
+            <xpath expr="//div[@id='payment_link_qrcode']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    margin-bottom:2px !important;
+                    font-size:6pt !important;
+                    line-height:1 !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- ====================================================== -->
+            <!-- TODO EL BLOQUE INFERIOR MÁS COMPACTO -->
+            <!-- ====================================================== -->
+            
+            <xpath expr="//div[@id='payment_term']"
+                   position="attributes">
+            
+                <attribute name="style">
+                    margin-top:4px !important;
+                    font-size:7pt !important;
+                    line-height:1.05 !important;
+                </attribute>
+            
+            </xpath>
+            
+            <!-- ====================================================== -->
+            <!-- CADENA / TIMBRADO CFDI -->
+            <!-- ====================================================== -->
+            
+            <!-- <xpath expr="//div[contains(@class,'o_tax_totals')]"
+                   position="attributes">
+            
+                <attribute name="style">
+                    font-size:7pt !important;
+                    line-height:1 !important;
+                </attribute>
+            
+            </xpath> -->
+            
+            <!-- ====================================================== -->
+            <!-- MÁRGENES GENERALES MÁS PEQUEÑOS -->
+            <!-- ====================================================== -->
+            
+            <xpath expr="//div[contains(@class,'page')]"
+                   position="attributes">
+            
+                <attribute name="style">
+                    font-size:8pt;
+                    line-height:1.0;
+                    margin-top:0 !important;
+                    padding-top:0 !important;
+                </attribute>
+            
+            </xpath>
+
 
         </template>
 

@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
 class StockPickingMassSearchWizard(models.TransientModel):
     _name = 'ctt.busquedas.masivas.stock.picking.wizard'
-    _description = 'Wizard for Mass Search of Stock Pickings'
+    _name = 'ctt.busquedas.masivas.stock.picking.wizard'  # ← Asegurar que sea string
+    _description = 'Wizard for Mass Search of Stock Pickings'  # ← CRUCIAL: Agregar _description
+    _rec_name = 'search_field'  # Opcional, para el nombre del registro
 
     search_field = fields.Selection([
         ('name', 'Transferencia'),
@@ -19,7 +22,7 @@ class StockPickingMassSearchWizard(models.TransientModel):
         ('company_id', 'Compañía'),
     ], string='Campo a buscar',
        default='name',
-       required=True)
+       required=True)  # ← True, no 1
 
     picking_values = fields.Text(
         string='Valores a buscar',
@@ -51,7 +54,7 @@ class StockPickingMassSearchWizard(models.TransientModel):
         if not self.picking_values:
             raise UserError('Debe ingresar al menos un valor.')
 
-        # Procesar valores (soporta coma, nueva línea, punto y coma)
+        # Procesar valores
         valores = []
         for linea in self.picking_values.replace('\n', ',').replace(';', ',').split(','):
             valor = linea.strip()
@@ -64,13 +67,11 @@ class StockPickingMassSearchWizard(models.TransientModel):
         operator = '=' if self.use_exact_match else 'ilike'
         search_field = self.search_field
 
-        # Construir dominio correctamente
+        # Construir dominio
         domain = []
-        
         if len(valores) == 1:
             domain = [(search_field, operator, valores[0])]
         else:
-            # Construir dominio con operadores OR
             sub_domains = [(search_field, operator, valor) for valor in valores]
             domain = ['|'] * (len(valores) - 1) + sub_domains
 
@@ -98,20 +99,16 @@ class StockPickingMassSearchWizard(models.TransientModel):
             raise UserError('No hay transferencias para mostrar.')
 
         action = self.env["ir.actions.actions"]._for_xml_id("stock.action_picking_tree_all")
-        
         action['domain'] = [('id', 'in', self.picking_ids.ids)]
         action['view_mode'] = 'tree,form'
-        
         return action
 
     def action_clear_results(self):
         self.ensure_one()
-        
         self.write({
             'picking_ids': [(5, 0, 0)],
             'picking_values': '',
         })
-        
         return {
             'type': 'ir.actions.act_window',
             'res_model': self._name,

@@ -8,17 +8,17 @@
                 <form string="Partial reconciliation">
                     <group>
                         <field name="wizard_origin" invisible="1"/>
-                        <field name="partner_id" options="{'no_open':True,'no_create':True,'no_create_edit':True}" readonly="wizard_origin != 'menu_item'"/>
+                        <field name="partner_id" options="{'no_open':True}" readonly="wizard_origin != 'menu_item'"/>
                         <field name="type" required="1" invisible="wizard_origin != 'menu_item'"/>
-                        <field name="account_id" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('account_type','=',type)]" readonly="wizard_origin != 'menu_item'"/>
+                        <field name="account_id" required="1" options="{'no_open':True}" domain="[('account_type','=',type)]" readonly="wizard_origin != 'menu_item'"/>
                     </group>
                     <field name="line_ids_opc_1" readonly="account_id == False" invisible="partner_id == False">
                         <list editable="bottom">
-                            <field name="wizard_id_1" invisible="1"/>
-                            <field name="wizard_id_1_account_id" invisible="1"/>
-                            <field name="wizard_id_1_partner_id" invisible="1"/>
-                            <field name="line_id_id" invisible="1"/>
-                            <field name="line_id" string="Journal entry (selected partner)" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('parent_state','=','posted'),('account_id','=',wizard_id_1_account_id),('amount_residual','!=',0),('partner_id','in',[wizard_id_1_partner_id,False])]" context="{'tree_view_ref':'account.view_move_line_tree'}"/>
+                            <field name="wizard_id_1" column_invisible="1"/>
+                            <field name="wizard_id_1_account_id" column_invisible="1"/>
+                            <field name="wizard_id_1_partner_id" column_invisible="1"/>
+                            <field name="line_id_id" column_invisible="1"/>
+                            <field name="line_id" string="Journal entry (selected partner)" required="1" options="{'no_open':True}" domain="[('parent_state','=','posted'),('account_id','=',wizard_id_1_account_id),('amount_residual','!=',0),('partner_id','in',[wizard_id_1_partner_id,False])]" context="{'tree_view_ref':'account.view_move_line_tree'}"/>
                             <field name="line_id_debit" readonly="1" sum="line_id_debit" optional="hide"/>
                             <field name="line_id_credit" readonly="1" sum="line_id_credit" optional="hide"/>
                             <field name="line_id_balance" readonly="1" sum="line_id_balance" optional="hide"/>
@@ -29,11 +29,11 @@
                     
                     <field name="line_ids_opc_2" readonly="account_id == False" invisible="partner_id != False">
                         <list editable="bottom">
-                            <field name="wizard_id_2" invisible="1"/>
-                            <field name="wizard_id_2_account_id" invisible="1"/>
-                            <field name="wizard_id_2_partner_id" invisible="1"/>
-                            <field name="line_id_id" invisible="1"/>
-                            <field name="line_id" string="Journal entry (without partner)" required="1" options="{'no_open':True,'no_create':True,'no_create_edit':True}" domain="[('parent_state','=','posted'),('account_id','=',wizard_id_2_account_id),('amount_residual','!=',0)]" context="{'tree_view_ref':'account.view_move_line_tree'}"/>
+                            <field name="wizard_id_2" column_invisible="1"/>
+                            <field name="wizard_id_2_account_id" column_invisible="1"/>
+                            <field name="wizard_id_2_partner_id" column_invisible="1"/>
+                            <field name="line_id_id" column_invisible="1"/>
+                            <field name="line_id" string="Journal entry (without partner)" required="1" options="{'no_open':True}" domain="[('parent_state','=','posted'),('account_id','=',wizard_id_2_account_id),('amount_residual','!=',0)]" context="{'tree_view_ref':'account.view_move_line_tree'}"/>
                             <field name="line_id_debit" readonly="1" sum="line_id_debit" optional="hide"/>
                             <field name="line_id_credit" readonly="1" sum="line_id_credit" optional="hide"/>
                             <field name="line_id_balance" readonly="1" sum="line_id_balance" optional="hide"/>
@@ -63,7 +63,7 @@
         <menuitem id="ctt_partial_reconcile_wizard_menu"  
             name="Partial reconciliation"  
             action="ctt_partial_reconcile_wizard_action" 
-            parent="account.menu_finance"
+            parent="account.account_closing_menu"
             sequence="-1" />
     </data>
 </odoo>

@@ -1,34 +1,27 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Partial reconciliation",
-
-    'summary': """""",
-
+    'summary': """Partial reconciliation wizard for accounting""",
     'description': """
+        Allows partial reconciliation of journal items
     """,
-
     'author': "Coreteam Tech",
     'website': "https://www.coreteam.mx",
     'license': 'LGPL-3',
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
     'category': 'Accounting',
-    'version': '1.0',
+    'version': '19.0.1.0.0',  # Cambia a versión compatible con Odoo 17/18/19
 
-    # any module necessary for this one to work correctly
+    # depends corregidos para Odoo 19
     'depends': [
         'base',
         'account',
-        'account_accountant'
+        # 'account_accountant' ya no existe en Odoo 19
     ],
 
-    # always loaded
     'data': [
-        # 'security/ir.model.access.csv', UPGRADE
-        # 'views/account.xml',
-        # 'views/ctt_partial_reconcile_wizard.xml',
-        # 'views/res.xml',
+        'security/ir.model.access.csv',
+        'views/account.xml',
+        'views/ctt_partial_reconcile_wizard.xml',
+        'views/res.xml',
     ],
 }

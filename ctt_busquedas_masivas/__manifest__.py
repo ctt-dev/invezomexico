@@ -10,6 +10,8 @@
         'views/wizard_mass_search_invoice_view.xml',
         'views/sale_order_extension_view.xml',
         'views/account_move_extension_view.xml',
+        'views/stock_picking_estension_views.xml',
+        'views/wizard_mass_seach_stock_picking.xml',
     ],
     'installable': True,
     'application': False,

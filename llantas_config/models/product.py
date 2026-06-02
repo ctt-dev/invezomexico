@@ -184,7 +184,7 @@ class ProductProductInherit(models.Model):
         ]).mapped('product_id.product_variant_id').ids
     
         if sku_products:
-            domain = expression.OR([
+            domain = Domain.OR([
                 domain,
                 [('id', 'in', sku_products)]
             ])

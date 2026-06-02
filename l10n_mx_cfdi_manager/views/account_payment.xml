@@ -10,8 +10,11 @@
                     <button name="asignar_cfdi" string="Vincular CFDI" class="oe_highlight" type="object" invisible="cfdi_document != False or payment_type != 'outbound' or state not in ['in_process','paid']"/>
                     <button name="unlink_cfdi" string="Desvincular CFDI" class="oe_highlight" type="object" confirm="¿Está seguro que desea desvincular el CFDI?" invisible="cfdi_document == False or payment_type != 'outbound'"/>
                 </xpath>
-                <group name="l10n_mx_edi_group_2" position="after">
+                <group name="main_group" position="after">
                     <group>
+                        <!-- <label for="cfdi_document" invisible="cfdi_document == False"/> -->
+                        <!-- <field name="cfdi_document" options="{'no_create': True}" readonly="1" save_force="1" invisible="cfdi_document == False"/> -->
+
                         <!-- <label for="cfdi_document" invisible="cfdi_document == False"/> -->
                         <field name="cfdi_document" options="{'no_create': True}" readonly="1" save_force="1" invisible="cfdi_document == False"/>
                     </group>

@@ -98,17 +98,14 @@ class SaleOrderMassSearchWizard(models.TransientModel):
                           'company_id', 'warehouse_id']
         
         if search_field in many2one_fields:
-            domain = []
-            for valor in valores:
-                domain.append('|')
-                domain.append((search_field, operator, valor))
-            if domain and domain[-1] == '|':
-                domain.pop()
-        else:
+
             if len(valores) == 1:
                 domain = [(search_field, operator, valores[0])]
             else:
-                domain = ['|'] * (len(valores) - 1) + [(search_field, operator, valor) for valor in valores]
+                domain = ['|'] * (len(valores) - 1) + [
+                    (search_field, operator, valor)
+                    for valor in valores
+                ]
 
         if not domain:
             return
@@ -137,18 +134,22 @@ class SaleOrderMassSearchWizard(models.TransientModel):
         }
     
     def action_open_orders(self):
-        """Abrir las órdenes encontradas en una lista"""
+        """Abrir las órdenes encontradas"""
+    
         if not self.order_ids:
             return
-            
-        return {
-            'type': 'ir.actions.act_window',
-            'name': f'Órdenes de Venta Encontradas ({self.result_count})',
-            'res_model': 'sale.order',
-            'view_mode': 'list,form',
-            'domain': [('id', 'in', self.order_ids.ids)],
-            'target': 'current',
+    
+        action = self.env.ref('sale.action_orders').read()[0]
+    
+        action['domain'] = [('id', 'in', self.order_ids.ids)]
+    
+        action['context'] = {
+            'search_default_my_quotation': 0,
+            'search_default_draft': 0,
+            'search_default_sent': 0,
         }
+    
+        return action
     
     def action_clear_results(self):
         """Limpiar los resultados de búsqueda"""

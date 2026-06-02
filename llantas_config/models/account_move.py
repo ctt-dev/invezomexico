@@ -202,10 +202,8 @@ class account_move_inherit(models.Model):
     def action_post(self):
         for move in self:
             if move.move_type in ('out_invoice', 'in_invoice'):
-    
-                
                 for line in move.invoice_line_ids:
-                    if not line.tax_ids.mapped('name'):
+                    if not line.tax_ids.mapped('name') and line.display_type == 'product':
                         raise UserError(
                             "No se puede confirmar la factura %s.\n\n"
                             "Existen productos que no tienen impuestos configurados:"
@@ -221,40 +219,30 @@ class ResCurrency(models.Model):
     _inherit = 'res.currency'
 
     def amount_to_text(self, amount):
-        """
-        Converts the amount to text, handling the currency and the decimal part.
-        """
         self.ensure_one()
-
+    
         integer_part = int(amount)
-        decimal_part = int(round((amount - integer_part) * 100))
-
+    
+        lang = self.env.context.get('lang') or 'es_MX'
+        lang = lang[:2]
+    
+        amount_words = num2words(
+            integer_part,
+            lang=lang
+        ).upper()
+    
         if self.name == 'MXN':
             currency_text = 'PESOS'
-            currency_abbr = 'M.N.'
         elif self.name == 'USD':
             currency_text = 'DÓLARES'
-            currency_abbr = 'USD'
         else:
             currency_text = (
                 self.currency_unit_label.upper()
                 if self.currency_unit_label
                 else self.name.upper()
             )
-            currency_abbr = self.name.upper()
-
-        # FIX
-        lang = self.env.context.get('lang') or 'es_MX'
-        lang = lang[:2]
-
-        amount_words = num2words(
-            integer_part,
-            lang=lang
-        ).upper()
-
-        return '%s %s %02d/100 %s' % (
+    
+        return '%s %s' % (
             amount_words,
             currency_text,
-            decimal_part,
-            currency_abbr
         )

@@ -150,18 +150,22 @@ class InvoiceMassSearchWizard(models.TransientModel):
         }
     
     def action_open_invoices(self):
-        """Abrir las facturas encontradas en una lista"""
+        """Abrir las facturas encontradas"""
+    
         if not self.invoice_ids:
             return
-            
-        return {
-            'type': 'ir.actions.act_window',
-            'name': f'Facturas Encontradas ({self.result_count})',
-            'res_model': 'account.move',
-            'view_mode': 'list,form',
-            'domain': [('id', 'in', self.invoice_ids.ids)],
-            'target': 'current',
+    
+        action = self.env.ref('account.action_move_out_invoice_type').read()[0]
+    
+        action['domain'] = [('id', 'in', self.invoice_ids.ids)]
+    
+        action['context'] = {
+            'default_move_type': 'out_invoice',
+            'search_default_posted': 0,
+            'create': False,
         }
+    
+        return action
     
     def action_clear_results(self):
         """Limpiar los resultados de búsqueda"""

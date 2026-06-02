@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_ctt_busquedas_masivas_stock_picking_wizard_form" model="ir.ui.view">
+            <field name="name">ctt.busquedas.masivas.stock.picking.wizard.form</field>
+            <field name="model">ctt.busquedas.masivas.stock.picking.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Búsqueda Masiva de Transferencias">
+                    <header>
+                        <button name="action_open_pickings" string="Ver Transferencias" type="object" class="btn-primary" invisible="not picking_ids"/>
+                        <button name="action_clear_results" string="Limpiar" type="object" class="btn-secondary" invisible="not picking_ids"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group string="Configuración">
+                                <field name="search_field"/>
+                                <field name="use_exact_match"/>
+                            </group>
+                            <group string="Valores">
+                                <field name="picking_values" nolabel="1" placeholder="Ingrese valores separados por coma o por línea"/>
+                            </group>
+                        </group>
+                        <group string="Resultados">
+                            <field name="result_count" readonly="1"/>
+                            <field name="picking_ids" widget="many2many_tags" nolabel="1" options="{'no_create': True, 'no_create_edit': True}"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_search_multiple_pickings" string="🔍 Buscar" type="object" class="btn-primary"/>
+                        <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_ctt_busquedas_masivas_stock_picking_wizard" model="ir.actions.act_window">
+            <field name="name">Búsqueda Múltiple de Transferencias</field>
+            <field name="res_model">ctt.busquedas.masivas.stock.picking.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_view_types">list,form</field>
+        </record>
+    </data>
+</odoo>

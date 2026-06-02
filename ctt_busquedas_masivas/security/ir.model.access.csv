@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_ctt_busquedas_masivas_wizard,ctt.busquedas.masivas.wizard,model_ctt_busquedas_masivas_wizard,base.group_user,1,1,1,0
 access_ctt_busquedas_masivas_invoice_wizard,ctt.busquedas.masivas.invoice.wizard,model_ctt_busquedas_masivas_invoice_wizard,base.group_user,1,1,1,0
+access_ctt_busquedas_masivas_stock_picking_wizard,ctt.busquedas.masivas.stock.picking.wizard,model_ctt_busquedas_masivas_stock_picking_wizard,base.group_user,1,1,1,1

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking2_view_tree_inherit_mass_search" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit.mass.search</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list/header" position="inside">
+                <button string="🔍 Búsqueda Múltiple"
+                        type="action"
+                        name="%(action_ctt_busquedas_masivas_stock_picking_wizard)d"
+                        class="btn-primary"
+                        display="always"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

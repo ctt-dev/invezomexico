@@ -9,7 +9,7 @@
     'website': "https://www.coreteam.mx",
     'license': 'LGPL-3',
     'category': 'Accounting',
-    'version': '19.0.1.0.0',  # Cambia a versión compatible con Odoo 17/18/19
+    'version': '19.0.1',  # Cambia a versión compatible con Odoo 17/18/19
 
     # depends corregidos para Odoo 19
     'depends': [

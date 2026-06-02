@@ -1,6 +1,9 @@
 {
     'name': 'Búsquedas Masivas CTT',
+    'author': "Mega",
+    'website': "https://www.coreteam.mx",
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Sales',
     'summary': 'Búsqueda múltiple de órdenes de venta y facturas',
     'depends': ['sale', 'account', 'base'],
@@ -15,4 +18,9 @@
     ],
     'installable': True,
     'application': False,
+    "assets": {
+        "web.assets_backend": [
+            'llantas_config/static/src/**/*',
+        ],
+    },    
 }

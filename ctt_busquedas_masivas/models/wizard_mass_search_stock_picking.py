@@ -10,9 +10,8 @@ class StockPickingMassSearchWizard(models.TransientModel):
     _rec_name = 'search_field'  # Opcional, para el nombre del registro
 
     search_field = fields.Selection([
-        ('name', 'Transferencia'),
+        ('name', 'Referencia'),
         ('origin', 'Origen'),
-        ('reference', 'Referencia'),
         ('partner_id', 'Contacto'),
         ('carrier_id', 'Transportista'),
         ('picking_type_id', 'Tipo de Operación'),

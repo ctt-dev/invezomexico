@@ -76,55 +76,74 @@ class SaleOrderMassSearchWizard(models.TransientModel):
                     'message': 'Debe ingresar al menos un valor para buscar.',
                 }
             }
-
+    
         # Procesar los valores
         valores = []
         for linea in self.sale_order_names.replace('\n', ',').split(','):
             valor = linea.strip()
             if valor:
                 valores.append(valor)
-
+    
         if not valores:
-            return
-
+            return {
+                'warning': {
+                    'title': 'Campos vacíos',
+                    'message': 'Debe ingresar al menos un valor válido para buscar.',
+                }
+            }
+    
         # Determinar el operador de búsqueda
         operator = '=' if self.use_exact_match else 'ilike'
-
-        # Construir el dominio
+    
+        # Campo seleccionado
         search_field = self.search_field
-        
-        # Para campos Many2one, buscar por nombre
-        many2one_fields = ['partner_id', 'user_id', 'team_id', 'comprador_id', 
-                          'company_id', 'warehouse_id']
-        
-        if search_field in many2one_fields:
-
-            if len(valores) == 1:
-                domain = [(search_field, operator, valores[0])]
-            else:
-                domain = ['|'] * (len(valores) - 1) + [
-                    (search_field, operator, valor)
-                    for valor in valores
-                ]
-
-        if not domain:
-            return
-
-        # Buscar las órdenes
+    
+        # Campos Many2one y su campo name relacionado
+        many2one_fields = {
+            'partner_id': 'partner_id.name',
+            'user_id': 'user_id.name',
+            'team_id': 'team_id.name',
+            'comprador_id': 'comprador_id.name',
+            'company_id': 'company_id.name',
+            'warehouse_id': 'warehouse_id.name',
+        }
+    
+        # Determinar el campo real a buscar
+        field_to_search = many2one_fields.get(search_field, search_field)
+    
+        # Construir dominio OR
+        if len(valores) == 1:
+            domain = [(field_to_search, operator, valores[0])]
+        else:
+            domain = ['|'] * (len(valores) - 1)
+            domain += [
+                (field_to_search, operator, valor)
+                for valor in valores
+            ]
+    
+        # Buscar órdenes
         orders = self.env['sale.order'].search(domain)
-        
+    
         if not orders:
-            field_name = dict(self._fields['search_field'].selection).get(search_field, search_field)
+            field_name = dict(
+                self._fields['search_field'].selection
+            ).get(search_field, search_field)
+    
             return {
                 'warning': {
                     'title': 'Sin resultados',
-                    'message': f'No se encontraron órdenes en el campo "{field_name}" con los valores proporcionados.',
+                    'message': (
+                        f'No se encontraron órdenes en el campo '
+                        f'"{field_name}" con los valores proporcionados.'
+                    ),
                 }
             }
-
-        # Actualizar el wizard con los resultados
-        self.write({'order_ids': [(6, 0, orders.ids)]})
-        
+    
+        # Actualizar wizard
+        self.write({
+            'order_ids': [(6, 0, orders.ids)]
+        })
+    
         return {
             'type': 'ir.actions.act_window',
             'res_model': self._name,

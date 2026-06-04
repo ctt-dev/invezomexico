@@ -210,7 +210,7 @@
                 <div class="row mb-2" t-if="o.currency_id.name == 'USD'" style="font-size:12px;">
                     <div class="col">
                         <strong>Tipo de Cambio:</strong>
-                        <span t-esc="'%.6f' % (o.l10n_mx_edi_exchange_rate or 0.0)"/>
+                        <span t-esc="'%.6f' % (o.exchange_rate or 0.0)"/>
                     </div>
                 </div>
             </xpath>

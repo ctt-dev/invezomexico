@@ -78,6 +78,8 @@
         'views/account_payment.xml',
         'views/wizard_stock_picking_validate.xml',
         # 'reports/mx_report.xml',
+        'reports/address_layout.xml',
+        'reports/external_layout_boxed.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -202,6 +202,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//list//field[@name='name']" position="before">
                     <field name="marketplace_name" />
+                    <field name="yuju_pack_id"/>
                     
                     <!-- <field name="folio_venta" optional="show"/> -->
                     <!-- <field name="yuju_pack_id" optional="hide" /> -->
@@ -243,8 +244,12 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
+                <xpath expr="//search//field[@name='user_id']" position="before">
+                    <field name="yuju_pack_id"/>
+                </xpath>
                 <xpath expr="//search//group//filter[@name='salesperson']" position="after">
                     <filter name="marketplace_name" string="Marketplace" domain="[]" context="{'group_by': 'marketplace_name'}"/>
+                    
                 </xpath>
                 <xpath expr="//search//filter[@name='my_sale_orders_filter']" position="after">
                     <filter name="es_killer" string="Es venta killer" domain="[('es_killer', '=', True)]"/>

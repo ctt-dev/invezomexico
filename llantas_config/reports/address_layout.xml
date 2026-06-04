@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <template id="web_address_layout_llantas"
+          inherit_id="web.address_layout"
+          priority="99">
+        
+            <xpath expr="//div[@name='information_block']" position="replace"/>
+
+            <!-- Quitar alineación a la derecha -->
+            <xpath expr="//t[@t-set='colclass']" position="replace">
+                <t t-set="colclass" t-value="'col-12'"/>
+            </xpath>
+        
+            <!-- Hacer más pequeña la letra de la dirección -->
+            <xpath expr="//div[@name='address']" position="attributes">
+                <attribute name="style">
+                    font-size:11pt;
+                    line-height:1;
+                </attribute>
+            </xpath>
+        </template>
+    </data>
+</odoo>

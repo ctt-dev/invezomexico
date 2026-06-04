@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="external_layout_boxed_llantas"
-              inherit_id="web.external_layout_boxed">
-        <xpath expr="//img[@t-att-src]" position="attributes">
-            <attribute name="style">max-height:60px !important; height:60px !important; width:auto !important;</attribute>
-        </xpath>
-    </template>
     
     <template id="purchase_stock_report_purchaseorder_document_for_llantas"
               inherit_id="purchase_stock.report_purchaseorder_document">

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout_boxed_llantas"
+              inherit_id="web.external_layout_boxed">
+        <!-- Tamaño del logo -->
+        <xpath expr="//img[@t-att-src]" position="attributes">
+            <attribute name="style">
+                max-height:75px !important;
+                height:75px !important;
+                width:auto !important;
+            </attribute>
+        </xpath>
+        <xpath expr="//div[@name='company_address']/.." position="attributes">
+            <attribute name="style">font-size:13px !important;</attribute>
+        </xpath>
+        <!-- Reducir margen debajo del logo y datos empresa -->
+        <xpath expr="//div[@class='row mb8']" position="attributes">
+            <attribute name="class">row mb-1</attribute>
+        </xpath>
+
+        <!-- Reducir margen de company_address -->
+        <xpath expr="//div[@name='company_address']" position="attributes">
+            <attribute name="style">
+                font-size:13pt;
+            </attribute>
+        </xpath>
+    </template>
+</odoo>

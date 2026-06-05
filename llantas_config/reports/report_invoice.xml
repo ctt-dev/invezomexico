@@ -15,7 +15,7 @@
             <xpath expr="//div[@id='informations']//div[@name='delivery_date']" position="replace"/>
             
             <!-- Eliminar Reference -->
-            <xpath expr="//div[@id='informations']//div[@name='reference']" position="replace"/>
+            <!-- <xpath expr="//div[@id='informations']//div[@name='reference']" position="replace"/> -->
             
             <!-- ====================================================== -->
             <!-- ESTILOS GENERALES PARA LA TABLA -->
@@ -192,6 +192,15 @@
                         <span t-esc="'%.6f' % (o.exchange_rate or 0.0)"/>
                     </div>
                 </div>
+            </xpath>
+
+            <!-- MONTOS EN LETRA - CON MÉTODO PERSONALIZADO -->
+            <!-- ====================================================== -->
+            <xpath expr="//p[hasclass('text-end', 'lh-sm')]" position="replace">
+                <p class="text-end lh-sm" style="font-size:13px; text-align:right;">
+                    <strong>Total en letra:</strong><br/>
+                    <span style="font-size:12pt;" t-out="o._get_amount_words_clean()"/>
+                </p>
             </xpath>
             
             <!-- ====================================================== -->

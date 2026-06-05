@@ -25,9 +25,9 @@
                         </group>
                     </page>
                 </xpath>
-                <!-- <xpath expr="//page[@name='invoice_tab']//field/tree//field[@name='discount']" position="after">
-                        <field name="pronto_pago"/>
-                </xpath> -->
+                <xpath expr="//form//sheet//field[@name='date']" position="after">
+                    <field name="invoice_date_due" invisible="move_type != 'entry'"/>
+                </xpath>
             </field>
         </record>
         

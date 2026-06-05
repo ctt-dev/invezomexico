@@ -19,12 +19,12 @@
         </record>
 
         <record id="run_cancel_reversed_moves_manually_action" model="ir.actions.server">
-            <field name="name">Run cancel reversed moves manually</field>
+            <field name="name">Reprocesar impuestos</field>
             <field name="model_id" ref="model_account_move"/>
             <field name="state">code</field>
             <field name="code">model.cancel_reversed_moves()</field>
         </record>
 
-        <menuitem id="run_cancel_reversed_moves_manually_menu" name="Run cancel reversed moves manually" parent="account.menu_finance_entries" action="run_cancel_reversed_moves_manually_action"/>
+        <menuitem id="run_cancel_reversed_moves_manually_menu" name="Reprocesar impuestos" parent="account.menu_finance_entries" action="run_cancel_reversed_moves_manually_action"/>
     </data>
 </odoo>

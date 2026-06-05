@@ -215,6 +215,13 @@ class account_move_inherit(models.Model):
     
         return super().action_post()
 
+    def _get_amount_words_clean(self):
+        """Retorna el monto en letras sin la abreviatura M.E."""
+        words = self.amount_total_words
+        if self.currency_id.name == 'USD':
+            words = words.replace(' M.E.', ' USD')
+        return words
+
 class ResCurrency(models.Model):
     _inherit = 'res.currency'
 

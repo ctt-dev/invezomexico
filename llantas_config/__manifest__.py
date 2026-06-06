@@ -80,6 +80,7 @@
         # 'reports/mx_report.xml',
         'reports/address_layout.xml',
         'reports/external_layout_boxed.xml',
+        'data/server_actions.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

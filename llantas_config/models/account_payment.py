@@ -16,3 +16,27 @@ class AccountPayment(models.Model):
         default=False,
         tracking=True
     )
+
+    def action_massive_stamp_payment_complements(self):
+
+        for payment in self:
+            try:
+                invoices = payment.reconciled_invoice_ids.filtered(
+                    lambda inv: inv.l10n_mx_edi_update_payments_needed
+                )
+
+                if not invoices:
+                    continue
+
+                invoices.l10n_mx_edi_cfdi_invoice_try_update_payments()
+
+                _logger.info(
+                    "Complemento procesado para pago %s",
+                    payment.display_name
+                )
+
+            except Exception:
+                _logger.exception(
+                    "Error al procesar complemento para pago %s",
+                    payment.display_name
+                )

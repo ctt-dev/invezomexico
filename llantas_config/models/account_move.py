@@ -222,6 +222,8 @@ class account_move_inherit(models.Model):
             words = words.replace(' M.E.', ' USD')
         return words
 
+    
+
 class ResCurrency(models.Model):
     _inherit = 'res.currency'
 

@@ -4,7 +4,7 @@ from odoo import models, fields, api
 import requests
 import os
 import csv
-from odoo.exceptions import ValidationError , UserError
+from odoo.exceptions import ValidationError, UserError
 
 _EFOS_DOWNLOAD_PATH_ROOT = '/home/odoo/data/filestore/EFOS/'
 
@@ -105,6 +105,11 @@ class l10n_mx_cfdi_fiel(models.Model):
         
         url = 'http://omawww.sat.gob.mx/cifras_sat/Documents/Listado_Completo_69-B.csv'
         r = requests.get(url, allow_redirects=True)
+        
+        ## Solo procesar respuesta 200
+        if r.status_code != 200:
+            return
+            
         filename = url.split('/')[-1]
         open(_EFOS_DOWNLOAD_PATH_ROOT+filename, 'wb').write(r.content)
         

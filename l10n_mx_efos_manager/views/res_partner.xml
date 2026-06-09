@@ -14,8 +14,7 @@
                     <attribute name="autofocus">False</attribute>
                 </xpath> 
                 <xpath expr="//page[@name='contact_addresses']" position="before">
-                    <!-- <page string="EFOS" attrs="{'invisible':[('efos_status','=',False)]}" autofocus="autofocus"> -->
-                    <page string="EFOS" invisible="[('efos_status','=',False)]" autofocus="autofocus">
+                    <page string="EFOS" invisible="efos_status == False" autofocus="autofocus">
                         <field name="efos_ids" readonly="1"/>
                         <span>Advertencia.</span>
                         <br/>
@@ -25,13 +24,9 @@
                     </page>
                 </xpath> 
                 <xpath expr="//div[@name='button_box']" position="after">
-                    <!-- <widget name="web_ribbon" title="Presunto" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Presunto')]}"/> -->
                     <widget name="web_ribbon" title="Presunto" bg_color="bg-danger" invisible="efos_status != 'Presunto'"/>
-                    <!-- <widget name="web_ribbon" title="Desvirtuado" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Desvirtuado')]}"/> -->
                     <widget name="web_ribbon" title="Desvirtuado" bg_color="bg-danger" invisible="efos_status != 'Desvirtuado'"/>
-                    <!-- <widget name="web_ribbon" title="Definitivo" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Definitivo')]}"/> -->
                     <widget name="web_ribbon" title="Definitivo" bg_color="bg-danger" invisible="efos_status != 'Definitivo'"/>
-                    <!-- <widget name="web_ribbon" title="Sentencia Favorable" bg_color="bg-danger" attrs="{'invisible': [('efos_status', '!=', 'Sentencia Favorable')]}"/> -->
                     <widget name="web_ribbon" title="Sentencia Favorable" bg_color="bg-danger" invisible="efos_status != 'Sentencia Favorable'"/>
                 </xpath>
             </field>
@@ -59,7 +54,6 @@
                     <div class="row" invisible="efos_status == False">
                         <div class="col-12">
                             <span class="float-right">
-                                <!--<field name="efos_status" widget="label_selection" options="{'classes': {'Presunto': 'danger', 'Desvirtuado': 'danger', 'Definitivo': 'danger', 'Sentencia Favorable': 'danger'}}"/>-->
                                 <div style="background-color: #DD3544; color: white; font-size: 10px; padding: 2px; border-radius: 3px; border: solid #017F85 2px;">
                                     <b><field name="efos_status"/></b>
                                 </div>

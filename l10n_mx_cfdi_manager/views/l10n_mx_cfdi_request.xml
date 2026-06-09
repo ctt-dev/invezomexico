@@ -34,8 +34,6 @@
                     <field name="done" string="Descargado"/>
                     <field name="docs_create" invisible="0"/> 
                     <field name="total_documents"/>
-                    <!-- <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" attrs="{'invisible':['|',('done','=',False),('docs_create','!=',False)]}"/> -->
-                    <!-- <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" invisible="done == False or docs_create != False"/> -->
                     <button name="create_request_documents" type="object" icon="fa-archive" string="DESCOMPRIMIR DOCUMENTOS" invisible="not done or docs_create or request_type != 'CFDI'"/>
                     <button name="create_request_metadata" type="object" icon="fa-archive" string="DESCOMPRIMIR METADATOS" invisible="not done or docs_create or request_type != 'Metadata'"/>
                     <button name="verificar_solicitud" type="object" string="VERIFICAR"/>                    
@@ -68,7 +66,6 @@
                             </group>
                         </group>
                         <notebook>
-                            <!-- <page string="Documentos" attrs="{'invisible':[('done','=',False)]}"> -->
                             <page string="Documentos" invisible="done == False or request_type != 'CFDI'">
                                 <field name="cfdi_documents"/>
                             </page>

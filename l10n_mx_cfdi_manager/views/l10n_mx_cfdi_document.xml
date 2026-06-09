@@ -14,7 +14,6 @@
                                 <field name="type_emision" readonly="1"/>
                                 <field name="total" readonly="1"/>
                                 <field name="link_state" readonly="1" string="¿Esta vinculado?"/>
-                                <!-- <field name="move_id" readonly="1" attrs="{'invisible':[('link_state','=','unlink')]}"/> -->
                                 <field name="move_id" readonly="1" invisible="link_state == 'unlink'"/>
                             </group>
                             <group>
@@ -25,15 +24,12 @@
                                 <field name="attatch_name" invisible="1"/>
                                 <field name="pdf_preview_name" invisible="1" force_save="1"/>
                                 <field name="attatch" string="XML" filename="attatch_name" widget="binary" readonly="1"/>
-                                <!-- <field name="pdf_preview" string="PDF" filename="pdf_preview_name" widget="binary" readonly="1" attrs="{'invisible':[('pdf_preview','=',False)]}"/> -->
                                 <field name="pdf_preview" string="PDF" filename="pdf_preview_name" widget="binary" readonly="1" invisible="pdf_preview == False"/>
-                                <!-- <button name="generate_pdf_preview" type="object" string="Generar PDF" attrs="{'invisible':[('pdf_preview','!=',False)]}"/> -->
                                 <button name="generate_pdf_preview" type="object" string="Generar PDF" invisible="pdf_preview != False or type_comprobante not in ['I','E']"/>
                                 <button name="generate_pdf_preview" type="object" string="Actualizar PDF" invisible="pdf_preview == False or type_comprobante not in ['I','E']"/>
                             </group>
                         </group>
                         <notebook>
-                            <!-- <page string="PDF" attrs="{'invisible':[('pdf_preview','=',False)]}"> -->
                             <page string="PDF" invisible="pdf_preview == False">
                                 <field name="pdf_preview" widget="pdf_viewer" readonly="1" force_save="1"/>
                             </page>
@@ -108,7 +104,6 @@
                     <field name="link_state" readonly="1" optional="hide"/>
                     <field name="metodo_pago" readonly="1" optional="hide"/>
                     <field name="moves_ids" string="Factura" readonly="1" widget="many2many_tags" optional="hide"/>
-                    <!-- <field name="journal_id" options="{'no_open': True, 'no_create': True}" domain="[('type','=','purchase')]" readonly="type_comprobante in ['T','N']"/> -->
                     <field name="suitable_journal_ids" column_invisible="1"/>
                     <field name="journal_id" options="{'no_open': True, 'no_create': True}" readonly="type_emision == 'E' or type_comprobante in ['T','N']"/>
                     <button name="create_bill_showing_new_record" type="object" icon="fa-file-o" string="Crear Factura" invisible="type_emision == 'E' or link_state == 'link' or type_comprobante not in ['I','E']"/>
@@ -138,7 +133,6 @@
                     'edit': 1
                 }
             </field>
-            <!-- <field name="search_view_id" ref="view_l10n_mx_cfdi_document_filter"/> -->
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No hay documentos aún...
@@ -160,7 +154,6 @@
                     'edit': 1
                 }
             </field>
-            <!-- <field name="search_view_id" ref="view_l10n_mx_cfdi_document_filter"/> -->
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     No hay documentos aún...

@@ -11,7 +11,6 @@
                     <button name="unlink_cfdi" string="Desvincular CFDI" class="oe_highlight" type="object" confirm="¿Está seguro que desea desvincular el CFDI?" invisible="cfdi_document == False or picking_type_code != 'incoming' or state != 'done'"/>
                 </xpath>
                 <xpath expr="//sheet//group//group[2]" position="inside">
-                    <!-- <label for="cfdi_document" invisible="cfdi_document == False"/> -->
                     <field name="cfdi_document" options="{'no_create': True}" readonly="1" save_force="1" invisible="cfdi_document == False"/>
                 </xpath>
             </field>

@@ -29,6 +29,7 @@ class AccountPayment(models.Model):
                     continue
 
                 invoices.l10n_mx_edi_cfdi_invoice_try_update_payments()
+                invoices.l10n_mx_edi_cfdi_try_sat()
 
                 _logger.info(
                     "Complemento procesado para pago %s",

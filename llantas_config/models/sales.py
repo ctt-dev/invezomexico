@@ -296,6 +296,9 @@ class sale_order_inherit(models.Model):
 
         for values in vals_list:
 
+            if values.get('yuju_shipping_id'):
+                values['guia'] = values['yuju_shipping_id']
+
             # =====================================================
             # FOLIO VENTA
             # =====================================================
@@ -742,7 +745,7 @@ class sale_order_inherit(models.Model):
                     'marketplace_name':rec.marketplace.name,
                     'tipo_factura': rec.tipo_factura,
                     'no_recoleccion': rec.guia,
-                    'numero_guia' : rec.yuju_carrier_tracking_ref
+                    'numero_guia' : rec.yuju_shipping_id
                 })
         
     

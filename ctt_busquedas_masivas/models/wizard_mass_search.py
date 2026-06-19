@@ -155,20 +155,25 @@ class SaleOrderMassSearchWizard(models.TransientModel):
     def action_open_orders(self):
         """Abrir las órdenes encontradas"""
     
+        self.ensure_one()
+    
         if not self.order_ids:
-            return
+            return False
     
-        action = self.env.ref('sale.action_orders').read()[0]
-    
-        action['domain'] = [('id', 'in', self.order_ids.ids)]
-    
-        action['context'] = {
-            'search_default_my_quotation': 0,
-            'search_default_draft': 0,
-            'search_default_sent': 0,
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Órdenes de Venta',
+            'res_model': 'sale.order',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.order_ids.ids)],
+            'target': 'current',
+            'context': {
+                'search_default_my_quotation': 0,
+                'search_default_draft': 0,
+                'search_default_sent': 0,
+                'create': False,
+            },
         }
-    
-        return action
     
     def action_clear_results(self):
         """Limpiar los resultados de búsqueda"""

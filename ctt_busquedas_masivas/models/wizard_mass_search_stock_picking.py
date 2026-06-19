@@ -93,14 +93,18 @@ class StockPickingMassSearchWizard(models.TransientModel):
 
     def action_open_pickings(self):
         self.ensure_one()
-
+    
         if not self.picking_ids:
             raise UserError('No hay transferencias para mostrar.')
-
-        action = self.env["ir.actions.actions"]._for_xml_id("stock.action_picking_tree_all")
-        action['domain'] = [('id', 'in', self.picking_ids.ids)]
-        action['view_mode'] = 'tree,form'
-        return action
+    
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Transferencias',
+            'res_model': 'stock.picking',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.picking_ids.ids)],
+            'target': 'current',
+        }
 
     def action_clear_results(self):
         self.ensure_one()

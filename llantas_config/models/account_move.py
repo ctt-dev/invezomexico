@@ -77,6 +77,33 @@ class account_move_line_inherit(models.Model):
             else:
                 factura.dias_transcurridos = 0
 
+    def _get_pedimento_from_landed_cost(self):
+        """Devuelve el número de pedimento del costo en destino más reciente
+        confirmado para este producto, asumiendo un solo pedimento vigente
+        por producto (sin trazabilidad por lote)."""
+        self.ensure_one()
+        if not self.product_id:
+            return False
+    
+        landed_cost = self.env['stock.landed.cost'].search([
+            ('valuation_adjustment_lines.move_id.product_id', '=', self.product_id.id),
+            ('state', '=', 'done'),
+        ], order='date desc', limit=1)
+    
+        if not landed_cost:
+            return False
+    
+        return landed_cost.l10n_mx_edi_customs_number
+
+    def action_recalcular_pedimento(self):
+        """Server action: recalcula y escribe el pedimento en las líneas seleccionadas."""
+        for line in self:
+            if line.move_id.move_type != 'out_invoice':
+                continue
+            pedimento = line._get_pedimento_from_landed_cost()
+            if pedimento:
+                # AJUSTA este nombre de campo destino según lo que confirmes con el grep
+                line.l10n_mx_edi_customs_number = pedimento
 
 class account_move_inherit(models.Model):
     _inherit = 'account.move'
@@ -222,6 +249,7 @@ class account_move_inherit(models.Model):
             words = words.replace(' M.E.', ' USD')
         return words
 
+    
     
 
 class ResCurrency(models.Model):

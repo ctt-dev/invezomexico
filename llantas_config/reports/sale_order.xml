@@ -128,7 +128,7 @@
             <div style="text-align:right; font-size:10px; margin-top:5px; margin-bottom:5px;">
                 <strong>Moneda:</strong> <span t-field="doc.currency_id.name"/><br/>
                 <strong>Total con letra:</strong>
-                <span t-esc="doc.currency_id.with_context(lang=doc.partner_id.lang or 'es_ES').amount_to_text(doc.amount_total)"/>
+                <span t-esc="doc.currency_id.with_context(lang=doc.partner_id.lang or 'es_ES').amount_to_text(doc.amount_total).replace(' M.E.', '') + ' ' + '{:02d}/100'.format(int(round((doc.amount_total % 1) * 100))) + ' ' + doc.currency_id.name"/>
             </div>
         </xpath>
 
